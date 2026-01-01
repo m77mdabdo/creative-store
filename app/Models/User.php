@@ -20,12 +20,14 @@ class User extends Authenticatable
         'email_verified_at',
         'phone',
         'avatar_path',
+        'google_id',
         'is_active',
         'created_by',
         'last_login_at',
     ];
 
     protected $hidden = [
+        'google_id',
         'password',
         'remember_token',
     ];
