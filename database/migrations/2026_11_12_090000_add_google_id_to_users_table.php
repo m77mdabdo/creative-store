@@ -1,0 +1,35 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+/**
+ * Remembers which Google account is linked to a user, so Google sign-in
+ * matches on Google's stable account id instead of on the email alone.
+ */
+return new class extends Migration
+{
+    public function up(): void
+    {
+        if (Schema::hasColumn('users', 'google_id')) {
+            return;
+        }
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('google_id', 64)->nullable()->unique()->after('email');
+        });
+    }
+
+    public function down(): void
+    {
+        if (! Schema::hasColumn('users', 'google_id')) {
+            return;
+        }
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropUnique(['google_id']);
+            $table->dropColumn('google_id');
+        });
+    }
+};
