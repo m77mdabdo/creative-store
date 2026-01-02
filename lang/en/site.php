@@ -553,5 +553,9 @@ return [
     'login_to_checkout' => 'Sign in or create an account to complete your order. Your cart is saved.',
     'checkout_login_hint' => 'You will sign in when you check out',
     'free' => 'Free',
+    'google_failed' => 'Google sign-in did not complete. Please try again.',
+    'google_unverified' => 'Your Google account email is not verified yet. Verify it with Google, or sign in with your password.',
+    'google_other_account' => 'This email is already linked to a different Google account. Sign in with your password instead.',
+    'account_deleted' => 'This account was closed. Please contact support to restore it.',
 
 ];

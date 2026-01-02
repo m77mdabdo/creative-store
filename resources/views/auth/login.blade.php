@@ -68,6 +68,12 @@
                                         </div>
                                     @endif
 
+                                    @if (session('error'))
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ session('error') }}
+                                        </div>
+                                    @endif
+
                                     @if ($errors->any())
                                         <div class="alert alert-danger" role="alert">
                                             {{ $errors->first() }}
