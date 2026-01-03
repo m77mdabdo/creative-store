@@ -24,6 +24,17 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Behind a load balancer or CDN (Render, Cloudflare, Nginx) the real
+        // visitor IP and scheme arrive in X-Forwarded-* headers. They are only
+        // believed when the request comes from an address in TRUSTED_PROXIES;
+        // without this every visitor shares the proxy's IP, so one person
+        // could use up the login rate limit for everyone.
+        $trustedProxies = trim((string) env('TRUSTED_PROXIES', ''));
+        $middleware->trustProxies(
+            at: $trustedProxies === '*' ? '*' : array_values(array_filter(array_map('trim', explode(',', $trustedProxies)))),
+        );
+
+        $middleware->prepend(\App\Http\Middleware\ForceHttps::class);
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
         // Outside local development, only requests for the APP_URL host (and its
