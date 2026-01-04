@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -31,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->pinApplicationUrl();
         $this->configureRateLimiting();
 
         // Month names, weekdays and AM/PM follow the site language.
@@ -55,6 +57,27 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Paginator::useBootstrapFive();
+    }
+
+    /**
+     * Absolute links (password reset, staff invitations, cart reminders,
+     * the cached sitemap) are built from APP_URL instead of the Host header
+     * of whoever made the request. Local development keeps using the
+     * address it is browsed on.
+     */
+    private function pinApplicationUrl(): void
+    {
+        $root = rtrim((string) config('app.url'), '/');
+
+        if ($root === '' || $this->app->environment('local')) {
+            return;
+        }
+
+        URL::forceRootUrl($root);
+
+        if (str_starts_with($root, 'https://')) {
+            URL::forceScheme('https');
+        }
     }
 
     private function configureRateLimiting(): void
