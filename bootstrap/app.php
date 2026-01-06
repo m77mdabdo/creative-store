@@ -25,6 +25,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+
+        // Outside local development, only requests for the APP_URL host (and its
+        // subdomains) are served, so a forged Host header cannot reach the app.
+        $middleware->trustHosts();
         $middleware->appendToGroup('web', \App\Http\Middleware\PersistCustomerCart::class);
 
         // Guests can shop and fill the cart; checkout asks them to sign in
