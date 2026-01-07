@@ -96,6 +96,12 @@ class AppServiceProvider extends ServiceProvider
             Limit::perMinute(10)->by('otp-ip:' . $request->ip()),
         ]);
 
+        // Changing the password checks the current one, so it is limited per
+        // account: a stolen session cannot be used to guess the password.
+        RateLimiter::for('password-change', fn (Request $request) => [
+            Limit::perMinutes(10, 5)->by('password-change:' . ($request->user()?->id ?: $request->ip())),
+        ]);
+
         RateLimiter::for('forms', fn (Request $request) => Limit::perMinute(6)
             ->by($request->user()?->id ?: $request->ip()));
 

@@ -148,9 +148,11 @@ Route::group([
         Route::get('/myaccount', [MyAccountController::class, 'index'])->name('myaccount');
 
         Route::post('/myaccount/profile', [MyAccountController::class, 'updateProfile'])
+            ->middleware('throttle:forms')
             ->name('myaccount.profile');
 
         Route::post('/myaccount/password', [MyAccountController::class, 'updatePassword'])
+            ->middleware('throttle:password-change')
             ->name('myaccount.password');
     });
 

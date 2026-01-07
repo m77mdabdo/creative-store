@@ -62,5 +62,6 @@ return [
         'sent' => 'We sent a confirmation link to :email. Your email changes once you open it.',
         'invalid' => 'This email confirmation link is invalid or has expired. Please request the change again.',
         'done' => 'Your email address has been updated.',
+        'too_many' => 'You have asked to change your email several times already. Please try again in an hour.',
     ],
 ];
