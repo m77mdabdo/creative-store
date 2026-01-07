@@ -14,6 +14,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -43,6 +44,8 @@ class MyAccountController extends Controller
         return view('myaccount.myaccount', compact('user', 'orders', 'stats'));
     }
 
+    private const EMAIL_CHANGES_PER_HOUR = 3;
+
     public function updateProfile(UpdateProfileRequest $request): RedirectResponse
     {
         $user = $request->user();
@@ -69,11 +72,24 @@ class MyAccountController extends Controller
         $user->save();
 
         if ($emailPending) {
-            Mail::to($newEmail)->send(new ConfirmEmailChangeMail(
-                $user->name,
-                EmailChangeLink::for($user, $newEmail),
-                EmailChangeLink::VALID_MINUTES,
-            ));
+            // Each request emails an address the user typed, so it is capped
+            // per account to stop the form being used to flood someone's inbox.
+            $sent = RateLimiter::attempt(
+                'email-change:' . $user->id,
+                self::EMAIL_CHANGES_PER_HOUR,
+                fn () => Mail::to($newEmail)->send(new ConfirmEmailChangeMail(
+                    $user->name,
+                    EmailChangeLink::for($user, $newEmail),
+                    EmailChangeLink::VALID_MINUTES,
+                )),
+                3600,
+            );
+
+            if ($sent === false) {
+                return back()
+                    ->with('success_profile', __('account.profile_updated'))
+                    ->withErrors(['email' => __('account.email_change.too_many')]);
+            }
 
             return back()
                 ->with('success_profile', __('account.profile_updated'))

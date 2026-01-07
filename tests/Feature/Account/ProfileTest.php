@@ -140,4 +140,33 @@ class ProfileTest extends TestCase
 
         $this->assertTrue(Hash::check('NewPass456', $this->user->fresh()->password));
     }
+
+    public function test_guessing_the_current_password_is_rate_limited(): void
+    {
+        $attempt = fn () => $this->actingAs($this->user)->post(route('myaccount.password'), [
+            'current_password' => 'wrong', 'password' => 'NewPass456', 'password_confirmation' => 'NewPass456',
+        ]);
+
+        for ($i = 0; $i < 5; $i++) {
+            $attempt()->assertSessionHasErrors('current_password');
+        }
+
+        $attempt()->assertStatus(429);
+    }
+
+    public function test_email_change_mails_are_capped_per_account(): void
+    {
+        Mail::fake();
+
+        foreach (['a@example.com', 'b@example.com', 'c@example.com'] as $email) {
+            $this->actingAs($this->user)->post(route('myaccount.profile'), ['name' => 'Mohamed Abdo', 'email' => $email, 'current_password' => 'OldPass123'])
+                ->assertSessionHas('info_profile');
+        }
+
+        $this->actingAs($this->user)->post(route('myaccount.profile'), ['name' => 'Mohamed Abdo', 'email' => 'd@example.com', 'current_password' => 'OldPass123'])
+            ->assertSessionHasErrors('email');
+
+        Mail::assertSent(ConfirmEmailChangeMail::class, 3);
+        Mail::assertNotSent(ConfirmEmailChangeMail::class, fn ($mail) => $mail->hasTo('d@example.com'));
+    }
 }
