@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Models\User;
+use App\Services\Auth\AccountSessions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -32,6 +33,9 @@ class ResetPasswordController extends Controller
         $user->update([
             'password' => Hash::make($request->password),
         ]);
+
+        // Whoever else was signed in to this account is signed out.
+        app(AccountSessions::class)->revokeOthers($user);
 
         return redirect()->route('login')->with('success', __('Password reset successfully, you can login now'));
     }
