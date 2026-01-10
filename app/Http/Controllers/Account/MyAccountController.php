@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\UpdatePasswordRequest;
 use App\Http\Requests\Account\UpdateProfileRequest;
 use App\Models\Order;
+use App\Services\Auth\AccountSessions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -73,6 +74,9 @@ class MyAccountController extends Controller
 
         $user->password = Hash::make($request->password);
         $user->save();
+
+        // Other devices are signed out; this one stays signed in.
+        app(AccountSessions::class)->revokeOthers($user, $request->session()->getId());
 
         return back()->with('success_password', __('account.password_updated_successfully'));
     }
