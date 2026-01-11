@@ -31,6 +31,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustHosts();
         $middleware->appendToGroup('web', \App\Http\Middleware\PersistCustomerCart::class);
 
+        // A session ends once the account's password changes elsewhere.
+        $middleware->authenticateSessions();
+
         // Guests can shop and fill the cart; checkout asks them to sign in
         // and brings them back to the same step afterwards.
         $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
