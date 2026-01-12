@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.4-apache
 
 WORKDIR /var/www/html
 
@@ -14,7 +14,13 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     zip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip
+    && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip opcache \
+    && rm -rf /var/lib/apt/lists/*
+
+# Production PHP settings: no error output, no version header, no
+# function arguments in stack traces.
+RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+COPY docker/php/production.ini $PHP_INI_DIR/conf.d/zz-production.ini
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
@@ -22,7 +28,9 @@ COPY . /var/www/html
 
 RUN composer install --no-dev --optimize-autoloader
 
-RUN a2enmod rewrite
+RUN a2enmod rewrite headers
+COPY docker/apache/security.conf /etc/apache2/conf-available/security-hardening.conf
+RUN a2enconf security-hardening
 
 RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 RUN sed -i 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf
