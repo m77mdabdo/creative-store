@@ -10,6 +10,7 @@ use App\Http\Requests\Dashboard\User\UserIndexRequest;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
+use App\Services\Auth\AccountSessions;
 use App\Services\Security\ProtectOwnerService;
 use App\Services\Staff\StaffInvitations;
 use Illuminate\Http\RedirectResponse;
@@ -273,7 +274,13 @@ class UserController extends Controller
                 ]);
             }
 
+            $wasActive = $user->is_active !== false;
             $user->update($updateData);
+
+            // Disabling an account or setting a new password signs out its sessions.
+            if (($wasActive && ! $updateData['is_active']) || isset($updateData['password'])) {
+                app(AccountSessions::class)->revokeOthers($user);
+            }
 
             $this->syncRoles($user, $data['roles'] ?? [], $request->user());
             $this->syncDirectPermissions(

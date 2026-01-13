@@ -5,6 +5,7 @@ namespace App\Services\Dashboard;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
+use App\Services\Auth\AccountSessions;
 use App\Services\Security\ProtectOwnerService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -137,6 +138,10 @@ class UserManagementService
         $target->update([
             'is_active' => $isActive,
         ]);
+
+        if (! $isActive) {
+            app(AccountSessions::class)->revokeOthers($target);
+        }
     }
 
     protected function syncRoles(User $user, array $roleNames, User $actor): void
