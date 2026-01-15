@@ -5,6 +5,13 @@
 
     RewriteEngine On
 
+    # Uploaded files live under /storage. Nothing there may ever run as a
+    # script, whatever name or extension it was given.
+    RewriteRule ^storage/.*\.(php[0-9]?|phtml|phar|pht|cgi|pl|py|sh|asp|aspx|jsp)$ - [F,L,NC]
+
+    # Never serve dotfiles (.env, .git, .htaccess copies) if one ends up in public/.
+    RewriteRule (^|/)\.(?!well-known/) - [F,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
