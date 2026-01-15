@@ -52,5 +52,15 @@ return [
     'profile_updated' => 'Your profile was updated.',
     'show_password' => 'Show password',
     'password_rules' => 'At least 8 characters, with letters and numbers.',
-
+    'email_change' => [
+        'subject' => 'Confirm your new email for :store',
+        'title' => 'Hi :name, confirm your new email',
+        'body' => 'You asked to use this address to sign in to your Creative Store account. Confirm it with the button below.',
+        'button' => 'Confirm my new email',
+        'expiry' => 'The link works once and expires in :minutes minutes.',
+        'ignore' => 'If you did not ask for this, ignore this email and nothing will change.',
+        'sent' => 'We sent a confirmation link to :email. Your email changes once you open it.',
+        'invalid' => 'This email confirmation link is invalid or has expired. Please request the change again.',
+        'done' => 'Your email address has been updated.',
+    ],
 ];
