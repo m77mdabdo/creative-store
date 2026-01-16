@@ -369,6 +369,12 @@ html[dir="rtl"] .cs-alert {
     color: #1a6e3a;
 }
 
+.cs-alert-info {
+    background: rgba(59, 130, 246, .08);
+    border-color: #3b82f6;
+    color: #1e40af;
+}
+
 /* Forgot link */
 .cs-forgot-link {
     display: inline-flex;

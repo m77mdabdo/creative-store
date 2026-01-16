@@ -90,6 +90,13 @@
                 </div>
             @endif
 
+            @if (session('info_profile'))
+                <div class="cs-alert cs-alert-info" role="status">
+                    <i class="fas fa-envelope" aria-hidden="true"></i>
+                    {{ session('info_profile') }}
+                </div>
+            @endif
+
             <form action="{{ route('myaccount.profile') }}" method="POST" enctype="multipart/form-data" novalidate>
                 @csrf
                 <input type="hidden" name="_form" value="profile">
