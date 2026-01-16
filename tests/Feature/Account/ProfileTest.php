@@ -2,10 +2,13 @@
 
 namespace Tests\Feature\Account;
 
+use App\Mail\ConfirmEmailChangeMail;
 use App\Models\User;
+use App\Support\Auth\EmailChangeLink;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -64,8 +67,9 @@ class ProfileTest extends TestCase
         Storage::disk(config('filesystems.media_disk', 'public'))->assertMissing($old);
     }
 
-    public function test_changing_the_email_needs_the_current_password(): void
+    public function test_changing_the_email_needs_the_current_password_and_a_confirmation(): void
     {
+        Mail::fake();
         $payload = ['name' => 'Mohamed Abdo', 'email' => 'new@example.com'];
 
         $this->actingAs($this->user)
@@ -75,8 +79,32 @@ class ProfileTest extends TestCase
 
         $this->actingAs($this->user)
             ->post(route('myaccount.profile'), $payload + ['current_password' => 'OldPass123'])
-            ->assertSessionHasNoErrors();
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('info_profile');
+
+        // Nothing changes until the new mailbox confirms it.
+        $this->assertSame('mohamed@example.com', $this->user->fresh()->email);
+
+        $link = null;
+        Mail::assertSent(ConfirmEmailChangeMail::class, function (ConfirmEmailChangeMail $mail) use (&$link) {
+            $link = $mail->confirmUrl;
+
+            return $mail->hasTo('new@example.com');
+        });
+
+        $this->actingAs($this->user)->get($link)->assertRedirect(route('myaccount'));
         $this->assertSame('new@example.com', $this->user->fresh()->email);
+
+        // The link works once.
+        $this->actingAs($this->user->fresh())->get($link)->assertRedirect(route('login'));
+    }
+
+    public function test_a_tampered_email_confirmation_link_is_refused(): void
+    {
+        $link = EmailChangeLink::for($this->user, 'new@example.com');
+
+        $this->get(str_replace('new%40example.com', 'evil%40example.com', $link))->assertForbidden();
+        $this->assertSame('mohamed@example.com', $this->user->fresh()->email);
     }
 
     public function test_emails_and_phones_stay_unique(): void

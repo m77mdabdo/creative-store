@@ -100,6 +100,11 @@ Route::group([
         ->name('password.update');
 
     // New team members choose their password from the invitation email.
+    Route::get('/myaccount/email/confirm/{user}', [MyAccountController::class, 'confirmEmail'])
+        ->middleware(['signed', 'throttle:auth'])
+        ->whereNumber('user')
+        ->name('myaccount.email.confirm');
+
     Route::get('/welcome/{user}', [StaffWelcomeController::class, 'show'])
         ->middleware('signed')
         ->whereNumber('user')

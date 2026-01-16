@@ -5,11 +5,16 @@ namespace App\Http\Controllers\Account;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\UpdatePasswordRequest;
 use App\Http\Requests\Account\UpdateProfileRequest;
+use App\Mail\ConfirmEmailChangeMail;
 use App\Models\Order;
+use App\Models\User;
 use App\Services\Auth\AccountSessions;
+use App\Support\Auth\EmailChangeLink;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 /**
@@ -45,9 +50,13 @@ class MyAccountController extends Controller
 
         $user->fill([
             'name'  => $data['name'],
-            'email' => $data['email'],
             'phone' => $request->normalizedPhone(),
         ]);
+
+        // A new sign-in email takes effect only after it is confirmed from
+        // that mailbox, so nobody can claim an address they do not own.
+        $newEmail = Str::lower($data['email']);
+        $emailPending = $newEmail !== Str::lower((string) $user->email);
 
         if ($request->hasFile('avatar')) {
             $this->deleteAvatar($user->avatar_path);
@@ -59,7 +68,38 @@ class MyAccountController extends Controller
 
         $user->save();
 
+        if ($emailPending) {
+            Mail::to($newEmail)->send(new ConfirmEmailChangeMail(
+                $user->name,
+                EmailChangeLink::for($user, $newEmail),
+                EmailChangeLink::VALID_MINUTES,
+            ));
+
+            return back()
+                ->with('success_profile', __('account.profile_updated'))
+                ->with('info_profile', __('account.email_change.sent', ['email' => $newEmail]));
+        }
+
         return back()->with('success_profile', __('account.profile_updated'));
+    }
+
+    /**
+     * Opened from the confirmation email sent to the new address.
+     */
+    public function confirmEmail(Request $request, User $user): RedirectResponse
+    {
+        $email = Str::lower((string) $request->query('email'));
+
+        if (! EmailChangeLink::isCurrent($user, $request->query('v'))
+            || ! filter_var($email, FILTER_VALIDATE_EMAIL)
+            || User::withTrashed()->whereKeyNot($user->getKey())->where('email', $email)->exists()) {
+            return redirect()->route('login')->with('error', __('account.email_change.invalid'));
+        }
+
+        $user->forceFill(['email' => $email, 'email_verified_at' => now()])->save();
+
+        return redirect()->route(auth()->id() === $user->getKey() ? 'myaccount' : 'login')
+            ->with(auth()->id() === $user->getKey() ? 'success_profile' : 'success', __('account.email_change.done'));
     }
 
     public function updatePassword(UpdatePasswordRequest $request): RedirectResponse
