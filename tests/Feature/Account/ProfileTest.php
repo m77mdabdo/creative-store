@@ -169,4 +169,21 @@ class ProfileTest extends TestCase
         Mail::assertSent(ConfirmEmailChangeMail::class, 3);
         Mail::assertNotSent(ConfirmEmailChangeMail::class, fn ($mail) => $mail->hasTo('d@example.com'));
     }
+
+    public function test_avatars_are_saved_as_clean_webp_images(): void
+    {
+        Storage::fake(config('filesystems.media_disk', 'public'));
+
+        $this->actingAs($this->user)->post(route('myaccount.profile'), [
+            'name' => 'Mohamed Abdo', 'email' => 'mohamed@example.com',
+            'avatar' => UploadedFile::fake()->image('phone-photo.jpg', 2400, 1800),
+        ])->assertSessionHasNoErrors();
+
+        $path = $this->user->fresh()->avatar_path;
+        $bytes = Storage::disk(config('filesystems.media_disk', 'public'))->get($path);
+
+        $this->assertStringEndsWith('.webp', $path);
+        $this->assertSame('WEBP', substr($bytes, 8, 4));
+        $this->assertSame([1024, 768], array_slice(getimagesizefromstring($bytes), 0, 2));
+    }
 }
