@@ -9,6 +9,7 @@ use App\Mail\ConfirmEmailChangeMail;
 use App\Models\Order;
 use App\Models\User;
 use App\Services\Auth\AccountSessions;
+use App\Services\Media\ImageReencoder;
 use App\Support\Auth\EmailChangeLink;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -63,7 +64,8 @@ class MyAccountController extends Controller
 
         if ($request->hasFile('avatar')) {
             $this->deleteAvatar($user->avatar_path);
-            $user->avatar_path = $request->file('avatar')->store('avatars', config('filesystems.media_disk', 'public'));
+            // Saved as a fresh WebP so phone photos don't publish their GPS location.
+            $user->avatar_path = app(ImageReencoder::class)->store($request->file('avatar'), 'avatars');
         } elseif ($request->boolean('remove_avatar')) {
             $this->deleteAvatar($user->avatar_path);
             $user->avatar_path = null;
