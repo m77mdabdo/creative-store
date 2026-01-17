@@ -43,4 +43,10 @@ return [
         'added_message' => ':name joined as :role',
         'added_message_by' => ':by added :name as :role',
     ],
+
+    'ceiling' => [
+        'own_account' => 'You cannot change the roles or permissions on your own account. Ask an owner.',
+        'role' => 'You can only give roles whose permissions you hold yourself: :role.',
+        'permission' => 'You can only grant permissions you hold yourself: :permissions.',
+    ],
 ];
