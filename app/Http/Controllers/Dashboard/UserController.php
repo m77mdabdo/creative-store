@@ -11,6 +11,7 @@ use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\Auth\AccountSessions;
+use App\Services\Security\GrantCeiling;
 use App\Services\Security\ProtectOwnerService;
 use App\Services\Staff\StaffInvitations;
 use Illuminate\Http\RedirectResponse;
@@ -25,6 +26,7 @@ class UserController extends Controller
     public function __construct(
         protected ProtectOwnerService $protectOwnerService,
         protected StaffInvitations $invitations,
+        protected GrantCeiling $grantCeiling,
     ) {}
 
     public function index(UserIndexRequest $request): View
@@ -164,6 +166,14 @@ class UserController extends Controller
                 'created_by'        => $request->user()->id,
             ]);
 
+            $this->grantCeiling->assertUserAssignment(
+                $request->user(),
+                null,
+                $data['roles'] ?? [],
+                $data['direct_permissions'] ?? [],
+                $data['denied_permissions'] ?? []
+            );
+
             $this->syncRoles($user, $data['roles'] ?? [], $request->user());
             $this->syncDirectPermissions(
                 $user,
@@ -281,6 +291,19 @@ class UserController extends Controller
             if (($wasActive && ! $updateData['is_active']) || isset($updateData['password'])) {
                 app(AccountSessions::class)->revokeOthers($user);
             }
+
+            // Roles and permissions on your own account are managed by an owner.
+            if ($request->user()->is($user) && ! $request->user()->isOwner()) {
+                return;
+            }
+
+            $this->grantCeiling->assertUserAssignment(
+                $request->user(),
+                $user,
+                $data['roles'] ?? [],
+                $data['direct_permissions'] ?? [],
+                $data['denied_permissions'] ?? []
+            );
 
             $this->syncRoles($user, $data['roles'] ?? [], $request->user());
             $this->syncDirectPermissions(
