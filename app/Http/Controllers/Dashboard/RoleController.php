@@ -9,6 +9,7 @@ use App\Http\Requests\Dashboard\Role\StoreRoleRequest;
 use App\Http\Requests\Dashboard\Role\UpdateRoleRequest;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Services\Security\GrantCeiling;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -69,6 +70,8 @@ class RoleController extends Controller
     {
         $data = $request->validated();
 
+        app(GrantCeiling::class)->assertRolePermissions($request->user(), $data['permissions'] ?? []);
+
         DB::transaction(function () use ($data) {
             $role = Role::create([
                 'name' => Str::lower(trim($data['name'])),
@@ -120,6 +123,12 @@ class RoleController extends Controller
         $data = $request->validated();
 
         $this->ensureSystemRoleCanBeManaged($role, $request->user());
+
+        // Only permissions the editor holds can be added to a role.
+        app(GrantCeiling::class)->assertRolePermissions(
+            $request->user(),
+            array_diff($data['permissions'] ?? [], $role->permissions()->pluck('code')->all())
+        );
 
         DB::transaction(function () use ($data, $role) {
             $newName = Str::lower(trim($data['name']));
