@@ -25,6 +25,7 @@ return [
         'sent' => 'An invitation with the sign-in details was sent to :email.',
         'send_failed' => 'The user was created, but the invitation could not be sent. Use "Resend invitation" to try again.',
         'resend' => 'Resend invitation',
+        'owner_only' => 'Only an owner can send an invitation to an owner account.',
         'not_staff' => 'Invitations are only for team members (owner, admin or employee).',
     ],
 
