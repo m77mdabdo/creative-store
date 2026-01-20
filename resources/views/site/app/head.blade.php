@@ -38,7 +38,6 @@
 <link rel="stylesheet" href="{{ asset('cozastore/vendor/css-hamburgers/hamburgers.min.css') }}">
 <link rel="stylesheet" href="{{ asset('cozastore/vendor/animsition/css/animsition.min.css') }}">
 <link rel="stylesheet" href="{{ asset('cozastore/vendor/select2/select2.min.css') }}">
-<link rel="stylesheet" href="{{ asset('cozastore/vendor/daterangepicker/daterangepicker.css') }}">
 <link rel="stylesheet" href="{{ asset('cozastore/vendor/slick/slick.css') }}">
 <link rel="stylesheet" href="{{ asset('cozastore/vendor/MagnificPopup/magnific-popup.css') }}">
 <link rel="stylesheet" href="{{ asset('cozastore/vendor/perfect-scrollbar/perfect-scrollbar.css') }}">
