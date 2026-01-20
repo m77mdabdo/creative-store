@@ -3,19 +3,11 @@
     window.isRTL = {{ app()->getLocale() === 'ar' ? 'true' : 'false' }};
 </script>
 
-<script src="{{ asset('cozastore/vendor/jquery/jquery-3.2.1.min.js') }}"></script>
-{{-- ... باقي الـ scripts زي ما هي --}}
-
-
-
-
-<script src="{{ asset('cozastore/vendor/jquery/jquery-3.2.1.min.js') }}"></script>
+{{-- jQuery 3.7.1, Bootstrap 4.6.2 (bundle includes Popper) and Select2 4.0.13. --}}
+<script src="{{ asset('cozastore/vendor/jquery/jquery-3.7.1.min.js') }}"></script>
 <script src="{{ asset('cozastore/vendor/animsition/js/animsition.min.js') }}"></script>
-<script src="{{ asset('cozastore/vendor/bootstrap/js/popper.js') }}"></script>
-<script src="{{ asset('cozastore/vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('cozastore/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('cozastore/vendor/select2/select2.min.js') }}"></script>
-<script src="{{ asset('cozastore/vendor/daterangepicker/moment.min.js') }}"></script>
-<script src="{{ asset('cozastore/vendor/daterangepicker/daterangepicker.js') }}"></script>
 <script src="{{ asset('cozastore/vendor/slick/slick.min.js') }}"></script>
 <script src="{{ versioned_asset('cozastore/js/slick-custom.js') }}"></script>
 <script src="{{ asset('cozastore/vendor/parallax100/parallax100.js') }}"></script>
