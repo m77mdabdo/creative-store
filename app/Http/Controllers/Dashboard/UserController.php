@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use LogicException;
 
 class UserController extends Controller
 {
@@ -204,6 +205,13 @@ class UserController extends Controller
     {
         if ($this->invitations->roleOf($user) === null) {
             return back()->with('error', __('staff.invite.not_staff'));
+        }
+
+        // An invitation sets the password, so only an owner may send one to an owner.
+        try {
+            $this->protectOwnerService->ensureUserCanBeUpdated($request->user(), $user);
+        } catch (LogicException) {
+            return back()->with('error', __('staff.invite.owner_only'));
         }
 
         return $this->invitations->invite($user, $request->user(), announce: false)
