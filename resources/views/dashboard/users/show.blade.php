@@ -8,7 +8,7 @@
         <div class="container-fluid d-flex justify-content-between align-items-center">
             <h1>{{ __('User Details') }}</h1>
             <div class="d-flex flex-wrap" style="gap:8px;">
-                @if ($user->isDashboardUser() && auth()->user()->hasPermission('users.edit'))
+                @if ($user->isDashboardUser() && auth()->user()->hasPermission('users.edit') && (! $user->isOwner() || auth()->user()->isOwner()))
                     <form method="POST" action="{{ route('dashboard.users.invitation', $user) }}" class="m-0">
                         @csrf
                         <button type="submit" class="btn btn-outline-primary">
