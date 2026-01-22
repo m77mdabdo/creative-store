@@ -133,6 +133,9 @@ public function bulkAction(Request $request): RedirectResponse
         'ids.*' => ['integer', 'exists:reviews,id'],
     ]);
 
+    // Deleting needs the delete permission, the same as the single-item route.
+    abort_if($request->input('action') === 'delete' && ! $request->user()->hasPermission('reviews.delete'), 403);
+
     $reviews = Review::whereIn('id', $request->ids)->get();
 
     foreach ($reviews as $review) {
