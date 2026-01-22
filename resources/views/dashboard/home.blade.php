@@ -191,6 +191,7 @@
                         </div>
                     </div>
 
+                    @if($canSeeCustomers)
                     <div class="col-lg-3 col-md-6 col-12">
                         <div class="card shadow-sm border-0" style="border-radius:18px;">
                             <div class="card-body d-flex align-items-center justify-content-between">
@@ -205,6 +206,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
 
                     <div class="col-lg-3 col-md-6 col-12">
                         <div class="card shadow-sm border-0" style="border-radius:18px;">
@@ -313,6 +315,7 @@
 
                 {{-- Latest Orders + Top Products --}}
                 <div class="row">
+                    @if($canSeeOrders)
                     <div class="col-lg-8">
                         <div class="card shadow-sm border-0" style="border-radius:20px;">
                             <div class="card-header bg-white border-0 pt-4">
@@ -379,6 +382,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
 
                     <div class="col-lg-4">
                         <div class="card shadow-sm border-0" style="border-radius:20px;">
@@ -419,6 +423,7 @@
                 </div>
 
                 {{-- Recent Activity --}}
+                @if($canSeeActivity)
                 <div class="row">
                     <div class="col-12">
                         <div class="card shadow-sm border-0" style="border-radius:20px;">
@@ -468,6 +473,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
             </div>
         </section>

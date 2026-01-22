@@ -25,6 +25,13 @@ class DashboardController extends Controller
     {
         $lowStockThreshold = 5;
 
+        // Every staff member lands here, so each panel that shows customer or
+        // audit data is limited to the people allowed to open that section.
+        $user = auth()->user();
+        $canSeeOrders = $user->hasPermission('orders.view');
+        $canSeeCustomers = $user->hasPermission('users.view');
+        $canSeeActivity = $user->hasPermission('audit.view');
+
         // Main stats
         $stats = $this->statsService->get();
         $totalSales = Order::where('payment_status', 'paid')->sum('total');
@@ -32,9 +39,9 @@ class DashboardController extends Controller
         $paidOrdersCount = Order::where('payment_status', 'paid')->count();
         $pendingOrdersCount = Order::whereIn('status', ['pending', 'processing'])->count();
         $productsCount = Product::count();
-        $customersCount = User::whereHas('roles', function ($q) {
-            $q->where('name', 'customer');
-        })->count();
+        $customersCount = $canSeeCustomers
+            ? User::whereHas('roles', fn ($q) => $q->where('name', 'customer'))->count()
+            : null;
 
         $lowStockProductsCount = Product::where(function ($q) use ($lowStockThreshold) {
             $q->where('has_variants', false)
@@ -47,10 +54,9 @@ class DashboardController extends Controller
         $unreadContactMessagesCount = ContactMessage::where('is_read', false)->count();
 
         // Latest orders
-        $latestOrders = Order::with(['user', 'items'])
-            ->latest()
-            ->take(8)
-            ->get();
+        $latestOrders = $canSeeOrders
+            ? Order::with(['user', 'items'])->latest()->take(8)->get()
+            : collect();
 
         // Top products
         $topProducts = Product::with(['translations', 'primaryImage'])
@@ -80,10 +86,9 @@ class DashboardController extends Controller
         }
 
         // Recent activity
-        $recentActivities = AuditLog::with('user')
-            ->latest()
-            ->take(8)
-            ->get();
+        $recentActivities = $canSeeActivity
+            ? AuditLog::with('user')->latest()->take(8)->get()
+            : collect();
 
         return view('dashboard.home', compact(
             'totalSales',
@@ -100,7 +105,10 @@ class DashboardController extends Controller
             'salesChartLabels',
             'salesChartData',
             'recentActivities',
-            'stats'
+            'stats',
+            'canSeeOrders',
+            'canSeeCustomers',
+            'canSeeActivity'
         ));
     }
 }
