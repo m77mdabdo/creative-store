@@ -301,6 +301,9 @@ class ProductController extends Controller
             'ids.*' => ['integer', 'exists:products,id'],
         ]);
 
+        // Deleting needs the delete permission, the same as the single-item route.
+        abort_if($request->input('action') === 'delete' && ! $request->user()->hasPermission('products.delete'), 403);
+
         $products = Product::whereIn('id', $request->ids)->get();
 
         foreach ($products as $product) {
