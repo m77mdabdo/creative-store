@@ -116,6 +116,9 @@ class ContactMessageController extends Controller
             'ids.*' => ['integer', 'exists:contact_messages,id'],
         ]);
 
+        // Deleting needs the delete permission, the same as the single-item route.
+        abort_if($request->input('action') === 'delete' && ! $request->user()->hasPermission('contact.delete'), 403);
+
         $query = ContactMessage::query()->whereIn('id', $data['ids']);
 
         if ($data['action'] === 'read') {
