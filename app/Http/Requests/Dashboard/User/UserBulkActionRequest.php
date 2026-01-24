@@ -8,7 +8,9 @@ class UserBulkActionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->hasPermission('users.edit') ?? false;
+        $needed = $this->input('action') === 'delete' ? 'users.delete' : 'users.edit';
+
+        return $this->user()?->hasPermission($needed) ?? false;
     }
 
     public function rules(): array

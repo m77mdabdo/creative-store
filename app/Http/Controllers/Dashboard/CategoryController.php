@@ -285,6 +285,9 @@ class CategoryController extends Controller
             'ids.*' => ['integer', 'exists:categories,id'],
         ]);
 
+        // Deleting needs the delete permission, the same as the single-item route.
+        abort_if($request->input('action') === 'delete' && ! $request->user()->hasPermission('categories.delete'), 403);
+
         $ids = collect($request->input('ids', []))
             ->map(fn ($id) => (int) $id)
             ->unique()

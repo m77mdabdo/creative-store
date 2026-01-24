@@ -179,6 +179,9 @@ class CouponController extends Controller
             'ids.*' => ['integer', 'exists:coupons,id'],
         ]);
 
+        // Deleting needs the delete permission, the same as the single-item route.
+        abort_if($request->input('action') === 'delete' && ! $request->user()->hasPermission('coupons.delete'), 403);
+
         $coupons = Coupon::whereIn('id', $request->input('ids', []))->get();
 
         foreach ($coupons as $coupon) {
