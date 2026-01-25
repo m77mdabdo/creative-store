@@ -8,7 +8,7 @@ class BulkDeleteBackupRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('audit.view');
+        return auth()->check() && auth()->user()->hasPermission('backups.delete');
     }
 
     public function rules(): array
