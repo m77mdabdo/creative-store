@@ -1029,27 +1029,27 @@ Route::group([
 
 
         Route::get('/error-logs', [ErrorLogController::class, 'index'])
-            ->middleware('permission:audit.view')
+            ->middleware('permission:error-logs.view')
             ->name('error-logs.index');
 
         Route::get('/error-logs/{errorLog}', [ErrorLogController::class, 'show'])
-            ->middleware('permission:audit.view')
+            ->middleware('permission:error-logs.view')
             ->name('error-logs.show');
 
         Route::patch('/error-logs/{errorLog}/resolve', [ErrorLogController::class, 'resolve'])
-            ->middleware('permission:audit.view')
+            ->middleware('permission:error-logs.edit')
             ->name('error-logs.resolve');
 
         Route::delete('/error-logs/clear-resolved', [ErrorLogController::class, 'clearResolved'])
-            ->middleware('permission:audit.view')
+            ->middleware('permission:error-logs.edit')
             ->name('error-logs.clear-resolved');
 
         Route::patch('/error-logs/bulk-resolve', [ErrorLogController::class, 'bulkResolve'])
-            ->middleware('permission:audit.view')
+            ->middleware('permission:error-logs.edit')
             ->name('error-logs.bulk-resolve');
 
         Route::delete('/error-logs/bulk-delete', [ErrorLogController::class, 'bulkDelete'])
-            ->middleware('permission:audit.view')
+            ->middleware('permission:error-logs.edit')
             ->name('error-logs.bulk-delete');
 
 
@@ -1059,29 +1059,29 @@ Route::group([
 
 
         Route::get('/backups', [BackupController::class, 'index'])
-            ->middleware('permission:audit.view')
+            ->middleware('permission:backups.view')
             ->name('backups.index');
 
         Route::post('/backups/create', [BackupController::class, 'create'])
-            ->middleware('permission:audit.view')
+            ->middleware('permission:backups.create')
             ->name('backups.create');
 
         Route::delete('/backups/bulk-delete', [BackupController::class, 'bulkDelete'])
-            ->middleware('permission:audit.view')
+            ->middleware('permission:backups.delete')
             ->name('backups.bulk-delete');
 
         Route::get('/backups/{systemBackup}/download', [BackupController::class, 'download'])
             ->whereNumber('systemBackup')
-            ->middleware('permission:audit.view')
+            ->middleware('permission:backups.view')
             ->name('backups.download');
 
         Route::get('/backups/{systemBackup}', [BackupController::class, 'show'])
             ->whereNumber('systemBackup')
-            ->middleware('permission:audit.view')
+            ->middleware('permission:backups.view')
             ->name('backups.show');
 
         Route::delete('/backups/{systemBackup}', [BackupController::class, 'destroy'])
             ->whereNumber('systemBackup')
-            ->middleware('permission:audit.view')
+            ->middleware('permission:backups.delete')
             ->name('backups.destroy');
     });
