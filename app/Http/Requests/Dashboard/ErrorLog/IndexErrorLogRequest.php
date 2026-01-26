@@ -8,7 +8,7 @@ class IndexErrorLogRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('audit.view');
+        return auth()->check() && auth()->user()->hasPermission('error-logs.view');
     }
 
     public function rules(): array

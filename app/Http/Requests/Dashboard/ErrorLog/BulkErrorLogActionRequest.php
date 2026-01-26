@@ -8,7 +8,7 @@ class BulkErrorLogActionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('audit.view');
+        return auth()->check() && auth()->user()->hasPermission('error-logs.edit');
     }
 
     public function rules(): array
