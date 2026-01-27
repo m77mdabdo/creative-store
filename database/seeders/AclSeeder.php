@@ -66,6 +66,8 @@ class AclSeeder extends Seeder
             'users.delete',
 
             'audit.view',
+            'error-logs.view',
+            'error-logs.edit',
 
             'orders.view',
             'orders.edit',
@@ -241,6 +243,18 @@ class AclSeeder extends Seeder
 
             'audit' => [
                 ['code' => 'audit.view', 'name' => 'View audit logs'],
+            ],
+
+            'error-logs' => [
+                ['code' => 'error-logs.view', 'name' => 'View error logs'],
+                ['code' => 'error-logs.edit', 'name' => 'Resolve and clear error logs'],
+            ],
+
+            // Backups contain the whole database; only owners get them by default.
+            'backups' => [
+                ['code' => 'backups.view', 'name' => 'View and download backups'],
+                ['code' => 'backups.create', 'name' => 'Create backups'],
+                ['code' => 'backups.delete', 'name' => 'Delete backups'],
             ],
 
             'orders' => [
