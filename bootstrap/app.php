@@ -82,13 +82,10 @@ return Application::configure(basePath: dirname(__DIR__))
                     return;
                 }
 
-                $message = trim((string) $e->getMessage());
-
-                if ($message === '') {
-                    $message = class_basename($e);
-                }
-
-                $trace = $e->getTraceAsString();
+                // Staff can read these rows, so personal data and secrets are
+                // removed first: SQL bindings, emails, phones, tokens, passwords.
+                $message = \App\Support\Logging\SensitiveDataRedactor::message($e);
+                $trace = \App\Support\Logging\SensitiveDataRedactor::redact($e->getTraceAsString());
 
                 // Store each distinct error at most once every two minutes.
                 // Cache::add is atomic, so a burst of identical failures writes one row.
