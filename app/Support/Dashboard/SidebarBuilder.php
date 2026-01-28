@@ -571,7 +571,7 @@ class SidebarBuilder
             );
         }
 
-        if ($this->routeExists('dashboard.error-logs.index') && $this->canAny($user, ['audit.view'])) {
+        if ($this->routeExists('dashboard.error-logs.index') && $this->canAny($user, ['error-logs.view'])) {
             $systemChildren[] = $this->childItem(
                 title: 'Error Logs',
                 titleKey: 'site.Error Logs',
@@ -581,7 +581,7 @@ class SidebarBuilder
             );
         }
 
-        if ($this->routeExists('dashboard.backups.index') && $this->canAny($user, ['audit.view'])) {
+        if ($this->routeExists('dashboard.backups.index') && $this->canAny($user, ['backups.view'])) {
             $systemChildren[] = $this->childItem(
                 title: 'Backup History',
                 titleKey: 'site.Backup History',
