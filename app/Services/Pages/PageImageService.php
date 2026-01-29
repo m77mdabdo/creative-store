@@ -6,6 +6,9 @@ use Illuminate\Http\UploadedFile;
 
 class PageImageService
 {
+    /** Pages only ever delete files they uploaded themselves. */
+    private const OWN_DIRECTORY = 'pages/';
+
     public function upload(?UploadedFile $file, ?string $oldPath = null, string $directory = 'pages/about'): ?string
     {
         if (! $file) {
@@ -14,26 +17,14 @@ class PageImageService
 
         $newPath = $file->store($directory, config('filesystems.media_disk'));
 
-        if (
-            $oldPath &&
-            ! $this->isExternalUrl($oldPath) &&
-            ! $this->isAssetPath($oldPath) &&
-            media_disk()->exists($oldPath)
-        ) {
-            media_disk()->delete($oldPath);
-        }
+        $this->deleteIfExists($oldPath);
 
         return $newPath;
     }
 
     public function deleteIfExists(?string $path): void
     {
-        if (
-            $path &&
-            ! $this->isExternalUrl($path) &&
-            ! $this->isAssetPath($path) &&
-            media_disk()->exists($path)
-        ) {
+        if ($this->isOwnFile($path) && media_disk()->exists($path)) {
             media_disk()->delete($path);
         }
     }
@@ -63,5 +54,21 @@ class PageImageService
     private function isAssetPath(string $path): bool
     {
         return str_starts_with($path, 'images/');
+    }
+
+    /**
+     * A file this service stored: under pages/, relative, with no "..".
+     */
+    public function isOwnFile(?string $path): bool
+    {
+        if (! is_string($path) || $path === '' || $this->isExternalUrl($path) || $this->isAssetPath($path)) {
+            return false;
+        }
+
+        $normalized = str_replace('\\', '/', $path);
+
+        return str_starts_with($normalized, self::OWN_DIRECTORY)
+            && ! str_contains($normalized, '..')
+            && ! str_contains($normalized, "\0");
     }
 }
