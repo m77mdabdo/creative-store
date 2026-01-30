@@ -570,5 +570,6 @@ return [
     'reset_mail_ignore' => 'If you did not ask for this, you can ignore this email and your password will stay the same.',
     'reset_mail_fallback' => 'If the button does not work, copy this link into your browser:',
     'reset_mail_signoff' => 'Thank you, :store',
+    'reset_link_sent_if_exists' => 'If an account exists for that email, we have sent it a link to reset the password. Check your inbox and spam folder.',
 
 ];
