@@ -58,4 +58,19 @@ class PasswordResetTest extends TestCase
 
         $this->assertFalse(Hash::check('Fresh12345', $user->fresh()->password));
     }
+
+    public function test_unknown_emails_get_the_same_answer_and_no_mail(): void
+    {
+        Mail::fake();
+        $known = User::factory()->create();
+
+        $forKnown = $this->post(route('forgot-password.submit'), ['email' => $known->email]);
+        $forUnknown = $this->post(route('forgot-password.submit'), ['email' => 'nobody-here@example.com']);
+
+        $forUnknown->assertSessionHasNoErrors()->assertSessionHas('success', __('site.reset_link_sent_if_exists'));
+        $forKnown->assertSessionHas('success', __('site.reset_link_sent_if_exists'));
+
+        Mail::assertSent(SendResetLinkMail::class, 1);
+        $this->assertFalse(DB::table('password_reset_tokens')->where('email', 'nobody-here@example.com')->exists());
+    }
 }
