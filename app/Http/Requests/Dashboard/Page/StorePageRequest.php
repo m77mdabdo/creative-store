@@ -51,10 +51,10 @@ class StorePageRequest extends FormRequest
             'quote_author_ar' => ['nullable', 'string', 'max:255'],
             'quote_author_en' => ['nullable', 'string', 'max:255'],
 
-            'image_1_ar' => ['nullable', 'string', 'max:255'],
-            'image_1_en' => ['nullable', 'string', 'max:255'],
-            'image_2_ar' => ['nullable', 'string', 'max:255'],
-            'image_2_en' => ['nullable', 'string', 'max:255'],
+            'image_1_ar' => ['nullable', 'string', 'max:255', 'regex:/^(images\/|pages\/|https?:\/\/)\S+$/', 'not_regex:/\.\./'],
+            'image_1_en' => ['nullable', 'string', 'max:255', 'regex:/^(images\/|pages\/|https?:\/\/)\S+$/', 'not_regex:/\.\./'],
+            'image_2_ar' => ['nullable', 'string', 'max:255', 'regex:/^(images\/|pages\/|https?:\/\/)\S+$/', 'not_regex:/\.\./'],
+            'image_2_en' => ['nullable', 'string', 'max:255', 'regex:/^(images\/|pages\/|https?:\/\/)\S+$/', 'not_regex:/\.\./'],
 
             'image_1_ar_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'image_1_en_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
