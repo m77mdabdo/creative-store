@@ -266,34 +266,40 @@ class AuthSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
 
-        // Owner
+        if (! $this->shouldSeedDemoAccounts()) {
+            $this->seedProductionOwner($ownerRole);
+
+            return;
+        }
+
+        // Demo accounts for local development and tests only.
+        $password = (string) (env('SEED_DEMO_PASSWORD') ?: 'password');
+
         $owner = User::firstOrCreate(
             ['email' => 'owner@example.com'],
             [
                 'name' => 'Store Owner',
-                'password' => Hash::make('password'),
+                'password' => Hash::make($password),
                 'email_verified_at' => now(),
             ]
         );
         $owner->roles()->sync([$ownerRole->id]);
 
-        // Admin
         $admin = User::firstOrCreate(
             ['email' => 'admin@example.com'],
             [
                 'name' => 'System Admin',
-                'password' => Hash::make('password'),
+                'password' => Hash::make($password),
                 'email_verified_at' => now(),
             ]
         );
         $admin->roles()->sync([$adminRole->id]);
 
-        // Employee
         $employee = User::firstOrCreate(
             ['email' => 'employee@example.com'],
             [
                 'name' => 'Store Employee',
-                'password' => Hash::make('password'),
+                'password' => Hash::make($password),
                 'email_verified_at' => now(),
             ]
         );
@@ -303,5 +309,44 @@ class AuthSeeder extends Seeder
         User::factory(10)->create()->each(function ($user) use ($customerRole) {
             $user->roles()->sync([$customerRole->id]);
         });
+    }
+
+    /**
+     * Known demo logins are never created outside local development and
+     * tests unless SEED_DEMO_ACCOUNTS=true is set on purpose.
+     */
+    private function shouldSeedDemoAccounts(): bool
+    {
+        return app()->environment(['local', 'testing'])
+            || filter_var(env('SEED_DEMO_ACCOUNTS', false), FILTER_VALIDATE_BOOLEAN);
+    }
+
+    /**
+     * On a real install, create the first owner from SEED_OWNER_EMAIL with a
+     * random password, shown once in the console. Nothing is created when
+     * the variable is empty.
+     */
+    private function seedProductionOwner(Role $ownerRole): void
+    {
+        $email = strtolower(trim((string) env('SEED_OWNER_EMAIL', '')));
+
+        if ($email === '' || User::withTrashed()->where('email', $email)->exists()) {
+            $this->command?->info('Skipped demo accounts. Use SEED_OWNER_EMAIL or `php artisan users:assign-role` to set up the first owner.');
+
+            return;
+        }
+
+        $password = Str::password(16);
+
+        $owner = User::create([
+            'name' => 'Store Owner',
+            'email' => $email,
+            'password' => Hash::make($password),
+        ]);
+        $owner->forceFill(['email_verified_at' => now()])->save();
+        $owner->roles()->sync([$ownerRole->id]);
+
+        $this->command?->warn("Owner account created for {$email}. Temporary password: {$password}");
+        $this->command?->warn('Sign in and change this password straight away.');
     }
 }
