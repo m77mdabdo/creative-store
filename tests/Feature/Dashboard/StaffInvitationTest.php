@@ -95,6 +95,10 @@ class StaffInvitationTest extends TestCase
         $this->post($link, ['password' => 'short', 'password_confirmation' => 'short'])
             ->assertSessionHasErrors('password');
 
+        // Staff passwords need 10+ characters with upper and lower case letters and a number.
+        $this->post($link, ['password' => 'alllowercase2026', 'password_confirmation' => 'alllowercase2026'])
+            ->assertSessionHasErrors('password');
+
         $this->post($link, ['password' => 'MyOwnPass2026', 'password_confirmation' => 'MyOwnPass2026'])
             ->assertRedirect(route('dashboard.home'));
 
@@ -126,5 +130,13 @@ class StaffInvitationTest extends TestCase
         $this->actingAs($this->owner)
             ->post(route('dashboard.users.invitation', $customer))
             ->assertSessionHas('error');
+    }
+
+    public function test_staff_accounts_cannot_be_created_with_a_weak_password(): void
+    {
+        $this->createUser('admin', ['password' => 'password12', 'password_confirmation' => 'password12'])
+            ->assertSessionHasErrors('password');
+
+        $this->assertFalse(User::where('email', 'sara@example.com')->exists());
     }
 }
