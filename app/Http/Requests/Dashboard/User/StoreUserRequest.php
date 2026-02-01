@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Dashboard\User;
 
+use App\Support\Auth\StaffPassword;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -18,7 +19,7 @@ class StoreUserRequest extends FormRequest
             'name'                 => ['required', 'string', 'max:255'],
             'email'                => ['required', 'email', 'max:255', Rule::unique('users', 'email')],
             'phone'                => ['nullable', 'string', 'max:50'],
-            'password'             => ['required', 'string', 'min:8', 'confirmed'],
+            'password'             => ['required', 'string', 'confirmed', StaffPassword::rule()],
             'email_verified'       => ['nullable', 'boolean'],
             'is_active'            => ['nullable', 'boolean'],
             'roles'                => ['nullable', 'array'],
