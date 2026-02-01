@@ -205,8 +205,19 @@ class AclSeeder extends Seeder
             ->all();
     }
 
+    /**
+     * Local installs get an owner out of the box. A store that already has an
+     * owner is left alone, and outside local development nobody is promoted
+     * automatically (the first user might be a customer).
+     */
     protected function attachOwnerToFirstUser(): void
     {
+        $hasOwner = User::query()->whereHas('roles', fn ($q) => $q->where('name', 'owner'))->exists();
+
+        if ($hasOwner || ! app()->environment(['local', 'testing'])) {
+            return;
+        }
+
         $firstUser = User::query()->oldest('id')->first();
 
         if (! $firstUser) {
