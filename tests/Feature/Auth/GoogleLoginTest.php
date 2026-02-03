@@ -92,13 +92,16 @@ class GoogleLoginTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_disabled_and_closed_accounts_cannot_sign_in_with_google(): void
+    public function test_disabled_accounts_cannot_sign_in_with_google(): void
     {
         User::factory()->create(['email' => 'off@gmail.com', 'is_active' => false]);
         $this->google('off@gmail.com');
         $this->get(route('google.callback'))->assertSessionHas('error', __('site.account_disabled'));
         $this->assertGuest();
+    }
 
+    public function test_closed_accounts_cannot_sign_in_with_google(): void
+    {
         $closed = User::factory()->create(['email' => 'closed@gmail.com']);
         $closed->delete();
         $this->google('closed@gmail.com', id: 'google-closed');
