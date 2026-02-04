@@ -21,7 +21,7 @@ class DashboardHomeTest extends TestCase
 
         $this->seed(AclSeeder::class);
         $this->customer = User::factory()->create(['name' => 'Private Customer Name']);
-        Order::factory()->create(['user_id' => $this->customer->id]);
+        Order::factory()->create(['user_id' => $this->customer->id, 'status' => 'pending']);
         AuditLog::create(['user_id' => $this->customer->id, 'action' => 'secret-audit-action', 'auditable_type' => User::class, 'auditable_id' => $this->customer->id]);
     }
 
@@ -30,6 +30,8 @@ class DashboardHomeTest extends TestCase
         $staff = User::factory()->create();
         $staff->assignRole('employee');
         $staff->denyPermission('orders.view');
+        $staff->denyPermission('reviews.view');
+        $staff->denyPermission('contact.view');
 
         $this->actingAs($staff)->get(route('dashboard.home'))
             ->assertOk()
