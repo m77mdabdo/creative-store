@@ -46,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
                 return;
             }
 
-            $badges = app(DashboardBadgeService::class)->data();
+            $badges = DashboardBadgeService::visibleTo($user, app(DashboardBadgeService::class)->data());
 
             $view->with($badges + [
                 'sidebar' => app(SidebarBuilder::class)->build($user, array_filter(

@@ -47,6 +47,7 @@
             </div>
         </li>
 
+        @if(auth()->user()->hasPermission('orders.view'))
         {{-- Orders Notifications --}}
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
@@ -84,7 +85,9 @@
                 </a>
             </div>
         </li>
+        @endif
 
+        @if(auth()->user()->hasPermission('contact.view'))
         {{-- Contact Messages Notifications --}}
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
@@ -122,7 +125,9 @@
                 </a>
             </div>
         </li>
+        @endif
 
+        @if(auth()->user()->hasPermission('reviews.view'))
         {{-- Reviews Notifications --}}
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
@@ -164,6 +169,7 @@
                 </a>
             </div>
         </li>
+        @endif
 
         {{-- User Notifications --}}
         @auth

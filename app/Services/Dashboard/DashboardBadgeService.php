@@ -32,6 +32,35 @@ class DashboardBadgeService
         return Cache::flexible(self::CACHE_KEY, [60, 300], fn () => $this->compute());
     }
 
+    /**
+     * The badge data is cached once for all staff, so each person's copy is
+     * trimmed to what their permissions allow before it reaches the view.
+     * Previews carry customer names and messages, so they are removed
+     * entirely, not just hidden.
+     */
+    public static function visibleTo(User $user, array $badges): array
+    {
+        $sections = [
+            'orders.view'   => ['dashboardPendingOrders', 'dashboardPendingOrdersCount'],
+            'payments.view' => ['dashboardPendingPaymentsCount'],
+            'contact.view'  => ['dashboardUnreadMessages', 'dashboardUnreadMessagesCount'],
+            'reviews.view'  => ['dashboardPendingReviews', 'dashboardPendingReviewsCount'],
+            'users.view'    => ['dashboardUsersCount'],
+        ];
+
+        foreach ($sections as $permission => $keys) {
+            if ($user->hasPermission($permission)) {
+                continue;
+            }
+
+            foreach ($keys as $key) {
+                $badges[$key] = str_ends_with($key, 'Count') ? 0 : collect();
+            }
+        }
+
+        return $badges;
+    }
+
     public static function forget(): void
     {
         Cache::forget(self::CACHE_KEY);
