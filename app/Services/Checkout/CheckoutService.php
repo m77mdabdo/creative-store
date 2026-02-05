@@ -24,6 +24,8 @@ class CheckoutService
 
     private const PRICE_TOLERANCE = 0.01;
 
+    private const VAT_RATE = 0.15;
+
     public function __construct(
         private readonly CouponRedemptionService $coupons,
     ) {
@@ -63,9 +65,13 @@ class CheckoutService
                 throw new CheckoutException(__('Some prices have changed. Please review your cart before paying.'));
             }
 
-            $discount = min((float) ($totals['discount'] ?? 0), $subtotal);
-            $shippingFee = (float) ($totals['shipping_fee'] ?? 0);
-            $taxTotal = (float) ($totals['tax_total'] ?? 0);
+            // The discount can never be more than the coupons actually
+            // redeemed on this order, and tax is worked out again from the
+            // final amounts instead of being taken from the session.
+            $redeemed = round(array_sum(array_map('floatval', $couponDiscounts)), 2);
+            $discount = round(max(0, min((float) ($totals['discount'] ?? 0), $redeemed, $subtotal)), 2);
+            $shippingFee = round(max(0, (float) ($totals['shipping_fee'] ?? 0)), 2);
+            $taxTotal = round(($subtotal - $discount) * self::VAT_RATE, 2);
             $total = round($subtotal - $discount + $taxTotal + $shippingFee, 2);
 
             $promise = DeliveryPromise::make($rate->eta_min_days, $rate->eta_max_days);
