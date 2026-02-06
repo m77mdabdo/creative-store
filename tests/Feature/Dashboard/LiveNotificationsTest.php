@@ -4,9 +4,9 @@ namespace Tests\Feature\Dashboard;
 
 use App\Models\ContactMessage;
 use App\Models\Order;
-use App\Models\Role;
 use App\Models\User;
 use App\Notifications\OrderPlacedNotification;
+use Database\Seeders\AclSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -22,7 +22,7 @@ class LiveNotificationsTest extends TestCase
     {
         parent::setUp();
 
-        Role::firstOrCreate(['name' => 'admin']);
+        $this->seed(AclSeeder::class);
         $this->admin = User::factory()->create(['is_active' => true]);
         $this->admin->assignRole('admin');
     }
@@ -73,5 +73,21 @@ class LiveNotificationsTest extends TestCase
         $this->actingAs(User::factory()->create(['is_active' => true]))
             ->getJson(route('dashboard.notifications.feed'))
             ->assertStatus(403);
+    }
+
+    public function test_the_feed_hides_counters_for_sections_the_user_cannot_open(): void
+    {
+        Order::factory()->create(['status' => 'pending']);
+
+        $employee = User::factory()->create(['is_active' => true]);
+        $employee->assignRole('employee');
+        $employee->denyPermission('orders.view');
+        $employee->denyPermission('contact.view');
+        ContactMessage::create(['name' => 'Huda', 'email' => 'huda@example.com', 'subject' => 'Hello', 'message' => 'Do you ship to Abha?', 'is_read' => false]);
+
+        $this->actingAs($employee)
+            ->getJson(route('dashboard.notifications.feed'))
+            ->assertOk()
+            ->assertJson(['pending_orders' => 0, 'unread_messages' => 0]);
     }
 }
