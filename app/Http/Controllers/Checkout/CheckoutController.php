@@ -8,6 +8,7 @@ use App\Http\Requests\Shipping\PlaceOrderRequest;
 use App\Models\Address;
 use App\Models\ShippingRate;
 use App\Services\Checkout\CheckoutService;
+use App\Services\Shipping\ShippingService;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Cache;
@@ -16,6 +17,7 @@ class CheckoutController extends Controller
 {
     public function __construct(
         private readonly CheckoutService $checkout,
+        private readonly ShippingService $shipping,
     ) {
     }
 
@@ -35,12 +37,27 @@ class CheckoutController extends Controller
         $shipping = $session->get('shipping', []);
         $totals = $session->get('checkout_totals');
 
-        $selectionMatches = (int) ($shipping['shipping_method_id'] ?? 0) === $request->integer('shipping_method_id')
+        $selectionMatches = (int) ($shipping['address_id'] ?? 0) === $address->id
+            && (int) ($shipping['shipping_method_id'] ?? 0) === $request->integer('shipping_method_id')
             && (int) ($shipping['shipping_rate_id'] ?? 0) === $request->integer('shipping_rate_id');
 
         if (! $totals || ! $selectionMatches) {
             return back()->with('error', __('Please select your shipping method again.'));
         }
+
+        // Price the delivery again for this address and the cart as it is now,
+        // so a fee chosen earlier for another address or a lighter cart is not used.
+        $cart = $session->get('cart', []);
+        $option = collect($this->shipping->availableOptions($address, $cart))->first(
+            fn (array $option) => (int) $option['rate_id'] === $request->integer('shipping_rate_id')
+                && (int) $option['shipping_method_id'] === $request->integer('shipping_method_id')
+        );
+
+        if (! $option) {
+            return back()->with('error', __('Please select your shipping method again.'));
+        }
+
+        $totals['shipping_fee'] = (float) $option['price'];
 
         $rate = ShippingRate::query()->findOrFail($request->integer('shipping_rate_id'));
 
@@ -54,7 +71,7 @@ class CheckoutController extends Controller
                 address: $address,
                 rate: $rate,
                 shippingMethodId: $request->integer('shipping_method_id'),
-                cart: $session->get('cart', []),
+                cart: $cart,
                 totals: $totals,
                 couponId: $session->get('cart_coupon.id'),
                 couponDiscounts: $this->couponDiscounts($session->get('cart_coupon'), $session->get('cart_product_coupons', [])),
