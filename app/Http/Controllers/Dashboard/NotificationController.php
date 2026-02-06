@@ -73,8 +73,13 @@ class NotificationController extends Controller
             ])->render(),
             'fresh'          => $fresh,
             'latest'         => $latest->first()?->created_at?->getTimestamp() ?? $since->getTimestamp(),
-            'pending_orders' => Order::query()->whereIn('status', ['pending', 'processing'])->count(),
-            'unread_messages' => ContactMessage::query()->where('is_read', false)->count(),
+            // Counters for sections this person may not open are always 0.
+            'pending_orders' => $user->hasPermission('orders.view')
+                ? Order::query()->whereIn('status', ['pending', 'processing'])->count()
+                : 0,
+            'unread_messages' => $user->hasPermission('contact.view')
+                ? ContactMessage::query()->where('is_read', false)->count()
+                : 0,
         ])->header('Cache-Control', 'no-store');
     }
 
