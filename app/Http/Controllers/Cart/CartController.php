@@ -422,7 +422,7 @@ public function add(Request $request)
 
     public function removeCoupon()
     {
-        session()->forget('cart_coupon');
+        session()->forget(['cart_coupon', 'checkout_totals']);
         return back()->with('success', __('Cart coupon removed successfully.'));
     }
 
@@ -434,6 +434,8 @@ public function add(Request $request)
             unset($productCoupons[$productId]);
             session()->put('cart_product_coupons', $productCoupons);
         }
+
+        session()->forget('checkout_totals');
 
         return back()->with('success', __('Product coupon removed successfully.'));
     }
@@ -717,7 +719,19 @@ public function add(Request $request)
             return false;
         }
 
-        return true;
+        return ! $this->usedUpByCustomer($coupon);
+    }
+
+    private function usedUpByCustomer(Coupon $coupon): bool
+    {
+        if (is_null($coupon->per_user_limit) || ! auth()->check()) {
+            return false;
+        }
+
+        return \App\Models\CouponUsage::query()
+            ->where('coupon_id', $coupon->id)
+            ->where('user_id', auth()->id())
+            ->count() >= $coupon->per_user_limit;
     }
 
     private function getCouponErrorMessage(Coupon $coupon, float $subtotal): string
@@ -740,6 +754,10 @@ public function add(Request $request)
 
         if (!is_null($coupon->min_order_amount) && $subtotal < (float) $coupon->min_order_amount) {
             return 'Minimum order amount for this coupon is ' . number_format((float) $coupon->min_order_amount, 2);
+        }
+
+        if ($this->usedUpByCustomer($coupon)) {
+            return 'You have already used this coupon the maximum number of times.';
         }
 
         return 'Invalid coupon code.';
