@@ -2,22 +2,22 @@
 
 namespace Database\Factories;
 
+use App\Models\AttributeValue;
+use App\Models\Attribute;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AttributeValue>
- */
 class AttributeValueFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = AttributeValue::class;
+
     public function definition(): array
     {
         return [
-            //
+            'attribute_id' => Attribute::query()->inRandomOrder()->value('id') ?? Attribute::factory(),
+            'value' => $this->faker->word(),
+            'slug' => $this->faker->slug(2),
+            'sort_order' => $this->faker->numberBetween(0, 50),
+            'is_active' => true,
         ];
     }
 }

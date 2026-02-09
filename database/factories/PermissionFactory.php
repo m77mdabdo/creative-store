@@ -2,22 +2,28 @@
 
 namespace Database\Factories;
 
+use App\Models\Permission;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Permission>
- */
 class PermissionFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Permission::class;
+
     public function definition(): array
     {
+        $code = $this->faker->unique()->randomElement([
+            'users.view','users.create','users.update','users.delete',
+            'categories.view','categories.create','categories.update','categories.delete',
+            'products.view','products.create','products.update','products.delete',
+            'orders.view','orders.update_status',
+            'payments.view','refunds.process',
+            'shipping.manage','inventory.manage','returns.manage','settings.manage'
+        ]);
+
         return [
-            //
+            'code' => $code,
+            'name' => Str::headline(str_replace('.', ' ', $code)),
         ];
     }
 }

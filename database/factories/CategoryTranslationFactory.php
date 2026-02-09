@@ -2,22 +2,21 @@
 
 namespace Database\Factories;
 
+use App\Models\CategoryTranslation;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CategoryTranslation>
- */
 class CategoryTranslationFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = CategoryTranslation::class;
+
     public function definition(): array
     {
         return [
-            //
+            'category_id' => Category::query()->inRandomOrder()->value('id') ?? Category::factory(),
+            'locale' => $this->faker->randomElement(['ar','en']),
+            'name' => $this->faker->words(2, true),
+            'description' => $this->faker->optional()->paragraph(),
         ];
     }
 }

@@ -2,22 +2,19 @@
 
 namespace Database\Factories;
 
+use App\Models\Setting;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Setting>
- */
 class SettingFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Setting::class;
+
     public function definition(): array
     {
         return [
-            //
+            'key' => $this->faker->unique()->slug(2),
+            'value' => $this->faker->optional()->sentence(),
+            'type' => $this->faker->randomElement(['string','text','json','bool','int']),
         ];
     }
 }

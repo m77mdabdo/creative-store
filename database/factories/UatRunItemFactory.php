@@ -2,22 +2,22 @@
 
 namespace Database\Factories;
 
+use App\Models\UatRunItem;
+use App\Models\UatRun;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\UatRunItem>
- */
 class UatRunItemFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = UatRunItem::class;
+
     public function definition(): array
     {
         return [
-            //
+            'uat_run_id' => UatRun::query()->inRandomOrder()->value('id') ?? UatRun::factory(),
+            'scenario_code' => strtoupper($this->faker->bothify('SCN-###-??')),
+            'title' => $this->faker->sentence(4),
+            'status' => $this->faker->randomElement(['pending','passed','failed']),
+            'evidence' => $this->faker->optional()->sentence(),
         ];
     }
 }

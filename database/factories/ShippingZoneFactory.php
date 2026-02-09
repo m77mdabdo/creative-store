@@ -2,22 +2,19 @@
 
 namespace Database\Factories;
 
+use App\Models\ShippingZone;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ShippingZone>
- */
 class ShippingZoneFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = ShippingZone::class;
+
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->randomElement(['KSA Main','KSA East','KSA West']),
+            'country' => 'Saudi Arabia',
+            'is_active' => true,
         ];
     }
 }
