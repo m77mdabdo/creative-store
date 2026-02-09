@@ -58,7 +58,7 @@ class ProductCatalogService
                     ->orderByDesc('products.is_featured')
                     ->orderBy('products.id')
                     ->limit(1)])
-                ->having('active_products_count', '>', 0)
+                ->whereHas('products', fn ($q) => $q->where('status', 'active'))
                 ->orderBy('sort_order')
                 ->limit($limit)
                 ->get()
