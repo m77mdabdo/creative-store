@@ -53,7 +53,8 @@ Route::group([
         'localizationRedirect',
         'localeViewPath',
         'auth',
-        'role:owner,admin,employee'
+        'role:owner,admin,employee',
+        'throttle:dashboard',
     ],
 ], function () {
 

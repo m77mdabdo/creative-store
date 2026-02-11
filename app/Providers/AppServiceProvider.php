@@ -112,6 +112,18 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('checkout', fn (Request $request) => Limit::perMinute(10)
             ->by($request->user()?->id ?: $request->ip()));
 
+        // Everyday account actions: addresses, cancelling an order, the wishlist.
+        RateLimiter::for('account', fn (Request $request) => Limit::perMinute(30)
+            ->by('account:' . ($request->user()?->id ?: $request->ip())));
+
+        // Google sign-in round trips; generous, but stops scripted callbacks.
+        RateLimiter::for('oauth', fn (Request $request) => Limit::perMinute(20)->by('oauth:' . $request->ip()));
+
+        // A ceiling for the whole dashboard per staff account, far above
+        // normal use, so a stolen session cannot be used to scrape or mass-edit.
+        RateLimiter::for('dashboard', fn (Request $request) => Limit::perMinute(300)
+            ->by('dashboard:' . ($request->user()?->id ?: $request->ip())));
+
         RateLimiter::for('webhooks', fn (Request $request) => Limit::perMinute(120)->by($request->ip()));
     }
 }

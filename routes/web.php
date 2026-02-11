@@ -74,7 +74,7 @@ Route::group([
         ->name('login.submit');
 
     Route::post('/logout', [LoginController::class, 'logout'])
-        ->middleware('auth')
+        ->middleware(['auth', 'throttle:account'])
         ->name('logout');
 
     /*
@@ -133,9 +133,11 @@ Route::group([
     */
 
     Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirectToGoogle'])
+        ->middleware('throttle:oauth')
         ->name('google.redirect');
 
     Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])
+        ->middleware('throttle:oauth')
         ->name('google.callback');
 
     /*
@@ -217,16 +219,18 @@ Route::group([
 
         Route::delete('/remove/{key}', [CartController::class, 'remove'])
             ->where('key', '.*')
+            ->middleware('throttle:cart')
             ->name('remove');
 
-        Route::post('/update', [CartController::class, 'update'])->name('update');
-        Route::post('/clear', [CartController::class, 'clear'])->name('clear');
+        Route::post('/update', [CartController::class, 'update'])->middleware('throttle:cart')->name('update');
+        Route::post('/clear', [CartController::class, 'clear'])->middleware('throttle:cart')->name('clear');
 
         Route::post('/coupon', [CartController::class, 'applyCoupon'])
             ->middleware('throttle:forms')
             ->name('coupon');
 
         Route::delete('/coupon/remove', [CartController::class, 'removeCoupon'])
+            ->middleware('throttle:cart')
             ->name('coupon.remove');
 
         Route::post('/coupon/preview', [CartController::class, 'previewCoupon'])
@@ -254,7 +258,7 @@ Route::group([
     |--------------------------------------------------------------------------
     */
 
-    Route::middleware('auth')->post('/product/review/store', [ReviewController::class, 'store'])
+    Route::middleware(['auth', 'throttle:forms'])->post('/product/review/store', [ReviewController::class, 'store'])
         ->name('reviews.store');
 
     /*
@@ -265,22 +269,28 @@ Route::group([
 
     Route::middleware('auth')->prefix('shipping')->name('shipping.')->group(function () {
         Route::get('/', [ShippingController::class, 'index'])->name('index');
-        Route::post('/options', [ShippingController::class, 'shippingOptions'])->name('options');
-        Route::post('/select-address', [ShippingController::class, 'selectAddress'])->name('select-address');
-        Route::post('/select-method', [ShippingController::class, 'selectMethod'])->name('select-method');
+        Route::middleware('throttle:cart')->group(function () {
+            Route::post('/options', [ShippingController::class, 'shippingOptions'])->name('options');
+            Route::post('/select-address', [ShippingController::class, 'selectAddress'])->name('select-address');
+            Route::post('/select-method', [ShippingController::class, 'selectMethod'])->name('select-method');
+        });
 
         Route::get('/addresses', [AddressController::class, 'index'])->name('addresses.index');
         Route::get('/addresses/create', [AddressController::class, 'create'])->name('addresses.create');
-        Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
         Route::get('/addresses/{address}/edit', [AddressController::class, 'edit'])->name('addresses.edit');
-        Route::put('/addresses/{address}', [AddressController::class, 'update'])->name('addresses.update');
-        Route::delete('/addresses/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy');
-        Route::post('/addresses/{address}/default', [AddressController::class, 'setDefault'])->name('addresses.default');
+
+        Route::middleware('throttle:account')->group(function () {
+            Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
+            Route::put('/addresses/{address}', [AddressController::class, 'update'])->name('addresses.update');
+            Route::delete('/addresses/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy');
+            Route::post('/addresses/{address}/default', [AddressController::class, 'setDefault'])->name('addresses.default');
+        });
 
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
 
         Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])
+            ->middleware('throttle:account')
             ->name('orders.cancel');
 
         Route::get('/orders/{order}/invoice', [OrderController::class, 'invoice'])
@@ -298,9 +308,11 @@ Route::group([
             ->name('wishlist.index');
 
         Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])
+            ->middleware('throttle:account')
             ->name('wishlist.toggle');
 
         Route::delete('/wishlist/{id}', [WishlistController::class, 'destroy'])
+            ->middleware('throttle:account')
             ->name('wishlist.destroy');
     });
 
