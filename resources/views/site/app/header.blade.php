@@ -13,9 +13,22 @@
                         Help & FAQs
                     </a>
 
-                    <a href="#" class="flex-c-m trans-04 p-lr-25">
-                        My Account
-                    </a>
+                    @auth
+                        <a href="{{ route('home') }}" class="flex-c-m p-lr-10 trans-04">
+                            My Account
+                        </a>
+                    @endauth
+
+                    @guest
+                        <a href="{{ route('login') }}" class="flex-c-m p-lr-10 trans-04">
+                            Sign In
+                        </a>
+
+                        <a href="{{ route('register') }}" class="flex-c-m p-lr-10 trans-04">
+                            Sign Up
+                        </a>
+                    @endguest
+
 
                     <a href="#" class="flex-c-m trans-04 p-lr-25">
                         EN
@@ -37,7 +50,8 @@
         <!-- Logo moblie -->
         <div class="logo-mobile">
             <a href="index.html">
-               <img style="height:90px; width:auto; max-height:none;" src="{{ asset('cozastore/images/icons/logo-01.png') }}" alt="IMG-LOGO">
+                <img style="height:90px; width:auto; max-height:none;"
+                    src="{{ asset('cozastore/images/icons/logo-01.png') }}" alt="IMG-LOGO">
 
             </a>
         </div>
@@ -48,11 +62,13 @@
                 <i class="zmdi zmdi-search"></i>
             </div>
 
-            <div class="icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10 icon-header-noti js-show-cart" data-notify="2">
+            <div class="icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10 icon-header-noti js-show-cart"
+                data-notify="2">
                 <i class="zmdi zmdi-shopping-cart"></i>
             </div>
 
-            <a href="#" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10 icon-header-noti" data-notify="0">
+            <a href="#" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10 icon-header-noti"
+                data-notify="0">
                 <i class="zmdi zmdi-favorite-outline"></i>
             </a>
         </div>
@@ -71,7 +87,7 @@
         <ul class="topbar-mobile">
             <li>
                 <div class="left-top-bar">
-                    Free shipping for standard order over $100
+
                 </div>
             </li>
 
@@ -147,7 +163,3 @@
         </div>
     </div>
 </header>
-
-
-
-
