@@ -756,22 +756,47 @@
                 finalImages = uniqueImages(defaultGallery);
             }
 
-            gallery.innerHTML = finalImages.map(img => {
-                const thumb = img.thumb || img.url;
-                const url   = img.url || img;
-                const alt   = img.alt || @json($productName);
+            // Built with DOM nodes, never HTML strings, so image names and
+            // alt text from the catalogue are always treated as plain text.
+            const safeUrl = (value) => {
+                try {
+                    const parsed = new URL(String(value || ''), window.location.href);
+                    return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : '';
+                } catch (e) {
+                    return '';
+                }
+            };
 
-                return `
-                    <div class="item-slick3" data-thumb="${thumb}">
-                        <div class="product-image-frame">
-                            <img src="${url}" alt="${alt}" loading="lazy" decoding="async">
-                            <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="${url}">
-                                <i class="fa fa-expand"></i>
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            gallery.replaceChildren(...finalImages.map(img => {
+                const url   = safeUrl(img.url || img);
+                const thumb = safeUrl(img.thumb) || url;
+                const alt   = String(img.alt || @json($productName));
+
+                const item = document.createElement('div');
+                item.className = 'item-slick3';
+                item.dataset.thumb = thumb;
+
+                const frame = document.createElement('div');
+                frame.className = 'product-image-frame';
+
+                const image = document.createElement('img');
+                image.src = url;
+                image.alt = alt;
+                image.loading = 'lazy';
+                image.decoding = 'async';
+
+                const zoom = document.createElement('a');
+                zoom.className = 'flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04';
+                zoom.href = url;
+                const icon = document.createElement('i');
+                icon.className = 'fa fa-expand';
+                zoom.appendChild(icon);
+
+                frame.append(image, zoom);
+                item.appendChild(frame);
+
+                return item;
+            }));
 
             initProductGallery(finalImages.length);
         }
