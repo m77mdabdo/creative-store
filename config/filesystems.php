@@ -40,7 +40,9 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // Private files (shipping labels, backups) are only handed out by
+            // controllers that check permissions, never by a public route.
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],
