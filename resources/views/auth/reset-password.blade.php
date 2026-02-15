@@ -60,6 +60,13 @@
                     <input type="hidden" name="token" value="{{ $token }}">
                     <input type="hidden" name="email" value="{{ request()->query('email') }}">
 
+                    <!--email -->
+                    <div class="input-group mb-3">
+                        <input type="email" name="email" class="form-control" placeholder="Email" value="{{ request()->query('email') }}" readonly>
+                        <div class="input-group-append">
+                            <div class="input-group-text"><span class="fas fa-envelope"></span></div>
+                        </div>
+                    </div>
                     <div class="input-group mb-3">
                         <input type="password" name="password" class="form-control" placeholder="New Password" required>
                         <div class="input-group-append">

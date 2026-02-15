@@ -285,7 +285,7 @@
                                             Sign up using Facebook
                                         </a>
 
-                                        <a href="#" class="btn btn-block btn-danger">
+                                        <a href="{{ route('google.redirect') }}" class="btn btn-block btn-danger">
                                             <i class="fab fa-google-plus mr-2"></i>
                                             Sign up using Google+
                                         </a>

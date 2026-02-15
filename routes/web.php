@@ -9,6 +9,7 @@ use App\Http\Controllers\Account\MyAccountController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerifyAccountController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 
 Route::get('/', function () {
     return view('site.home');
@@ -81,3 +82,11 @@ Route::post('/login', [LoginController::class, 'login'])
 
     Route::view("/verify-email/{email}", 'auth.verify-email')->name('email.verify');
     Route::post('/verify-email', VerifyAccountController::class)->name('email.verify.submit');
+
+
+
+
+    //google auth
+
+    Route::get('/auth/google/redirect',[GoogleAuthController::class,'redirectToGoogle'])->name('google.redirect');
+    Route::get('/auth/google/callback',[GoogleAuthController::class,'handleGoogleCallback'])->name('google.callback');

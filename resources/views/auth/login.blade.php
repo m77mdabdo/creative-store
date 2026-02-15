@@ -266,7 +266,7 @@
                       Sign in using Facebook
                     </a>
 
-                    <a href="#" class="btn btn-block btn-google">
+                    <a href="{{ route('google.redirect') }}" class="btn btn-block btn-google">
                       <i class="fab fa-google-plus mr-2"></i>
                       Sign in using Google
                     </a>
