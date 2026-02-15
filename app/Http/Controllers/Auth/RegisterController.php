@@ -7,6 +7,8 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Mail\VerifyAccountMail;
+use Illuminate\Support\Facades\Mail;
 
 class RegisterController extends Controller
 {
@@ -20,13 +22,15 @@ class RegisterController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'otp' => rand(100000, 999999)
         ]);
 
-        // Login automatically
-        Auth::login($user);
 
+        // Generate OTP
+
+       Mail::to($user->email)->send(new VerifyAccountMail($user->otp, $user->email));
         // Redirect after register
-        return redirect()->route('home');
-        // غيري home لو عندك dashboard باسم تاني
+         return redirect()->route('email.verify', $user->email);
+
     }
 }

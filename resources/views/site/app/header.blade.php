@@ -14,9 +14,10 @@
                     </a>
 
                     @auth
-                        <a href="{{ route('home') }}" class="flex-c-m p-lr-10 trans-04">
+                        <a href="{{ route('myaccount') }}" class="flex-c-m p-lr-10 trans-04">
                             My Account
                         </a>
+
                     @endauth
 
                     @guest

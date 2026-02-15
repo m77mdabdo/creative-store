@@ -35,12 +35,11 @@
       background:#000;
     }
 
-    /* ✅ الفيديو ملون */
     .register-video video{
       width:100%;
       height:100%;
       object-fit:cover;
-      filter:none;  /* تم إلغاء الأبيض والأسود */
+      filter:none;
       transform: scale(1.02);
     }
 
@@ -109,24 +108,11 @@
       color:#fff;
     }
 
-    .btn-facebook:hover{
-      filter: brightness(0.95);
-      color:#fff;
-    }
-
     .btn-google{
       background:#db4437;
       border:none;
       color:#fff;
     }
-
-    .btn-google:hover{
-      background:#c1351d;
-      color:#fff;
-    }
-
-    a{ color:#000; }
-    a:hover{ color:#555; }
 
     .auth-split-card{
       display:flex;
@@ -143,19 +129,6 @@
       border-right: 1px solid rgba(0,0,0,0.08);
     }
 
-    .auth-split-left h2{
-      font-size: 34px;
-      font-weight: 800;
-      margin:0;
-    }
-
-    .auth-split-left p{
-      margin:0 0 8px 0;
-      opacity:.75;
-      line-height:1.6;
-      max-width: 300px;
-    }
-
     .auth-split-right{
       width:58%;
       display:flex;
@@ -170,11 +143,11 @@
       padding: 28px 28px 22px;
     }
 
-    @media(max-width: 992px){
-      .auth-split-card{ flex-direction:column; min-height:auto; }
-      .auth-split-left, .auth-split-right{ width:100%; }
-      .auth-split-left{ border-right:none; border-bottom:1px solid rgba(0,0,0,0.08); }
+    .invalid-feedback{
+        font-size:13px;
+        color:#dc3545;
     }
+
   </style>
 </head>
 
@@ -182,7 +155,7 @@
 
 <div class="register-wrapper">
 
-  <!-- LEFT SIDE - VIDEO -->
+  <!-- LEFT VIDEO -->
   <div class="register-video">
     <video autoplay muted loop playsinline>
       <source src="{{ asset('cozastore/videos/register-bg.mp4') }}" type="video/mp4">
@@ -190,23 +163,20 @@
     <div class="video-overlay"></div>
   </div>
 
-  <!-- RIGHT SIDE - LOGIN CARD -->
+  <!-- LOGIN SIDE -->
   <div class="register-form-side">
     <div class="register-box">
       <div class="card">
 
-        <!-- LOGO -->
         <div class="card-header logo-header">
           <a href="{{ url('/') }}">
-            <img src="{{ asset('cozastore/images/icons/creative-store-logo.png') }}" alt="Creative Store">
+            <img src="{{ asset('cozastore/images/icons/creative-store-logo.png') }}">
           </a>
         </div>
 
-        <!-- SPLIT BODY -->
         <div class="card-body p-0">
           <div class="auth-split-card">
 
-            <!-- LEFT PANEL -->
             <div class="auth-split-left">
               <h2>Hello Again</h2>
               <p>Login to continue and manage your account.</p>
@@ -215,28 +185,65 @@
               </a>
             </div>
 
-            <!-- RIGHT PANEL -->
             <div class="auth-split-right">
               <div class="auth-right-inner">
 
                 <p class="login-box-msg mb-4">Sign in to start your session</p>
 
-                <form action="{{ route('login') }}" method="post">
+                {{-- رسالة عامة --}}
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        Invalid email or password.
+                    </div>
+                @endif
+
+                <form action="{{ route('login.submit') }}" method="post">
                   @csrf
 
+                  <!-- EMAIL -->
                   <div class="input-group mb-3">
-                    <input name="email" type="email" class="form-control" placeholder="Email" required>
+                    <input name="email"
+                           type="email"
+                           value="{{ old('email') }}"
+                           class="form-control @error('email') is-invalid @enderror"
+                           placeholder="Email"
+                           required>
+
                     <div class="input-group-append">
-                      <div class="input-group-text"><span class="fas fa-envelope"></span></div>
+                      <div class="input-group-text">
+                        <span class="fas fa-envelope"></span>
+                      </div>
                     </div>
                   </div>
 
+                  @error('email')
+                      <div class="invalid-feedback d-block mb-2">
+                          {{ $message }}
+                      </div>
+                  @enderror
+
+
+                  <!-- PASSWORD -->
                   <div class="input-group mb-3">
-                    <input name="password" type="password" class="form-control" placeholder="Password" required>
+                    <input name="password"
+                           type="password"
+                           class="form-control @error('password') is-invalid @enderror"
+                           placeholder="Password"
+                           required>
+
                     <div class="input-group-append">
-                      <div class="input-group-text"><span class="fas fa-lock"></span></div>
+                      <div class="input-group-text">
+                        <span class="fas fa-lock"></span>
+                      </div>
                     </div>
                   </div>
+
+                  @error('password')
+                      <div class="invalid-feedback d-block mb-2">
+                          {{ $message }}
+                      </div>
+                  @enderror
+
 
                   <div class="row mb-3">
                     <div class="col-8">
@@ -246,7 +253,9 @@
                       </div>
                     </div>
                     <div class="col-4">
-                      <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                      <button type="submit" class="btn btn-primary btn-block">
+                        Sign In
+                      </button>
                     </div>
                   </div>
 
@@ -266,8 +275,9 @@
                 </form>
 
                 <div class="mt-3">
-                  <a href="{{ route('forgot-password') }}" class="d-block">I forgot my password</a>
-                  {{-- <a href="{{ route('register') }}" class="d-block">Register a new membership</a> --}}
+                  <a href="{{ route('forgot-password') }}" class="d-block">
+                    I forgot my password
+                  </a>
                 </div>
 
               </div>
