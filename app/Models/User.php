@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+
     use HasFactory, Notifiable;
     // use HasApiTokens;
 
@@ -18,6 +19,9 @@ class User extends Authenticatable
         'email',
         'password',
          'otp',
+         'email_verified_at',
+         'phone',
+
     ];
 
     protected $hidden = [

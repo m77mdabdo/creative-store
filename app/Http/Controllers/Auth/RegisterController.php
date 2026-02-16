@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\VerifyAccountMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
 {
@@ -24,6 +25,8 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
             'otp' => rand(100000, 999999)
         ]);
+
+        event(new Registered($user));
 
 
         // Generate OTP

@@ -16,28 +16,38 @@ class GoogleAuthController extends Controller
 {
     //
 
-    public function redirectToGoogle(){
+public function redirectToGoogle()
+{
+    return Socialite::driver('google')->stateless()->redirect();
+}
 
-        return Socialite::driver("google")->redirect();
+public function handleGoogleCallback()
+{
+    $googleUser = Socialite::driver('google')->stateless()->user();
 
+    $email = $googleUser->getEmail();
+    if (!$email) {
+        return redirect('/login')->with('error', 'Google did not return an email address.');
     }
 
+    $user = User::updateOrCreate(
+        ['email' => $email],
+        [
+            'name' => $googleUser->getName() ?? 'Google User',
+            'email_verified_at' => now(),
+            'password' => Hash::make(Str::random(32)),
+            'otp' => null,
+        ]
+    );
 
-    public function handleGoogleCallback(){
-        $googleUser = Socialite::driver('google')->user();
-
-        $user = User::firstOrCreate(
-            ['email' => $googleUser->getEmail()],
-            [
-                'name' => $googleUser->getName(),
-                'password' => Hash::make(Str::random(14)),
-                'email_verified_at' => now(),
-                'otp' => rand(100000, 999999)
-            ]
-        );
-
-        Auth::login($user);
-        return redirect()->intended('/')->with('success', 'You are in');
-
+    if (!$user->password) {
+        $user->password = Hash::make(Str::random(14));
+        $user->save();
     }
+
+    Auth::login($user);
+
+    return redirect()->intended('/')->with('success', 'You are in');
+}
+
 }
