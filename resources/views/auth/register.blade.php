@@ -247,6 +247,20 @@
                                     </div>
                                     @error('email') <div class="invalid-feedback mb-2">{{ $message }}</div> @enderror
 
+
+
+
+                                    <div class="input-group mb-3">
+                                        <input name="phone" type="text"
+                                            class="form-control @error('phone') is-invalid @enderror"
+                                            placeholder="phone" value="{{ old('phone') }}" required>
+                                        <div class="input-group-append">
+                                            <div class="input-group-text"><span class="fas fa-phone"></span></div>
+                                        </div>
+                                    </div>
+                                    @error('phone') <div class="invalid-feedback mb-2">{{ $message }}</div> @enderror
+
+
                                     <div class="input-group mb-3">
                                         <input name="password" type="password"
                                             class="form-control @error('password') is-invalid @enderror"

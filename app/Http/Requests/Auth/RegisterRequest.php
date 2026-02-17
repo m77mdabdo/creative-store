@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Propaganistas\LaravelPhone\Rules\Phone;
+
 
 class RegisterRequest extends FormRequest
 {
@@ -29,13 +31,32 @@ class RegisterRequest extends FormRequest
                 'unique:users,email'
             ],
 
+
+            'phone' => [
+                'nullable',
+                new Phone('AUTO'), // يكتشف الدولة من كود + تلقائيًا
+                'unique:users,phone'
+            ],
+
+
+
             'password' => [
                 'required',
                 'confirmed',
                 'min:6',
                 'string',
-                
+
             ],
         ];
     }
+
+    protected function passedValidation()
+{
+    if ($this->phone) {
+        $this->merge([
+            'phone' => phone($this->phone)->formatE164()
+        ]);
+    }
+}
+
 }
