@@ -129,6 +129,6 @@ class MoyasarPaymentController extends Controller
 
     private function authorizeOwner(Request $request, Order $order): void
     {
-        abort_unless((int) $order->user_id === (int) $request->user()?->id, 403);
+        abort_unless($request->user()?->can('pay', $order), 403);
     }
 }

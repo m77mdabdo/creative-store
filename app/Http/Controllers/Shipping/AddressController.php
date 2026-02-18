@@ -7,6 +7,7 @@ use App\Http\Requests\Shipping\StoreAddressRequest;
 use App\Http\Requests\Shipping\UpdateAddressRequest;
 use App\Models\Address;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class AddressController extends Controller
@@ -46,14 +47,14 @@ class AddressController extends Controller
 
     public function edit(Address $address): View
     {
-        abort_unless($address->user_id === auth()->id(), 403);
+        Gate::authorize('update', $address);
 
         return view('site.shipping.addresses.edit', compact('address'));
     }
 
     public function update(UpdateAddressRequest $request, Address $address): RedirectResponse
     {
-        abort_unless($address->user_id === auth()->id(), 403);
+        Gate::authorize('update', $address);
 
         $data = $request->validated();
         $data['is_default'] = (bool) ($data['is_default'] ?? false);
@@ -69,7 +70,7 @@ class AddressController extends Controller
 
     public function destroy(Address $address): RedirectResponse
     {
-        abort_unless($address->user_id === auth()->id(), 403);
+        Gate::authorize('delete', $address);
 
         $wasDefault = $address->is_default;
         $address->delete();
@@ -86,7 +87,7 @@ class AddressController extends Controller
 
     public function setDefault(Address $address): RedirectResponse
     {
-        abort_unless($address->user_id === auth()->id(), 403);
+        Gate::authorize('update', $address);
 
         Address::where('user_id', auth()->id())->update(['is_default' => false]);
         $address->update(['is_default' => true]);

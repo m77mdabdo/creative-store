@@ -13,6 +13,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use RuntimeException;
 
@@ -41,7 +42,7 @@ class OrderController extends Controller
 
     public function show(Order $order): View|RedirectResponse
     {
-        abort_unless($order->user_id === auth()->id(), 403);
+        Gate::authorize('view', $order);
 
         $order->load([
             'items',
@@ -57,7 +58,7 @@ class OrderController extends Controller
 
     public function cancel(Order $order): RedirectResponse
     {
-        abort_unless($order->user_id === auth()->id(), 403);
+        Gate::authorize('cancel', $order);
 
         if ($order->status === 'cancelled') {
             return back()->with('error', __('Order already cancelled.'));
@@ -215,7 +216,7 @@ class OrderController extends Controller
 
     public function invoice(Order $order, \App\Services\Invoices\TaxInvoiceBuilder $invoices)
     {
-        abort_unless($order->user_id === auth()->id(), 403);
+        Gate::authorize('downloadInvoice', $order);
 
         // A tax invoice is issued for a completed sale only.
         abort_unless(in_array($order->payment_status, ['paid', 'partially_refunded', 'refunded'], true), 404);
