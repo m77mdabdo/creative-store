@@ -28,5 +28,9 @@ class VerifyAccountMail extends Mailable
     public function content(): Content
     {
         return new Content(view: 'emails.verify-account');
+        
     }
 }
+
+
+

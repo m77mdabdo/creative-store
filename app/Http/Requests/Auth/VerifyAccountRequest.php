@@ -11,9 +11,9 @@ class VerifyAccountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required','email','exists:users,email'],
-            'otp' => ['required','array','size:6'],
-            'otp.*' => ['required','digits:1'],
+            'email' => ['required', 'email'],
+            'otp' => ['required', 'array', 'size:6'],
+            'otp.*' => ['required', 'digits:1'],
         ];
     }
 }

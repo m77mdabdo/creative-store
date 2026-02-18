@@ -4,37 +4,40 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use App\Mail\VerifyAccountMail;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
     public function __invoke(RegisterRequest $request)
     {
-        // Create User
-        $user = User::create([
+        $otp = (string) random_int(100000, 999999);
+
+        // Store pending registration for 10 minutes
+        Cache::put($this->cacheKey($request->email), [
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'otp' => rand(100000, 999999)
-        ]);
+            'otp' => $otp,
+            'expires_at' => now()->addMinutes(10),
+        ], now()->addMinutes(10));
 
-        event(new Registered($user));
+        // Send OTP email
+        Mail::to($request->email)->send(
+            new VerifyAccountMail((int) $otp, $request->email)
+        );
 
-
-        // Generate OTP
-
-       Mail::to($user->email)->send(new VerifyAccountMail($user->otp, $user->email));
-        // Redirect after register
-         return redirect()->route('email.verify', $user->email);
-
+        return redirect()->route('email.verify', $request->email)
+            ->with('success', 'We sent a verification code to your email.');
     }
+    
+
+    private function cacheKey(string $email): string
+    {
+        return 'pending_register:' . strtolower($email);
+    }
+
 }

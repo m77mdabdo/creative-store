@@ -11,11 +11,7 @@
             <ul class="main-menu">
                 <li class="active-menu">
                     <a href="{{ url('/') }}">Home</a>
-                    <ul class="sub-menu">
-                        <li><a href="{{ url('/') }}">Homepage 1</a></li>
-                        <li><a href="{{ url('/home-02') }}">Homepage 2</a></li>
-                        <li><a href="{{ url('/home-03') }}">Homepage 3</a></li>
-                    </ul>
+                  
                 </li>
 
                 <li>

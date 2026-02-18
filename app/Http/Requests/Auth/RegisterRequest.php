@@ -4,21 +4,15 @@ namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Propaganistas\LaravelPhone\Rules\Phone;
-
+use Illuminate\Support\Facades\Cache;
 
 class RegisterRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     */
     public function rules(): array
     {
         return [
@@ -28,35 +22,44 @@ class RegisterRequest extends FormRequest
                 'required',
                 'email',
                 'max:255',
-                'unique:users,email'
+                'unique:users,email',
             ],
-
 
             'phone' => [
                 'nullable',
-                new Phone('AUTO'), // يكتشف الدولة من كود + تلقائيًا
-                'unique:users,phone'
+                new Phone(),
+                'unique:users,phone',
             ],
-
-
 
             'password' => [
                 'required',
                 'confirmed',
                 'min:6',
                 'string',
-
             ],
         ];
     }
 
-    protected function passedValidation()
-{
-    if ($this->phone) {
-        $this->merge([
-            'phone' => phone($this->phone)->formatE164()
-        ]);
-    }
-}
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $email = strtolower((string) $this->input('email'));
+            if (!$email) return;
 
+            $key = 'pending_register:' . $email;
+
+            if (Cache::has($key)) {
+                $validator->errors()->add('email', 'هذا البريد لديه تسجيل مُعلّق. تحقق من OTP أو انتظر انتهاء الصلاحية.');
+            }
+        });
+    }
+
+    protected function passedValidation()
+    {
+        if ($this->phone) {
+            $this->merge([
+                'phone' => phone($this->phone)->formatE164(),
+            ]);
+        }
+    }
 }
