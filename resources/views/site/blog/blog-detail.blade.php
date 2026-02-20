@@ -144,8 +144,8 @@
                                     {{ $comment->comment }}
                                 </p>
 
-                                @if($comment->website)
-                                    <a href="{{ $comment->website }}" target="_blank" class="comment-link">
+                                @if($comment->website && preg_match('#^https?://#i', $comment->website))
+                                    <a href="{{ $comment->website }}" target="_blank" rel="nofollow noopener noreferrer ugc" class="comment-link">
                                         {{ $comment->website }}
                                     </a>
                                 @endif
