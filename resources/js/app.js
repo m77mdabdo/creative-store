@@ -14,7 +14,8 @@ window.Echo = new Echo({
     wsHost: import.meta.env.VITE_REVERB_HOST ?? window.location.hostname,
     wsPort: import.meta.env.VITE_REVERB_PORT ?? 8080,
     wssPort: import.meta.env.VITE_REVERB_PORT ?? 8080,
-    forceTLS: false,
+    // Use wss:// whenever the site itself is served over HTTPS.
+    forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? window.location.protocol.replace(':', '')) === 'https',
     enabledTransports: ['ws', 'wss'],
 });
 
@@ -33,10 +34,15 @@ if (window.Laravel?.userId) {
                 const item = document.createElement('a');
                 item.href = '#';
                 item.className = 'dropdown-item';
-                item.innerHTML = `
-                    <strong>${notification.title ?? 'Notification'}</strong>
-                    <div class="text-muted text-sm">${notification.message ?? ''}</div>
-                `;
+                // Built with text nodes: notification text is never parsed as HTML.
+                const title = document.createElement('strong');
+                title.textContent = notification.title ?? 'Notification';
+
+                const message = document.createElement('div');
+                message.className = 'text-muted text-sm';
+                message.textContent = notification.message ?? '';
+
+                item.append(title, message);
 
                 const divider = document.createElement('div');
                 divider.className = 'dropdown-divider';
