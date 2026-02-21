@@ -8,23 +8,26 @@
 	<!-- Cart -->
 
 
-    @include('site.app.cart')
+    @yield('content')
+
+
+    {{-- @include('site.app.cart') --}}
 
 
 	<!-- Slider -->
 
-    @include('site.app.slider')
+    {{-- @include('site.app.slider') --}}
 
 
 	<!-- Banner -->
 
 
-    @include('site.app.banner')
+    {{-- @include('site.app.banner') --}}
 
 	<!-- Product -->
 
 
-    @include('site.app.product')
+    {{-- @include('site.app.product') --}}
 
 	<!-- Footer -->
 

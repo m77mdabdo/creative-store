@@ -10,10 +10,18 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerifyAccountController;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuditLog\AuditLogController;
+
+
 
 Route::get('/', function () {
     return view('site.home');
 })->name('home');
+
+// Route::get('/dashboard', function () {
+//     return view('dashboard.home');
+// })->name('dashboard');
 
 Route::get('/cart', function () {
     return view('site.app.cart');
@@ -90,3 +98,30 @@ Route::post('/login', [LoginController::class, 'login'])
 
     Route::get('/auth/google/redirect',[GoogleAuthController::class,'redirectToGoogle'])->name('google.redirect');
     Route::get('/auth/google/callback',[GoogleAuthController::class,'handleGoogleCallback'])->name('google.callback');
+
+
+
+    //authorization
+
+
+
+// Dashboard: ممنوع على customer
+Route::middleware(['auth', 'role:owner,admin,employee'])
+    ->prefix('dashboard')
+    ->group(function () {
+
+        Route::get('/dashboard', fn () => view('dashboard.home'))->name('dashboard');
+
+        // Audit logs (Admin/Owner)
+        Route::get('/audit-logs', [AuditLogController::class, 'index'])
+            ->middleware('permission:audit.view')
+            ->name('audit.index');
+
+        // Users management (موظفين) — Admin/Owner
+        Route::get('/users', [UserController::class, 'index'])
+            ->middleware('permission:users.view')
+            ->name('users.index');
+
+        // ... كمل نفس النمط لباقي الأقسام حسب permissions اللي عندك
+    });
+

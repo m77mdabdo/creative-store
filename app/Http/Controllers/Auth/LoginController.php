@@ -31,6 +31,14 @@ class LoginController extends Controller
         // مهم جداً للأمان بعد تسجيل الدخول
         $request->session()->regenerate();
 
-        return redirect()->intended(route('home'));
+
+        $user = $request->user();
+
+        if ($user->hasRole('customer')) {
+            return redirect()->route('home');
+        }
+
+        return redirect()->route('dashboard');
     }
+    
 }

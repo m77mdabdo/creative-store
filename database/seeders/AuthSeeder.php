@@ -16,15 +16,16 @@ class AuthSeeder extends Seeder
         /* =========================
          * Roles
          * ========================= */
+        $ownerRole    = Role::firstOrCreate(['name' => 'owner']);
         $adminRole    = Role::firstOrCreate(['name' => 'admin']);
-        $managerRole  = Role::firstOrCreate(['name' => 'manager']);
+        $employeeRole = Role::firstOrCreate(['name' => 'employee']);
         $customerRole = Role::firstOrCreate(['name' => 'customer']);
 
         /* =========================
          * Permissions
          * ========================= */
         $permissions = [
-            // Users
+            // Users (Employees management)
             'users.view','users.create','users.update','users.delete',
 
             // Categories
@@ -39,6 +40,9 @@ class AuthSeeder extends Seeder
 
             // Ops
             'shipping.manage','inventory.manage','returns.manage','settings.manage',
+
+            // Audit Logs (متابعة الموظفين)
+            'audit.view',
         ];
 
         $permissionIds = [];
@@ -54,21 +58,32 @@ class AuthSeeder extends Seeder
          * Attach permissions to roles
          * ========================= */
 
-        // Admin: كل الصلاحيات
-        $adminRole->permissions()->sync($permissionIds);
+        // Owner: كل الصلاحيات
+        $ownerRole->permissions()->sync($permissionIds);
 
-        // Manager: صلاحيات تشغيل
-        $managerPermissions = Permission::whereIn('code', [
-            'categories.view','categories.create','categories.update',
-            'products.view','products.create','products.update',
+        // Admin: صلاحيات الموظفين + التشغيل + مشاهدة اللوجز
+        $adminPermissions = Permission::whereIn('code', [
+            'users.view','users.create','users.update','users.delete',
+            'categories.view','categories.create','categories.update','categories.delete',
+            'products.view','products.create','products.update','products.delete',
             'orders.view','orders.update_status',
-            'payments.view',
-            'shipping.manage','inventory.manage','returns.manage',
+            'payments.view','refunds.process',
+            'shipping.manage','inventory.manage','returns.manage','settings.manage',
+            'audit.view',
         ])->pluck('id')->all();
 
-        $managerRole->permissions()->sync($managerPermissions);
+        $adminRole->permissions()->sync($adminPermissions);
 
-        // Customer: قراءة فقط
+        // Employee: تشغيل محدود (عدّلها حسب شغل الموظف)
+        $employeePermissions = Permission::whereIn('code', [
+            'categories.view',
+            'products.view',
+            'orders.view',
+        ])->pluck('id')->all();
+
+        $employeeRole->permissions()->sync($employeePermissions);
+
+        // Customer: قراءة فقط على الموقع (وممنوع Dashboard بالـ role middleware)
         $customerPermissions = Permission::whereIn('code', [
             'categories.view',
             'products.view',
@@ -81,6 +96,17 @@ class AuthSeeder extends Seeder
          * Users
          * ========================= */
 
+        // Owner user
+        $owner = User::firstOrCreate(
+            ['email' => 'owner@example.com'],
+            [
+                'name' => 'Store Owner',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+        $owner->roles()->sync([$ownerRole->id]);
+
         // Admin user
         $admin = User::firstOrCreate(
             ['email' => 'admin@example.com'],
@@ -92,16 +118,16 @@ class AuthSeeder extends Seeder
         );
         $admin->roles()->sync([$adminRole->id]);
 
-        // Manager user
-        $manager = User::firstOrCreate(
-            ['email' => 'manager@example.com'],
+        // Employee user
+        $employee = User::firstOrCreate(
+            ['email' => 'employee@example.com'],
             [
-                'name' => 'Store Manager',
+                'name' => 'Store Employee',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ]
         );
-        $manager->roles()->sync([$managerRole->id]);
+        $employee->roles()->sync([$employeeRole->id]);
 
         // Customers (Fake)
         User::factory(10)->create()->each(function ($user) use ($customerRole) {
