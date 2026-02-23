@@ -11,16 +11,16 @@
             <ul class="main-menu">
                 <li class="active-menu">
                     <a href="{{ url('/') }}">Home</a>
-                  
+
                 </li>
 
                 <li>
                     <a href="{{ url('/products') }}">Shop</a>
                 </li>
 
-                <li class="label1" data-label1="hot">
+                {{-- <li class="label1" data-label1="hot">
                     <a href="{{ url('/cart') }}">Features</a>
-                </li>
+                </li> --}}
 
                 <li>
                     <a href="{{ url('/blog') }}">Blog</a>
@@ -55,3 +55,4 @@
 
     </nav>
 </div>
+

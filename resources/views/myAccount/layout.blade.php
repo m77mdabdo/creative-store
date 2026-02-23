@@ -36,8 +36,27 @@
             </div>
         </div>
 
-        <a href="{{ route('home') }}"><i class="fas fa-home"></i> Back to site</a>
-        <a href="{{ route('myaccount') }}"><i class="fas fa-user"></i> Profile</a>
+       <a href="{{ route('home') }}" class="nav-link">
+    <i class="fas fa-home me-1"></i> Back to site
+</a>
+
+<a href="{{ route('myaccount') }}" class="nav-link">
+    <i class="fas fa-user me-1"></i> Profile
+</a>
+
+@auth
+    @if(auth()->user()->isDashboardUser())
+        <a href="{{ route('dashboard') }}"
+           class="nav-link" style="border-radius:10px;">
+            <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+        </a>
+    @endif
+@endauth
+
+
+
+
+
 
         <form action="{{ route('logout') }}" method="POST" class="mt-3">
             @csrf

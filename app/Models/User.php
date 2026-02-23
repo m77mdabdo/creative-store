@@ -139,4 +139,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(AuditLog::class);
     }
+
+    public function isDashboardUser(): bool
+{
+    return $this->hasRole('owner')
+        || $this->hasRole('admin')
+        || $this->hasRole('employee');
+}
+
 }

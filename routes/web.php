@@ -100,6 +100,14 @@ Route::post('/login', [LoginController::class, 'login'])
     Route::get('/auth/google/callback',[GoogleAuthController::class,'handleGoogleCallback'])->name('google.callback');
 
 
+    //categories
+
+
+    //products
+
+    Route::get('/products', function () {
+        return view('site.product.product');
+    })->name('products.index');
 
     //authorization
 
@@ -124,4 +132,9 @@ Route::middleware(['auth', 'role:owner,admin,employee'])
 
         // ... كمل نفس النمط لباقي الأقسام حسب permissions اللي عندك
     });
+
+
+
+
+
 
