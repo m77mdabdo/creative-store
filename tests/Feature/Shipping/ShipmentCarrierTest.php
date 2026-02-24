@@ -34,7 +34,8 @@ class ShipmentCarrierTest extends TestCase
 
         $shipment = $service->book($shipment);
 
-        $this->assertStringStartsWith('SBX', $shipment->tracking_number);
+        $this->assertMatchesRegularExpression('/^SBX[A-Z0-9]{12}$/', $shipment->tracking_number);
+        $this->assertStringNotContainsString((string) $shipment->order_id, substr($shipment->tracking_number, 3, 6));
         $this->assertSame(Shipment::STATUS_SHIPPED, $shipment->status);
         Storage::disk('local')->assertExists($service->labelPath($shipment->tracking_number));
         $this->assertSame('shipped', $shipment->order->fresh()->status);
