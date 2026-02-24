@@ -4,11 +4,13 @@ namespace App\Services\Shipping\Carriers;
 
 use App\Models\Shipment;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Str;
 
 /**
  * Simulated carrier for development and demos.
  *
- * Waybill numbers are stable for an order, the label is a real printable
+ * Waybill numbers are random (a tracking number alone opens the public
+ * tracking page, so it must not be guessable) and kept once booked; the label is a real printable
  * PDF, and tracking advances with time since booking (configurable in
  * config/carriers.php), ending in "delivered".
  */
@@ -27,8 +29,7 @@ class SandboxCarrier implements Carrier
     {
         $shipment->loadMissing('order.addressSnapshot', 'order.items');
 
-        $number = 'SBX' . str_pad((string) $shipment->order_id, 6, '0', STR_PAD_LEFT)
-            . substr((string) crc32($shipment->order?->order_number ?? (string) $shipment->id), -4);
+        $number = $shipment->tracking_number ?: 'SBX' . strtoupper(Str::random(12));
 
         $label = Pdf::loadView('shipping.sandbox-label', [
             'shipment'       => $shipment,
