@@ -10,9 +10,11 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerifyAccountController;
 use App\Http\Controllers\Auth\GoogleAuthController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\AuditLog\AuditLogController;
-
+use App\Http\Controllers\Blog\BlogController;
+use App\Http\Controllers\About\AboutController;
+use App\Http\Controllers\Contact\ContactController;
 
 
 Route::get('/', function () {
@@ -108,6 +110,24 @@ Route::post('/login', [LoginController::class, 'login'])
     Route::get('/products', function () {
         return view('site.product.product');
     })->name('products.index');
+
+
+
+    //blog
+
+    Route::get('/blog',[BlogController::class,'index'])->name('blog.index');
+
+
+    //about
+
+    Route::get('/about',[AboutController::class,'index'])->name('about.index');
+
+
+    //contact
+
+    Route::get('/contact',[ContactController::class,'index'])->name('contact.index');
+
+
 
     //authorization
 
