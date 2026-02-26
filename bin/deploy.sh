@@ -3,6 +3,10 @@
 # Run from the project root on the server:  bash bin/deploy.sh
 set -euo pipefail
 
+echo "→ Production settings"
+# Stops here (before maintenance mode) if .env still has debug or test settings.
+php artisan app:preflight
+
 echo "→ Maintenance mode"
 php artisan down --retry=15 || true
 
