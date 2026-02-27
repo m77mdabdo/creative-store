@@ -8,6 +8,7 @@ use App\Models\WishlistItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class WishlistController extends Controller
 {
@@ -37,8 +38,8 @@ class WishlistController extends Controller
     public function toggle(Request $request)
     {
         $request->validate([
-            'product_id' => ['required', 'exists:products,id'],
-            'variant_id' => ['nullable', 'exists:product_variants,id'],
+            'product_id' => ['required', 'integer', Rule::exists('products', 'id')->where('status', 'active')->whereNull('deleted_at')],
+            'variant_id' => ['nullable', 'integer', Rule::exists('product_variants', 'id')->where('product_id', (int) $request->input('product_id'))],
         ]);
 
         $wishlist = Wishlist::createOrFirst(['user_id' => Auth::id()]);
