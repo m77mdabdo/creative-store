@@ -223,13 +223,17 @@ The goal is that request time depends on the page size, not on how big the table
 ## Security
 
 - **Payments:** amounts are verified with Moyasar's API on the server; the webhook secret is compared in constant time; the webhook is CSRF-exempt and rate-limited.
-- **Rate limiting:** login and registration (5/min per email+IP), OTP (5 tries per 10 min, then the code is destroyed), password reset, contact, comments, coupons, order tracking, checkout and webhooks.
+- **Rate limiting:** every route that changes data has a limit, and a test fails if a new one is added without it. Login and registration (5/min per email+IP), OTP (5 tries per 10 min), password change (5 per 10 min per account), email-change mails (3 per hour), password reset, contact, comments, reviews, coupons, cart, addresses, wishlist, order tracking, checkout, Google sign-in, webhooks, and a 300/min ceiling per staff account across the dashboard.
 - **Authentication:** session regenerated on login and invalidated on logout; disabled accounts cannot sign in; OTPs compared with `hash_equals`.
-- **Authorization:** every dashboard route has a `permission:` middleware; customers can only reach their own orders, addresses and invoices.
+- **Authorization:** every dashboard route has a `permission:` middleware, and the dashboard home, top bar and live counters only show panels the person may open. Customers can only reach their own orders, addresses and invoices, enforced by `OrderPolicy` and `AddressPolicy`.
 - **XSS:** Blade escapes by default; rich blog content goes through an allow-list HTML sanitizer that strips scripts, event handlers, inline styles and `javascript:` links.
 - **SQL injection:** only Eloquent and parameter bindings; `LIKE` wildcards are escaped in the home page search.
-- **Uploads:** images only (`jpg`, `jpeg`, `png`, `webp`) with size limits.
-- **Secrets:** never committed; password hashes, tokens, OTPs and gateway payloads are redacted from audit logs; errors shown to customers never include exception details.
+- **Uploads:** images only (`jpg`, `jpeg`, `png`, `webp`) with size limits; avatars are re-encoded to WebP so EXIF/GPS data is dropped; nothing under `/storage` can run as a script.
+- **Secrets and logs:** never committed; password hashes, tokens, OTPs and gateway payloads are redacted from audit logs; stored error logs have emails, phones, card numbers, tokens and SQL values masked; the SMS log driver never writes the number or the text; errors shown to customers never include exception details.
+- **Accounts:** the forgot-password form answers the same way for every address, so it cannot be used to discover customers. Staff passwords need 10+ characters with upper and lower case letters and a number.
+- **Headers:** CSP (enforced `object-src`, `base-uri`, `frame-ancestors`, plus a Report-Only full policy), HSTS on HTTPS, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`. Plain HTTP is redirected to HTTPS in production.
+- **Proxies:** `X-Forwarded-*` headers are only trusted from the addresses in `TRUSTED_PROXIES`, so rate limits and logs see the real visitor IP behind a load balancer.
+- **Dependencies:** `composer audit` and `npm audit` are clean; the storefront uses jQuery 3.7.1, Bootstrap 4.6.2 and Select2 4.0.13, and the unused theme demos and docs are not published.
 - **Google sign-in:** the OAuth state is checked, accounts are matched by Google's account id, an existing account is linked only when Google reports the email as verified, and disabled or closed accounts are refused.
 - **Staff permissions:** staff can only hand out roles and permissions they hold themselves, cannot change their own access, and only an owner can manage another owner. Backups and error logs have their own permissions.
 - **Sessions:** changing or resetting a password, or disabling an account, signs out the account's other sessions. A new email address is saved only after the link sent to it is opened.
@@ -362,9 +366,12 @@ php artisan view:cache
 php artisan event:cache
 ```
 
+- Start from `.env.production.example`, then run `php artisan app:preflight`: it fails unless debug is off, the environment is production, `APP_URL` is https, the session cookie is secure, logging is not at debug level and Moyasar uses live keys. `bin/deploy.sh` runs it automatically.
 - Set `APP_URL` to the public address (scheme and host) before going live.
+- Behind a load balancer or CDN, set `TRUSTED_PROXIES` (its IPs, or `*` when the app is only reachable through it).
 - Seed with `SEED_OWNER_EMAIL` set; demo accounts are not created in production.
-- Serve over HTTPS only.
+- Serve over HTTPS only; plain HTTP is redirected automatically in production.
+- The Docker image runs PHP 8.4 with `php.ini-production`, `expose_php=Off`, `zend.exception_ignore_args=On` and Apache `ServerTokens Prod`.
 - Run `queue:work` under Supervisor and the scheduler from cron.
 - Point the Moyasar webhook at the production URL.
 
