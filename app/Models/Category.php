@@ -40,4 +40,18 @@ class Category extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    public function translation($locale = null)
+{
+    $locale = $locale ?? app()->getLocale();
+    return $this->translations->firstWhere('locale', $locale)
+        ?? $this->translations->firstWhere('locale', config('app.fallback_locale'))
+        ?? $this->translations->first();
+}
+
+public function getNameAttribute()
+{
+    return optional($this->translation())->name;
+}
+
 }
