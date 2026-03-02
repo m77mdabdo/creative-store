@@ -42,7 +42,7 @@ class WishlistController extends Controller
             'variant_id' => ['nullable', 'integer', Rule::exists('product_variants', 'id')->where('product_id', (int) $request->input('product_id'))],
         ]);
 
-        $wishlist = Wishlist::createOrFirst(['user_id' => Auth::id()]);
+        $wishlist = Wishlist::firstOrCreate(['user_id' => Auth::id()]);
         $variantId = $request->filled('variant_id') ? (int) $request->variant_id : null;
 
         // Lock the customer's wishlist row so a double click toggles once, not twice.
