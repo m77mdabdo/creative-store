@@ -84,11 +84,7 @@ class RefundReturnSeeder extends Seeder
                         + (float) $returnRequest->tax_refund_amount,
                         2
                     ),
-                  'status' => fake()->randomElement([
-    'pending',
-    'processed',
-    'failed',
-]),,
+                    'status' => fake()->randomElement(['pending', 'processed', 'failed']),
                     'transaction_id' => 'RFD-' . strtoupper(fake()->bothify('??######')),
                     'processed_at' => now()->subDays(rand(0, 10)),
                 ]);
