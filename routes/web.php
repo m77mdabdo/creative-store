@@ -15,19 +15,19 @@ use App\Http\Controllers\AuditLog\AuditLogController;
 use App\Http\Controllers\Blog\BlogController;
 use App\Http\Controllers\About\AboutController;
 use App\Http\Controllers\Contact\ContactController;
+use App\Http\Controllers\Home\HomeController;
+use App\Http\Controllers\Product\ProductController;
+ use App\Http\Controllers\Cart\CartController;
 
 
-Route::get('/', function () {
-    return view('site.home');
-})->name('home');
 
+
+Route::get('/',[HomeController::class,'index'])->name('home');
 // Route::get('/dashboard', function () {
 //     return view('dashboard.home');
 // })->name('dashboard');
 
-Route::get('/cart', function () {
-    return view('site.app.cart');
-})->name('cart.index');
+
 
 Route::get('checkout', function () {
     return view('site.app.cart');
@@ -107,9 +107,10 @@ Route::post('/login', [LoginController::class, 'login'])
 
     //products
 
-    Route::get('/products', function () {
-        return view('site.product.product');
-    })->name('products.index');
+
+    Route::get('/products',[ProductController::class,'index'])->name('products.index');
+    Route::get('/products/{slug}',[ProductController::class,'show'])->name('products.show');
+
 
 
 
@@ -126,6 +127,33 @@ Route::post('/login', [LoginController::class, 'login'])
     //contact
 
     Route::get('/contact',[ContactController::class,'index'])->name('contact.index');
+
+
+    //cart
+
+
+Route::prefix('cart')->name('cart.')->group(function () {
+
+    Route::get('/', [CartController::class, 'index'])->name('index');
+
+    Route::middleware('auth')->group(function () {
+
+        Route::post('/add', [CartController::class, 'add'])->name('add');
+
+        Route::delete('/remove/{key}', [CartController::class, 'remove'])->name('remove');
+
+        Route::post('/update', [CartController::class, 'update'])->name('update');
+
+        Route::post('/clear', [CartController::class, 'clear'])->name('clear');
+
+    });
+
+});
+Route::get('/cart/view',fn () => view('site.cart.cart-panel'));
+
+//checkout
+
+Route::get('/checkout', fn() => view('site.checkout.index'))->name('checkout.index');
 
 
 
