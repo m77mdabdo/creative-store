@@ -343,20 +343,31 @@ protected function createDatabaseDump(): string
         \Illuminate\Support\Facades\File::makeDirectory(dirname($tempSqlPath), 0755, true);
     }
 
-    $command = escapeshellarg($mysqldumpPath)
-        . ' -h ' . escapeshellarg($host)
-        . ' -P ' . escapeshellarg($port)
-        . ' -u ' . escapeshellarg($username);
+    // Credentials go in a private option file, not on the command line,
+    // where any user on the server could read them from the process list.
+    $optionsFile = $tempSqlPath . '.cnf';
+    \Illuminate\Support\Facades\File::put($optionsFile, implode("\n", [
+        '[client]',
+        'host="' . addcslashes($host, "\\\"") . '"',
+        'port="' . addcslashes($port, "\\\"") . '"',
+        'user="' . addcslashes($username, "\\\"") . '"',
+        'password="' . addcslashes($password, "\\\"") . '"',
+        '',
+    ]));
+    @chmod($optionsFile, 0600);
 
-    if ($password !== '') {
-        $command .= ' -p' . escapeshellarg($password);
-    }
+    $command = escapeshellarg($mysqldumpPath)
+        . ' --defaults-extra-file=' . escapeshellarg($optionsFile);
 
     $command .= ' --single-transaction --quick --routines --triggers --skip-lock-tables '
         . escapeshellarg($database)
         . ' > ' . escapeshellarg($tempSqlPath) . ' 2> ' . escapeshellarg($tempSqlPath . '.error');
 
-    exec($command, $output, $resultCode);
+    try {
+        exec($command, $output, $resultCode);
+    } finally {
+        \Illuminate\Support\Facades\File::delete($optionsFile);
+    }
 
     $errorOutput = '';
 
