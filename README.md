@@ -1,31 +1,49 @@
+<div align="center">
+
+<img src="docs/screenshots/logo.png" alt="Creative Store logo" width="110">
+
 # Creative Store
 
 **A bilingual (Arabic / English) e-commerce platform built with Laravel 12.**
 
+[![Tests](https://github.com/m77mdabdo/creative-store/actions/workflows/tests.yml/badge.svg)](https://github.com/m77mdabdo/creative-store/actions/workflows/tests.yml)
+![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php&logoColor=white)
+![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-178%20passing-2ea44f)
+![composer audit](https://img.shields.io/badge/composer%20audit-0%20advisories-2ea44f)
+![npm audit](https://img.shields.io/badge/npm%20audit-0%20vulnerabilities-2ea44f)
+![RTL](https://img.shields.io/badge/Arabic-RTL-0E7C66)
+
+<img src="docs/screenshots/store-home-en.jpg" alt="Creative Store home page" width="100%">
+
+</div>
+
 Creative Store covers the full online-retail lifecycle: catalogue with product variants, cart and coupons, checkout with online payment through Moyasar, shipping across Saudi zones, order tracking, cancellations, returns and refunds, all managed from a role-based admin dashboard.
 
-> **بالعربي:** متجر إلكتروني ثنائي اللغة (عربي / إنجليزي) مبني بـ Laravel 12. يغطي رحلة الشراء كاملة: منتجات بمقاسات وألوان، سلة وكوبونات، دفع أونلاين عبر ميسر، شحن داخل المملكة، تتبع الطلبات، الإلغاء والمرتجعات والاسترداد، ولوحة تحكم بصلاحيات تفصيلية لكل موظف.
+> **بالعربي:** متجر إلكتروني ثنائي اللغة (عربي / إنجليزي) مبني بـ Laravel 12. يغطي رحلة الشراء كاملة: منتجات بمقاسات وألوان، سلة وكوبونات، دفع أونلاين عبر ميسر، شحن داخل المملكة، تتبع الطلبات، الإلغاء والمرتجعات والاسترداد، ولوحة تحكم بصلاحيات تفصيلية لكل موظف. المشروع اتعمله فحص أمني شامل واتقفلت كل الثغرات اللي ظهرت (التفاصيل في قسم [Security](#security)).
 
 ---
 
 ## Table of contents
 
 1. [Features](#features)
-2. [Tech stack](#tech-stack)
-3. [Architecture](#architecture)
-4. [Database design](#database-design)
-5. [How an order flows](#how-an-order-flows)
-6. [Concurrency: what happens when two customers act at once](#concurrency-what-happens-when-two-customers-act-at-once)
-7. [Scaling to millions of rows](#scaling-to-millions-of-rows)
-8. [Security](#security)
-9. [Frontend and design system](#frontend-and-design-system)
-10. [Background jobs and scheduler](#background-jobs-and-scheduler)
-11. [Installation](#installation)
-12. [Configuration](#configuration)
-13. [Testing](#testing)
-14. [Deployment checklist](#deployment-checklist)
-15. [Roadmap](#roadmap)
-16. [Changelog of the hardening pass](#changelog-of-the-hardening-pass)
+2. [Screenshots](#screenshots)
+3. [Tech stack](#tech-stack)
+4. [Architecture](#architecture)
+5. [Database design](#database-design)
+6. [How an order flows](#how-an-order-flows)
+7. [Concurrency: what happens when two customers act at once](#concurrency-what-happens-when-two-customers-act-at-once)
+8. [Scaling to millions of rows](#scaling-to-millions-of-rows)
+9. [Security](#security)
+10. [Frontend and design system](#frontend-and-design-system)
+11. [Background jobs and scheduler](#background-jobs-and-scheduler)
+12. [Installation](#installation)
+13. [Configuration](#configuration)
+14. [Testing](#testing)
+15. [Deployment checklist](#deployment-checklist)
+16. [Roadmap](#roadmap)
+17. [Changelog of the hardening pass](#changelog-of-the-hardening-pass)
 
 ---
 
@@ -54,6 +72,69 @@ Creative Store covers the full online-retail lifecycle: catalogue with product v
 - Shipping methods, zones, cities and rates
 - Users, roles, permissions, audit log, error log, contact inbox, blog and pages
 - Sales statistics and scheduled database backups
+
+---
+
+## Screenshots
+
+> All screenshots come from a demo database filled with generated data (no real customers).
+
+### Storefront
+
+| Home (English) | Home (Arabic, RTL) |
+|---|---|
+| <img src="docs/screenshots/store-home-en.jpg" alt="Home page in English"> | <img src="docs/screenshots/store-home-ar.jpg" alt="Home page in Arabic"> |
+
+| Catalogue with filters | Product with variants |
+|---|---|
+| <img src="docs/screenshots/store-products.jpg" alt="Product listing"> | <img src="docs/screenshots/store-product.jpg" alt="Product details"> |
+
+| Cart and coupons | Checkout: address and delivery |
+|---|---|
+| <img src="docs/screenshots/store-cart.jpg" alt="Cart"> | <img src="docs/screenshots/store-checkout.jpg" alt="Checkout"> |
+
+| My account | My orders |
+|---|---|
+| <img src="docs/screenshots/store-account.jpg" alt="Customer account"> | <img src="docs/screenshots/store-orders.jpg" alt="Customer orders"> |
+
+| Sign in (email or Google) | Public order tracking |
+|---|---|
+| <img src="docs/screenshots/store-login.jpg" alt="Sign in"> | <img src="docs/screenshots/store-tracking.jpg" alt="Order tracking"> |
+
+<details>
+<summary><b>Mobile</b></summary>
+
+| Home (Arabic) | Product |
+|---|---|
+| <img src="docs/screenshots/mobile-home-ar.jpg" alt="Mobile home" width="300"> | <img src="docs/screenshots/mobile-product.jpg" alt="Mobile product" width="300"> |
+
+</details>
+
+### Admin dashboard
+
+| Overview | Overview (Arabic) |
+|---|---|
+| <img src="docs/screenshots/dash-home.jpg" alt="Dashboard overview"> | <img src="docs/screenshots/dash-home-ar.jpg" alt="Dashboard overview in Arabic"> |
+
+| Orders | Order details |
+|---|---|
+| <img src="docs/screenshots/dash-orders.jpg" alt="Orders"> | <img src="docs/screenshots/dash-order.jpg" alt="Order details"> |
+
+| Products | Shipments |
+|---|---|
+| <img src="docs/screenshots/dash-products.jpg" alt="Products"> | <img src="docs/screenshots/dash-shipments.jpg" alt="Shipments"> |
+
+| Payments | Users |
+|---|---|
+| <img src="docs/screenshots/dash-payments.jpg" alt="Payments"> | <img src="docs/screenshots/dash-users.jpg" alt="Users"> |
+
+| Role permissions | Audit log |
+|---|---|
+| <img src="docs/screenshots/dash-role-permissions.jpg" alt="Role permissions"> | <img src="docs/screenshots/dash-audit.jpg" alt="Audit log"> |
+
+| Error log (personal data masked) | |
+|---|---|
+| <img src="docs/screenshots/dash-error-logs.jpg" alt="Error log"> | |
 
 ---
 
@@ -239,6 +320,34 @@ The goal is that request time depends on the page size, not on how big the table
 - **Sessions:** changing or resetting a password, or disabling an account, signs out the account's other sessions. A new email address is saved only after the link sent to it is opened.
 - **Host header:** links in emails and the sitemap are built from `APP_URL`, and only that host is accepted, so `APP_URL` must be set exactly in production.
 - **Checkout:** discounts, VAT and the delivery fee are worked out on the server when the order is placed, not taken from earlier pages.
+
+
+### Security audit
+
+A full pre-launch review covered authentication, passwords, authorization and IDOR, secrets (including the whole Git history), SQL injection and mass assignment, input validation, XSS and CSRF, file uploads, server configuration, rate limiting, dependencies, logs and debug tooling. Every finding below is fixed and covered by a test.
+
+| # | Finding | Severity | Fix |
+|---|---|---|---|
+| 1 | 70 known advisories in PHP packages (signed-URL path confusion and email-rule CRLF in Laravel, mail header injection in symfony/mime, local file read in dompdf, guzzle host confusion) | High | Dependencies updated; `composer audit` reports none |
+| 2 | No trusted proxies: behind a load balancer every visitor shared one IP, so one person could exhaust the login limit for everyone, and HSTS never applied | Medium | `TRUSTED_PROXIES` setting and an HTTP to HTTPS redirect in production |
+| 3 | No Content-Security-Policy | Medium | Enforced `object-src`, `base-uri`, `frame-ancestors`, plus a Report-Only policy listing every third party |
+| 4 | Storefront loaded jQuery 3.2.1 (twice), Bootstrap 4.0.0 and Select2 4.0.3, all with public XSS issues | Medium | jQuery 3.7.1, Bootstrap 4.6.2, Select2 4.0.13; unused moment.js removed |
+| 5 | Profile and password forms had no rate limit (password guessing on a stolen session, email-change mails to any inbox) | Medium | 5 password attempts per 10 minutes, 3 email-change mails per hour |
+| 6 | Dashboard home, top bar and live counters showed customer names, orders and audit entries to every staff member | Medium | Each panel and counter now follows the matching permission |
+| 7 | 15 vulnerable npm packages (2 critical) | Medium | Lock file updated; `npm audit` reports none |
+| 8 | Docker image without production PHP settings (errors shown, PHP version exposed, arguments in traces) and on PHP 8.2 | Medium | PHP 8.4, `php.ini-production`, `expose_php=Off`, `zend.exception_ignore_args=On`, `ServerTokens Prod` |
+| 9 | Stored error logs could contain SQL values, emails and phone numbers | Low | Masked before saving |
+| 10 | Forgot-password told whether an email had an account | Low | Same answer for every address |
+| 11 | Staff passwords only needed 8 characters | Low | 10+ characters with upper/lower case and a number |
+| 12 | Cart, address, wishlist, review, Google sign-in and dashboard actions had no rate limit | Low | Limits on every data-changing route, enforced by a test |
+| 13 | Theme demos, docs and a third-party Maps key were published under `public/` | Low | Unused theme files and demo pages removed |
+| 14 | Ownership checks repeated by hand in controllers | Low | `OrderPolicy` and `AddressPolicy` |
+| 15 | Live notifications built with `innerHTML`, WebSocket without TLS | Low | Text nodes and `wss://` on HTTPS |
+| 16 | SMS log driver wrote phone numbers and verification codes to the log | Low | Number masked, text never logged |
+| 17 | Avatars kept EXIF/GPS data; nothing stopped scripts from running under `/storage` | Low | Avatars re-encoded to WebP; scripts and dotfiles blocked |
+| 18 | `.env.example` had debug defaults and deploys did not check the settings | Low | `.env.production.example` and `php artisan app:preflight` |
+
+Checked and found safe: no SQL injection (only bindings), `$fillable` on every model, Blade output escaped, CSRF on every form, uploads limited to real images, passwords hashed with bcrypt, sessions regenerated on login, no secrets in the code or in the Git history, no debug routes, Telescope or Debugbar.
 
 ---
 
