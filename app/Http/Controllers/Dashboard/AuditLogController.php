@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\AuditLog\IndexAuditLogRequest;
 use App\Models\AuditLog;
 use App\Models\User;
+use App\Support\Export\CsvCell;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Response;
@@ -100,7 +101,7 @@ class AuditLogController extends Controller
             $query->latest('id')
                 ->chunk(500, function ($logs) use ($handle) {
                     foreach ($logs as $log) {
-                        fputcsv($handle, [
+                        fputcsv($handle, CsvCell::row([
                             $log->id,
                             $log->user?->name,
                             $log->user?->email,
@@ -109,7 +110,7 @@ class AuditLogController extends Controller
                             $log->auditable_id,
                             $log->ip_address,
                             optional($log->created_at)->format('Y-m-d H:i:s'),
-                        ]);
+                        ]));
                     }
                 });
 
