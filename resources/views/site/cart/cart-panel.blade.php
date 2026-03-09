@@ -2,19 +2,64 @@
 
 @section('content')
 
+<style>
+    .remove-cart-btn {
+        background: transparent;
+        border: none;
+        font-size: 22px;
+        color: #e74c3c;
+        cursor: pointer;
+    }
+
+    .remove-cart-btn:hover {
+        color: #000;
+    }
+
+    .column-6 {
+        width: 60px;
+        text-align: center;
+    }
+</style>
+
 @php
     use Illuminate\Support\Facades\Storage;
 
-    $cart  = session()->get('cart', []);
+    $cart = session()->get('cart', []);
     $items = collect($cart);
 
-    $cartTotal = $items->sum(fn($item) => (float)($item['price'] ?? 0) * (int)($item['quantity'] ?? 0));
-    $currency  = $items->first()['currency'] ?? 'SAR';
+    $subtotalValue = $subtotal ?? $items->sum(fn($item) => (float)($item['price'] ?? 0) * (int)($item['quantity'] ?? 0));
+    $discountValue = $discount ?? 0;
+    $finalTotal = $grandTotal ?? max($subtotalValue - $discountValue, 0);
+    $currency = $items->first()['currency'] ?? 'SAR';
 @endphp
 
 <section class="bg0 p-t-75 p-b-85">
     <div class="container">
 
+        {{-- alerts --}}
+        @if(session('success'))
+            <div class="alert alert-success m-b-20">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger m-b-20">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="alert alert-danger m-b-20">
+                <ul class="m-b-0">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        {{-- عنوان + زر Clear --}}
         <div class="p-b-30 flex-w flex-sb-m">
             <h3 class="ltext-103 cl5">Shopping Cart</h3>
 
@@ -32,6 +77,7 @@
 
             <div class="row">
 
+                {{-- LEFT: TABLE --}}
                 <div class="col-lg-8 m-lr-auto m-b-50">
                     <div class="m-l-25 m-r--38 m-lr-0-xl">
 
@@ -48,18 +94,22 @@
 
                                 @foreach($items as $key => $item)
                                     @php
-                                        $name  = $item['name'] ?? 'Product';
-                                        $qty   = (int)($item['quantity'] ?? 1);
-                                        $price = (float)($item['price'] ?? 0);
+                                        $name = $item['name'] ?? 'Product';
+                                        $qty = (int) ($item['quantity'] ?? 1);
+                                        $price = (float) ($item['price'] ?? 0);
                                         $image = $item['image'] ?? null;
 
-                                        if (!$image) $imgUrl = asset('cozastore/images/item-cart-01.jpg');
-                                        elseif (str_starts_with($image, 'http')) $imgUrl = $image;
-                                        elseif (str_starts_with($image, '/')) $imgUrl = $image;
-                                        else $imgUrl = Storage::url($image);
+                                        if (!$image) {
+                                            $imgUrl = asset('cozastore/images/item-cart-01.jpg');
+                                        } elseif (str_starts_with($image, 'http')) {
+                                            $imgUrl = $image;
+                                        } elseif (str_starts_with($image, '/')) {
+                                            $imgUrl = $image;
+                                        } else {
+                                            $imgUrl = Storage::url($image);
+                                        }
 
-                                        // ✅ id safe (بدل ما key يدخل في id مباشرة)
-                                        $safeKey = md5((string)$key);
+                                        $safeKey = md5((string) $key);
                                     @endphp
 
                                     <tr class="table_row">
@@ -79,29 +129,30 @@
                                                 @csrf
                                                 <input type="hidden" name="key" value="{{ $key }}">
 
-                                                <div class="wrap-num-product flex-w m-r-10">
-                                                    <button type="button" class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m"
-                                                            onclick="changeQty('{{ $safeKey }}', -1)">
+                                                <div class="wrap-num-product flex-w m-l-auto m-r-0 m-r-10">
+                                                    <button type="button"
+                                                        class="my-btn-down cl8 hov-btn3 trans-04 flex-c-m"
+                                                        onclick="changeQty('{{ $safeKey }}', -1)">
                                                         <i class="fs-16 zmdi zmdi-minus"></i>
                                                     </button>
 
                                                     <input id="qty-{{ $safeKey }}"
-                                                           class="mtext-104 cl3 txt-center num-product"
-                                                           type="number"
-                                                           name="quantity"
-                                                           value="{{ $qty }}"
-                                                           min="1"
-                                                           style="width:70px;">
+                                                        class="mtext-104 cl3 txt-center num-product"
+                                                        type="number"
+                                                        name="quantity"
+                                                        value="{{ $qty }}"
+                                                        min="1">
 
-                                                    <button type="button" class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m"
-                                                            onclick="changeQty('{{ $safeKey }}', 1)">
+                                                    <button type="button"
+                                                        class="my-btn-up cl8 hov-btn3 trans-04 flex-c-m"
+                                                        onclick="changeQty('{{ $safeKey }}', 1)">
                                                         <i class="fs-16 zmdi zmdi-plus"></i>
                                                     </button>
                                                 </div>
 
                                                 <button type="submit"
-                                                        class="flex-c-m stext-101 cl0 size-119 bg3 bor13 hov-btn3 p-lr-15 trans-04"
-                                                        style="height:40px;">
+                                                    class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer"
+                                                    style="height:40px;">
                                                     Update
                                                 </button>
                                             </form>
@@ -110,14 +161,15 @@
                                         <td class="column-5">{{ number_format($price * $qty, 2) }} {{ $currency }}</td>
 
                                         <td class="column-6">
-                                            {{-- ✅ DELETE (key encoded) --}}
-                                            <form action="{{ route('cart.remove', rawurlencode($key)) }}" method="POST"
-                                                  onsubmit="return confirm('Remove this item?')" style="display:inline-block;">
+                                            <form action="{{ route('cart.remove', ['key' => $key]) }}" method="POST"
+                                                onsubmit="return confirm('Remove this item?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="cl2 hov-cl1 trans-04" title="Remove"
-                                                        style="background:none;border:none;font-size:18px;cursor:pointer;">
-                                                    <i class="zmdi zmdi-close"></i>
+
+                                                <button type="submit"
+                                                    class="remove-cart-btn"
+                                                    title="Remove item">
+                                                    <i class="zmdi zmdi-delete"></i>
                                                 </button>
                                             </form>
                                         </td>
@@ -127,9 +179,48 @@
                             </table>
                         </div>
 
-                        <div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm m-t-20">
+                        {{-- coupon --}}
+                        <div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
+
+                            <div class="flex-w flex-m m-r-20 m-tb-5">
+                                <form action="{{ route('cart.coupon') }}" method="POST" class="flex-w flex-m">
+                                    @csrf
+
+                                    <input class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5"
+                                        type="text"
+                                        name="coupon"
+                                        value="{{ session('cart_coupon.code') }}"
+                                        placeholder="Coupon Code">
+
+                                    <button type="submit"
+                                        class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5">
+                                        Apply coupon
+                                    </button>
+                                </form>
+
+                                @if(session('cart_coupon'))
+                                    <form action="{{ route('cart.coupon.remove') }}" method="POST" class="m-l-10 m-tb-5">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit"
+                                            class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer">
+                                            Remove coupon
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+
+                            <a href="{{ route('cart.index') }}"
+                                class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10">
+                                Refresh Cart
+                            </a>
+                        </div>
+
+                        {{-- Continue Shopping --}}
+                        <div class="flex-w flex-sb-m p-t-30">
                             <a href="{{ url('/products') }}"
-                               class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04">
+                                class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04">
                                 Continue Shopping
                             </a>
                         </div>
@@ -137,26 +228,57 @@
                     </div>
                 </div>
 
+                {{-- RIGHT: TOTALS --}}
                 <div class="col-sm-10 col-lg-4 col-xl-4 m-lr-auto m-b-50">
                     <div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-25 m-lr-0-xl">
+
                         <h4 class="mtext-109 cl2 p-b-30">Cart Totals</h4>
 
                         <div class="flex-w flex-t bor12 p-b-13">
-                            <div class="size-208"><span class="stext-110 cl2">Subtotal:</span></div>
-                            <div class="size-209"><span class="mtext-110 cl2">{{ number_format($cartTotal, 2) }} {{ $currency }}</span></div>
+                            <div class="size-208">
+                                <span class="stext-110 cl2">Subtotal:</span>
+                            </div>
+                            <div class="size-209">
+                                <span class="mtext-110 cl2">{{ number_format($subtotalValue, 2) }} {{ $currency }}</span>
+                            </div>
                         </div>
 
+                        @if(session('cart_coupon'))
+                            <div class="flex-w flex-t p-t-20 p-b-13">
+                                <div class="size-208">
+                                    <span class="stext-110 cl2">Coupon:</span>
+                                </div>
+                                <div class="size-209">
+                                    <span class="mtext-110 cl2">{{ session('cart_coupon.code') }}</span>
+                                </div>
+                            </div>
+
+                            <div class="flex-w flex-t p-b-13">
+                                <div class="size-208">
+                                    <span class="stext-110 cl2">Discount:</span>
+                                </div>
+                                <div class="size-209">
+                                    <span class="mtext-110 cl2">- {{ number_format($discountValue, 2) }} {{ $currency }}</span>
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="flex-w flex-t p-t-20 p-b-13">
-                            <div class="size-208"><span class="stext-110 cl2">Total:</span></div>
-                            <div class="size-209"><span class="mtext-110 cl2">{{ number_format($cartTotal, 2) }} {{ $currency }}</span></div>
+                            <div class="size-208">
+                                <span class="stext-110 cl2">Total:</span>
+                            </div>
+                            <div class="size-209">
+                                <span class="mtext-110 cl2">{{ number_format($finalTotal, 2) }} {{ $currency }}</span>
+                            </div>
                         </div>
 
                         <div class="p-t-27">
                             <a href="{{ route('checkout.index') }}"
-                               class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
+                                class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
                                 Proceed to Checkout
                             </a>
                         </div>
+
                     </div>
                 </div>
 
@@ -168,8 +290,8 @@
                 <p class="stext-102 cl3 p-t-10">Add some products to continue.</p>
 
                 <a href="{{ url('/products') }}"
-                   class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer m-t-20"
-                   style="display:inline-flex;width:auto;">
+                    class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer m-t-20"
+                    style="display:inline-flex;width:auto;">
                     Continue Shopping
                 </a>
             </div>

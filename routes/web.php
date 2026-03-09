@@ -17,12 +17,14 @@ use App\Http\Controllers\About\AboutController;
 use App\Http\Controllers\Contact\ContactController;
 use App\Http\Controllers\Home\HomeController;
 use App\Http\Controllers\Product\ProductController;
- use App\Http\Controllers\Cart\CartController;
+use App\Http\Controllers\Cart\CartController;
+use App\Http\Controllers\Blog\BlogCommentController;
+use App\Http\Controllers\WishlistController;
 
 
 
 
-Route::get('/',[HomeController::class,'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 // Route::get('/dashboard', function () {
 //     return view('dashboard.home');
 // })->name('dashboard');
@@ -79,7 +81,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/myaccount/profile', [MyAccountController::class, 'updateProfile'])->name('myaccount.profile');
 
     Route::post('/myaccount/password', [MyAccountController::class, 'updatePassword'])->name('myaccount.password');
-
 });
 
 
@@ -88,48 +89,52 @@ Route::post('/login', [LoginController::class, 'login'])
     ->name('login.submit');
 
 
-    //verification code otp
+//verification code otp
 
-    Route::view("/verify-email/{email}", 'auth.verify-email')->name('email.verify');
-    Route::post('/verify-email', VerifyAccountController::class)->name('email.verify.submit');
-
-
-
-
-    //google auth
-
-    Route::get('/auth/google/redirect',[GoogleAuthController::class,'redirectToGoogle'])->name('google.redirect');
-    Route::get('/auth/google/callback',[GoogleAuthController::class,'handleGoogleCallback'])->name('google.callback');
-
-
-    //categories
-
-
-    //products
-
-
-    Route::get('/products',[ProductController::class,'index'])->name('products.index');
-    Route::get('/products/{slug}',[ProductController::class,'show'])->name('products.show');
+Route::view("/verify-email/{email}", 'auth.verify-email')->name('email.verify');
+Route::post('/verify-email', VerifyAccountController::class)->name('email.verify.submit');
 
 
 
 
-    //blog
+//google auth
 
-    Route::get('/blog',[BlogController::class,'index'])->name('blog.index');
-
-
-    //about
-
-    Route::get('/about',[AboutController::class,'index'])->name('about.index');
+Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirectToGoogle'])->name('google.redirect');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])->name('google.callback');
 
 
-    //contact
-
-    Route::get('/contact',[ContactController::class,'index'])->name('contact.index');
+//categories
 
 
-    //cart
+//products
+
+
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
+
+
+
+
+//blog
+
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
+
+Route::post('/blog/{blog}/comment', [BlogCommentController::class, 'store'])->middleware('auth')
+    ->name('blog.comment.store');
+
+//about
+
+Route::get('/about', [AboutController::class, 'index'])->name('about.index');
+
+
+//contact
+
+Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+
+//cart
 
 
 Route::prefix('cart')->name('cart.')->group(function () {
@@ -140,24 +145,37 @@ Route::prefix('cart')->name('cart.')->group(function () {
 
         Route::post('/add', [CartController::class, 'add'])->name('add');
 
-        Route::delete('/remove/{key}', [CartController::class, 'remove'])->name('remove');
+        // ✅ delete item (key can contain _ and anything)
+        Route::delete('/remove/{key}', [CartController::class, 'remove'])
+            ->where('key', '.*')
+            ->name('remove');
 
         Route::post('/update', [CartController::class, 'update'])->name('update');
 
         Route::post('/clear', [CartController::class, 'clear'])->name('clear');
 
+        Route::post('/coupon', [CartController::class, 'applyCoupon'])->name('coupon');
+        Route::delete('/coupon/remove', [CartController::class, 'removeCoupon'])->name('coupon.remove');
     });
-
 });
-Route::get('/cart/view',fn () => view('site.cart.cart-panel'));
+Route::get('/cart/view', fn() => view('site.cart.cart-panel'));
 
 //checkout
 
 Route::get('/checkout', fn() => view('site.checkout.index'))->name('checkout.index');
 
+//wishlist
 
 
-    //authorization
+Route::middleware('auth')->group(function () {
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist', [WishlistController::class, 'store'])->name('wishlist.store');
+    Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::delete('/wishlist/{id}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
+});
+
+
+//authorization
 
 
 
@@ -166,7 +184,7 @@ Route::middleware(['auth', 'role:owner,admin,employee'])
     ->prefix('dashboard')
     ->group(function () {
 
-        Route::get('/dashboard', fn () => view('dashboard.home'))->name('dashboard');
+        Route::get('/dashboard', fn() => view('dashboard.home'))->name('dashboard');
 
         // Audit logs (Admin/Owner)
         Route::get('/audit-logs', [AuditLogController::class, 'index'])
@@ -180,9 +198,3 @@ Route::middleware(['auth', 'role:owner,admin,employee'])
 
         // ... كمل نفس النمط لباقي الأقسام حسب permissions اللي عندك
     });
-
-
-
-
-
-

@@ -7,12 +7,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Traits\Auditable;
 
+
 // use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
 
-    use HasFactory, Notifiable , Auditable;
+    use HasFactory, Notifiable , Auditable ;
     // use HasApiTokens;
 
     protected $fillable = [
@@ -47,19 +48,16 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class, 'role_user');
     }
 
-    // Permissions عبر الـ Roles (Collection من الأدوار مع permissions)
     public function rolesWithPermissions()
     {
         return $this->roles()->with('permissions');
     }
 
-    // هل عنده Role؟
     public function hasRole(string $name): bool
     {
         return $this->roles()->where('name', $name)->exists();
     }
 
-    // هل عنده Permission؟
     public function hasPermission(string $code): bool
     {
         return $this->roles()
@@ -67,6 +65,26 @@ class User extends Authenticatable
             ->exists();
     }
 
+    // ✅ بديل assignRole بتاع Spatie
+    public function assignRole(string $roleName): void
+    {
+        $role = Role::firstOrCreate(['name' => $roleName]);
+        $this->roles()->syncWithoutDetaching([$role->id]);
+    }
+
+    // ✅ لو عايز تستبدل كل الرولات (مش إضافة)
+    public function syncRoles(array $roleNames): void
+    {
+        $roleIds = collect($roleNames)->map(function ($name) {
+            return Role::firstOrCreate(['name' => $name])->id;
+        })->all();
+
+        $this->roles()->sync($roleIds);
+    }
+
+   
+
+    /* باقي العلاقات زي ما هي عندك */
     /* =========================
      * Catalog
      * ========================= */

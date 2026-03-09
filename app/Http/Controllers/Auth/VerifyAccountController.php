@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\VerifyAccountRequest;
 
      use App\Mail\AccountVerifiedMail;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
@@ -42,6 +43,12 @@ class VerifyAccountController extends Controller
             'email_verified_at' => now(),
             'otp' => null,
         ]);
+
+         // ✅ تأكد أن رول customer موجود
+        Role::firstOrCreate(['name' => 'customer']);
+
+        // ✅ Assign role للمستخدم
+        $user->assignRole('customer');
 
         event(new Registered($user));
 

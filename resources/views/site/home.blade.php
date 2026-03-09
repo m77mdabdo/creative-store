@@ -4,7 +4,7 @@
 
     @php
         use Illuminate\Support\Facades\Storage;
-         $cart = session()->get('cart', []);
+        $cart = session()->get('cart', []);
         $items = collect($cart);
 
         $cartTotal = $items->sum(function ($item) {
@@ -12,7 +12,7 @@
         });
     @endphp
 
-  
+
 
     <div class="wrap-header-cart js-panel-cart">
         <div class="s-full js-hide-cart"></div>
@@ -404,10 +404,18 @@
                 @forelse($products as $product)
 
                     @php
-                        // صورة المنتج: الأولوية لصورة primaryImage من DB، لو مش موجودة استخدم صورة افتراضية
                         $img = $product->primaryImage?->path
                             ? Storage::url($product->primaryImage->path)
                             : asset('cozastore/images/product-01.jpg');
+
+                        $wishlistExists = false;
+
+                        if (auth()->check() && auth()->user()->wishlist) {
+                            $wishlistExists = auth()->user()->wishlist->items()
+                                ->where('product_id', $product->id)
+                                ->whereNull('variant_id')
+                                ->exists();
+                        }
                     @endphp
 
                     <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item">
@@ -434,12 +442,37 @@
                                 </div>
 
                                 <div class="block2-txt-child2 flex-r p-t-3">
-                                    <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-                                        <img class="icon-heart1 dis-block trans-04"
-                                            src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" alt="ICON">
-                                        <img class="icon-heart2 dis-block trans-04 ab-t-l"
-                                            src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}" alt="ICON">
-                                    </a>
+                                    @auth
+                                        <form action="{{ route('wishlist.toggle') }}" method="POST" class="m-0 p-0">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                            <input type="hidden" name="variant_id" value="">
+
+                                            <button type="submit"
+                                                class="btn-addwish-b2 dis-block pos-relative js-addwish-b2 border-0 bg-transparent p-0"
+                                                title="{{ $wishlistExists ? 'Remove from Wishlist' : 'Add to Wishlist' }}"
+                                                style="outline: none; box-shadow: none; background: transparent; border: none;">
+
+                                                <img class="icon-heart1 trans-04"
+                                                    src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" alt="Wishlist"
+                                                    style="display: {{ $wishlistExists ? 'none' : 'block' }};">
+
+                                                <img class="icon-heart2 trans-04 ab-t-l"
+                                                    src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}" alt="Wishlist"
+                                                    style="display: {{ $wishlistExists ? 'block' : 'none' }};">
+                                            </button>
+                                        </form>
+                                    @else
+                                        <a href="{{ route('login') }}" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2"
+                                            title="Login to add to wishlist">
+                                            <img class="icon-heart1 dis-block trans-04"
+                                                src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" alt="Wishlist">
+
+                                            <img class="icon-heart2 trans-04 ab-t-l"
+                                                src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}" alt="Wishlist"
+                                                style="display: none;">
+                                        </a>
+                                    @endauth
                                 </div>
                             </div>
                         </div>
