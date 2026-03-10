@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\PaymentWebhookLog;
 use App\Services\Payments\Moyasar\MoyasarGateway;
-use App\Services\Payments\Moyasar\MoyasarPayment;
 use App\Services\Payments\OrderPaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -101,7 +100,16 @@ class MoyasarPaymentController extends Controller
             return response()->json(['message' => 'already processed']);
         }
 
-        $remote = MoyasarPayment::fromArray((array) data_get($payload, 'data', []));
+        // The event body only says which payment changed. Its status and
+        // amount are read back from Moyasar, so a forged or replayed body
+        // can never mark an order as paid on its own.
+        $paymentId = (string) data_get($payload, 'data.id', '');
+
+        try {
+            $remote = $gateway->fetchPayment($paymentId);
+        } catch (PaymentGatewayException) {
+            return response()->json(['message' => 'payment could not be verified'], 503);
+        }
 
         if ($remote->orderId && $order = Order::query()->find($remote->orderId)) {
             $this->payments->apply($order, $remote, 'webhook');
