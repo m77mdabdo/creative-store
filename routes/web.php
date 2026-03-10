@@ -20,6 +20,7 @@ use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Blog\BlogCommentController;
 use App\Http\Controllers\Wishlist\WishlistController;
+use App\Http\Controllers\Product\ReviewController;
 
 
 
@@ -169,6 +170,9 @@ Route::get('/checkout', fn() => view('site.checkout.index'))->name('checkout.ind
 //wishlist
 
 
+//comment on product review
+Route::middleware('auth')->post('/product/review/store', [ReviewController::class, 'store'])
+    ->name('reviews.store');
 
 
 Route::middleware('auth')->group(function () {

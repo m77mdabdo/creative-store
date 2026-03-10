@@ -73,10 +73,6 @@ class Product extends Model
         return $this->hasMany(InventoryReservation::class);
     }
 
-    public function reviews()
-    {
-        return $this->hasMany(Review::class);
-    }
 
     public function orderItems()
     {
@@ -101,12 +97,22 @@ public function coupons()
     return $this->hasMany(\App\Models\Coupon::class);
 }
 
-public function averageRating()
+public function reviews()
 {
-    return $this->reviews()->avg('rating') ?? 0;
+    return $this->hasMany(Review::class)->approved()->latest();
 }
 
-public function reviewsCount()
+public function allReviews()
+{
+    return $this->hasMany(Review::class)->latest();
+}
+
+public function averageRating(): float
+{
+    return (float) $this->reviews()->avg('rating');
+}
+
+public function reviewsCount(): int
 {
     return $this->reviews()->count();
 }

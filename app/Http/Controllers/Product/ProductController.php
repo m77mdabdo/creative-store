@@ -8,10 +8,14 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
+use App\Models\WishlistItem;
 
 class ProductController extends Controller
 {
     //
+
+
+
 
      public function index(Request $request)
     {
@@ -169,7 +173,9 @@ class ProductController extends Controller
 
 
 
-   public function show(string $slug)
+
+
+public function show(string $slug)
 {
     $locale   = app()->getLocale();
     $fallback = config('app.fallback_locale');
@@ -215,6 +221,13 @@ class ProductController extends Controller
                       $query->whereNull('expires_at')
                             ->orWhere('expires_at', '>=', now());
                   });
+            },
+
+            // ✅ Reviews الخاصة بالمنتج
+            'reviews' => function ($q) {
+                $q->where('is_approved', true)
+                  ->with('user:id,name')
+                  ->latest();
             }
 
         ])
@@ -311,6 +324,13 @@ class ProductController extends Controller
     // =========================
     $productCoupons = $product->coupons ?? collect();
 
+    // =========================
+    // Reviews Data
+    // =========================
+    $reviews = $product->reviews ?? collect();
+    $reviewsCount = $reviews->count();
+    $averageRating = round($reviews->avg('rating'), 1);
+
     return view('site.product.product-detail', compact(
         'product',
         'galleryImages',
@@ -318,8 +338,17 @@ class ProductController extends Controller
         'colors',
         'variantMap',
         'related',
-        'productCoupons' // ✅ إرسال الكوبونات
+        'productCoupons',
+        'reviews',
+        'reviewsCount',
+        'averageRating'
     ));
 }
 
 }
+
+
+
+
+
+

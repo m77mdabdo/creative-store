@@ -9,7 +9,6 @@
 <section class="bg0 p-b-140" style="padding-top:50px;">
     <div class="container">
 
-
         <div class="p-b-10">
             <h3 class="ltext-103 cl5">
                 <br>
@@ -53,7 +52,6 @@
             <div class="dis-none panel-search w-full p-t-10 p-b-15">
                 <form class="bor8 dis-flex p-l-15" method="GET" action="{{ url()->current() }}">
 
-                    {{-- حافظ على باقي الفلاتر --}}
                     @foreach(request()->except(['q','page']) as $k => $v)
                         @if($v !== null && $v !== '')
                             <input type="hidden" name="{{ $k }}" value="{{ $v }}">
@@ -186,10 +184,11 @@
         <div class="row isotope-grid">
             @forelse($products as $product)
                 @php
-                    // صورة المنتج: primaryImage->path داخل storage
                     $img = $product->primaryImage?->path
                         ? Storage::url($product->primaryImage->path)
                         : asset('cozastore/images/product-01.jpg');
+
+                    $isInWishlist = in_array($product->id, $wishlistProductIds ?? []);
                 @endphp
 
                 <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item">
@@ -213,61 +212,64 @@
                                 <span class="stext-105 cl3">
                                     {{ number_format((float)$product->base_price, 2) }} {{ $product->currency }}
                                 </span>
+
+                                {{-- لو بعدين جبتي average rating / reviews count من الكنترولر --}}
+                                @if(isset($product->reviews_avg_rating) || isset($product->reviews_count))
+                                    <span class="stext-105 cl3 p-t-4">
+                                        ⭐ {{ number_format((float)($product->reviews_avg_rating ?? 0), 1) }}
+                                        ({{ (int)($product->reviews_count ?? 0) }})
+                                    </span>
+                                @endif
                             </div>
 
-                          <div class="block2-txt-child2 flex-r p-t-3">
-    @auth
-        @php
-            $wishlistExists = \App\Models\WishlistItem::whereHas('wishlist', function ($query) {
-                $query->where('user_id', auth()->id());
-            })
-            ->where('product_id', $product->id)
-            ->whereNull('variant_id')
-            ->exists();
-        @endphp
+                            <div class="block2-txt-child2 flex-r p-t-3">
+                                @auth
+                                    <form action="{{ route('wishlist.toggle') }}" method="POST" style="margin:0;">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                        <input type="hidden" name="variant_id" value="">
 
-        <form action="{{ route('wishlist.toggle') }}" method="POST" style="margin:0;">
-            @csrf
-            <input type="hidden" name="product_id" value="{{ $product->id }}">
-            <input type="hidden" name="variant_id" value="">
-
-            <button type="submit" style="background:none;border:none;padding:0;cursor:pointer;">
-                @if($wishlistExists)
-                    <img
-                        src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}"
-                        alt="Wishlist"
-                        class="dis-block trans-04">
-                @else
-                    <img
-                        src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}"
-                        alt="Wishlist"
-                        class="dis-block trans-04">
-                @endif
-            </button>
-        </form>
-    @else
-        <a href="{{ route('login') }}">
-            <img
-                src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}"
-                alt="Wishlist"
-                class="dis-block trans-04">
-        </a>
-    @endauth
-</div>
+                                        <button type="submit" style="background:none;border:none;padding:0;cursor:pointer;">
+                                            @if($isInWishlist)
+                                                <img
+                                                    src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}"
+                                                    alt="Wishlist"
+                                                    class="dis-block trans-04">
+                                            @else
+                                                <img
+                                                    src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}"
+                                                    alt="Wishlist"
+                                                    class="dis-block trans-04">
+                                            @endif
+                                        </button>
+                                    </form>
+                                @else
+                                    <a href="{{ route('login') }}">
+                                        <img
+                                            src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}"
+                                            alt="Wishlist"
+                                            class="dis-block trans-04">
+                                    </a>
+                                @endauth
+                            </div>
                         </div>
                     </div>
                 </div>
             @empty
                 <div class="col-12 p-t-30">
-                    <p>No products found.</p>
+                    <div class="alert alert-warning text-center">
+                        No products found for the selected filters.
+                    </div>
                 </div>
             @endforelse
         </div>
 
         {{-- ======= Pagination بدل Load More ======= --}}
-        <div class="flex-c-m flex-w w-full p-t-45">
-            {{ $products->links() }}
-        </div>
+        @if($products->hasPages())
+            <div class="flex-c-m flex-w w-full p-t-45">
+                {{ $products->links() }}
+            </div>
+        @endif
 
     </div>
 </section>

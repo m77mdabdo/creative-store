@@ -102,6 +102,31 @@
                         {{ $name }}
                     </h4>
 
+                    @if(($reviewsCount ?? 0) > 0)
+                        <div class="p-b-15">
+                            <span class="fs-18 cl11">
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= round($averageRating ?? 0))
+                                        ⭐
+                                    @else
+                                        ☆
+                                    @endif
+                                @endfor
+                            </span>
+
+                            <span class="stext-102 cl3">
+                                {{ number_format((float) ($averageRating ?? 0), 1) }}/5
+                                ({{ $reviewsCount }} Reviews)
+                            </span>
+                        </div>
+                    @else
+                        <div class="p-b-15">
+                            <span class="stext-102 cl3">
+                                No reviews yet
+                            </span>
+                        </div>
+                    @endif
+
                     @if(isset($productCoupons) && $productCoupons->count())
                         <div class="p-t-10 p-b-10">
                             <h5 class="mtext-104 cl2 p-b-10">
@@ -358,8 +383,160 @@
                         <div class="row">
                             <div class="col-sm-10 col-md-8 col-lg-6 m-lr-auto">
                                 <div class="p-b-30 m-lr-15-sm">
-                                    <p class="stext-102 cl6">Reviews section (لما تربط reviews table هنعرضها هنا).</p>
+
+                                    <h5 class="mtext-104 p-b-20">
+                                        {{ $reviewsCount ?? 0 }} Reviews
+                                    </h5>
+
+                                    @forelse($reviews as $review)
+
+                                        <div class="flex-w flex-t p-b-25">
+
+                                            <div class="size-207">
+
+                                                <div class="flex-w flex-sb-m p-b-8">
+
+                                                    <span class="mtext-107 cl2">
+                                                        {{ $review->user->name ?? 'User' }}
+                                                    </span>
+
+                                                    <span class="fs-18 cl11">
+
+                                                        @for($i=1;$i<=5;$i++)
+                                                            @if($i <= $review->rating)
+                                                                ⭐
+                                                            @else
+                                                                ☆
+                                                            @endif
+                                                        @endfor
+
+                                                    </span>
+
+                                                </div>
+
+                                                @if($review->title)
+                                                    <p class="stext-102 cl3 m-b-5">
+                                                        <strong>{{ $review->title }}</strong>
+                                                    </p>
+                                                @endif
+
+                                                <p class="stext-102 cl6">
+                                                    {{ $review->comment }}
+                                                </p>
+
+                                            </div>
+
+                                        </div>
+
+                                    @empty
+
+                                        <p class="stext-102 cl6">
+                                            No reviews yet.
+                                        </p>
+
+                                    @endforelse
+
                                 </div>
+
+                                @auth
+
+                                    <div class="bor10 p-lr-20 p-tb-20">
+
+                                        <h4 class="mtext-105 cl2 p-b-20">
+                                            Add a review
+                                        </h4>
+
+                                        @if(session('success'))
+                                            <div class="alert alert-success">
+                                                {{ session('success') }}
+                                            </div>
+                                        @endif
+
+                                        @if(session('error'))
+                                            <div class="alert alert-danger">
+                                                {{ session('error') }}
+                                            </div>
+                                        @endif
+
+                                        @if($errors->any())
+                                            <div class="alert alert-danger">
+                                                <ul class="m-b-0 p-l-20">
+                                                    @foreach($errors->all() as $error)
+                                                        <li>{{ $error }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
+
+                                        <form action="{{ route('reviews.store') }}" method="POST">
+
+                                            @csrf
+
+                                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+
+                                            <div class="p-b-15">
+
+                                                <label class="stext-102 cl3">
+                                                    Rating
+                                                </label>
+
+                                                <select name="rating" class="bor8 p-lr-10 p-tb-5">
+                                                    <option value="5">⭐⭐⭐⭐⭐</option>
+                                                    <option value="4">⭐⭐⭐⭐</option>
+                                                    <option value="3">⭐⭐⭐</option>
+                                                    <option value="2">⭐⭐</option>
+                                                    <option value="1">⭐</option>
+                                                </select>
+
+                                            </div>
+
+                                            <div class="p-b-15">
+
+                                                <input
+                                                    type="text"
+                                                    name="title"
+                                                    value="{{ old('title') }}"
+                                                    placeholder="Review title"
+                                                    class="stext-111 cl2 plh3 size-116 bor8 p-lr-20">
+
+                                            </div>
+
+                                            <div class="p-b-15">
+
+                                                <textarea
+                                                    name="comment"
+                                                    rows="4"
+                                                    placeholder="Write your review..."
+                                                    class="stext-111 cl2 plh3 size-116 bor8 p-lr-20 p-tb-10">{{ old('comment') }}</textarea>
+
+                                            </div>
+
+                                            <button
+                                                type="submit"
+                                                class="flex-c-m stext-101 cl0 size-121 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+
+                                                Submit Review
+
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                @else
+
+                                    <div class="p-t-20">
+
+                                        <a href="{{ route('login') }}" class="stext-102 cl3">
+
+                                            Login to write a review
+
+                                        </a>
+
+                                    </div>
+
+                                @endauth
+
                             </div>
                         </div>
                     </div>
