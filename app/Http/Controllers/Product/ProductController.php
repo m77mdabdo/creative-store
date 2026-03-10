@@ -170,134 +170,156 @@ class ProductController extends Controller
 
 
    public function show(string $slug)
-    {
-        $locale   = app()->getLocale();
-        $fallback = config('app.fallback_locale');
+{
+    $locale   = app()->getLocale();
+    $fallback = config('app.fallback_locale');
 
-        $product = Product::query()
-            ->where('slug', $slug)
-            ->where('status', 'active')
-            ->with([
-                'translations' => function ($q) use ($locale, $fallback) {
-                    $q->select(['id','product_id','locale','name','description'])
-                        ->whereIn('locale', [$locale, $fallback]);
-                },
-                'images:id,product_id,variant_id,path,alt_text,is_primary,sort_order',
-                'primaryImage:id,product_id,path,is_primary',
-                'category:id,slug',
-                'category.translations' => function ($q) use ($locale, $fallback) {
-                    $q->select(['id','category_id','locale','name'])
-                        ->whereIn('locale', [$locale, $fallback]);
-                },
-                'variants' => function ($q) {
-                    $q->select(['id','product_id','sku','price','stock','is_active'])
-                        ->where('is_active', true);
-                },
-                'variants.values' => function ($q) {
-                    $q->select(['id','product_variant_id','attribute_id','attribute_value_id']);
-                },
-                'variants.values.attribute:id,slug,name,is_active',
-                'variants.values.value:id,attribute_id,value,slug,sort_order,is_active',
-            ])
-            ->firstOrFail();
+    $product = Product::query()
+        ->where('slug', $slug)
+        ->where('status', 'active')
+        ->with([
+            'translations' => function ($q) use ($locale, $fallback) {
+                $q->select(['id','product_id','locale','name','description'])
+                    ->whereIn('locale', [$locale, $fallback]);
+            },
 
-        // =========================
-        // Gallery Images (primary first)
-        // =========================
-        $galleryImages = $product->images
-            ->sortBy(function ($img) {
-                return [(int)!$img->is_primary, (int)$img->sort_order, (int)$img->id];
-            })
-            ->values();
+            'images:id,product_id,variant_id,path,alt_text,is_primary,sort_order',
+            'primaryImage:id,product_id,path,is_primary',
 
-        // =========================
-        // Extract Size / Color values from variants
-        // =========================
-        $sizes  = collect();
-        $colors = collect();
+            'category:id,slug',
+            'category.translations' => function ($q) use ($locale, $fallback) {
+                $q->select(['id','category_id','locale','name'])
+                    ->whereIn('locale', [$locale, $fallback]);
+            },
 
-        foreach ($product->variants as $variant) {
-            foreach ($variant->values as $vv) {
-                $attrSlug = strtolower($vv->attribute?->slug ?? '');
+            'variants' => function ($q) {
+                $q->select(['id','product_id','sku','price','stock','is_active'])
+                    ->where('is_active', true);
+            },
 
-                if (in_array($attrSlug, ['size', 'sizes'], true)) {
-                    if ($vv->value) $sizes->push($vv->value);
-                }
+            'variants.values' => function ($q) {
+                $q->select(['id','product_variant_id','attribute_id','attribute_value_id']);
+            },
 
-                if (in_array($attrSlug, ['color', 'colors'], true)) {
-                    if ($vv->value) $colors->push($vv->value);
-                }
+            'variants.values.attribute:id,slug,name,is_active',
+            'variants.values.value:id,attribute_id,value,slug,sort_order,is_active',
+
+            // ✅ الكوبونات الخاصة بالمنتج
+            'coupons' => function ($q) {
+                $q->where('is_active', true)
+                  ->where(function ($query) {
+                      $query->whereNull('starts_at')
+                            ->orWhere('starts_at', '<=', now());
+                  })
+                  ->where(function ($query) {
+                      $query->whereNull('expires_at')
+                            ->orWhere('expires_at', '>=', now());
+                  });
+            }
+
+        ])
+        ->firstOrFail();
+
+    // =========================
+    // Gallery Images (primary first)
+    // =========================
+    $galleryImages = $product->images
+        ->sortBy(function ($img) {
+            return [(int)!$img->is_primary, (int)$img->sort_order, (int)$img->id];
+        })
+        ->values();
+
+    // =========================
+    // Extract Size / Color values from variants
+    // =========================
+    $sizes  = collect();
+    $colors = collect();
+
+    foreach ($product->variants as $variant) {
+        foreach ($variant->values as $vv) {
+
+            $attrSlug = strtolower($vv->attribute?->slug ?? '');
+
+            if (in_array($attrSlug, ['size','sizes'], true)) {
+                if ($vv->value) $sizes->push($vv->value);
+            }
+
+            if (in_array($attrSlug, ['color','colors'], true)) {
+                if ($vv->value) $colors->push($vv->value);
             }
         }
-
-        $sizes  = $sizes->filter()->unique('id')->sortBy('sort_order')->values();
-        $colors = $colors->filter()->unique('id')->sortBy('sort_order')->values();
-
-        // =========================
-        // Build Variant Map
-        // key => "sizeId-colorId" => variant_id
-        // =========================
-        $variantMap = [];
-
-        foreach ($product->variants as $variant) {
-
-            $sizeId  = null;
-            $colorId = null;
-
-            foreach ($variant->values as $vv) {
-
-                $attrSlug = strtolower($vv->attribute?->slug ?? '');
-
-                if (in_array($attrSlug, ['size', 'sizes'], true)) {
-                    $sizeId = (int) $vv->attribute_value_id;
-                }
-
-                if (in_array($attrSlug, ['color', 'colors'], true)) {
-                    $colorId = (int) $vv->attribute_value_id;
-                }
-            }
-
-            // لو المنتج فيه Size + Color
-            if (!empty($sizeId) && !empty($colorId)) {
-                $variantMap["{$sizeId}-{$colorId}"] = $variant->id;
-            }
-            // لو المنتج فيه Size بس
-            elseif (!empty($sizeId) && empty($colorId)) {
-                $variantMap["{$sizeId}"] = $variant->id;
-            }
-            // لو المنتج فيه Color بس
-            elseif (!empty($colorId) && empty($sizeId)) {
-                $variantMap["{$colorId}"] = $variant->id;
-            }
-        }
-
-        // =========================
-        // Related Products (same category)
-        // =========================
-        $related = Product::query()
-            ->select(['id','category_id','slug','base_price','currency','status','created_at'])
-            ->where('status', 'active')
-            ->where('id', '!=', $product->id)
-            ->when($product->category_id, fn ($q) => $q->where('category_id', $product->category_id))
-            ->with([
-                'translations' => function ($q) use ($locale, $fallback) {
-                    $q->select(['id','product_id','locale','name'])
-                        ->whereIn('locale', [$locale, $fallback]);
-                },
-                'primaryImage:id,product_id,path,is_primary',
-            ])
-            ->latest()
-            ->take(8)
-            ->get();
-
-        return view('site.product.product-detail', compact(
-            'product',
-            'galleryImages',
-            'sizes',
-            'colors',
-            'variantMap',
-            'related'
-        ));
     }
+
+    $sizes  = $sizes->filter()->unique('id')->sortBy('sort_order')->values();
+    $colors = $colors->filter()->unique('id')->sortBy('sort_order')->values();
+
+    // =========================
+    // Build Variant Map
+    // =========================
+    $variantMap = [];
+
+    foreach ($product->variants as $variant) {
+
+        $sizeId  = null;
+        $colorId = null;
+
+        foreach ($variant->values as $vv) {
+
+            $attrSlug = strtolower($vv->attribute?->slug ?? '');
+
+            if (in_array($attrSlug, ['size','sizes'], true)) {
+                $sizeId = (int) $vv->attribute_value_id;
+            }
+
+            if (in_array($attrSlug, ['color','colors'], true)) {
+                $colorId = (int) $vv->attribute_value_id;
+            }
+        }
+
+        if (!empty($sizeId) && !empty($colorId)) {
+            $variantMap["{$sizeId}-{$colorId}"] = $variant->id;
+        }
+        elseif (!empty($sizeId) && empty($colorId)) {
+            $variantMap["{$sizeId}"] = $variant->id;
+        }
+        elseif (!empty($colorId) && empty($sizeId)) {
+            $variantMap["{$colorId}"] = $variant->id;
+        }
+    }
+
+    // =========================
+    // Related Products
+    // =========================
+    $related = Product::query()
+        ->select(['id','category_id','slug','base_price','currency','status','created_at'])
+        ->where('status', 'active')
+        ->where('id', '!=', $product->id)
+        ->when($product->category_id, fn ($q) => $q->where('category_id', $product->category_id))
+        ->with([
+            'translations' => function ($q) use ($locale, $fallback) {
+                $q->select(['id','product_id','locale','name'])
+                    ->whereIn('locale', [$locale, $fallback]);
+            },
+            'primaryImage:id,product_id,path,is_primary',
+        ])
+        ->latest()
+        ->take(8)
+        ->get();
+
+    // =========================
+    // Product Coupons
+    // =========================
+    $productCoupons = $product->coupons ?? collect();
+
+    return view('site.product.product-detail', compact(
+        'product',
+        'galleryImages',
+        'sizes',
+        'colors',
+        'variantMap',
+        'related',
+        'productCoupons' // ✅ إرسال الكوبونات
+    ));
+}
 
 }

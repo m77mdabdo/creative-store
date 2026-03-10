@@ -95,5 +95,20 @@ public function getNameAttribute()
 {
     return optional($this->translation())->name;
 }
- 
+
+public function coupons()
+{
+    return $this->hasMany(\App\Models\Coupon::class);
+}
+
+public function averageRating()
+{
+    return $this->reviews()->avg('rating') ?? 0;
+}
+
+public function reviewsCount()
+{
+    return $this->reviews()->count();
+}
+
 }

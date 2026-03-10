@@ -19,7 +19,7 @@ use App\Http\Controllers\Home\HomeController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Blog\BlogCommentController;
-use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\Wishlist\WishlistController;
 
 
 
@@ -156,6 +156,8 @@ Route::prefix('cart')->name('cart.')->group(function () {
 
         Route::post('/coupon', [CartController::class, 'applyCoupon'])->name('coupon');
         Route::delete('/coupon/remove', [CartController::class, 'removeCoupon'])->name('coupon.remove');
+       Route::post('/coupon/preview', [CartController::class, 'previewCoupon'])
+    ->name('coupon.preview');
     });
 });
 Route::get('/cart/view', fn() => view('site.cart.cart-panel'));
@@ -167,11 +169,19 @@ Route::get('/checkout', fn() => view('site.checkout.index'))->name('checkout.ind
 //wishlist
 
 
+
+
 Route::middleware('auth')->group(function () {
-    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
-    Route::post('/wishlist', [WishlistController::class, 'store'])->name('wishlist.store');
-    Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
-    Route::delete('/wishlist/{id}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
+
+    Route::get('/wishlist', [WishlistController::class, 'index'])
+        ->name('wishlist.index');
+
+    Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])
+        ->name('wishlist.toggle');
+
+    Route::delete('/wishlist/{id}', [WishlistController::class, 'destroy'])
+        ->name('wishlist.destroy');
+
 });
 
 

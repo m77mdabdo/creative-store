@@ -215,14 +215,45 @@
                                 </span>
                             </div>
 
-                            <div class="block2-txt-child2 flex-r p-t-3">
-                                <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-                                    <img class="icon-heart1 dis-block trans-04"
-                                         src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" alt="ICON">
-                                    <img class="icon-heart2 dis-block trans-04 ab-t-l"
-                                         src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}" alt="ICON">
-                                </a>
-                            </div>
+                          <div class="block2-txt-child2 flex-r p-t-3">
+    @auth
+        @php
+            $wishlistExists = \App\Models\WishlistItem::whereHas('wishlist', function ($query) {
+                $query->where('user_id', auth()->id());
+            })
+            ->where('product_id', $product->id)
+            ->whereNull('variant_id')
+            ->exists();
+        @endphp
+
+        <form action="{{ route('wishlist.toggle') }}" method="POST" style="margin:0;">
+            @csrf
+            <input type="hidden" name="product_id" value="{{ $product->id }}">
+            <input type="hidden" name="variant_id" value="">
+
+            <button type="submit" style="background:none;border:none;padding:0;cursor:pointer;">
+                @if($wishlistExists)
+                    <img
+                        src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}"
+                        alt="Wishlist"
+                        class="dis-block trans-04">
+                @else
+                    <img
+                        src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}"
+                        alt="Wishlist"
+                        class="dis-block trans-04">
+                @endif
+            </button>
+        </form>
+    @else
+        <a href="{{ route('login') }}">
+            <img
+                src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}"
+                alt="Wishlist"
+                class="dis-block trans-04">
+        </a>
+    @endauth
+</div>
                         </div>
                     </div>
                 </div>

@@ -442,46 +442,50 @@
                                 </div>
 
                                 <div class="block2-txt-child2 flex-r p-t-3">
+
                                     @auth
-                                        <form action="{{ route('wishlist.toggle') }}" method="POST" class="m-0 p-0">
+                                        <form action="{{ route('wishlist.toggle') }}" method="POST" style="margin:0">
                                             @csrf
+
                                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                                             <input type="hidden" name="variant_id" value="">
 
-                                            <button type="submit"
-                                                class="btn-addwish-b2 dis-block pos-relative js-addwish-b2 border-0 bg-transparent p-0"
-                                                title="{{ $wishlistExists ? 'Remove from Wishlist' : 'Add to Wishlist' }}"
-                                                style="outline: none; box-shadow: none; background: transparent; border: none;">
+                                            <button type="submit" style="background:none;border:none;padding:0;cursor:pointer">
 
-                                                <img class="icon-heart1 trans-04"
-                                                    src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" alt="Wishlist"
-                                                    style="display: {{ $wishlistExists ? 'none' : 'block' }};">
+                                                @if($wishlistExists)
 
-                                                <img class="icon-heart2 trans-04 ab-t-l"
-                                                    src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}" alt="Wishlist"
-                                                    style="display: {{ $wishlistExists ? 'block' : 'none' }};">
+                                                    <img src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}" class="trans-04"
+                                                        style="width:20px">
+
+                                                @else
+
+                                                    <img src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" class="trans-04"
+                                                        style="width:20px">
+
+                                                @endif
+
                                             </button>
+
                                         </form>
                                     @else
-                                        <a href="{{ route('login') }}" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2"
-                                            title="Login to add to wishlist">
-                                            <img class="icon-heart1 dis-block trans-04"
-                                                src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" alt="Wishlist">
 
-                                            <img class="icon-heart2 trans-04 ab-t-l"
-                                                src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}" alt="Wishlist"
-                                                style="display: none;">
+                                        <a href="{{ route('login') }}">
+
+                                            <img src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" style="width:20px">
+
                                         </a>
+
                                     @endauth
+
                                 </div>
                             </div>
                         </div>
                     </div>
 
                 @empty
-                    <div class="col-12 p-t-30">
-                        <p>No products found.</p>
-                    </div>
+                <div class="col-12 p-t-30">
+                    <p>No products found.</p>
+                </div>
                 @endforelse
             </div>
 

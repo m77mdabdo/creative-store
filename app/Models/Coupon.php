@@ -39,4 +39,14 @@ class Coupon extends Model
     {
         return $this->hasMany(CouponUsage::class);
     }
+
+    public function product()
+{
+    return $this->belongsTo(\App\Models\Product::class);
+}
+
+public function coupons()
+{
+    return $this->hasMany(\App\Models\Coupon::class);
+}
 }
