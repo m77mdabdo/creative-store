@@ -13,47 +13,59 @@ class CartController extends Controller
     private const VAT_RATE = 0.15;
     private const MAX_QTY_PER_ITEM = 20;
 
-    public function index()
-    {
-        $cart = session()->get('cart', []);
-        $cart = $this->syncCartWithDatabase($cart);
+public function index()
+{
+    $cart = session()->get('cart', []);
+    $cart = $this->syncCartWithDatabase($cart);
 
-        if (empty($cart)) {
-            session()->forget('cart');
-            session()->forget('cart_coupon');
-            session()->forget('cart_product_coupons');
-        } else {
-            session()->put('cart', $cart);
-        }
-
-        $this->refreshCoupons();
-
-        $subtotal = $this->getCartSubtotal($cart);
-
-        $cartCouponData = session()->get('cart_coupon');
-        $productCouponsData = session()->get('cart_product_coupons', []);
-
-        $productDiscount = $this->calculateAllProductCouponsDiscount($cart, $productCouponsData);
-        $cartDiscount = (float) ($cartCouponData['discount'] ?? 0);
-        $discount = $productDiscount + $cartDiscount;
-
-        $netTotal = max($subtotal - $discount, 0);
-        $vatValue = $netTotal * self::VAT_RATE;
-        $grandTotal = $netTotal + $vatValue;
-
-        return view('site.cart.cart-panel', [
-            'cart' => $cart,
-            'subtotal' => $subtotal,
-            'cartDiscount' => $cartDiscount,
-            'productDiscount' => $productDiscount,
-            'discount' => $discount,
-            'netTotal' => $netTotal,
-            'vatValue' => $vatValue,
-            'grandTotal' => $grandTotal,
-            'cartCouponData' => $cartCouponData,
-            'productCouponsData' => $productCouponsData,
-        ]);
+    if (empty($cart)) {
+        session()->forget('cart');
+        session()->forget('cart_coupon');
+        session()->forget('cart_product_coupons');
+    } else {
+        session()->put('cart', $cart);
     }
+
+    $this->refreshCoupons();
+
+    $subtotal = $this->getCartSubtotal($cart);
+
+    $cartCouponData = session()->get('cart_coupon');
+    $productCouponsData = session()->get('cart_product_coupons', []);
+
+    $productDiscount = $this->calculateAllProductCouponsDiscount($cart, $productCouponsData);
+    $cartDiscount = (float) ($cartCouponData['discount'] ?? 0);
+    $discount = $productDiscount + $cartDiscount;
+
+    $netTotal = max($subtotal - $discount, 0);
+    $vatValue = $netTotal * self::VAT_RATE;
+    $grandTotal = $netTotal + $vatValue;
+
+    /*
+    حفظ ملخص الكارت النهائي في session
+    */
+    session([
+        'cart_summary' => [
+            'subtotal' => $subtotal,
+            'discount' => $discount,
+            'tax_total' => $vatValue,
+            'total' => $grandTotal,
+        ]
+    ]);
+
+    return view('site.cart.cart-panel', [
+        'cart' => $cart,
+        'subtotal' => $subtotal,
+        'cartDiscount' => $cartDiscount,
+        'productDiscount' => $productDiscount,
+        'discount' => $discount,
+        'netTotal' => $netTotal,
+        'vatValue' => $vatValue,
+        'grandTotal' => $grandTotal,
+        'cartCouponData' => $cartCouponData,
+        'productCouponsData' => $productCouponsData,
+    ]);
+}
 
     public function add(Request $request)
     {

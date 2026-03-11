@@ -10,10 +10,18 @@ class Shipment extends Model
 
       use HasFactory;
 
-    protected $fillable = [
-        'order_id','shipping_method_id','carrier','tracking_number',
-        'status','shipped_at','delivered_at'
-    ];
+   protected $fillable = [
+    'order_id',
+    'shipping_method_id',
+    'carrier',
+    'tracking_number',
+    'status',
+    'current_location',
+    'carrier_status',
+    'shipped_at',
+    'delivered_at',
+    'notes',
+];
 
     protected $casts = [
         'shipped_at' => 'datetime',

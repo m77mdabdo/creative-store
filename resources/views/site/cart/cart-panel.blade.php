@@ -458,10 +458,10 @@
                             </div>
                         </div>
 
-                        <a href="{{ route('checkout.index') }}"
-                            class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
-                            Proceed to Checkout
-                        </a>
+                       <a href="{{ route('shipping.index') }}"
+   class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer m-t-10">
+    Continue to Shipping
+</a>
                     </div>
                 </div>
             </div>

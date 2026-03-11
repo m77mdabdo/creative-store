@@ -22,6 +22,9 @@ use App\Http\Controllers\Blog\BlogCommentController;
 use App\Http\Controllers\Wishlist\WishlistController;
 use App\Http\Controllers\Product\ReviewController;
 
+use App\Http\Controllers\Shipping\ShippingController;
+use App\Http\Controllers\Shipping\AddressController;
+use App\Http\Controllers\Shipping\OrderController;
 
 
 
@@ -174,6 +177,46 @@ Route::get('/checkout', fn() => view('site.checkout.index'))->name('checkout.ind
 Route::middleware('auth')->post('/product/review/store', [ReviewController::class, 'store'])
     ->name('reviews.store');
 
+//shipping
+
+
+
+
+
+Route::middleware(['auth'])->prefix('shipping')->name('shipping.')->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Shipping Main
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/', [ShippingController::class, 'index'])->name('index');
+    Route::post('/options', [ShippingController::class, 'shippingOptions'])->name('options');
+    Route::post('/select-address', [ShippingController::class, 'selectAddress'])->name('select-address');
+    Route::post('/select-method', [ShippingController::class, 'selectMethod'])->name('select-method');
+    Route::post('/place-order', [ShippingController::class, 'placeOrder'])->name('place-order');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Addresses
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/addresses', [AddressController::class, 'index'])->name('addresses.index');
+    Route::get('/addresses/create', [AddressController::class, 'create'])->name('addresses.create');
+    Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
+    Route::get('/addresses/{address}/edit', [AddressController::class, 'edit'])->name('addresses.edit');
+    Route::put('/addresses/{address}', [AddressController::class, 'update'])->name('addresses.update');
+    Route::delete('/addresses/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy');
+    Route::post('/addresses/{address}/default', [AddressController::class, 'setDefault'])->name('addresses.default');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Orders
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+});
 
 Route::middleware('auth')->group(function () {
 

@@ -10,11 +10,17 @@ class ShippingZone extends Model
 
       use HasFactory;
 
-    protected $fillable = ['name','country','is_active'];
+    protected $fillable = [
+    'name',
+    'code',
+    'country',
+    'description',
+    'is_active',
+];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-    ];
+protected $casts = [
+    'is_active' => 'boolean',
+];
 
     public function rates()
     {

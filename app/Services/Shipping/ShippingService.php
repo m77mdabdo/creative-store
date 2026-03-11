@@ -1,0 +1,173 @@
+<?php
+
+namespace App\Services\Shipping;
+
+use App\Models\Address;
+use App\Models\ShippingRate;
+
+class ShippingService
+{
+    public function cartSubtotal(array $cart): float
+    {
+        return (float) collect($cart)->sum(function ($item) {
+            return ((float) ($item['price'] ?? 0)) * ((int) ($item['quantity'] ?? 1));
+        });
+    }
+
+    public function cartWeight(array $cart): float
+    {
+        return (float) collect($cart)->sum(function ($item) {
+            return ((float) ($item['weight'] ?? 0)) * ((int) ($item['quantity'] ?? 1));
+        });
+    }
+
+public function availableOptions(Address $address, array $cart): array
+{
+    $subtotal = $this->cartSubtotal($cart);
+    $weight = $this->cartWeight($cart);
+
+    $country = trim((string) $address->country);
+    $city = trim((string) $address->city);
+    $district = trim((string) $address->district);
+
+    $countryAliases = array_unique(array_filter([
+        $country,
+        $this->normalizeCountry($country),
+    ]));
+
+    $cityAliases = array_unique(array_filter([
+        $city,
+        $this->normalizeCity($city),
+    ]));
+
+    $rates = ShippingRate::with(['method', 'zone'])
+        ->where('is_active', true)
+        ->whereHas('method', function ($q) {
+            $q->where('is_active', true);
+        })
+        ->whereHas('zone', function ($q) use ($countryAliases) {
+            $q->where('is_active', true)
+              ->where(function ($sub) use ($countryAliases) {
+                  foreach ($countryAliases as $country) {
+                      $sub->orWhere('country', $country);
+                  }
+              });
+        })
+        ->where('min_weight', '<=', $weight)
+        ->where('max_weight', '>=', $weight)
+        ->where(function ($q) use ($cityAliases) {
+            $q->whereNull('city');
+
+            foreach ($cityAliases as $city) {
+                $q->orWhere('city', $city);
+            }
+        })
+        ->where(function ($q) use ($district) {
+            $q->whereNull('district');
+
+            if ($district !== '') {
+                $q->orWhere('district', $district);
+            }
+        })
+        ->orderByRaw("
+            CASE
+                WHEN city IS NULL THEN 2
+                ELSE 1
+            END
+        ")
+        ->orderBy('priority')
+        ->get();
+
+    $grouped = $rates->groupBy('shipping_method_id')->map(function ($items) use ($cityAliases) {
+        return $items->sortBy(function ($rate) use ($cityAliases) {
+            if (!is_null($rate->city) && in_array($rate->city, $cityAliases, true)) {
+                return 1;
+            }
+
+            if (is_null($rate->city)) {
+                return 2;
+            }
+
+            return 3;
+        })->first();
+    })->values();
+
+    return $grouped->map(function ($rate) use ($subtotal) {
+        $shippingFee = (float) $rate->price;
+
+        if (!is_null($rate->free_shipping_threshold) && $subtotal >= (float) $rate->free_shipping_threshold) {
+            $shippingFee = 0;
+        }
+
+        return [
+            'rate_id' => $rate->id,
+            'shipping_method_id' => $rate->shipping_method_id,
+            'method_name' => $rate->method->name,
+            'method_code' => $rate->method->code,
+            'price' => $shippingFee,
+            'eta_min_days' => $rate->eta_min_days,
+            'eta_max_days' => $rate->eta_max_days,
+            'label' => $rate->method->name . ' - ' . number_format($shippingFee, 2) . ' SAR',
+        ];
+    })->values()->toArray();
+}
+
+private function normalizeCountry(?string $country): ?string
+{
+    $country = trim((string) $country);
+
+    return match ($country) {
+        'السعودية', 'المملكة العربية السعودية', 'KSA' => 'Saudi Arabia',
+        'Saudi Arabia', 'Kingdom of Saudi Arabia' => 'Saudi Arabia',
+        default => $country,
+    };
+}
+
+private function normalizeCity(?string $city): ?string
+{
+    $city = trim((string) $city);
+
+    return match ($city) {
+        'الرياض' => 'Riyadh',
+        'Riyadh' => 'الرياض',
+
+        'جدة' => 'Jeddah',
+        'Jeddah' => 'جدة',
+
+        'مكة', 'مكة المكرمة' => 'Makkah',
+        'Makkah', 'Mecca' => 'مكة',
+
+        'المدينة', 'المدينة المنورة' => 'Madinah',
+        'Madinah', 'Medina' => 'المدينة',
+
+        'الدمام' => 'Dammam',
+        'Dammam' => 'الدمام',
+
+        'الخبر' => 'Khobar',
+        'Khobar', 'Al Khobar' => 'الخبر',
+
+        'الظهران' => 'Dhahran',
+        'Dhahran' => 'الظهران',
+
+        default => $city,
+    };
+}
+
+    public function orderTotalsFromCartSummary(array $cartSummary, float $shippingFee): array
+    {
+        $subtotal = (float) ($cartSummary['subtotal'] ?? 0);
+        $discount = (float) ($cartSummary['discount'] ?? 0);
+        $taxTotal = (float) ($cartSummary['tax_total'] ?? 0);
+
+        // ده الرقم النهائي القادم من الكارت قبل الشحن
+        $cartFinalTotal = (float) ($cartSummary['total'] ?? 0);
+
+        return [
+            'subtotal' => round($subtotal, 2),
+            'discount' => round($discount, 2),
+            'shipping_fee' => round($shippingFee, 2),
+            'tax_total' => round($taxTotal, 2),
+            'total' => round($cartFinalTotal + $shippingFee, 2),
+        ];
+    }
+}
