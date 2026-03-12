@@ -9,6 +9,19 @@
             <div class="alert alert-success m-b-20">{{ session('success') }}</div>
         @endif
 
+        @if(session('error'))
+    <div class="alert alert-danger m-b-20">{{ session('error') }}</div>
+@endif
+
+@if($errors->any())
+    <div class="alert alert-danger m-b-20">
+        <ul class="mb-0">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
         <div class="row">
             <div class="col-md-8">
                 <div class="bor10 p-lr-40 p-t-30 p-b-40 m-b-30">
@@ -97,17 +110,17 @@
                         <div class="size-209"><span class="mtext-110 cl2" id="summary-total">{{ number_format($totals['total'], 2) }} SAR</span></div>
                     </div>
 
-                    <form action="{{ route('shipping.place-order') }}" method="POST" id="place-order-form">
-                        @csrf
-                        <input type="hidden" name="address_id" id="place-order-address-id">
-                        <input type="hidden" name="shipping_method_id" id="place-order-shipping-method-id">
-                        <input type="hidden" name="shipping_rate_id" id="place-order-shipping-rate-id">
-                        <input type="hidden" name="payment_method" value="cash_on_delivery">
+                   <form action="{{ route('shipping.place-order') }}" method="POST" id="place-order-form">
+    @csrf
+    <input type="hidden" name="address_id" id="place-order-address-id">
+    <input type="hidden" name="shipping_method_id" id="place-order-shipping-method-id">
+    <input type="hidden" name="shipping_rate_id" id="place-order-shipping-rate-id">
+    <input type="hidden" name="payment_method" value="moyasar">
 
-                        <button type="submit" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
-                            Place Order
-                        </button>
-                    </form>
+    <button type="submit" class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
+        Proceed to Payment
+    </button>
+</form>
                 </div>
             </div>
         </div>
@@ -194,6 +207,118 @@ document.addEventListener('DOMContentLoaded', function () {
     if (checkedAddress) {
         loadShippingOptions(checkedAddress.value);
     }
+});
+
+
+</script>
+<script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const addressInputs = document.querySelectorAll('input[name="address_id"]');
+    const shippingOptionsBox = document.getElementById('shipping-options');
+    const placeOrderForm = document.getElementById('place-order-form');
+
+    function applySelectedShipping(input) {
+        fetch("{{ route('shipping.select-method') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({
+                shipping_method_id: input.dataset.methodId,
+                shipping_rate_id: input.dataset.rateId
+            })
+        })
+        .then(res => res.json())
+        .then(response => {
+            if (response.success) {
+                document.getElementById('place-order-shipping-method-id').value = input.dataset.methodId;
+                document.getElementById('place-order-shipping-rate-id').value = input.dataset.rateId;
+
+                document.getElementById('summary-shipping').innerText = response.totals.shipping_fee.toFixed(2) + ' SAR';
+                document.getElementById('summary-tax').innerText = response.totals.tax_total.toFixed(2) + ' SAR';
+                document.getElementById('summary-total').innerText = response.totals.total.toFixed(2) + ' SAR';
+            }
+        });
+    }
+
+    function loadShippingOptions(addressId) {
+        fetch("{{ route('shipping.options') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({ address_id: addressId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('place-order-address-id').value = addressId;
+
+            if (!data.success || !data.options.length) {
+                shippingOptionsBox.innerHTML = '<p class="text-danger">No shipping methods available for this address.</p>';
+                document.getElementById('place-order-shipping-method-id').value = '';
+                document.getElementById('place-order-shipping-rate-id').value = '';
+                return;
+            }
+
+            let html = '';
+
+            data.options.forEach((option, index) => {
+                html += `
+                    <div class="bor8 p-3 m-b-15">
+                        <label class="w-100" style="cursor:pointer;">
+                            <input type="radio"
+                                   name="shipping_option"
+                                   data-method-id="${option.shipping_method_id}"
+                                   data-rate-id="${option.rate_id}"
+                                   ${index === 0 ? 'checked' : ''}>
+                            <strong>${option.method_name}</strong><br>
+                            ${option.price.toFixed(2)} SAR<br>
+                            ${option.eta_min_days ?? 0} - ${option.eta_max_days ?? 0} days
+                        </label>
+                    </div>
+                `;
+            });
+
+            shippingOptionsBox.innerHTML = html;
+
+            const shippingInputs = document.querySelectorAll('input[name="shipping_option"]');
+
+            shippingInputs.forEach(input => {
+                input.addEventListener('change', function () {
+                    applySelectedShipping(this);
+                });
+            });
+
+            if (shippingInputs.length > 0) {
+                applySelectedShipping(shippingInputs[0]);
+            }
+        });
+    }
+
+    addressInputs.forEach(input => {
+        input.addEventListener('change', function () {
+            loadShippingOptions(this.value);
+        });
+    });
+
+    const checkedAddress = document.querySelector('input[name="address_id"]:checked');
+    if (checkedAddress) {
+        loadShippingOptions(checkedAddress.value);
+    }
+
+    placeOrderForm.addEventListener('submit', function(e) {
+        const addressId = document.getElementById('place-order-address-id').value;
+        const shippingMethodId = document.getElementById('place-order-shipping-method-id').value;
+        const shippingRateId = document.getElementById('place-order-shipping-rate-id').value;
+
+        if (!addressId || !shippingMethodId || !shippingRateId) {
+            e.preventDefault();
+            alert('Please select address and shipping method first.');
+        }
+    });
 });
 </script>
 @endsection

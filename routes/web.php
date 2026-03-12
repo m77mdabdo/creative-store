@@ -26,7 +26,8 @@ use App\Http\Controllers\Shipping\ShippingController;
 use App\Http\Controllers\Shipping\AddressController;
 use App\Http\Controllers\Shipping\OrderController;
 
-
+use App\Http\Controllers\Checkout\CheckoutController;
+use App\Http\Controllers\MoyasarPayment\MoyasarPaymentController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 // Route::get('/dashboard', function () {
@@ -35,9 +36,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 
 
-Route::get('checkout', function () {
-    return view('site.app.cart');
-})->name('checkout.index');
+// Route::get('checkout', function () {
+//     return view('site.app.cart');
+// })->name('checkout.index');
 
 
 // auth login and rigister
@@ -185,22 +186,11 @@ Route::middleware('auth')->post('/product/review/store', [ReviewController::clas
 
 Route::middleware(['auth'])->prefix('shipping')->name('shipping.')->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Shipping Main
-    |--------------------------------------------------------------------------
-    */
     Route::get('/', [ShippingController::class, 'index'])->name('index');
     Route::post('/options', [ShippingController::class, 'shippingOptions'])->name('options');
     Route::post('/select-address', [ShippingController::class, 'selectAddress'])->name('select-address');
     Route::post('/select-method', [ShippingController::class, 'selectMethod'])->name('select-method');
-    Route::post('/place-order', [ShippingController::class, 'placeOrder'])->name('place-order');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Addresses
-    |--------------------------------------------------------------------------
-    */
     Route::get('/addresses', [AddressController::class, 'index'])->name('addresses.index');
     Route::get('/addresses/create', [AddressController::class, 'create'])->name('addresses.create');
     Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
@@ -209,13 +199,13 @@ Route::middleware(['auth'])->prefix('shipping')->name('shipping.')->group(functi
     Route::delete('/addresses/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy');
     Route::post('/addresses/{address}/default', [AddressController::class, 'setDefault'])->name('addresses.default');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Orders
-    |--------------------------------------------------------------------------
-    */
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+
+    Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])
+        ->name('orders.cancel');
+        Route::get('/orders/{order}/invoice', [OrderController::class, 'invoice'])
+    ->name('orders.invoice');
 });
 
 Route::middleware('auth')->group(function () {
@@ -232,9 +222,27 @@ Route::middleware('auth')->group(function () {
 });
 
 
-//authorization
+//payment routes will be here
 
 
+Route::middleware(['auth'])->group(function () {
+    Route::post('/shipping/place-order', [CheckoutController::class, 'placeOrder'])
+        ->name('shipping.place-order');
+
+    Route::get('/checkout/payment/callback', [MoyasarPaymentController::class, 'callback'])
+        ->name('checkout.payment.callback');
+
+    Route::get('/checkout/payment/{order}', [MoyasarPaymentController::class, 'show'])
+        ->whereNumber('order')
+        ->name('checkout.payment');
+
+    Route::get('/order/success/{order}', [MoyasarPaymentController::class, 'success'])
+        ->whereNumber('order')
+        ->name('order.success');
+});
+
+Route::post('/webhooks/moyasar', [MoyasarPaymentController::class, 'webhook'])
+    ->name('webhooks.moyasar');
 
 // Dashboard: ممنوع على customer
 Route::middleware(['auth', 'role:owner,admin,employee'])

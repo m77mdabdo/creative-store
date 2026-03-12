@@ -11,17 +11,89 @@
     <link rel="stylesheet" href="{{ asset('AdminLTE/dist/css/adminlte.min.css') }}">
 
     <style>
-        body{ background:#f5f6f8; }
-        .account-shell{ min-height:100vh; display:flex; }
-        .account-sidebar{
-            width:280px; background:#111; color:#fff; padding:22px;
+        body {
+            background: #f5f6f8;
         }
-        .account-sidebar a{ color:#fff; opacity:.9; text-decoration:none; display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; }
-        .account-sidebar a:hover{ background:rgba(255,255,255,.08); }
-        .account-content{ flex:1; padding:28px; }
-        .brand-mini{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
-        .brand-mini img{ height:42px; width:auto; }
-        .card{ border-radius:14px; }
+
+        .account-shell {
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .account-sidebar {
+            width: 280px;
+            background: #111;
+            color: #fff;
+            padding: 22px;
+        }
+
+        .account-sidebar a {
+            color: #fff;
+            opacity: .92;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 12px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            transition: .2s ease;
+        }
+
+        .account-sidebar a:hover {
+            background: rgba(255,255,255,.08);
+            opacity: 1;
+        }
+
+        .account-content {
+            flex: 1;
+            padding: 28px;
+        }
+
+        .brand-mini {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .brand-mini img {
+            height: 42px;
+            width: auto;
+        }
+
+        .card {
+            border-radius: 14px;
+            border: 0;
+            box-shadow: 0 6px 20px rgba(0,0,0,.04);
+        }
+
+        .sidebar-section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            opacity: .6;
+            margin: 18px 0 10px;
+            padding-left: 6px;
+        }
+
+        .logout-btn {
+            border-radius: 10px;
+        }
+
+        @media (max-width: 991.98px) {
+            .account-shell {
+                flex-direction: column;
+            }
+
+            .account-sidebar {
+                width: 100%;
+            }
+
+            .account-content {
+                padding: 18px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -36,31 +108,41 @@
             </div>
         </div>
 
-       <a href="{{ route('home') }}" class="nav-link">
-    <i class="fas fa-home me-1"></i> Back to site
-</a>
+        <div class="sidebar-section-title">Navigation</div>
 
-<a href="{{ route('myaccount') }}" class="nav-link">
-    <i class="fas fa-user me-1"></i> Profile
-</a>
-
-@auth
-    @if(auth()->user()->isDashboardUser())
-        <a href="{{ route('dashboard') }}"
-           class="nav-link" style="border-radius:10px;">
-            <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+        <a href="{{ route('home') }}" class="nav-link">
+            <i class="fas fa-home"></i> Back to Site
         </a>
-    @endif
-@endauth
 
+        <a href="{{ route('myaccount') }}" class="nav-link">
+            <i class="fas fa-user"></i> Profile
+        </a>
 
+        <a href="{{ route('shipping.orders.index') }}" class="nav-link">
+            <i class="fas fa-box"></i> My Orders
+        </a>
 
+        <a href="{{ route('shipping.addresses.index') }}" class="nav-link">
+            <i class="fas fa-map-marker-alt"></i> My Addresses
+        </a>
 
+        <a href="{{ route('wishlist.index') }}" class="nav-link">
+            <i class="fas fa-heart"></i> Wishlist
+        </a>
 
+        @auth
+            @if(auth()->user()->isDashboardUser())
+                <div class="sidebar-section-title">Management</div>
 
-        <form action="{{ route('logout') }}" method="POST" class="mt-3">
+                <a href="{{ route('dashboard') }}" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            @endif
+        @endauth
+
+        <form action="{{ route('logout') }}" method="POST" class="mt-4">
             @csrf
-            <button type="submit" class="btn btn-outline-light btn-block" style="border-radius:10px;">
+            <button type="submit" class="btn btn-outline-light btn-block logout-btn">
                 <i class="fas fa-sign-out-alt mr-2"></i> Logout
             </button>
         </form>

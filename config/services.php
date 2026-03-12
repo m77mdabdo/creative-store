@@ -41,4 +41,10 @@ return [
     'redirect' => env('GOOGLE_CALLBACK_URL'),
 ],
 
+'moyasar' => [
+    'publishable_key' => env('MOYASAR_PUBLISHABLE_KEY'),
+    'secret_key' => env('MOYASAR_SECRET_KEY'),
+    'currency' => env('MOYASAR_CURRENCY', 'SAR'),
+    'webhook_secret' => env('MOYASAR_WEBHOOK_SECRET'),
+],
 ];

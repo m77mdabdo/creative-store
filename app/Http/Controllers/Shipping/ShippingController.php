@@ -46,6 +46,9 @@ class ShippingController extends Controller
 ]);
 
       $totals = $this->shippingService->orderTotalsFromCartSummary($cartSummary, $shippingFee);
+      session([
+    'checkout_totals' => $totals,
+     ]);
         return view('site.shipping.index', compact('cart', 'addresses', 'shipping', 'totals'));
     }
 
@@ -82,50 +85,55 @@ class ShippingController extends Controller
         ]);
     }
 
-    public function selectMethod(SelectShippingMethodRequest $request): JsonResponse
-    {
-        $cart = session()->get('cart', []);
-        $addressId = session('shipping.address_id');
+public function selectMethod(SelectShippingMethodRequest $request): JsonResponse
+{
+    $cart = session()->get('cart', []);
+    $addressId = session('shipping.address_id');
 
-        abort_unless($addressId, 422, 'Please select address first.');
+    abort_unless($addressId, 422, 'Please select address first.');
 
-        $address = Address::where('user_id', auth()->id())->findOrFail($addressId);
+    $address = Address::where('user_id', auth()->id())->findOrFail($addressId);
 
-        $options = collect($this->shippingService->availableOptions($address, $cart));
+    $options = collect($this->shippingService->availableOptions($address, $cart));
 
-        $selected = $options->first(function ($option) use ($request) {
-            return (int) $option['rate_id'] === (int) $request->shipping_rate_id
-                && (int) $option['shipping_method_id'] === (int) $request->shipping_method_id;
-        });
+    $selected = $options->first(function ($option) use ($request) {
+        return (int) $option['rate_id'] === (int) $request->shipping_rate_id
+            && (int) $option['shipping_method_id'] === (int) $request->shipping_method_id;
+    });
 
-        abort_unless($selected, 422, 'Invalid shipping option selected.');
+    abort_unless($selected, 422, 'Invalid shipping option selected.');
 
-        session([
-            'shipping.shipping_method_id' => (int) $selected['shipping_method_id'],
-            'shipping.shipping_rate_id' => (int) $selected['rate_id'],
-            'shipping.shipping_fee' => (float) $selected['price'],
-            'shipping.shipping_label' => $selected['method_name'],
-            'shipping.eta_min_days' => $selected['eta_min_days'],
-            'shipping.eta_max_days' => $selected['eta_max_days'],
-        ]);
+    session([
+        'shipping.shipping_method_id' => (int) $selected['shipping_method_id'],
+        'shipping.shipping_rate_id' => (int) $selected['rate_id'],
+        'shipping.shipping_fee' => (float) $selected['price'],
+        'shipping.shipping_label' => $selected['method_name'],
+        'shipping.eta_min_days' => $selected['eta_min_days'],
+        'shipping.eta_max_days' => $selected['eta_max_days'],
+    ]);
 
-       $cartSummary = session('cart_summary', [
-    'subtotal' => 0,
-    'discount' => 0,
-    'tax_total' => 0,
-    'total' => 0,
-]);
+    $cartSummary = session('cart_summary', [
+        'subtotal' => 0,
+        'discount' => 0,
+        'tax_total' => 0,
+        'total' => 0,
+    ]);
 
-$totals = $this->shippingService->orderTotalsFromCartSummary(
-    $cartSummary,
-    (float) $selected['price']
-);
-        return response()->json([
-            'success' => true,
-            'message' => 'Shipping method selected successfully.',
-            'totals' => $totals,
-        ]);
-    }
+    $totals = $this->shippingService->orderTotalsFromCartSummary(
+        $cartSummary,
+        (float) $selected['price']
+    );
+
+    session([
+        'checkout_totals' => $totals,
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Shipping method selected successfully.',
+        'totals' => $totals,
+    ]);
+}
 
     public function placeOrder(PlaceOrderRequest $request): RedirectResponse
     {
