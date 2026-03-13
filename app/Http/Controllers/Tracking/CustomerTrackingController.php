@@ -23,6 +23,9 @@ class CustomerTrackingController extends Controller
 {
     private const SESSION_KEY = 'tracking.orders';
 
+    /** Orders this browser matched with the phone number, not only a tracking number. */
+    private const VERIFIED_KEY = 'tracking.verified';
+
     public function searchForm(Request $request): View
     {
         $recentOrders = $request->user()
@@ -56,7 +59,11 @@ class CustomerTrackingController extends Controller
             return back()->withErrors(['tracking' => __('tracking.not_found')])->withInput();
         }
 
-        $this->remember($request, $order);
+        $this->remember($request, $order, self::SESSION_KEY);
+
+        if ($trackingNumber === '') {
+            $this->remember($request, $order, self::VERIFIED_KEY);
+        }
 
         return redirect()->route('tracking.show', $order->order_number);
     }
@@ -70,7 +77,12 @@ class CustomerTrackingController extends Controller
                 ->withErrors(['tracking' => __('tracking.need_details')]);
         }
 
-        return view('tracking.result', ['tracking' => OrderTracking::for($order)]);
+        // A tracking number is printed on the parcel and shared with couriers,
+        // so on its own it shows where the order is, not who it is for.
+        return view('tracking.result', [
+            'tracking'      => OrderTracking::for($order),
+            'showRecipient' => $this->canSeeRecipient($request, $order),
+        ]);
     }
 
     /**
@@ -136,11 +148,20 @@ class CustomerTrackingController extends Controller
         return $allowed ? $order : null;
     }
 
-    private function remember(Request $request, Order $order): void
+    private function canSeeRecipient(Request $request, Order $order): bool
     {
-        $ids = (array) $request->session()->get(self::SESSION_KEY, []);
+        $user = $request->user();
+
+        return in_array($order->id, (array) $request->session()->get(self::VERIFIED_KEY, []), true)
+            || ($user && $order->user_id === $user->id)
+            || ($user && $user->isDashboardUser());
+    }
+
+    private function remember(Request $request, Order $order, string $key): void
+    {
+        $ids = (array) $request->session()->get($key, []);
         $ids[] = $order->id;
 
-        $request->session()->put(self::SESSION_KEY, array_slice(array_values(array_unique($ids)), -20));
+        $request->session()->put($key, array_slice(array_values(array_unique($ids)), -20));
     }
 }

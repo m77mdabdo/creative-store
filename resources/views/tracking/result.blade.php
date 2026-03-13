@@ -181,11 +181,13 @@
                             <strong>{{ __('tracking.store_pickup') }}</strong><br>
                             {{ $rtl ? config('store.legal.address_ar') : config('store.legal.address_en') }}
                         </p>
-                    @elseif ($address)
+                    @elseif ($address && ($showRecipient ?? false))
                         <p class="trk-address">
                             <strong>{{ $address->full_name }}</strong><br>
                             {{ collect([$address->street, $address->district, $address->city])->filter()->implode($rtl ? '، ' : ', ') }}
                         </p>
+                    @elseif ($address)
+                        <p class="trk-address">{{ $address->city }}</p>
                     @endif
                 </div>
 

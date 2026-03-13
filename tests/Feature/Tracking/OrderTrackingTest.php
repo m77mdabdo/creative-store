@@ -138,4 +138,36 @@ class OrderTrackingTest extends TestCase
             ->assertOk()
             ->assertSee('This order was cancelled');
     }
+
+    public function test_a_tracking_number_alone_does_not_show_who_the_order_is_for(): void
+    {
+        Shipment::factory()->create([
+            'order_id' => $this->order->id, 'tracking_number' => 'SBX0000099999', 'carrier' => 'sandbox',
+        ]);
+
+        $this->post(route('tracking.track'), ['tracking_number' => 'SBX0000099999'])
+            ->assertRedirect(route('tracking.show', 'ORD-261115-ABC123'));
+
+        $this->get(route('tracking.show', 'ORD-261115-ABC123'))
+            ->assertOk()
+            ->assertSee('Riyadh')
+            ->assertDontSee('Sara Ali')
+            ->assertDontSee('Olaya');
+
+        // Proving the phone number on the same browser shows the full address.
+        $this->post(route('tracking.track'), ['order_number' => 'ORD-261115-ABC123', 'phone' => '0555555555']);
+
+        $this->get(route('tracking.show', 'ORD-261115-ABC123'))
+            ->assertSee('Sara Ali')
+            ->assertSee('Olaya');
+    }
+
+    public function test_the_owner_always_sees_the_full_address(): void
+    {
+        $this->actingAs($this->owner)
+            ->get(route('tracking.show', 'ORD-261115-ABC123'))
+            ->assertOk()
+            ->assertSee('Sara Ali')
+            ->assertSee('Olaya');
+    }
 }
