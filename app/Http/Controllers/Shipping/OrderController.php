@@ -215,6 +215,9 @@ class OrderController extends Controller
     {
         abort_unless($order->user_id === auth()->id(), 403);
 
+        // A tax invoice is issued for a completed sale only.
+        abort_unless(in_array($order->payment_status, ['paid', 'partially_refunded', 'refunded'], true), 404);
+
         $pdf = Pdf::loadView('invoices.tax-invoice', $invoices->build($order))
             ->setPaper('a4', 'portrait');
 

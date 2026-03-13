@@ -93,10 +93,12 @@
                         <i class="fas fa-map-marker-alt m-r-8"></i>
                         {{ __('site.track_order') }}
                     </a>
+                    @if(in_array($order->payment_status, ['paid', 'partially_refunded', 'refunded'], true))
                     <a href="{{ route('shipping.orders.invoice', $order->id) }}" class="main-action-btn dark-btn m-b-10">
                         <i class="fas fa-file-invoice m-r-8"></i>
                         {{ __('site.download_invoice') }}
                     </a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -429,10 +431,12 @@
                             <h4>{{ __('site.actions') }}</h4>
                         </div>
                         <div class="actions-panel">
+                            @if(in_array($order->payment_status, ['paid', 'partially_refunded', 'refunded'], true))
                             <a href="{{ route('shipping.orders.invoice', $order->id) }}" class="main-action-btn dark-btn w-100">
                                 <i class="fas fa-file-invoice m-r-8"></i>
                                 {{ __('site.download_invoice') }}
                             </a>
+                            @endif
 
                             @if($canCancel)
                                 <form action="{{ route('shipping.orders.cancel', $order->id) }}" method="POST" class="w-100 m-b-0">
