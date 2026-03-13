@@ -55,4 +55,15 @@ class TaxInvoiceTest extends TestCase
             ->assertOk()
             ->assertHeader('content-type', 'application/pdf');
     }
+
+    public function test_unpaid_orders_have_no_invoice(): void
+    {
+        $owner = $this->customer();
+        $order = $this->paidOrderFor($owner);
+        $order->forceFill(['payment_status' => 'pending', 'status' => 'pending'])->save();
+
+        $this->actingAs($owner)
+            ->get(route('shipping.orders.invoice', $order->id))
+            ->assertNotFound();
+    }
 }
