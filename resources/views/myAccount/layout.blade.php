@@ -134,7 +134,7 @@
             @if(auth()->user()->isDashboardUser())
                 <div class="sidebar-section-title">Management</div>
 
-                <a href="{{ route('dashboard') }}" class="nav-link">
+                <a href="{{ route('dashboard.home') }}" class="nav-link">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
             @endif

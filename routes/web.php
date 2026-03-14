@@ -245,21 +245,4 @@ Route::post('/webhooks/moyasar', [MoyasarPaymentController::class, 'webhook'])
     ->name('webhooks.moyasar');
 
 // Dashboard: ممنوع على customer
-Route::middleware(['auth', 'role:owner,admin,employee'])
-    ->prefix('dashboard')
-    ->group(function () {
 
-        Route::get('/dashboard', fn() => view('dashboard.home'))->name('dashboard');
-
-        // Audit logs (Admin/Owner)
-        Route::get('/audit-logs', [AuditLogController::class, 'index'])
-            ->middleware('permission:audit.view')
-            ->name('audit.index');
-
-        // Users management (موظفين) — Admin/Owner
-        Route::get('/users', [UserController::class, 'index'])
-            ->middleware('permission:users.view')
-            ->name('users.index');
-
-        // ... كمل نفس النمط لباقي الأقسام حسب permissions اللي عندك
-    });

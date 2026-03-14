@@ -8,12 +8,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Category extends Model
 {
-    use SoftDeletes;
-
-      use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'parent_id','slug','is_active','sort_order','meta_title','meta_description'
+        'parent_id',
+        'slug',
+        'is_active',
+        'sort_order',
+        'meta_title',
+        'meta_description',
     ];
 
     protected $casts = [
@@ -21,6 +24,9 @@ class Category extends Model
         'sort_order' => 'integer',
     ];
 
+    /* =========================
+     * Relationships
+     * ========================= */
     public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_id');
@@ -28,7 +34,12 @@ class Category extends Model
 
     public function children()
     {
-        return $this->hasMany(Category::class, 'parent_id');
+        return $this->hasMany(Category::class, 'parent_id')->orderBy('sort_order');
+    }
+
+    public function childrenRecursive()
+    {
+        return $this->children()->with('childrenRecursive', 'translations');
     }
 
     public function translations()
@@ -41,17 +52,69 @@ class Category extends Model
         return $this->hasMany(Product::class);
     }
 
+    /* =========================
+     * Scopes
+     * ========================= */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeRoot($query)
+    {
+        return $query->whereNull('parent_id');
+    }
+
+    public function scopeOrdered($query)
+    {
+        return $query->orderBy('sort_order')->orderByDesc('id');
+    }
+
+    /* =========================
+     * Translation helpers
+     * ========================= */
     public function translation($locale = null)
-{
-    $locale = $locale ?? app()->getLocale();
-    return $this->translations->firstWhere('locale', $locale)
-        ?? $this->translations->firstWhere('locale', config('app.fallback_locale'))
-        ?? $this->translations->first();
-}
+    {
+        $locale = $locale ?? app()->getLocale();
 
-public function getNameAttribute()
-{
-    return optional($this->translation())->name;
-}
+        return $this->translations->firstWhere('locale', $locale)
+            ?? $this->translations->firstWhere('locale', config('app.fallback_locale'))
+            ?? $this->translations->first();
+    }
 
+    public function getNameAttribute()
+    {
+        return optional($this->translation())->name;
+    }
+
+    public function getDescriptionAttribute()
+    {
+        return optional($this->translation())->description;
+    }
+
+    /* =========================
+     * Helpers
+     * ========================= */
+    public function isParentOf(Category $category): bool
+    {
+        return $category->parent_id === $this->id;
+    }
+
+    public function hasChildren(): bool
+    {
+        return $this->children()->exists();
+    }
+
+    public function getBreadcrumbAttribute(): string
+    {
+        $names = [];
+        $current = $this;
+
+        while ($current) {
+            $names[] = $current->name ?: "Category #{$current->id}";
+            $current = $current->parent;
+        }
+
+        return implode(' > ', array_reverse($names));
+    }
 }

@@ -30,7 +30,7 @@ class NewContactMessageNotification extends Notification
             'subject' => $this->contactMessage->subject,
             'message' => $this->contactMessage->message,
             'text' => 'New contact message from ' . $this->contactMessage->name,
-            'url' => route('admin.contact-messages.show', $this->contactMessage->id),
+            'url' => route('dashboard.contact-messages.show', $this->contactMessage->id),
         ];
     }
 
@@ -46,7 +46,7 @@ class NewContactMessageNotification extends Notification
             ->line('Subject: ' . ($this->contactMessage->subject ?: 'No Subject'))
             ->line('Message:')
             ->line($this->contactMessage->message)
-            ->action('View Message', route('admin.contact-messages.show', $this->contactMessage->id))
+            ->action('View Message', route('dashboard.contact-messages.show', $this->contactMessage->id))
             ->line('Thank you.');
     }
 }

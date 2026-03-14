@@ -7,11 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CategoryTranslation extends Model
 {
-
-      use HasFactory;
+    use HasFactory;
 
     protected $fillable = [
-        'category_id','locale','name','description'
+        'category_id',
+        'locale',
+        'name',
+        'description',
     ];
 
     public function category()
