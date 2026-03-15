@@ -10,7 +10,7 @@
 ![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php&logoColor=white)
 ![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-178%20passing-2ea44f)
+![Tests](https://img.shields.io/badge/tests-183%20passing-2ea44f)
 ![composer audit](https://img.shields.io/badge/composer%20audit-0%20advisories-2ea44f)
 ![npm audit](https://img.shields.io/badge/npm%20audit-0%20vulnerabilities-2ea44f)
 ![RTL](https://img.shields.io/badge/Arabic-RTL-0E7C66)
@@ -346,6 +346,8 @@ A full pre-launch review covered authentication, passwords, authorization and ID
 | 16 | SMS log driver wrote phone numbers and verification codes to the log | Low | Number masked, text never logged |
 | 17 | Avatars kept EXIF/GPS data; nothing stopped scripts from running under `/storage` | Low | Avatars re-encoded to WebP; scripts and dotfiles blocked |
 | 18 | `.env.example` had debug defaults and deploys did not check the settings | Low | `.env.production.example` and `php artisan app:preflight` |
+| 19 | Payment webhook trusted the status and amount in the request body once the shared secret matched | Medium | Payment read back from the Moyasar API before the order is touched |
+| 20 | A tracking number alone showed the recipient's name and street | Medium | Name and street only after the phone check, for the owner or staff |
 
 Checked and found safe: no SQL injection (only bindings), `$fillable` on every model, Blade output escaped, CSRF on every form, uploads limited to real images, passwords hashed with bcrypt, sessions regenerated on login, no secrets in the code or in the Git history, no debug routes, Telescope or Debugbar.
 
