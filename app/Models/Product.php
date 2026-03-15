@@ -43,20 +43,7 @@ class Product extends Model
         return $this->hasMany(ProductTranslation::class);
     }
 
-    public function images()
-    {
-        return $this->hasMany(ProductImage::class);
-    }
-
-    public function primaryImage()
-    {
-        return $this->hasOne(ProductImage::class)->where('is_primary', true);
-    }
-
-    public function variants()
-    {
-        return $this->hasMany(ProductVariant::class);
-    }
+   
 
     public function attributes()
     {
@@ -115,6 +102,30 @@ public function averageRating(): float
 public function reviewsCount(): int
 {
     return $this->reviews()->count();
+}
+
+
+public function generalImages()
+{
+    return $this->hasMany(ProductImage::class)
+        ->whereNull('variant_id');
+}
+
+public function images()
+{
+    return $this->hasMany(\App\Models\ProductImage::class);
+}
+
+public function variants()
+{
+    return $this->hasMany(\App\Models\ProductVariant::class);
+}
+
+public function primaryImage()
+{
+    return $this->hasOne(\App\Models\ProductImage::class)
+        ->whereNull('variant_id')
+        ->where('is_primary', true);
 }
 
 }

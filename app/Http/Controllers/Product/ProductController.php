@@ -3,156 +3,164 @@
 namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Category;
-use App\Models\Product;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
+use App\Models\Category;
+use App\Models\Product;
 use App\Models\WishlistItem;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    //
-
-
-
-
-     public function index(Request $request)
+    public function index(Request $request)
     {
-        // ✅ Validation للـ query params (بيمنع مدخلات غلط + يحمي من بطء)
         $request->validate([
-            'category' => ['nullable','string','max:120'],
-            'q'        => ['nullable','string','max:200'],
-            'min'      => ['nullable','numeric','min:0'],
-            'max'      => ['nullable','numeric','min:0'],
-            'color'    => ['nullable','integer','min:1'],
-            'tag'      => ['nullable','integer','min:1'],
-            'sort'     => ['nullable','in:new,price_asc,price_desc'],
+            'category' => ['nullable', 'string', 'max:120'],
+            'q'        => ['nullable', 'string', 'max:200'],
+            'min'      => ['nullable', 'numeric', 'min:0'],
+            'max'      => ['nullable', 'numeric', 'min:0'],
+            'color'    => ['nullable', 'integer', 'min:1'],
+            'tag'      => ['nullable', 'integer', 'min:1'],
+            'sort'     => ['nullable', 'in:new,price_asc,price_desc'],
         ]);
 
         $locale   = app()->getLocale();
         $fallback = config('app.fallback_locale');
 
-        // ===================== Categories (Tabs) =====================
         $categories = Category::query()
-            ->select(['id','parent_id','slug','sort_order'])
+            ->select(['id', 'parent_id', 'slug', 'sort_order'])
             ->whereNull('parent_id')
             ->where('is_active', true)
             ->with(['translations' => function ($q) use ($locale, $fallback) {
-                $q->select(['id','category_id','locale','name'])
-                  ->whereIn('locale', [$locale, $fallback]);
+                $q->select(['id', 'category_id', 'locale', 'name'])
+                    ->whereIn('locale', [$locale, $fallback]);
             }])
             ->orderBy('sort_order')
             ->get();
 
-        // ===================== Attributes (Color/Tags) =====================
-        // ملاحظة: لو slug عندك ثابت "color" و "tag" يبقى تمام
         $attrs = Attribute::query()
-            ->select(['id','slug'])
+            ->select(['id', 'slug'])
             ->where('is_active', true)
-            ->whereIn('slug', ['color','colors','tag','tags'])
+            ->whereIn('slug', ['color', 'colors', 'tag', 'tags'])
             ->get()
             ->keyBy('slug');
 
         $colorAttr = $attrs->get('color') ?? $attrs->get('colors');
-        $tagAttr   = $attrs->get('tag')   ?? $attrs->get('tags');
+        $tagAttr   = $attrs->get('tag') ?? $attrs->get('tags');
 
         $colorValues = $colorAttr
             ? AttributeValue::query()
-                ->select(['id','attribute_id','value','slug','sort_order'])
+                ->select(['id', 'attribute_id', 'value', 'slug', 'sort_order'])
                 ->where('attribute_id', $colorAttr->id)
                 ->where('is_active', true)
                 ->orderBy('sort_order')
+                ->orderBy('id')
                 ->get()
             : collect();
 
         $tagValues = $tagAttr
             ? AttributeValue::query()
-                ->select(['id','attribute_id','value','slug','sort_order'])
+                ->select(['id', 'attribute_id', 'value', 'slug', 'sort_order'])
                 ->where('attribute_id', $tagAttr->id)
                 ->where('is_active', true)
                 ->orderBy('sort_order')
+                ->orderBy('id')
                 ->get()
             : collect();
 
-        // ===================== Products Query + Eager Loading =====================
         $productsQuery = Product::query()
-            ->select(['id','category_id','slug','base_price','currency','created_at'])
+            ->select(['id', 'category_id', 'slug', 'base_price', 'currency', 'created_at'])
             ->where('status', 'active')
             ->with([
                 'translations' => function ($q) use ($locale, $fallback) {
-                    $q->select(['id','product_id','locale','name'])
-                      ->whereIn('locale', [$locale, $fallback]);
+                    $q->select(['id', 'product_id', 'locale', 'name'])
+                        ->whereIn('locale', [$locale, $fallback]);
                 },
                 'primaryImage' => function ($q) {
-                    $q->select(['id','product_id','path','is_primary'])
-                      ->where('is_primary', true);
+                    $q->select(['id', 'product_id', 'path', 'is_primary'])
+                        ->where('is_primary', true);
                 },
                 'category' => function ($q) use ($locale, $fallback) {
-                    $q->select(['id','slug'])
-                      ->with(['translations' => function ($t) use ($locale, $fallback) {
-                          $t->select(['id','category_id','locale','name'])
-                            ->whereIn('locale', [$locale, $fallback]);
-                      }]);
+                    $q->select(['id', 'slug'])
+                        ->with(['translations' => function ($t) use ($locale, $fallback) {
+                            $t->select(['id', 'category_id', 'locale', 'name'])
+                                ->whereIn('locale', [$locale, $fallback]);
+                        }]);
                 },
             ]);
 
-        // 1) Category filter
         $productsQuery->when($request->filled('category'), function ($q) use ($request) {
             $catSlug = $request->string('category')->toString();
-            $q->whereHas('category', fn($c) => $c->where('slug', $catSlug));
-        });
 
-        // 2) Search by product name (translations)
-        $productsQuery->when($request->filled('q'), function ($q) use ($request, $locale, $fallback) {
-            $term = trim($request->string('q')->toString());
-            $q->whereHas('translations', function ($t) use ($term, $locale, $fallback) {
-                $t->whereIn('locale', [$locale, $fallback])
-                  ->where('name', 'like', "%{$term}%");
+            $q->whereHas('category', function ($c) use ($catSlug) {
+                $c->where('slug', $catSlug);
             });
         });
 
-        // 3) Price range
-        $productsQuery->when($request->filled('min'), fn($q) => $q->where('base_price', '>=', (float)$request->input('min')));
-        $productsQuery->when($request->filled('max'), fn($q) => $q->where('base_price', '<=', (float)$request->input('max')));
+        $productsQuery->when($request->filled('q'), function ($q) use ($request, $locale, $fallback) {
+            $term = trim($request->string('q')->toString());
 
-        // 4) Color filter عبر variants.values
+            $q->whereHas('translations', function ($t) use ($term, $locale, $fallback) {
+                $t->whereIn('locale', [$locale, $fallback])
+                    ->where('name', 'like', "%{$term}%");
+            });
+        });
+
+        $productsQuery->when(
+            $request->filled('min'),
+            fn ($q) => $q->where('base_price', '>=', (float) $request->input('min'))
+        );
+
+        $productsQuery->when(
+            $request->filled('max'),
+            fn ($q) => $q->where('base_price', '<=', (float) $request->input('max'))
+        );
+
         if ($colorAttr && $request->filled('color')) {
             $colorValueId = (int) $request->input('color');
 
             $productsQuery->whereHas('variants.values', function ($v) use ($colorAttr, $colorValueId) {
                 $v->where('attribute_id', $colorAttr->id)
-                  ->where('attribute_value_id', $colorValueId);
+                    ->where('attribute_value_id', $colorValueId);
             });
         }
 
-        // 5) Tag filter عبر variants.values
         if ($tagAttr && $request->filled('tag')) {
             $tagValueId = (int) $request->input('tag');
 
             $productsQuery->whereHas('variants.values', function ($v) use ($tagAttr, $tagValueId) {
                 $v->where('attribute_id', $tagAttr->id)
-                  ->where('attribute_value_id', $tagValueId);
+                    ->where('attribute_value_id', $tagValueId);
             });
         }
 
-        // 6) Sort (مع ترتيب ثابت)
         $sort = $request->input('sort', 'new');
 
         if ($sort === 'price_asc') {
             $productsQuery->orderBy('base_price', 'asc')
-                          ->orderBy('created_at', 'desc'); // ترتيب ثابت للصفحات
+                ->orderBy('created_at', 'desc');
         } elseif ($sort === 'price_desc') {
             $productsQuery->orderBy('base_price', 'desc')
-                          ->orderBy('created_at', 'desc');
+                ->orderBy('created_at', 'desc');
         } else {
             $productsQuery->orderBy('created_at', 'desc');
         }
 
-        // Pagination
         $products = $productsQuery->paginate(10)->withQueryString();
 
-        // Ranges للـ UI
+        $wishlistProductIds = [];
+        if (auth()->check()) {
+            $wishlistProductIds = WishlistItem::query()
+                ->whereHas('wishlist', function ($q) {
+                    $q->where('user_id', auth()->id());
+                })
+                ->whereNull('variant_id')
+                ->pluck('product_id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+        }
+
         $priceRanges = [
             ['label' => 'All', 'min' => null, 'max' => null],
             ['label' => '$0.00 - $50.00', 'min' => 0, 'max' => 50],
@@ -167,188 +175,403 @@ class ProductController extends Controller
             'products',
             'colorValues',
             'tagValues',
-            'priceRanges'
+            'priceRanges',
+            'wishlistProductIds'
         ));
     }
 
 
+    public function show(string $slug)
+    {
+        $locale = app()->getLocale();
+        $fallback = config('app.fallback_locale');
 
+        // جلب المنتج مع جميع العلاقات المطلوبة
+        $product = Product::query()
+            ->where('slug', $slug)
+            ->where('status', 'active')
+            ->with([
+                'translations' => function ($q) use ($locale, $fallback) {
+                    $q->select(['id', 'product_id', 'locale', 'name', 'description'])
+                        ->whereIn('locale', [$locale, $fallback]);
+                },
+                'images' => function ($q) {
+                    $q->select([
+                        'id', 'product_id', 'variant_id', 'path', 'alt_text',
+                        'is_primary', 'sort_order'
+                    ])
+                        ->orderByDesc('is_primary')
+                        ->orderBy('sort_order')
+                        ->orderBy('id');
+                },
+                'primaryImage:id,product_id,path,is_primary',
+                'category:id,slug',
+                'category.translations' => function ($q) use ($locale, $fallback) {
+                    $q->select(['id', 'category_id', 'locale', 'name'])
+                        ->whereIn('locale', [$locale, $fallback]);
+                },
+                'variants' => function ($q) {
+                    $q->select([
+                        'id', 'product_id', 'sku', 'price', 'stock',
+                        'is_active', 'combination_key'
+                    ])
+                        ->where('is_active', true)
+                        ->orderByDesc('id');
+                },
+                'variants.values' => function ($q) {
+                    $q->select([
+                        'id', 'product_variant_id', 'attribute_id',
+                        'attribute_value_id'
+                    ]);
+                },
+                'variants.values.attribute:id,slug,name,is_active',
+                'variants.values.value:id,attribute_id,value,slug,sort_order,is_active',
+                'variants.images' => function ($q) {
+                    $q->select([
+                        'id', 'product_id', 'variant_id', 'path', 'alt_text',
+                        'is_primary', 'sort_order'
+                    ])
+                        ->orderByDesc('is_primary')
+                        ->orderBy('sort_order')
+                        ->orderBy('id');
+                },
+                'coupons' => function ($q) {
+                    $q->where('is_active', true)
+                        ->where(function ($query) {
+                            $query->whereNull('starts_at')
+                                ->orWhere('starts_at', '<=', now());
+                        })
+                        ->where(function ($query) {
+                            $query->whereNull('expires_at')
+                                ->orWhere('expires_at', '>=', now());
+                        });
+                },
+                'reviews' => function ($q) {
+                    $q->where('is_approved', true)
+                        ->with('user:id,name')
+                        ->latest();
+                }
+            ])
+            ->firstOrFail();
 
+        // إعداد الصور الافتراضية
+        $fallbackMain = asset('cozastore/images/product-detail-01.jpg');
+        $fallbackThumb = asset('cozastore/images/product-detail-02.jpg');
+        $fallbackRelated = asset('cozastore/images/product-01.jpg');
 
-public function show(string $slug)
-{
-    $locale   = app()->getLocale();
-    $fallback = config('app.fallback_locale');
+        // معلومات المنتج الأساسية
+        $productName = $product->name ?? $product->slug;
+        $productDescription = $product->description ?? '';
+        $productPrice = (float)($product->variants->min('price') ?? $product->base_price);
+        $productCurrency = $product->currency ?? 'SAR';
+        $productSku = $product->variants->first()?->sku ?? $product->sku ?? 'N/A';
+        $categoryName = $product->category?->name ?? $product->category?->slug ?? null;
+        $categorySlug = $product->category?->slug ?? null;
 
-    $product = Product::query()
-        ->where('slug', $slug)
-        ->where('status', 'active')
-        ->with([
-            'translations' => function ($q) use ($locale, $fallback) {
-                $q->select(['id','product_id','locale','name','description'])
-                    ->whereIn('locale', [$locale, $fallback]);
-            },
+        // بناء الصور العامة (بدون variant)
+        $generalGallery = $this->buildCleanImagePayload(
+            $product->images->whereNull('variant_id')->values(),
+            $productName,
+            $fallbackMain,
+            $fallbackThumb
+        );
 
-            'images:id,product_id,variant_id,path,alt_text,is_primary,sort_order',
-            'primaryImage:id,product_id,path,is_primary',
+        // إذا لم توجد صور عامة، استخدم الصورة الأساسية للمنتج
+        if (empty($generalGallery)) {
+            $mainPath = $product->primaryImage?->path;
+            $mainUrl = ($mainPath && Storage::disk('public')->exists($mainPath))
+                ? Storage::url($mainPath)
+                : $fallbackMain;
+            $generalGallery = [[
+                'id' => null,
+                'path' => null,
+                'url' => $mainUrl,
+                'thumb' => $mainUrl,
+                'alt' => $productName,
+                'is_primary' => true,
+                'sort_order' => 0,
+            ]];
+        }
 
-            'category:id,slug',
-            'category.translations' => function ($q) use ($locale, $fallback) {
-                $q->select(['id','category_id','locale','name'])
-                    ->whereIn('locale', [$locale, $fallback]);
-            },
+        // معالجة الأحجام والألوان والـ Variants
+        $sizes = collect();
+        $colors = collect();
+        $variantMap = [];
+        $colorGalleryMap = [];
+        $colorDefaultVariantMap = [];
+        $variantColorMap = [];
 
-            'variants' => function ($q) {
-                $q->select(['id','product_id','sku','price','stock','is_active'])
-                    ->where('is_active', true);
-            },
+        foreach ($product->variants as $variant) {
+            $sizeId = null;
+            $colorId = null;
 
-            'variants.values' => function ($q) {
-                $q->select(['id','product_variant_id','attribute_id','attribute_value_id']);
-            },
+            // استخراج معرف الحجم واللون من قيم الـ variant
+            foreach ($variant->values as $vv) {
+                $attrSlug = strtolower((string)($vv->attribute?->slug ?? ''));
 
-            'variants.values.attribute:id,slug,name,is_active',
-            'variants.values.value:id,attribute_id,value,slug,sort_order,is_active',
+                // التحقق من الحجم
+                if (in_array($attrSlug, ['size', 'sizes'], true) && $vv->value && $vv->value->is_active) {
+                    $sizes->push([
+                        'id' => (int)$vv->value->id,
+                        'value' => $vv->value->value,
+                        'slug' => $vv->value->slug,
+                        'sort_order' => (int)$vv->value->sort_order,
+                    ]);
+                    $sizeId = (int)$vv->attribute_value_id;
+                }
 
-            // ✅ الكوبونات الخاصة بالمنتج
-            'coupons' => function ($q) {
-                $q->where('is_active', true)
-                  ->where(function ($query) {
-                      $query->whereNull('starts_at')
-                            ->orWhere('starts_at', '<=', now());
-                  })
-                  ->where(function ($query) {
-                      $query->whereNull('expires_at')
-                            ->orWhere('expires_at', '>=', now());
-                  });
-            },
-
-            // ✅ Reviews الخاصة بالمنتج
-            'reviews' => function ($q) {
-                $q->where('is_approved', true)
-                  ->with('user:id,name')
-                  ->latest();
+                // التحقق من اللون
+                if (in_array($attrSlug, ['color', 'colors'], true) && $vv->value && $vv->value->is_active) {
+                    $colors->push([
+                        'id' => (int)$vv->value->id,
+                        'value' => $vv->value->value,
+                        'slug' => $vv->value->slug,
+                        'sort_order' => (int)$vv->value->sort_order,
+                    ]);
+                    $colorId = (int)$vv->attribute_value_id;
+                }
             }
 
-        ])
-        ->firstOrFail();
+            // بناء صور الـ variant
+            $variantImages = $this->buildCleanImagePayload(
+                $variant->images,
+                $productName,
+                $fallbackMain,
+                $fallbackThumb
+            );
 
-    // =========================
-    // Gallery Images (primary first)
-    // =========================
-    $galleryImages = $product->images
-        ->sortBy(function ($img) {
-            return [(int)!$img->is_primary, (int)$img->sort_order, (int)$img->id];
-        })
-        ->values();
+            $variantPayload = [
+                'id' => (int)$variant->id,
+                'sku' => $variant->sku,
+                'price' => (float)$variant->price,
+                'stock' => (int)$variant->stock,
+                'images' => $variantImages,
+                'size_id' => $sizeId,
+                'color_id' => $colorId,
+            ];
 
-    // =========================
-    // Extract Size / Color values from variants
-    // =========================
-    $sizes  = collect();
-    $colors = collect();
-
-    foreach ($product->variants as $variant) {
-        foreach ($variant->values as $vv) {
-
-            $attrSlug = strtolower($vv->attribute?->slug ?? '');
-
-            if (in_array($attrSlug, ['size','sizes'], true)) {
-                if ($vv->value) $sizes->push($vv->value);
+            // بناء خريطة الـ variants
+            if ($sizeId && $colorId) {
+                $variantMap["{$sizeId}-{$colorId}"] = $variantPayload;
+            }
+            if ($sizeId && !$colorId) {
+                $variantMap[(string)$sizeId] = $variantPayload;
+            }
+            if ($colorId && !$sizeId) {
+                $variantMap[(string)$colorId] = $variantPayload;
             }
 
-            if (in_array($attrSlug, ['color','colors'], true)) {
-                if ($vv->value) $colors->push($vv->value);
+            // بناء خريطة الألوان والصور
+            if ($colorId) {
+                $variantColorMap[$variant->id] = $colorId;
+
+                if (!isset($colorDefaultVariantMap[$colorId])) {
+                    $colorDefaultVariantMap[$colorId] = $variantPayload;
+                }
+
+                if (!empty($variantImages)) {
+                    if (!isset($colorGalleryMap[$colorId])) {
+                        $colorGalleryMap[$colorId] = [];
+                    }
+
+                    $colorGalleryMap[$colorId] = array_merge(
+                        $colorGalleryMap[$colorId],
+                        $variantImages
+                    );
+
+                    if (
+                        !isset($colorDefaultVariantMap[$colorId]['images']) ||
+                        empty($colorDefaultVariantMap[$colorId]['images'])
+                    ) {
+                        $colorDefaultVariantMap[$colorId] = $variantPayload;
+                    }
+                }
             }
         }
+
+        // تنظيف البيانات المكررة
+        $sizes = $sizes->unique('id')->sortBy('sort_order')->values()->all();
+        $colors = $colors->unique('id')->sortBy('sort_order')->values()->all();
+
+        // تنظيم صور الألوان
+        foreach ($colorGalleryMap as $colorId => $images) {
+            $colorGalleryMap[$colorId] = $this->uniqueAndSortImages($images);
+        }
+
+        // جلب المنتجات ذات الصلة
+        $related = Product::query()
+            ->select(['id', 'category_id', 'slug', 'base_price', 'currency', 'status', 'created_at'])
+            ->where('status', 'active')
+            ->where('id', '!=', $product->id)
+            ->when($product->category_id, fn($q) => $q->where('category_id', $product->category_id))
+            ->with([
+                'translations' => function ($q) use ($locale, $fallback) {
+                    $q->select(['id', 'product_id', 'locale', 'name'])
+                        ->whereIn('locale', [$locale, $fallback]);
+                },
+                'primaryImage:id,product_id,path,is_primary',
+            ])
+            ->latest()
+            ->take(8)
+            ->get()
+            ->map(function ($rp) use ($fallbackRelated) {
+                return [
+                    'slug' => $rp->slug,
+                    'name' => $rp->name ?? $rp->slug,
+                    'price' => number_format((float)$rp->base_price, 2),
+                    'currency' => $rp->currency,
+                    'image' => $rp->primaryImage?->path && Storage::disk('public')->exists($rp->primaryImage->path)
+                        ? Storage::url($rp->primaryImage->path)
+                        : $fallbackRelated,
+                ];
+            })
+            ->values()
+            ->all();
+
+        // معالجة الكوبونات
+        $productCoupons = ($product->coupons ?? collect())
+            ->map(function ($coupon) use ($productCurrency) {
+                return [
+                    'code' => $coupon->code,
+                    'type' => $coupon->type,
+                    'value' => $coupon->value,
+                    'currency' => $productCurrency,
+                    'label' => $coupon->type === 'percent'
+                        ? 'احصل على ' . rtrim(rtrim(number_format($coupon->value, 2), '0'), '.') . '% خصم على هذا المنتج'
+                        : 'احصل على ' . number_format($coupon->value, 2) . ' ' . $productCurrency . ' خصم على هذا المنتج',
+                ];
+            })
+            ->values()
+            ->all();
+
+        // معالجة المراجعات والتقييمات
+        $reviews = ($product->reviews ?? collect())
+            ->map(function ($review) {
+                return [
+                    'user_name' => $review->user->name ?? 'مستخدم',
+                    'rating' => (int)$review->rating,
+                    'title' => $review->title,
+                    'comment' => $review->comment,
+                ];
+            })
+            ->values()
+            ->all();
+
+        $reviewsCount = count($reviews);
+        $averageRating = $reviewsCount > 0 ? round(collect($reviews)->avg('rating'), 1) : 0;
+
+        // التحقق من وجود المنتج في قائمة المفضلة
+        $wishlistExists = false;
+        if (auth()->check()) {
+            $wishlistExists = WishlistItem::whereHas('wishlist', function ($query) {
+                $query->where('user_id', auth()->id());
+            })
+                ->where('product_id', $product->id)
+                ->whereNull('variant_id')
+                ->exists();
+        }
+
+        // إرسال جميع البيانات للـ View
+        return view('site.product.product-detail', [
+            'product' => $product,
+            'productName' => $productName,
+            'productDescription' => $productDescription,
+            'productPrice' => $productPrice,
+            'productCurrency' => $productCurrency,
+            'productSku' => $productSku,
+            'categoryName' => $categoryName,
+            'categorySlug' => $categorySlug,
+            'generalGallery' => $generalGallery,
+            'sizes' => $sizes,
+            'colors' => $colors,
+            'variantMap' => $variantMap,
+            'colorGalleryMap' => $colorGalleryMap,                    // ✅ صور كل لون
+            'colorDefaultVariantMap' => $colorDefaultVariantMap,      // ✅ بيانات الـ variant الافتراضي لكل لون
+            'variantColorMap' => $variantColorMap,
+            'related' => $related,
+            'productCoupons' => $productCoupons,
+            'reviews' => $reviews,
+            'reviewsCount' => $reviewsCount,                          // ✅ عدد المراجعات
+            'averageRating' => $averageRating,                        // ✅ متوسط التقييم
+            'wishlistExists' => $wishlistExists,
+        ]);
     }
 
-    $sizes  = $sizes->filter()->unique('id')->sortBy('sort_order')->values();
-    $colors = $colors->filter()->unique('id')->sortBy('sort_order')->values();
 
-    // =========================
-    // Build Variant Map
-    // =========================
-    $variantMap = [];
+    private function buildCleanImagePayload($images, string $productName, string $fallbackMain, string $fallbackThumb): array
+    {
+        $unique = [];
+        $seen = [];
 
-    foreach ($product->variants as $variant) {
+        foreach ($images as $img) {
+            $path = trim((string) ($img->path ?? ''));
 
-        $sizeId  = null;
-        $colorId = null;
-
-        foreach ($variant->values as $vv) {
-
-            $attrSlug = strtolower($vv->attribute?->slug ?? '');
-
-            if (in_array($attrSlug, ['size','sizes'], true)) {
-                $sizeId = (int) $vv->attribute_value_id;
+            if ($path === '') {
+                continue;
             }
 
-            if (in_array($attrSlug, ['color','colors'], true)) {
-                $colorId = (int) $vv->attribute_value_id;
+            if (!Storage::disk('public')->exists($path)) {
+                continue;
             }
+
+            if (isset($seen[$path])) {
+                continue;
+            }
+
+            $seen[$path] = true;
+
+            $url = Storage::url($path);
+
+            $unique[] = [
+                'id' => $img->id,
+                'path' => $path,
+                'url' => $url,
+                'thumb' => $url,
+                'alt' => $img->alt_text ?: $productName,
+                'is_primary' => (bool) ($img->is_primary ?? false),
+                'sort_order' => (int) ($img->sort_order ?? 0),
+            ];
         }
 
-        if (!empty($sizeId) && !empty($colorId)) {
-            $variantMap["{$sizeId}-{$colorId}"] = $variant->id;
+        if (empty($unique)) {
+            return [];
         }
-        elseif (!empty($sizeId) && empty($colorId)) {
-            $variantMap["{$sizeId}"] = $variant->id;
-        }
-        elseif (!empty($colorId) && empty($sizeId)) {
-            $variantMap["{$colorId}"] = $variant->id;
-        }
+
+        return $this->uniqueAndSortImages($unique);
     }
 
-    // =========================
-    // Related Products
-    // =========================
-    $related = Product::query()
-        ->select(['id','category_id','slug','base_price','currency','status','created_at'])
-        ->where('status', 'active')
-        ->where('id', '!=', $product->id)
-        ->when($product->category_id, fn ($q) => $q->where('category_id', $product->category_id))
-        ->with([
-            'translations' => function ($q) use ($locale, $fallback) {
-                $q->select(['id','product_id','locale','name'])
-                    ->whereIn('locale', [$locale, $fallback]);
-            },
-            'primaryImage:id,product_id,path,is_primary',
-        ])
-        ->latest()
-        ->take(8)
-        ->get();
+    private function uniqueAndSortImages(array $images): array
+    {
+        $seen = [];
+        $unique = [];
 
-    // =========================
-    // Product Coupons
-    // =========================
-    $productCoupons = $product->coupons ?? collect();
+        foreach ($images as $img) {
+            $key = trim((string) ($img['path'] ?? $img['url'] ?? ''));
 
-    // =========================
-    // Reviews Data
-    // =========================
-    $reviews = $product->reviews ?? collect();
-    $reviewsCount = $reviews->count();
-    $averageRating = round($reviews->avg('rating'), 1);
+            if ($key === '') {
+                continue;
+            }
 
-    return view('site.product.product-detail', compact(
-        'product',
-        'galleryImages',
-        'sizes',
-        'colors',
-        'variantMap',
-        'related',
-        'productCoupons',
-        'reviews',
-        'reviewsCount',
-        'averageRating'
-    ));
+            if (isset($seen[$key])) {
+                continue;
+            }
+
+            $seen[$key] = true;
+            $unique[] = $img;
+        }
+
+        usort($unique, function ($a, $b) {
+            return [
+                !empty($a['is_primary']) ? 0 : 1,
+                (int) ($a['sort_order'] ?? 0),
+                (int) ($a['id'] ?? 0),
+            ] <=> [
+                !empty($b['is_primary']) ? 0 : 1,
+                (int) ($b['sort_order'] ?? 0),
+                (int) ($b['id'] ?? 0),
+            ];
+        });
+
+        return array_values($unique);
+    }
 }
-
-}
-
-
-
-
-
-

@@ -6,43 +6,50 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\Category\StoreCategoryRequest;
 use App\Http\Requests\Dashboard\Category\UpdateCategoryRequest;
 use App\Models\Category;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
 
 class CategoryController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
-        $query = Category::query()
-            ->with(['parent.translations', 'translations'])
-            ->withCount(['children', 'products']);
+        $filters = $this->extractFilters($request);
 
-        if ($request->filled('search')) {
-            $search = $request->search;
+        $query = Category::query()
+            ->with([
+                'parent.translations',
+                'translations',
+            ])
+            ->withCount([
+                'children',
+                'products',
+            ]);
+
+        if ($filters['search'] !== '') {
+            $search = $filters['search'];
 
             $query->where(function ($q) use ($search) {
                 $q->where('slug', 'like', "%{$search}%")
-                  ->orWhereHas('translations', function ($t) use ($search) {
-                      $t->where('name', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%");
-                  });
+                    ->orWhereHas('translations', function ($t) use ($search) {
+                        $t->where('name', 'like', "%{$search}%")
+                            ->orWhere('description', 'like', "%{$search}%");
+                    });
             });
         }
 
-        if ($request->filled('status')) {
-            if ($request->status === 'active') {
-                $query->where('is_active', true);
-            } elseif ($request->status === 'inactive') {
-                $query->where('is_active', false);
-            }
+        if ($filters['status'] === 'active') {
+            $query->where('is_active', true);
+        } elseif ($filters['status'] === 'inactive') {
+            $query->where('is_active', false);
         }
 
-        if ($request->filled('parent')) {
-            if ($request->parent === 'root') {
-                $query->whereNull('parent_id');
-            } elseif (is_numeric($request->parent)) {
-                $query->where('parent_id', $request->parent);
-            }
+        if ($filters['parent'] === 'root') {
+            $query->whereNull('parent_id');
+        } elseif ($filters['parent'] !== '' && is_numeric($filters['parent'])) {
+            $query->where('parent_id', (int) $filters['parent']);
         }
 
         $categories = $query
@@ -51,41 +58,74 @@ class CategoryController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        $parents = Category::with('translations')
-            ->root()
-            ->ordered()
-            ->get();
+        $parents = $this->availableParents();
 
-        return view('dashboard.categories.index', compact('categories', 'parents'));
+        return view('dashboard.categories.index', [
+            'categories' => $categories,
+            'parents' => $parents,
+            'filters' => $filters,
+            'canCreate' => $this->canCurrentUser('categories.create'),
+            'canEdit' => $this->canCurrentUser('categories.edit'),
+            'canDelete' => $this->canCurrentUser('categories.delete'),
+            'canViewTrash' => $this->canCurrentUser('categories.view'),
+        ]);
     }
 
-    public function create()
+    public function trash(): View
     {
-        $parents = Category::with('translations')
-            ->ordered()
-            ->get();
+        $categories = Category::onlyTrashed()
+            ->with(['parent.translations', 'translations'])
+            ->withCount(['children', 'products'])
+            ->orderByDesc('deleted_at')
+            ->paginate(15);
 
-        return view('dashboard.categories.create', compact('parents'));
+        return view('dashboard.categories.trash', [
+            'categories' => $categories,
+            'canEdit' => $this->canCurrentUser('categories.edit'),
+            'canDelete' => $this->canCurrentUser('categories.delete'),
+        ]);
     }
 
-    public function store(StoreCategoryRequest $request)
+    public function create(): View
     {
-        DB::transaction(function () use ($request) {
+        return view('dashboard.categories.create', [
+            'parents' => $this->availableParents(),
+            'form' => $this->formData(),
+        ]);
+    }
+
+    public function store(StoreCategoryRequest $request): RedirectResponse
+    {
+        $payload = $this->normalizedPayload($request);
+
+        if (
+            $payload['is_active']
+            && $payload['parent_id']
+            && !$this->parentAllowsActiveChild($payload['parent_id'])
+        ) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'parent_id' => 'You cannot assign an active category under an inactive parent.',
+                ]);
+        }
+
+        DB::transaction(function () use ($payload) {
             $category = Category::create([
-                'parent_id' => $request->parent_id,
-                'slug' => $request->slug,
-                'is_active' => $request->boolean('is_active'),
-                'sort_order' => $request->sort_order ?? 0,
-                'meta_title' => $request->meta_title,
-                'meta_description' => $request->meta_description,
+                'parent_id' => $payload['parent_id'],
+                'slug' => $payload['slug'],
+                'is_active' => $payload['is_active'],
+                'sort_order' => $payload['sort_order'],
+                'meta_title' => $payload['meta_title'],
+                'meta_description' => $payload['meta_description'],
             ]);
 
-            foreach ($request->translations as $locale => $data) {
-                if (!empty($data['name']) || !empty($data['description'])) {
+            foreach ($payload['translations'] as $locale => $data) {
+                if (($data['name'] ?? '') !== '' || ($data['description'] ?? '') !== '') {
                     $category->translations()->create([
                         'locale' => $locale,
-                        'name' => $data['name'] ?? null,
-                        'description' => $data['description'] ?? null,
+                        'name' => $data['name'] ?: null,
+                        'description' => $data['description'] ?: null,
                     ]);
                 }
             }
@@ -96,56 +136,79 @@ class CategoryController extends Controller
             ->with('success', 'Category created successfully.');
     }
 
-    public function show(Category $category)
+    public function show(Category $category): View
     {
         $category->load([
+            'parent.parent.translations',
             'parent.translations',
             'children.translations',
             'translations',
-            'products',
-        ]);
+        ])->loadCount('products');
 
-        return view('dashboard.categories.show', compact('category'));
+        return view('dashboard.categories.show', [
+            'category' => $category,
+            'breadcrumb' => $this->buildBreadcrumb($category),
+            'canEdit' => $this->canCurrentUser('categories.edit'),
+        ]);
     }
 
-    public function edit(Category $category)
+    public function edit(Category $category): View
     {
         $category->load('translations');
 
-        $parents = Category::with('translations')
-            ->where('id', '!=', $category->id)
-            ->ordered()
-            ->get();
-
-        return view('dashboard.categories.edit', compact('category', 'parents'));
+        return view('dashboard.categories.edit', [
+            'category' => $category,
+            'parents' => $this->availableParents($category->id),
+            'form' => $this->formData($category),
+        ]);
     }
 
-    public function update(UpdateCategoryRequest $request, Category $category)
+    public function update(UpdateCategoryRequest $request, Category $category): RedirectResponse
     {
-        if ($this->wouldCreateCircularReference($category, $request->parent_id)) {
+        $payload = $this->normalizedPayload($request);
+
+        if ($this->wouldCreateCircularReference($category, $payload['parent_id'])) {
             return back()
                 ->withInput()
-                ->withErrors(['parent_id' => 'Invalid parent category selection.']);
+                ->withErrors([
+                    'parent_id' => 'Invalid parent category selection.',
+                ]);
         }
 
-        DB::transaction(function () use ($request, $category) {
+        if (
+            $payload['is_active']
+            && $payload['parent_id']
+            && !$this->parentAllowsActiveChild($payload['parent_id'])
+        ) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'parent_id' => 'You cannot activate this category while its parent is inactive.',
+                ]);
+        }
+
+        DB::transaction(function () use ($payload, $category) {
             $category->update([
-                'parent_id' => $request->parent_id,
-                'slug' => $request->slug,
-                'is_active' => $request->boolean('is_active'),
-                'sort_order' => $request->sort_order ?? 0,
-                'meta_title' => $request->meta_title,
-                'meta_description' => $request->meta_description,
+                'parent_id' => $payload['parent_id'],
+                'slug' => $payload['slug'],
+                'is_active' => $payload['is_active'],
+                'sort_order' => $payload['sort_order'],
+                'meta_title' => $payload['meta_title'],
+                'meta_description' => $payload['meta_description'],
             ]);
 
-            foreach ($request->translations as $locale => $data) {
+            foreach ($payload['translations'] as $locale => $data) {
                 $category->translations()->updateOrCreate(
                     ['locale' => $locale],
                     [
-                        'name' => $data['name'] ?? null,
-                        'description' => $data['description'] ?? null,
+                        'name' => $data['name'] ?: null,
+                        'description' => $data['description'] ?: null,
                     ]
                 );
+            }
+
+            if (!$category->is_active) {
+                $category->children()->update(['is_active' => false]);
             }
         });
 
@@ -154,7 +217,7 @@ class CategoryController extends Controller
             ->with('success', 'Category updated successfully.');
     }
 
-    public function destroy(Category $category)
+    public function destroy(Category $category): RedirectResponse
     {
         if ($category->children()->exists()) {
             return back()->with('error', 'Cannot delete category because it has child categories.');
@@ -168,16 +231,205 @@ class CategoryController extends Controller
 
         return redirect()
             ->route('dashboard.categories.index')
-            ->with('success', 'Category deleted successfully.');
+            ->with('success', 'Category moved to trash successfully.');
     }
 
-    public function toggleStatus(Category $category)
+    public function restore(int $id): RedirectResponse
     {
-        $category->update([
-            'is_active' => !$category->is_active,
-        ]);
+        $category = Category::onlyTrashed()->findOrFail($id);
+
+        if ($category->parent_id && !$this->parentExistsAndActive($category->parent_id)) {
+            return back()->with('error', 'Cannot restore category because its parent is missing or inactive.');
+        }
+
+        $category->restore();
+
+        return redirect()
+            ->route('dashboard.categories.trash')
+            ->with('success', 'Category restored successfully.');
+    }
+
+    public function forceDelete(int $id): RedirectResponse
+    {
+        $category = Category::onlyTrashed()->withCount(['children', 'products'])->findOrFail($id);
+
+        if ($category->children_count > 0) {
+            return back()->with('error', 'Cannot permanently delete category because it still has child categories.');
+        }
+
+        if ($category->products_count > 0) {
+            return back()->with('error', 'Cannot permanently delete category because it still has related products.');
+        }
+
+        $category->translations()->delete();
+        $category->forceDelete();
+
+        return redirect()
+            ->route('dashboard.categories.trash')
+            ->with('success', 'Category permanently deleted.');
+    }
+
+    public function toggleStatus(Category $category): RedirectResponse
+    {
+        $newStatus = !$category->is_active;
+
+        if ($newStatus && $category->parent_id && !$this->parentAllowsActiveChild($category->parent_id)) {
+            return back()->with('error', 'Cannot activate this category while parent category is inactive.');
+        }
+
+        DB::transaction(function () use ($category, $newStatus) {
+            $category->update([
+                'is_active' => $newStatus,
+            ]);
+
+            if (!$newStatus) {
+                $category->children()->update(['is_active' => false]);
+            }
+        });
 
         return back()->with('success', 'Category status updated successfully.');
+    }
+
+    public function bulkAction(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'action' => ['required', 'string', 'in:activate,deactivate,delete'],
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:categories,id'],
+        ]);
+
+        $ids = collect($request->input('ids', []))
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values();
+
+        if ($ids->isEmpty()) {
+            return back()->with('error', 'No categories selected.');
+        }
+
+        $categories = Category::whereIn('id', $ids)->get();
+
+        if ($request->action === 'activate') {
+            foreach ($categories as $category) {
+                if (!$category->parent_id || $this->parentAllowsActiveChild($category->parent_id)) {
+                    $category->update(['is_active' => true]);
+                }
+            }
+
+            return back()->with('success', 'Selected categories activated successfully.');
+        }
+
+        if ($request->action === 'deactivate') {
+            foreach ($categories as $category) {
+                $category->update(['is_active' => false]);
+                $category->children()->update(['is_active' => false]);
+            }
+
+            return back()->with('success', 'Selected categories deactivated successfully.');
+        }
+
+        if ($request->action === 'delete') {
+            foreach ($categories as $category) {
+                if (!$category->children()->exists() && !$category->products()->exists()) {
+                    $category->delete();
+                }
+            }
+
+            return back()->with('success', 'Bulk delete completed.');
+        }
+
+        return back()->with('error', 'Invalid bulk action.');
+    }
+
+    private function extractFilters(Request $request): array
+    {
+        return [
+            'search' => trim((string) $request->input('search', '')),
+            'status' => (string) $request->input('status', ''),
+            'parent' => (string) $request->input('parent', ''),
+        ];
+    }
+
+    private function availableParents(?int $exceptId = null)
+    {
+        return Category::query()
+            ->with('translations')
+            ->when($exceptId, fn ($q) => $q->where('id', '!=', $exceptId))
+            ->orderBy('sort_order')
+            ->orderByDesc('id')
+            ->get();
+    }
+
+    private function formData(?Category $category = null): array
+    {
+        $ar = $category?->translations->firstWhere('locale', 'ar');
+        $en = $category?->translations->firstWhere('locale', 'en');
+
+        return [
+            'translations' => [
+                'ar' => [
+                    'name' => old('translations.ar.name', $ar?->name ?? ''),
+                    'description' => old('translations.ar.description', $ar?->description ?? ''),
+                ],
+                'en' => [
+                    'name' => old('translations.en.name', $en?->name ?? ''),
+                    'description' => old('translations.en.description', $en?->description ?? ''),
+                ],
+            ],
+            'slug' => old('slug', $category->slug ?? ''),
+            'parent_id' => old('parent_id', $category->parent_id ?? ''),
+            'sort_order' => old('sort_order', $category->sort_order ?? 0),
+            'meta_title' => old('meta_title', $category->meta_title ?? ''),
+            'meta_description' => old('meta_description', $category->meta_description ?? ''),
+            'is_active' => old('is_active', $category?->is_active ?? true),
+        ];
+    }
+
+    private function normalizedPayload(Request $request): array
+    {
+        $arName = trim((string) data_get($request->input('translations'), 'ar.name', ''));
+        $enName = trim((string) data_get($request->input('translations'), 'en.name', ''));
+
+        $slug = trim((string) $request->input('slug', ''));
+        $generatedFrom = $enName !== '' ? $enName : $arName;
+        $slug = $slug !== '' ? $slug : Str::slug($generatedFrom);
+        $slug = Str::slug(Str::lower(trim($slug)));
+
+        return [
+            'parent_id' => $request->filled('parent_id') ? (int) $request->input('parent_id') : null,
+            'slug' => $slug,
+            'is_active' => $request->boolean('is_active'),
+            'sort_order' => (int) $request->input('sort_order', 0),
+            'meta_title' => trim((string) $request->input('meta_title', '')),
+            'meta_description' => trim((string) $request->input('meta_description', '')),
+            'translations' => [
+                'ar' => [
+                    'name' => $arName,
+                    'description' => trim((string) data_get($request->input('translations'), 'ar.description', '')),
+                ],
+                'en' => [
+                    'name' => $enName,
+                    'description' => trim((string) data_get($request->input('translations'), 'en.description', '')),
+                ],
+            ],
+        ];
+    }
+
+    private function buildBreadcrumb(Category $category): array
+    {
+        $items = [];
+        $current = $category;
+
+        while ($current) {
+            $items[] = [
+                'id' => $current->id,
+                'name' => $current->name ?: "Category #{$current->id}",
+            ];
+
+            $current = $current->parent;
+        }
+
+        return array_reverse($items);
     }
 
     private function wouldCreateCircularReference(Category $category, $parentId): bool
@@ -201,5 +453,35 @@ class CategoryController extends Controller
         }
 
         return false;
+    }
+
+    private function parentAllowsActiveChild(int $parentId): bool
+    {
+        return Category::query()
+            ->where('id', $parentId)
+            ->where('is_active', true)
+            ->exists();
+    }
+
+    private function parentExistsAndActive(int $parentId): bool
+    {
+        return Category::query()
+            ->where('id', $parentId)
+            ->whereNull('deleted_at')
+            ->where('is_active', true)
+            ->exists();
+    }
+
+    private function canCurrentUser(string $permission): bool
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return false;
+        }
+
+        return $user->hasRole('owner')
+            || $user->hasRole('admin')
+            || $user->hasPermission($permission);
     }
 }

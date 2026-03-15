@@ -1,24 +1,20 @@
-@php
-    $category = $category ?? null;
-
-    $arName = old('translations.ar.name', optional($category?->translations->firstWhere('locale', 'ar'))->name);
-    $arDescription = old('translations.ar.description', optional($category?->translations->firstWhere('locale', 'ar'))->description);
-
-    $enName = old('translations.en.name', optional($category?->translations->firstWhere('locale', 'en'))->name);
-    $enDescription = old('translations.en.description', optional($category?->translations->firstWhere('locale', 'en'))->description);
-@endphp
-
 <div class="row">
     <div class="col-md-8">
         <div class="card card-outline card-primary">
             <div class="card-header">
                 <h3 class="card-title">Basic Information</h3>
             </div>
+
             <div class="card-body">
                 <div class="form-group">
                     <label>Arabic Name <span class="text-danger">*</span></label>
-                    <input type="text" name="translations[ar][name]" class="form-control"
-                           value="{{ $arName }}" required>
+                    <input
+                        type="text"
+                        name="translations[ar][name]"
+                        class="form-control"
+                        value="{{ $form['translations']['ar']['name'] }}"
+                        required
+                    >
                     @error('translations.ar.name')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
@@ -26,15 +22,26 @@
 
                 <div class="form-group">
                     <label>Arabic Description</label>
-                    <textarea name="translations[ar][description]" rows="4" class="form-control">{{ $arDescription }}</textarea>
+                    <textarea
+                        name="translations[ar][description]"
+                        rows="4"
+                        class="form-control"
+                    >{{ $form['translations']['ar']['description'] }}</textarea>
+                    @error('translations.ar.description')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                 </div>
 
                 <hr>
 
                 <div class="form-group">
                     <label>English Name</label>
-                    <input type="text" name="translations[en][name]" class="form-control"
-                           value="{{ $enName }}">
+                    <input
+                        type="text"
+                        name="translations[en][name]"
+                        class="form-control"
+                        value="{{ $form['translations']['en']['name'] }}"
+                    >
                     @error('translations.en.name')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
@@ -42,7 +49,14 @@
 
                 <div class="form-group">
                     <label>English Description</label>
-                    <textarea name="translations[en][description]" rows="4" class="form-control">{{ $enDescription }}</textarea>
+                    <textarea
+                        name="translations[en][description]"
+                        rows="4"
+                        class="form-control"
+                    >{{ $form['translations']['en']['description'] }}</textarea>
+                    @error('translations.en.description')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                 </div>
             </div>
         </div>
@@ -51,16 +65,31 @@
             <div class="card-header">
                 <h3 class="card-title">SEO</h3>
             </div>
+
             <div class="card-body">
                 <div class="form-group">
                     <label>Meta Title</label>
-                    <input type="text" name="meta_title" class="form-control"
-                           value="{{ old('meta_title', $category->meta_title ?? '') }}">
+                    <input
+                        type="text"
+                        name="meta_title"
+                        class="form-control"
+                        value="{{ $form['meta_title'] }}"
+                    >
+                    @error('meta_title')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                 </div>
 
                 <div class="form-group">
                     <label>Meta Description</label>
-                    <textarea name="meta_description" rows="3" class="form-control">{{ old('meta_description', $category->meta_description ?? '') }}</textarea>
+                    <textarea
+                        name="meta_description"
+                        rows="3"
+                        class="form-control"
+                    >{{ $form['meta_description'] }}</textarea>
+                    @error('meta_description')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                 </div>
             </div>
         </div>
@@ -71,11 +100,17 @@
             <div class="card-header">
                 <h3 class="card-title">Category Settings</h3>
             </div>
+
             <div class="card-body">
                 <div class="form-group">
-                    <label>Slug <span class="text-danger">*</span></label>
-                    <input type="text" name="slug" class="form-control"
-                           value="{{ old('slug', $category->slug ?? '') }}" required>
+                    <label>Slug</label>
+                    <input
+                        type="text"
+                        name="slug"
+                        class="form-control"
+                        value="{{ $form['slug'] }}"
+                        placeholder="Leave empty to auto-generate"
+                    >
                     @error('slug')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
@@ -86,8 +121,7 @@
                     <select name="parent_id" class="form-control">
                         <option value="">Root Category</option>
                         @foreach($parents as $parent)
-                            <option value="{{ $parent->id }}"
-                                {{ (string) old('parent_id', $category->parent_id ?? '') === (string) $parent->id ? 'selected' : '' }}>
+                            <option value="{{ $parent->id }}" {{ (string) $form['parent_id'] === (string) $parent->id ? 'selected' : '' }}>
                                 {{ $parent->name ?? 'No Name' }}
                             </option>
                         @endforeach
@@ -99,20 +133,33 @@
 
                 <div class="form-group">
                     <label>Sort Order</label>
-                    <input type="number" min="0" name="sort_order" class="form-control"
-                           value="{{ old('sort_order', $category->sort_order ?? 0) }}">
+                    <input
+                        type="number"
+                        min="0"
+                        name="sort_order"
+                        class="form-control"
+                        value="{{ $form['sort_order'] }}"
+                    >
+                    @error('sort_order')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                 </div>
 
                 <div class="form-group">
                     <div class="custom-control custom-switch">
-                        <input type="checkbox"
-                               class="custom-control-input"
-                               id="is_active"
-                               name="is_active"
-                               value="1"
-                               {{ old('is_active', $category->is_active ?? true) ? 'checked' : '' }}>
+                        <input
+                            type="checkbox"
+                            class="custom-control-input"
+                            id="is_active"
+                            name="is_active"
+                            value="1"
+                            {{ $form['is_active'] ? 'checked' : '' }}
+                        >
                         <label class="custom-control-label" for="is_active">Active</label>
                     </div>
+                    @error('is_active')
+                        <small class="text-danger d-block">{{ $message }}</small>
+                    @enderror
                 </div>
             </div>
 

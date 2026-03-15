@@ -5,8 +5,12 @@
 @section('content')
 <div class="content-wrapper">
     <section class="content-header">
-        <div class="container-fluid">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
             <h1>Edit Category</h1>
+
+            <a href="{{ route('dashboard.categories.show', $category) }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left mr-1"></i> Back to Details
+            </a>
         </div>
     </section>
 

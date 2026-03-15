@@ -33,10 +33,7 @@ class ProductVariant extends Model
         return $this->hasMany(ProductVariantValue::class, 'product_variant_id');
     }
 
-    public function images()
-    {
-        return $this->hasMany(ProductImage::class, 'variant_id');
-    }
+   
 
     public function cartItems()
     {
@@ -62,4 +59,9 @@ class ProductVariant extends Model
     {
         return $this->hasMany(InventoryReservation::class, 'variant_id');
     }
+
+    public function images()
+{
+    return $this->hasMany(\App\Models\ProductImage::class, 'variant_id');
+}
 }
