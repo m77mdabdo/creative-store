@@ -48,7 +48,6 @@
                                     </div>
                                 @endforeach
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -162,6 +161,29 @@
                                         </div>
 
                                         <div class="size-204 respon6-next">
+
+                                            @if(isset($colorVariants) && $colorVariants->count())
+                                                <div class="d-flex flex-wrap m-b-10" id="colorVariantButtons">
+                                                    @foreach($colorVariants as $colorVariant)
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-outline-dark mr-2 mb-2 color-variant-btn"
+                                                            data-variant-id="{{ $colorVariant['variant_id'] }}"
+                                                            data-color-id="{{ $colorVariant['color_id'] ?? '' }}"
+                                                            data-color-name="{{ $colorVariant['color_name'] }}"
+                                                            data-color-slug="{{ $colorVariant['color_slug'] }}"
+                                                            data-image="{{ $colorVariant['image'] }}"
+                                                            data-gallery='@json($colorVariant['gallery'])'
+                                                            data-price="{{ $colorVariant['price'] }}"
+                                                            data-stock="{{ $colorVariant['stock'] }}"
+                                                            data-sku="{{ $colorVariant['sku'] }}"
+                                                        >
+                                                            {{ $colorVariant['color_name'] }}
+                                                        </button>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+
                                             <div class="rs1-select2 bor8 bg0">
                                                 <select class="js-select2" name="color" id="colorSelect">
                                                     <option value="">Choose an option</option>
@@ -294,8 +316,7 @@
                             <a class="nav-link active" data-toggle="tab" href="#tab_description" role="tab">Description</a>
                         </li>
                         <li class="nav-item p-b-10">
-                            <a class="nav-link" data-toggle="tab" href="#tab_information" role="tab">Additional
-                                information</a>
+                            <a class="nav-link" data-toggle="tab" href="#tab_information" role="tab">Additional information</a>
                         </li>
                         <li class="nav-item p-b-10">
                             <a class="nav-link" data-toggle="tab" href="#tab_reviews" role="tab">Reviews</a>
@@ -455,7 +476,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
         <div class="bg6 flex-c-m flex-w size-302 m-t-73 p-tb-15">
@@ -515,7 +535,6 @@
                     @endforelse
                 </div>
             </div>
-
         </div>
     </section>
 
@@ -550,6 +569,8 @@
         const skuInfo = document.getElementById('skuInfo');
         const footerSku = document.getElementById('footerSku');
         const priceOriginal = document.getElementById('priceOriginal');
+
+        const colorButtons = document.querySelectorAll('.color-variant-btn');
 
         const productId = {{ (int) $product->id }};
         const currency = @json($productCurrency);
@@ -645,18 +666,50 @@
                 finalImages = uniqueImages(defaultGallery);
             }
 
-            gallery.innerHTML = finalImages.map(img => `
-                <div class="item-slick3" data-thumb="${img.thumb}">
-                    <div class="wrap-pic-w pos-relative">
-                        <img src="${img.url}" alt="${img.alt}">
-                        <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="${img.url}">
-                            <i class="fa fa-expand"></i>
-                        </a>
+            gallery.innerHTML = finalImages.map(img => {
+                const thumb = img.thumb || img.url;
+                const url = img.url || img;
+                const alt = img.alt || @json($productName);
+
+                return `
+                    <div class="item-slick3" data-thumb="${thumb}">
+                        <div class="wrap-pic-w pos-relative">
+                            <img src="${url}" alt="${alt}">
+                            <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="${url}">
+                                <i class="fa fa-expand"></i>
+                            </a>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
 
             initProductGallery(finalImages.length);
+        }
+
+        function setActiveColorButtonByColorId(colorId) {
+            colorButtons.forEach(btn => {
+                const btnColorId = String(btn.dataset.colorId || '');
+                btn.classList.toggle('active', colorId && btnColorId === String(colorId));
+            });
+        }
+
+        function selectColorButton(button) {
+            if (!button) return;
+
+            colorButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            const colorId = button.dataset.colorId || '';
+
+            if (colorSelect) {
+                colorSelect.value = colorId;
+
+                if (window.jQuery && $(colorSelect).hasClass('select2-hidden-accessible')) {
+                    $(colorSelect).trigger('change.select2');
+                }
+            }
+
+            updateVariantUI(true, button);
         }
 
         function getBestVariant() {
@@ -716,12 +769,16 @@
             }
         }
 
-        function updateVariantUI() {
+        function updateVariantUI(fromColorButton = false, clickedButton = null) {
             const size = selectedSize();
             const color = selectedColor();
 
             const bestVariant = getBestVariant();
             const bestGallery = getBestGallery();
+
+            if (!fromColorButton) {
+                setActiveColorButtonByColorId(color);
+            }
 
             setGallery(bestGallery);
 
@@ -756,7 +813,38 @@
                 return;
             }
 
-            if (bestVariant) {
+            if (fromColorButton && clickedButton) {
+                const galleryFromButton = JSON.parse(clickedButton.dataset.gallery || '[]');
+                const imageFromButton = clickedButton.dataset.image || '';
+                const priceFromButton = clickedButton.dataset.price || '';
+                const stockFromButton = clickedButton.dataset.stock || '';
+                const skuFromButton = clickedButton.dataset.sku || '';
+                const variantIdFromButton = clickedButton.dataset.variantId || '';
+
+                if (galleryFromButton.length) {
+                    setGallery(galleryFromButton.map(url => ({
+                        url: url,
+                        thumb: url,
+                        alt: @json($productName)
+                    })));
+                } else if (imageFromButton) {
+                    setGallery([{
+                        url: imageFromButton,
+                        thumb: imageFromButton,
+                        alt: @json($productName)
+                    }]);
+                }
+
+                if (!size) {
+                    if (variantInput) variantInput.value = variantIdFromButton;
+                    if (productPrice && priceFromButton) productPrice.textContent = `${Number(priceFromButton).toFixed(2)} ${currency}`;
+                    if (priceOriginal && priceFromButton) priceOriginal.textContent = `${Number(priceFromButton).toFixed(2)} ${currency}`;
+                    if (dynamicSku) dynamicSku.textContent = skuFromButton || 'N/A';
+                    if (skuInfo) skuInfo.textContent = skuFromButton || 'N/A';
+                    if (footerSku) footerSku.textContent = skuFromButton || 'N/A';
+                    if (dynamicStock) dynamicStock.textContent = stockFromButton || 'N/A';
+                }
+            } else if (bestVariant) {
                 if (variantInput) variantInput.value = bestVariant.id || '';
                 if (productPrice) productPrice.textContent = `${Number(bestVariant.price).toFixed(2)} ${currency}`;
                 if (priceOriginal) priceOriginal.textContent = `${Number(bestVariant.price).toFixed(2)} ${currency}`;
@@ -872,24 +960,41 @@
             });
         }
 
-        [sizeSelect, colorSelect].forEach(el => {
-            if (el) {
-                el.addEventListener('change', function () {
-                    updateVariantUI();
-                    setTimeout(runCouponPreview, 80);
-                });
-            }
+        if (sizeSelect) {
+            sizeSelect.addEventListener('change', function () {
+                updateVariantUI();
+                setTimeout(runCouponPreview, 80);
+            });
+        }
+
+        if (colorSelect) {
+            colorSelect.addEventListener('change', function () {
+                updateVariantUI();
+                setTimeout(runCouponPreview, 80);
+            });
+        }
+
+        colorButtons.forEach(btn => {
+            btn.addEventListener('click', function () {
+                selectColorButton(this);
+                setTimeout(runCouponPreview, 80);
+            });
         });
 
         const addToCartForm = document.getElementById('addToCartForm');
-
         if (addToCartForm) {
             addToCartForm.addEventListener('submit', validateVariantBeforeSubmit);
         }
 
-         setGallery(defaultGallery);
+        setGallery(defaultGallery);
         resetBaseUI();
 
+        const initialColorBtn = document.querySelector('.color-variant-btn');
+        if (initialColorBtn && colorSelect && !colorSelect.value) {
+            selectColorButton(initialColorBtn);
+        } else {
+            updateVariantUI();
+        }
     });
 </script>
 @endsection

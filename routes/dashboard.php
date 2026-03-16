@@ -8,6 +8,14 @@ use App\Http\Controllers\Dashboard\OrderController as DashboardOrderController;
 use App\Http\Controllers\Dashboard\ProductController as DashboardProductController;
 use App\Http\Controllers\Dashboard\CategoryController as DashboardCategoryController;
 use App\Http\Controllers\Dashboard\ContactMessageController as DashboardContactMessageController;
+use App\Http\Controllers\Dashboard\ProductController;
+use App\Http\Controllers\Dashboard\ProductVariantController;
+use App\Http\Controllers\Dashboard\ProductImageController;
+use App\Http\Controllers\Dashboard\VariantImageController;
+use App\Http\Controllers\Dashboard\AttributeController;
+use App\Http\Controllers\Dashboard\AttributeValueController;
+
+
 
 Route::prefix('dashboard')
     ->as('dashboard.')
@@ -32,134 +40,133 @@ Route::prefix('dashboard')
             ->middleware('permission:orders.view')
             ->name('orders.show');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Products
-        |--------------------------------------------------------------------------
-        */
-        Route::get('/products', [DashboardProductController::class, 'index'])
-            ->middleware('permission:products.view')
-            ->name('products.index');
+     /*
+|--------------------------------------------------------------------------
+| Products
+|--------------------------------------------------------------------------
+*/
+Route::get('/products', [ProductController::class, 'index'])
+    ->middleware('permission:products.view')
+    ->name('products.index');
 
-        Route::get('/products/trash', [DashboardProductController::class, 'trash'])
-            ->middleware('permission:products.view')
-            ->name('products.trash');
+Route::get('/products/trash', [ProductController::class, 'trash'])
+    ->middleware('permission:products.view')
+    ->name('products.trash');
 
-        Route::post('/products/bulk-action', [DashboardProductController::class, 'bulkAction'])
-            ->middleware('permission:products.edit')
-            ->name('products.bulk-action');
+Route::post('/products/bulk-action', [ProductController::class, 'bulkAction'])
+    ->middleware('permission:products.edit')
+    ->name('products.bulk-action');
 
-        Route::get('/products/create', [DashboardProductController::class, 'create'])
-            ->middleware('permission:products.create')
-            ->name('products.create');
+Route::get('/products/create', [ProductController::class, 'create'])
+    ->middleware('permission:products.create')
+    ->name('products.create');
 
-        Route::post('/products', [DashboardProductController::class, 'store'])
-            ->middleware('permission:products.create')
-            ->name('products.store');
+Route::post('/products', [ProductController::class, 'store'])
+    ->middleware('permission:products.create')
+    ->name('products.store');
 
-        Route::get('/products/{product}', [DashboardProductController::class, 'show'])
-            ->middleware('permission:products.view')
-            ->name('products.show');
+Route::get('/products/{product}', [ProductController::class, 'show'])
+    ->middleware('permission:products.view')
+    ->name('products.show');
 
-        Route::get('/products/{product}/edit', [DashboardProductController::class, 'edit'])
-            ->middleware('permission:products.edit')
-            ->name('products.edit');
+Route::get('/products/{product}/edit', [ProductController::class, 'edit'])
+    ->middleware('permission:products.edit')
+    ->name('products.edit');
 
-        Route::put('/products/{product}', [DashboardProductController::class, 'update'])
-            ->middleware('permission:products.edit')
-            ->name('products.update');
+Route::put('/products/{product}', [ProductController::class, 'update'])
+    ->middleware('permission:products.edit')
+    ->name('products.update');
 
-        Route::patch('/products/{product}/toggle-status', [DashboardProductController::class, 'toggleStatus'])
-            ->middleware('permission:products.edit')
-            ->name('products.toggle-status');
+Route::patch('/products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])
+    ->middleware('permission:products.edit')
+    ->name('products.toggle-status');
 
-        Route::patch('/products/{product}/toggle-featured', [DashboardProductController::class, 'toggleFeatured'])
-            ->middleware('permission:products.edit')
-            ->name('products.toggle-featured');
+Route::patch('/products/{product}/toggle-featured', [ProductController::class, 'toggleFeatured'])
+    ->middleware('permission:products.edit')
+    ->name('products.toggle-featured');
 
-        Route::post('/products/{id}/restore', [DashboardProductController::class, 'restore'])
-            ->middleware('permission:products.edit')
-            ->name('products.restore');
+Route::post('/products/{id}/restore', [ProductController::class, 'restore'])
+    ->middleware('permission:products.edit')
+    ->name('products.restore');
 
-        Route::delete('/products/{product}', [DashboardProductController::class, 'destroy'])
-            ->middleware('permission:products.delete')
-            ->name('products.destroy');
+Route::delete('/products/{product}', [ProductController::class, 'destroy'])
+    ->middleware('permission:products.delete')
+    ->name('products.destroy');
 
-        Route::delete('/products/{id}/force-delete', [DashboardProductController::class, 'forceDelete'])
-            ->middleware('permission:products.delete')
-            ->name('products.force-delete');
+Route::delete('/products/{id}/force-delete', [ProductController::class, 'forceDelete'])
+    ->middleware('permission:products.delete')
+    ->name('products.force-delete');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Product Variants
-        |--------------------------------------------------------------------------
-        */
-        Route::get('/products/{product}/variants', [DashboardProductController::class, 'variants'])
-            ->middleware('permission:products.edit')
-            ->name('products.variants.index');
+/*
+|--------------------------------------------------------------------------
+| Product Variants
+|--------------------------------------------------------------------------
+*/
+Route::get('/products/{product}/variants', [ProductVariantController::class, 'index'])
+    ->middleware('permission:products.edit')
+    ->name('products.variants.index');
 
-        Route::post('/products/{product}/variants/generate', [DashboardProductController::class, 'generateVariants'])
-            ->middleware('permission:products.edit')
-            ->name('products.variants.generate');
+Route::post('/products/{product}/variants/generate', [ProductVariantController::class, 'generate'])
+    ->middleware('permission:products.edit')
+    ->name('products.variants.generate');
 
-        Route::post('/products/{product}/variants', [DashboardProductController::class, 'storeVariant'])
-            ->middleware('permission:products.edit')
-            ->name('products.variants.store');
+Route::post('/products/{product}/variants', [ProductVariantController::class, 'store'])
+    ->middleware('permission:products.edit')
+    ->name('products.variants.store');
 
-        Route::put('/products/{product}/variants/{variant}', [DashboardProductController::class, 'updateVariant'])
-            ->middleware('permission:products.edit')
-            ->name('products.variants.update');
+Route::put('/products/{product}/variants/{variant}', [ProductVariantController::class, 'update'])
+    ->middleware('permission:products.edit')
+    ->name('products.variants.update');
 
-        Route::patch('/products/{product}/variants/{variant}/toggle-status', [DashboardProductController::class, 'toggleVariantStatus'])
-            ->middleware('permission:products.edit')
-            ->name('products.variants.toggle-status');
+Route::patch('/products/{product}/variants/{variant}/toggle-status', [ProductVariantController::class, 'toggleStatus'])
+    ->middleware('permission:products.edit')
+    ->name('products.variants.toggle-status');
 
-        Route::delete('/products/{product}/variants/{variant}', [DashboardProductController::class, 'destroyVariant'])
-            ->middleware('permission:products.edit')
-            ->name('products.variants.destroy');
+Route::delete('/products/{product}/variants/{variant}', [ProductVariantController::class, 'destroy'])
+    ->middleware('permission:products.edit')
+    ->name('products.variants.destroy');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Product Images
-        |--------------------------------------------------------------------------
-        */
-        Route::get('/products/{product}/images', [DashboardProductController::class, 'images'])
-            ->middleware('permission:products.edit')
-            ->name('products.images.index');
+/*
+|--------------------------------------------------------------------------
+| Product Images
+|--------------------------------------------------------------------------
+*/
+Route::get('/products/{product}/images', [ProductImageController::class, 'index'])
+    ->middleware('permission:products.edit')
+    ->name('products.images.index');
 
-        Route::post('/products/{product}/images', [DashboardProductController::class, 'storeImage'])
-            ->middleware('permission:products.edit')
-            ->name('products.images.store');
+Route::post('/products/{product}/images', [ProductImageController::class, 'store'])
+    ->middleware('permission:products.edit')
+    ->name('products.images.store');
 
-        Route::patch('/products/{product}/images/{image}/set-primary', [DashboardProductController::class, 'setPrimaryImage'])
-            ->middleware('permission:products.edit')
-            ->name('products.images.set-primary');
+Route::patch('/products/{product}/images/{image}/set-primary', [ProductImageController::class, 'setPrimary'])
+    ->middleware('permission:products.edit')
+    ->name('products.images.set-primary');
 
-        Route::patch('/products/{product}/images/{image}/sort', [DashboardProductController::class, 'sortImage'])
-            ->middleware('permission:products.edit')
-            ->name('products.images.sort');
+Route::patch('/products/{product}/images/{image}/sort', [ProductImageController::class, 'sort'])
+    ->middleware('permission:products.edit')
+    ->name('products.images.sort');
 
-        Route::delete('/products/{product}/images/{image}', [DashboardProductController::class, 'destroyImage'])
-            ->middleware('permission:products.edit')
-            ->name('products.images.destroy');
+Route::delete('/products/{product}/images/{image}', [ProductImageController::class, 'destroy'])
+    ->middleware('permission:products.edit')
+    ->name('products.images.destroy');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Variant Images (Color / Variant Specific)
-        |--------------------------------------------------------------------------
-        */
-        Route::post('/products/{product}/variants/{variant}/images', [DashboardProductController::class, 'storeVariantImage'])
-            ->middleware('permission:products.edit')
-            ->name('products.variants.images.store');
+/*
+|--------------------------------------------------------------------------
+| Variant Images
+|--------------------------------------------------------------------------
+*/
+Route::post('/products/{product}/variants/{variant}/images', [VariantImageController::class, 'store'])
+    ->middleware('permission:products.edit')
+    ->name('products.variants.images.store');
 
-        Route::patch('/products/{product}/variants/{variant}/images/{image}/set-primary', [DashboardProductController::class, 'setPrimaryVariantImage'])
-            ->middleware('permission:products.edit')
-            ->name('products.variants.images.set-primary');
+Route::patch('/products/{product}/variants/{variant}/images/{image}/set-primary', [VariantImageController::class, 'setPrimary'])
+    ->middleware('permission:products.edit')
+    ->name('products.variants.images.set-primary');
 
-        Route::delete('/products/{product}/variants/{variant}/images/{image}', [DashboardProductController::class, 'destroyVariantImage'])
-            ->middleware('permission:products.edit')
-            ->name('products.variants.images.destroy');
-
+Route::delete('/products/{product}/variants/{variant}/images/{image}', [VariantImageController::class, 'destroy'])
+    ->middleware('permission:products.edit')
+    ->name('products.variants.images.destroy');
         /*
         |--------------------------------------------------------------------------
         | Categories
@@ -226,5 +233,70 @@ Route::prefix('dashboard')
             ->middleware('permission:contact.view')
             ->name('contact-messages.show');
 
-            
+            /*
+|--------------------------------------------------------------------------
+| Attributes
+|--------------------------------------------------------------------------
+*/
+Route::get('/attributes', [AttributeController::class, 'index'])
+    ->middleware('permission:attributes.view')
+    ->name('attributes.index');
+
+Route::get('/attributes/create', [AttributeController::class, 'create'])
+    ->middleware('permission:attributes.create')
+    ->name('attributes.create');
+
+Route::post('/attributes', [AttributeController::class, 'store'])
+    ->middleware('permission:attributes.create')
+    ->name('attributes.store');
+
+Route::get('/attributes/{attribute}', [AttributeController::class, 'show'])
+    ->middleware('permission:attributes.view')
+    ->name('attributes.show');
+
+Route::get('/attributes/{attribute}/edit', [AttributeController::class, 'edit'])
+    ->middleware('permission:attributes.edit')
+    ->name('attributes.edit');
+
+Route::put('/attributes/{attribute}', [AttributeController::class, 'update'])
+    ->middleware('permission:attributes.edit')
+    ->name('attributes.update');
+
+Route::patch('/attributes/{attribute}/toggle-status', [AttributeController::class, 'toggleStatus'])
+    ->middleware('permission:attributes.edit')
+    ->name('attributes.toggle-status');
+
+Route::delete('/attributes/{attribute}', [AttributeController::class, 'destroy'])
+    ->middleware('permission:attributes.delete')
+    ->name('attributes.destroy');
+
+/*
+|--------------------------------------------------------------------------
+| Attribute Values
+|--------------------------------------------------------------------------
+*/
+Route::get('/attributes/{attribute}/values/create', [AttributeValueController::class, 'create'])
+    ->middleware('permission:attributes.edit')
+    ->name('attributes.values.create');
+
+Route::post('/attributes/{attribute}/values', [AttributeValueController::class, 'store'])
+    ->middleware('permission:attributes.edit')
+    ->name('attributes.values.store');
+
+Route::get('/attributes/{attribute}/values/{value}/edit', [AttributeValueController::class, 'edit'])
+    ->middleware('permission:attributes.edit')
+    ->name('attributes.values.edit');
+
+Route::put('/attributes/{attribute}/values/{value}', [AttributeValueController::class, 'update'])
+    ->middleware('permission:attributes.edit')
+    ->name('attributes.values.update');
+
+Route::patch('/attributes/{attribute}/values/{value}/toggle-status', [AttributeValueController::class, 'toggleStatus'])
+    ->middleware('permission:attributes.edit')
+    ->name('attributes.values.toggle-status');
+
+Route::delete('/attributes/{attribute}/values/{value}', [AttributeValueController::class, 'destroy'])
+    ->middleware('permission:attributes.edit')
+    ->name('attributes.values.destroy');
+
     });

@@ -28,4 +28,6 @@ class ProductVariantValue extends Model
     {
         return $this->belongsTo(AttributeValue::class, 'attribute_value_id');
     }
+
+
 }

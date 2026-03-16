@@ -25,4 +25,10 @@ class Attribute extends Model
     {
         return $this->belongsToMany(Product::class, 'product_attributes');
     }
+
+    public function activeValues()
+    {
+        return $this->hasMany(AttributeValue::class)->where('is_active', true);
+    }
+
 }

@@ -10,6 +10,8 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use App\Services\Dashboard\SidebarService;
+use App\Services\Dashboard\DashboardLayoutService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,6 +36,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+
+         View::composer('dashboard.app.partials.sidebar', function ($view) {
+            $view->with('sidebar', app(SidebarService::class)->build());
+        });
+
+        View::composer('dashboard.app.nav', function ($view) {
+            if (auth()->check()) {
+                $view->with(app(DashboardLayoutService::class)->data());
+            }
+        });
+
+
         View::composer(['dashboard.app.nav', 'dashboard.app.sidebar'], function ($view) {
             $dashboardPendingOrders = collect();
             $dashboardUnreadMessages = collect();

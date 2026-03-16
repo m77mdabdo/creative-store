@@ -2,7 +2,7 @@
 <html lang="en">
 @include('dashboard.app.head')
 
-<body class="hold-transition sidebar-mini layout-fixed">
+<body class="hold-transition sidebar-mini layout-fixed text-sm">
 <div class="wrapper">
 
     <!-- Preloader -->
@@ -23,5 +23,6 @@
 </div>
 
 @include('dashboard.app.script')
+@stack('scripts')
 </body>
 </html>

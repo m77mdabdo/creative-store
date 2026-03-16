@@ -18,7 +18,8 @@ class UpdateProductRequest extends FormRequest
 
     public function rules(): array
     {
-        $productId = $this->route('product')->id;
+        $product = $this->route('product');
+        $productId = is_object($product) ? $product->id : $product;
 
         return [
             'category_id' => ['required', 'integer', 'exists:categories,id'],
@@ -39,6 +40,8 @@ class UpdateProductRequest extends FormRequest
             'translations.ar.description' => ['nullable', 'string'],
             'translations.en.name' => ['nullable', 'string', 'max:255'],
             'translations.en.description' => ['nullable', 'string'],
+            'attribute_ids' => ['nullable', 'array'],
+            'attribute_ids.*' => ['integer', 'exists:attributes,id'],
         ];
     }
 }

@@ -26,14 +26,7 @@
 
     <section class="content">
         <div class="container-fluid">
-
-            @if(session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
-
-            @if(session('error'))
-                <div class="alert alert-danger">{{ session('error') }}</div>
-            @endif
+            @include('dashboard.app.partials.alerts')
 
             <div class="card card-outline card-primary">
                 <div class="card-header">
@@ -96,32 +89,36 @@
                 </div>
             </div>
 
-            @if($canEdit && $products->count())
+            @if($products->count())
                 <div class="card card-outline card-secondary">
-                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-                        <h3 class="card-title mb-2">Bulk Actions</h3>
+                    @if($canEdit)
+                        <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                            <h3 class="card-title mb-2">Bulk Actions</h3>
 
-                        <form id="bulkProductForm" action="{{ route('dashboard.products.bulk-action') }}" method="POST" class="d-flex align-items-center">
-                            @csrf
-                            <select name="action" class="form-control mr-2" required>
-                                <option value="">Select action</option>
-                                <option value="activate">Activate</option>
-                                <option value="deactivate">Deactivate</option>
-                                <option value="feature">Feature</option>
-                                <option value="unfeature">Unfeature</option>
-                                <option value="delete">Move to Trash</option>
-                            </select>
+                            <form id="bulkProductForm" action="{{ route('dashboard.products.bulk-action') }}" method="POST" class="d-flex align-items-center">
+                                @csrf
+                                <select name="action" class="form-control mr-2" required>
+                                    <option value="">Select action</option>
+                                    <option value="activate">Activate</option>
+                                    <option value="deactivate">Deactivate</option>
+                                    <option value="feature">Feature</option>
+                                    <option value="unfeature">Unfeature</option>
+                                    <option value="delete">Move to Trash</option>
+                                </select>
 
-                            <button type="submit" class="btn btn-warning">Apply</button>
-                        </form>
-                    </div>
+                                <button type="submit" class="btn btn-warning">Apply</button>
+                            </form>
+                        </div>
+                    @endif
 
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover text-nowrap mb-0">
                                 <thead>
                                     <tr>
-                                        <th><input type="checkbox" id="check-all-products"></th>
+                                        @if($canEdit)
+                                            <th><input type="checkbox" id="check-all-products"></th>
+                                        @endif
                                         <th>#</th>
                                         <th>Image</th>
                                         <th>Name</th>
@@ -139,9 +136,11 @@
                                 <tbody>
                                     @forelse($products as $product)
                                         <tr>
-                                            <td>
-                                                <input type="checkbox" name="ids[]" value="{{ $product->id }}" class="product-checkbox" form="bulkProductForm">
-                                            </td>
+                                            @if($canEdit)
+                                                <td>
+                                                    <input type="checkbox" name="ids[]" value="{{ $product->id }}" class="product-checkbox" form="bulkProductForm">
+                                                </td>
+                                            @endif
                                             <td>{{ $product->id }}</td>
                                             <td>
                                                 @if($product->primaryImage)
@@ -216,7 +215,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="12" class="text-center py-4">No products found.</td>
+                                            <td colspan="{{ $canEdit ? '12' : '11' }}" class="text-center py-4">No products found.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>

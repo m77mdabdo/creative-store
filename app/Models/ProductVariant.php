@@ -23,17 +23,9 @@ class ProductVariant extends Model
         'is_active' => 'boolean',
     ];
 
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
-    }
 
-    public function values()
-    {
-        return $this->hasMany(ProductVariantValue::class, 'product_variant_id');
-    }
 
-   
+
 
     public function cartItems()
     {
@@ -60,8 +52,29 @@ class ProductVariant extends Model
         return $this->hasMany(InventoryReservation::class, 'variant_id');
     }
 
-    public function images()
+
+
+//
+public function product()
 {
-    return $this->hasMany(\App\Models\ProductImage::class, 'variant_id');
+    return $this->belongsTo(Product::class);
+}
+
+public function values()
+{
+    return $this->hasMany(ProductVariantValue::class, 'product_variant_id');
+}
+
+public function images()
+{
+    return $this->hasMany(ProductImage::class, 'variant_id')
+        ->orderBy('sort_order')
+        ->orderByDesc('id');
+}
+
+public function primaryImage()
+{
+    return $this->hasOne(ProductImage::class, 'variant_id')
+        ->where('is_primary', true);
 }
 }

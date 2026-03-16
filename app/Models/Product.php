@@ -43,12 +43,9 @@ class Product extends Model
         return $this->hasMany(ProductTranslation::class);
     }
 
-   
 
-    public function attributes()
-    {
-        return $this->belongsToMany(Attribute::class, 'product_attributes');
-    }
+
+
 
     public function inventoryMovements()
     {
@@ -105,27 +102,62 @@ public function reviewsCount(): int
 }
 
 
-public function generalImages()
+
+
+
+
+
+public function variants()
 {
-    return $this->hasMany(ProductImage::class)
-        ->whereNull('variant_id');
+    return $this->hasMany(ProductVariant::class);
 }
 
 public function images()
 {
-    return $this->hasMany(\App\Models\ProductImage::class);
-}
-
-public function variants()
-{
-    return $this->hasMany(\App\Models\ProductVariant::class);
+    return $this->hasMany(ProductImage::class);
 }
 
 public function primaryImage()
 {
-    return $this->hasOne(\App\Models\ProductImage::class)
+    return $this->hasOne(ProductImage::class)
         ->whereNull('variant_id')
         ->where('is_primary', true);
+}
+
+public function generalImages()
+{
+    return $this->hasMany(ProductImage::class)
+        ->whereNull('variant_id')
+        ->orderBy('sort_order')
+        ->orderByDesc('id');
+}
+
+public function attributes()
+{
+    return $this->belongsToMany(Attribute::class, 'product_attributes');
+}
+
+public function colorAttribute()
+{
+    return $this->attributes()
+        ->where(function ($q) {
+            $q->where('slug', 'color')
+              ->orWhere('name', 'Color')
+              ->orWhere('name', 'color')
+              ->orWhere('name', 'اللون');
+        })
+        ->first();
+}
+
+public function variantsWithColor()
+{
+    return $this->variants()
+        ->with([
+            'values.attribute',
+            'values.value',
+            'images',
+            'primaryImage',
+        ]);
 }
 
 }

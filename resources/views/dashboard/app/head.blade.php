@@ -44,3 +44,51 @@
   <link rel="stylesheet"
         href="{{ asset('AdminLTE/plugins/summernote/summernote-bs4.min.css') }}">
 </head>
+
+<style>
+    body {
+        font-size: 14px;
+    }
+
+    .content-wrapper > .content {
+        padding: 0 0.75rem;
+    }
+
+    .content-header {
+        padding: 12px 0.75rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .table td,
+    .table th {
+        vertical-align: middle;
+        padding: 0.65rem;
+    }
+
+    .btn {
+        border-radius: 0.35rem;
+    }
+
+    .main-sidebar {
+        width: 250px;
+    }
+
+    .content-wrapper,
+    .main-footer,
+    .main-header {
+        margin-left: 250px;
+    }
+
+    @media (max-width: 991.98px) {
+        .content-wrapper,
+        .main-footer,
+        .main-header {
+            margin-left: 0;
+        }
+    }
+</style>
+
+@stack('styles')
