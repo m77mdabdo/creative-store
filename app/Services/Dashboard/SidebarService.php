@@ -57,11 +57,13 @@ class SidebarService
                         $this->child('Categories', 'dashboard.categories.index', $this->can('categories.view')),
                         $this->child('Products', 'dashboard.products.index', $this->can('products.view')),
                         $this->child('Attributes', 'dashboard.attributes.index', $this->can('attributes.view')),
+                        $this->child('Product Reviews', 'dashboard.reviews.index', $this->can('reviews.view')),
                     ]),
                     activePatterns: [
                         'dashboard.categories.*',
                         'dashboard.products.*',
                         'dashboard.attributes.*',
+                        'dashboard.reviews.*',
                     ],
                     badge: [
                         'value' => Product::count(),

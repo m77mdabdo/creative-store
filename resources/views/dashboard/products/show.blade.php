@@ -8,21 +8,25 @@
             <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap">
                 <h1>Product Details</h1>
 
-                <div>
-                    <a href="{{ route('dashboard.products.index') }}" class="btn btn-secondary">
+                <div class="d-flex flex-wrap">
+                    <a href="{{ route('dashboard.products.index') }}" class="btn btn-secondary mr-2 mb-2">
                         <i class="fas fa-arrow-left mr-1"></i> Back
                     </a>
 
+                    <a href="{{ route('dashboard.products.reviews.index', $product) }}" class="btn btn-outline-dark mr-2 mb-2">
+                        <i class="fas fa-comments mr-1"></i> Reviews
+                    </a>
+
                     @if($canEdit)
-                        <a href="{{ route('dashboard.products.edit', $product) }}" class="btn btn-primary">
+                        <a href="{{ route('dashboard.products.edit', $product) }}" class="btn btn-primary mr-2 mb-2">
                             <i class="fas fa-edit mr-1"></i> Edit
                         </a>
 
-                        <a href="{{ route('dashboard.products.variants.index', $product) }}" class="btn btn-dark">
+                        <a href="{{ route('dashboard.products.variants.index', $product) }}" class="btn btn-dark mr-2 mb-2">
                             <i class="fas fa-layer-group mr-1"></i> Variants
                         </a>
 
-                        <a href="{{ route('dashboard.products.images.index', $product) }}" class="btn btn-info">
+                        <a href="{{ route('dashboard.products.images.index', $product) }}" class="btn btn-info mb-2">
                             <i class="fas fa-images mr-1"></i> Images
                         </a>
                     @endif
@@ -50,8 +54,7 @@
                                 <p><strong>SKU:</strong> {{ $product->sku }}</p>
                                 <p><strong>Slug:</strong> {{ $product->slug }}</p>
                                 <p><strong>Category:</strong> {{ $product->category?->name ?? '-' }}</p>
-                                <p><strong>Price:</strong> {{ number_format((float) $product->base_price, 2) }}
-                                    {{ $product->currency }}</p>
+                                <p><strong>Price:</strong> {{ number_format((float) $product->base_price, 2) }} {{ $product->currency }}</p>
                                 <p><strong>Status:</strong> {{ ucfirst($product->status) }}</p>
                                 <p><strong>Has Variants:</strong> {{ $product->has_variants ? 'Yes' : 'No' }}</p>
                                 <p>
@@ -76,14 +79,12 @@
                             </div>
                             <div class="card-body">
                                 <h5>Arabic Description</h5>
-                                <p>{{ optional($product->translations->firstWhere('locale', 'ar'))->description ?? '-' }}
-                                </p>
+                                <p>{{ optional($product->translations->firstWhere('locale', 'ar'))->description ?? '-' }}</p>
 
                                 <hr>
 
                                 <h5>English Description</h5>
-                                <p>{{ optional($product->translations->firstWhere('locale', 'en'))->description ?? '-' }}
-                                </p>
+                                <p>{{ optional($product->translations->firstWhere('locale', 'en'))->description ?? '-' }}</p>
                             </div>
                         </div>
                     </div>
@@ -97,8 +98,7 @@
                                 <div class="row">
                                     @forelse($product->images as $image)
                                         <div class="col-6 mb-3">
-                                            <img src="{{ asset('storage/' . $image->path) }}" class="img-fluid rounded border"
-                                                alt="">
+                                            <img src="{{ asset('storage/' . $image->path) }}" class="img-fluid rounded border" alt="">
                                         </div>
                                     @empty
                                         <div class="col-12">

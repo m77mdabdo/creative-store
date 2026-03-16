@@ -18,9 +18,7 @@ use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
-    //
-
-     public function placeOrder(Request $request)
+    public function placeOrder(Request $request)
     {
         $request->validate([
             'address_id' => ['required', 'exists:addresses,id'],
@@ -56,8 +54,8 @@ class CheckoutController extends Controller
         }
 
         if (
-            (int)($shipping['shipping_method_id'] ?? 0) !== (int)$request->shipping_method_id ||
-            (int)($shipping['shipping_rate_id'] ?? 0) !== (int)$request->shipping_rate_id
+            (int) ($shipping['shipping_method_id'] ?? 0) !== (int) $request->shipping_method_id ||
+            (int) ($shipping['shipping_rate_id'] ?? 0) !== (int) $request->shipping_rate_id
         ) {
             return back()->with('error', 'Shipping selection mismatch. Please reselect shipping method.');
         }
@@ -78,7 +76,7 @@ class CheckoutController extends Controller
                 'user_id' => $user->id,
                 'shipping_address_id' => $address->id,
                 'shipping_method_id' => $request->shipping_method_id,
-                'coupon_id' => session('coupon.id'),
+                'coupon_id' => session('cart_coupon.id'),
                 'guest_email' => null,
                 'guest_phone' => null,
                 'currency' => 'SAR',
@@ -113,35 +111,40 @@ class CheckoutController extends Controller
                 'notes' => $address->notes ?? null,
             ]);
 
-foreach ($cart as $item) {
-    $productId = $item['product_id'] ?? $item['id'] ?? null;
+            foreach ($cart as $item) {
+                $productId = $item['product_id'] ?? null;
 
-    if (!$productId) {
-        throw new \Exception('Cart item is missing product_id.');
-    }
+                if (!$productId) {
+                    throw new \Exception('Cart item is missing product_id.');
+                }
 
-    $quantity = (int) ($item['quantity'] ?? 1);
-    $unitPrice = (float) ($item['price'] ?? 0);
-    $taxRate = (float) ($item['tax_rate'] ?? 0);
-    $lineSubtotal = $quantity * $unitPrice;
-    $taxAmount = ($lineSubtotal * $taxRate) / 100;
-    $lineTotal = $lineSubtotal + $taxAmount;
+                $quantity = max(1, (int) ($item['quantity'] ?? 1));
+                $unitPrice = (float) ($item['price'] ?? 0);
+                $taxRate = (float) ($item['tax_rate'] ?? 0);
 
-    $skuSnapshot = $item['sku'] ?? ('SKU-' . $productId);
+                $lineSubtotal = $quantity * $unitPrice;
+                $taxAmount = ($lineSubtotal * $taxRate) / 100;
+                $lineTotal = $lineSubtotal + $taxAmount;
 
-    OrderItem::create([
-        'order_id' => $order->id,
-        'product_id' => $productId,
-        'variant_id' => $item['variant_id'] ?? null,
-        'product_name_snapshot' => $item['name'] ?? 'Product',
-        'sku_snapshot' => $skuSnapshot,
-        'quantity' => $quantity,
-        'unit_price' => $unitPrice,
-        'tax_rate' => $taxRate,
-        'tax_amount' => $taxAmount,
-        'line_total' => $lineTotal,
-    ]);
-}
+                $skuSnapshot = $item['sku'] ?? ('SKU-' . $productId);
+                $variantOptions = $item['variant_options'] ?? [];
+
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $productId,
+                    'variant_id' => $item['variant_id'] ?? null,
+                    'color' => $item['color'] ?? null,
+                    'size' => $item['size'] ?? null,
+                    'variant_options' => !empty($variantOptions) ? $variantOptions : null,
+                    'product_name_snapshot' => $item['name'] ?? 'Product',
+                    'sku_snapshot' => $skuSnapshot,
+                    'quantity' => $quantity,
+                    'unit_price' => $unitPrice,
+                    'tax_rate' => $taxRate,
+                    'tax_amount' => $taxAmount,
+                    'line_total' => $lineTotal,
+                ]);
+            }
 
             OrderStatusLog::create([
                 'order_id' => $order->id,
@@ -151,18 +154,18 @@ foreach ($cart as $item) {
                 'note' => 'Order created and waiting for online payment.',
             ]);
 
-           Payment::create([
-    'order_id' => $order->id,
-    'gateway' => 'moyasar',
-    'transaction_id' => null,
-    'idempotency_key' => (string) Str::uuid(),
-    'amount' => $order->total,
-    'currency' => $order->currency,
-    'exchange_rate' => 1,
-    'status' => 'pending',
-    'raw_response' => null,
-    'paid_at' => null,
-]);
+            Payment::create([
+                'order_id' => $order->id,
+                'gateway' => 'moyasar',
+                'transaction_id' => null,
+                'idempotency_key' => (string) Str::uuid(),
+                'amount' => $order->total,
+                'currency' => $order->currency,
+                'exchange_rate' => 1,
+                'status' => 'pending',
+                'raw_response' => null,
+                'paid_at' => null,
+            ]);
 
             DB::commit();
 

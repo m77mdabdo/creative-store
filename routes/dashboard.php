@@ -14,6 +14,7 @@ use App\Http\Controllers\Dashboard\ProductImageController;
 use App\Http\Controllers\Dashboard\VariantImageController;
 use App\Http\Controllers\Dashboard\AttributeController;
 use App\Http\Controllers\Dashboard\AttributeValueController;
+use App\Http\Controllers\Dashboard\ProductReviewController;
 
 
 
@@ -298,5 +299,36 @@ Route::patch('/attributes/{attribute}/values/{value}/toggle-status', [AttributeV
 Route::delete('/attributes/{attribute}/values/{value}', [AttributeValueController::class, 'destroy'])
     ->middleware('permission:attributes.edit')
     ->name('attributes.values.destroy');
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Product Reviews
+|--------------------------------------------------------------------------
+*/
+Route::get('/reviews', [ProductReviewController::class, 'index'])
+    ->middleware('permission:reviews.view')
+    ->name('reviews.index');
+
+Route::post('/reviews/bulk-action', [ProductReviewController::class, 'bulkAction'])
+    ->middleware('permission:reviews.edit')
+    ->name('reviews.bulk-action');
+
+Route::get('/reviews/{review}', [ProductReviewController::class, 'show'])
+    ->middleware('permission:reviews.view')
+    ->name('reviews.show');
+
+Route::patch('/reviews/{review}/toggle-status', [ProductReviewController::class, 'toggleStatus'])
+    ->middleware('permission:reviews.edit')
+    ->name('reviews.toggle-status');
+
+Route::delete('/reviews/{review}', [ProductReviewController::class, 'destroy'])
+    ->middleware('permission:reviews.delete')
+    ->name('reviews.destroy');
+
+Route::get('/products/{product}/reviews', [ProductReviewController::class, 'productReviews'])
+    ->middleware('permission:reviews.view')
+    ->name('products.reviews.index');
 
     });

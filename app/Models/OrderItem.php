@@ -7,13 +7,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class OrderItem extends Model
 {
-
-      use HasFactory;
+    use HasFactory;
 
     protected $fillable = [
-        'order_id','product_id','variant_id',
-        'product_name_snapshot','sku_snapshot',
-        'quantity','unit_price','tax_rate','tax_amount','line_total'
+        'order_id',
+        'product_id',
+        'variant_id',
+        'color',
+        'size',
+        'variant_options',
+        'product_name_snapshot',
+        'sku_snapshot',
+        'quantity',
+        'unit_price',
+        'tax_rate',
+        'tax_amount',
+        'line_total',
     ];
 
     protected $casts = [
@@ -22,6 +31,7 @@ class OrderItem extends Model
         'tax_rate' => 'decimal:2',
         'tax_amount' => 'decimal:2',
         'line_total' => 'decimal:2',
+        'variant_options' => 'array',
     ];
 
     public function order()

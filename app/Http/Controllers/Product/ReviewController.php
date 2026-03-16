@@ -61,6 +61,7 @@ class ReviewController extends Controller
             'is_approved' => true,
 
         ]);
+        app(\App\Services\Dashboard\DashboardStatsService::class)->clear();
 
 
         return back()->with('success','Your review has been submitted successfully.');

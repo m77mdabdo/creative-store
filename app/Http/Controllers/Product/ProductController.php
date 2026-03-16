@@ -51,22 +51,22 @@ class ProductController extends Controller
 
         $colorValues = $colorAttr
             ? AttributeValue::query()
-                ->select(['id', 'attribute_id', 'value', 'slug', 'sort_order'])
-                ->where('attribute_id', $colorAttr->id)
-                ->where('is_active', true)
-                ->orderBy('sort_order')
-                ->orderBy('id')
-                ->get()
+            ->select(['id', 'attribute_id', 'value', 'slug', 'sort_order'])
+            ->where('attribute_id', $colorAttr->id)
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get()
             : collect();
 
         $tagValues = $tagAttr
             ? AttributeValue::query()
-                ->select(['id', 'attribute_id', 'value', 'slug', 'sort_order'])
-                ->where('attribute_id', $tagAttr->id)
-                ->where('is_active', true)
-                ->orderBy('sort_order')
-                ->orderBy('id')
-                ->get()
+            ->select(['id', 'attribute_id', 'value', 'slug', 'sort_order'])
+            ->where('attribute_id', $tagAttr->id)
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get()
             : collect();
 
         $productsQuery = Product::query()
@@ -109,12 +109,12 @@ class ProductController extends Controller
 
         $productsQuery->when(
             $request->filled('min'),
-            fn ($q) => $q->where('base_price', '>=', (float) $request->input('min'))
+            fn($q) => $q->where('base_price', '>=', (float) $request->input('min'))
         );
 
         $productsQuery->when(
             $request->filled('max'),
-            fn ($q) => $q->where('base_price', '<=', (float) $request->input('max'))
+            fn($q) => $q->where('base_price', '<=', (float) $request->input('max'))
         );
 
         if ($colorAttr && $request->filled('color')) {
@@ -157,7 +157,7 @@ class ProductController extends Controller
                 })
                 ->whereNull('variant_id')
                 ->pluck('product_id')
-                ->map(fn ($id) => (int) $id)
+                ->map(fn($id) => (int) $id)
                 ->all();
         }
 
@@ -303,12 +303,12 @@ public function show(string $slug)
 
     $sizes = collect();
     $colors = collect();
-    $colorVariants = collect();
 
     $variantMap = [];
     $colorGalleryMap = [];
     $colorDefaultVariantMap = [];
     $variantColorMap = [];
+    $colorButtons = [];
 
     foreach ($product->variants as $variant) {
         $normalized = $this->extractVariantOptionData($variant);
@@ -351,51 +351,67 @@ public function show(string $slug)
         }
 
         if ($normalized['color_id']) {
-            $variantColorMap[$variant->id] = $normalized['color_id'];
+            $colorId = (int) $normalized['color_id'];
 
-            if (!isset($colorDefaultVariantMap[$normalized['color_id']])) {
-                $colorDefaultVariantMap[$normalized['color_id']] = $variantPayload;
+            $variantColorMap[$variant->id] = $colorId;
+
+            if (!isset($colorDefaultVariantMap[$colorId])) {
+                $colorDefaultVariantMap[$colorId] = $variantPayload;
             }
 
             if (!empty($variantImages)) {
-                $colorGalleryMap[$normalized['color_id']] = array_merge(
-                    $colorGalleryMap[$normalized['color_id']] ?? [],
-                    $variantImages
+                $existingImages = $colorGalleryMap[$colorId] ?? [];
+
+                $colorGalleryMap[$colorId] = $this->uniqueAndSortImages(
+                    array_merge($existingImages, $variantImages)
                 );
 
-                if (empty($colorDefaultVariantMap[$normalized['color_id']]['images'] ?? [])) {
-                    $colorDefaultVariantMap[$normalized['color_id']] = $variantPayload;
+                if (empty($colorDefaultVariantMap[$colorId]['images'] ?? [])) {
+                    $colorDefaultVariantMap[$colorId] = $variantPayload;
                 }
             }
 
             $mainImage = $variantImages[0]['url'] ?? $generalGallery[0]['url'] ?? $fallbackMain;
 
-            $colorVariants->push([
-                'variant_id' => (int) $variant->id,
-                'sku' => $variant->sku,
-                'price' => (float) $variant->price,
-                'stock' => (int) $variant->stock,
-                'is_active' => (bool) $variant->is_active,
-                'color_id' => $normalized['color_id'],
-                'color_name' => $normalized['color_name'],
-                'color_slug' => $normalized['color_slug'],
-                'image' => $mainImage,
-                'gallery' => collect($variantImages)
-                    ->pluck('url')
-                    ->filter()
-                    ->values()
-                    ->all(),
-            ]);
+            if (!isset($colorButtons[$colorId])) {
+                $colorButtons[$colorId] = [
+                    'variant_id' => (int) $variant->id,
+                    'sku' => $variant->sku,
+                    'price' => (float) $variant->price,
+                    'stock' => (int) $variant->stock,
+                    'is_active' => (bool) $variant->is_active,
+                    'color_id' => $colorId,
+                    'color_name' => $normalized['color_name'],
+                    'color_slug' => $normalized['color_slug'],
+                    'image' => $mainImage,
+                    'gallery' => [],
+                ];
+            }
         }
     }
 
     $sizes = $sizes->filter()->unique('id')->sortBy('sort_order')->values()->all();
     $colors = $colors->filter()->unique('id')->sortBy('id')->values()->all();
-    $colorVariants = $colorVariants->unique('variant_id')->values();
 
     foreach ($colorGalleryMap as $colorId => $images) {
         $colorGalleryMap[$colorId] = $this->uniqueAndSortImages($images);
     }
+
+    foreach ($colorButtons as $colorId => $button) {
+        $galleryUrls = collect($colorGalleryMap[$colorId] ?? [])
+            ->pluck('url')
+            ->filter()
+            ->values()
+            ->all();
+
+        $colorButtons[$colorId]['gallery'] = $galleryUrls;
+
+        if (empty($colorButtons[$colorId]['image']) && !empty($galleryUrls[0])) {
+            $colorButtons[$colorId]['image'] = $galleryUrls[0];
+        }
+    }
+
+    $colorButtons = collect($colorButtons)->values();
 
     $related = Product::query()
         ->select(['id', 'category_id', 'slug', 'base_price', 'currency', 'status', 'created_at'])
@@ -476,7 +492,7 @@ public function show(string $slug)
         'generalGallery' => $generalGallery,
         'sizes' => $sizes,
         'colors' => $colors,
-        'colorVariants' => $colorVariants,
+        'colorButtons' => $colorButtons,
         'variantMap' => $variantMap,
         'colorGalleryMap' => $colorGalleryMap,
         'colorDefaultVariantMap' => $colorDefaultVariantMap,
@@ -569,81 +585,81 @@ public function show(string $slug)
     }
 
     protected function resolvePublicImageUrl(?string $path, string $fallback): string
-{
-    if (!$path) {
-        return $fallback;
+    {
+        if (!$path) {
+            return $fallback;
+        }
+
+        return Storage::disk('public')->exists($path)
+            ? Storage::url($path)
+            : $fallback;
     }
 
-    return Storage::disk('public')->exists($path)
-        ? Storage::url($path)
-        : $fallback;
-}
+    protected function extractVariantOptionData($variant): array
+    {
+        $size = null;
+        $color = null;
+        $sizeId = null;
+        $colorId = null;
+        $colorName = null;
+        $colorSlug = null;
 
-protected function extractVariantOptionData($variant): array
-{
-    $size = null;
-    $color = null;
-    $sizeId = null;
-    $colorId = null;
-    $colorName = null;
-    $colorSlug = null;
+        foreach ($variant->values as $row) {
+            $attribute = $row->attribute;
+            $value = $row->value;
 
-    foreach ($variant->values as $row) {
-        $attribute = $row->attribute;
-        $value = $row->value;
+            if (!$attribute || !$value || !$value->is_active) {
+                continue;
+            }
 
-        if (!$attribute || !$value || !$value->is_active) {
-            continue;
+            $attrSlug = strtolower(trim((string) $attribute->slug));
+            $attrName = strtolower(trim((string) $attribute->name));
+
+            if ($this->isSizeAttribute($attrSlug, $attrName)) {
+                $size = [
+                    'id' => (int) $value->id,
+                    'value' => $value->value,
+                    'slug' => $value->slug,
+                    'sort_order' => (int) ($value->sort_order ?? 0),
+                ];
+
+                $sizeId = (int) $row->attribute_value_id;
+            }
+
+            if ($this->isColorAttribute($attrSlug, $attrName, $attribute->name)) {
+                $color = [
+                    'id' => (int) $value->id,
+                    'value' => $value->value,
+                    'slug' => $value->slug,
+                    'sort_order' => (int) ($value->sort_order ?? 0),
+                ];
+
+                $colorId = (int) $row->attribute_value_id;
+                $colorName = $value->value;
+                $colorSlug = $value->slug;
+            }
         }
 
-        $attrSlug = strtolower(trim((string) $attribute->slug));
-        $attrName = strtolower(trim((string) $attribute->name));
-
-        if ($this->isSizeAttribute($attrSlug, $attrName)) {
-            $size = [
-                'id' => (int) $value->id,
-                'value' => $value->value,
-                'slug' => $value->slug,
-                'sort_order' => (int) ($value->sort_order ?? 0),
-            ];
-
-            $sizeId = (int) $row->attribute_value_id;
-        }
-
-        if ($this->isColorAttribute($attrSlug, $attrName, $attribute->name)) {
-            $color = [
-                'id' => (int) $value->id,
-                'value' => $value->value,
-                'slug' => $value->slug,
-                'sort_order' => (int) ($value->sort_order ?? 0),
-            ];
-
-            $colorId = (int) $row->attribute_value_id;
-            $colorName = $value->value;
-            $colorSlug = $value->slug;
-        }
+        return [
+            'size' => $size,
+            'color' => $color,
+            'size_id' => $sizeId,
+            'color_id' => $colorId,
+            'color_name' => $colorName,
+            'color_slug' => $colorSlug,
+        ];
     }
 
-    return [
-        'size' => $size,
-        'color' => $color,
-        'size_id' => $sizeId,
-        'color_id' => $colorId,
-        'color_name' => $colorName,
-        'color_slug' => $colorSlug,
-    ];
-}
+    protected function isSizeAttribute(string $slug, string $name): bool
+    {
+        return in_array($slug, ['size', 'sizes'], true)
+            || in_array($name, ['size', 'sizes', 'المقاس', 'الحجم'], true);
+    }
 
-protected function isSizeAttribute(string $slug, string $name): bool
-{
-    return in_array($slug, ['size', 'sizes'], true)
-        || in_array($name, ['size', 'sizes', 'المقاس', 'الحجم'], true);
-}
-
-protected function isColorAttribute(string $slug, string $name, ?string $originalName = null): bool
-{
-    return in_array($slug, ['color', 'colors'], true)
-        || in_array($name, ['color', 'colors', 'اللون', 'الألوان'], true)
-        || in_array(trim((string) $originalName), ['اللون', 'الألوان'], true);
-}
+    protected function isColorAttribute(string $slug, string $name, ?string $originalName = null): bool
+    {
+        return in_array($slug, ['color', 'colors'], true)
+            || in_array($name, ['color', 'colors', 'اللون', 'الألوان'], true)
+            || in_array(trim((string) $originalName), ['اللون', 'الألوان'], true);
+    }
 }

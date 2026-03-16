@@ -50,6 +50,7 @@
         font-size: 13px;
         color: #888;
         margin-top: 4px;
+        line-height: 1.8;
     }
 
     .coupon-box {
@@ -100,6 +101,11 @@
         font-weight: 500;
         margin-right: 8px;
         margin-bottom: 8px;
+    }
+
+    .cart-option-row {
+        display: block;
+        margin-top: 2px;
     }
 
     @media (max-width: 991px) {
@@ -182,6 +188,8 @@
                                         $price = (float) ($item['price'] ?? 0);
                                         $image = $item['image'] ?? null;
                                         $productSlug = $item['slug'] ?? null;
+                                        $sku = $item['sku'] ?? null;
+                                        $variantOptions = collect($item['variant_options'] ?? []);
 
                                         if (!$image) {
                                             $imgUrl = asset('cozastore/images/item-cart-01.jpg');
@@ -194,6 +202,27 @@
                                         }
 
                                         $safeKey = md5((string) $key);
+
+                                        $displayOptions = $variantOptions->reject(function ($option) use ($item) {
+                                            $slug = strtolower(trim((string) ($option['slug'] ?? '')));
+                                            $name = strtolower(trim((string) ($option['name'] ?? '')));
+
+                                            $isColor = in_array($slug, ['color', 'colors'], true)
+                                                || in_array($name, ['color', 'colors', 'اللون', 'الألوان'], true);
+
+                                            $isSize = in_array($slug, ['size', 'sizes'], true)
+                                                || in_array($name, ['size', 'sizes', 'المقاس', 'الحجم'], true);
+
+                                            if ($isColor && !empty($item['color'])) {
+                                                return true;
+                                            }
+
+                                            if ($isSize && !empty($item['size'])) {
+                                                return true;
+                                            }
+
+                                            return false;
+                                        })->values();
                                     @endphp
 
                                     <tr class="table_row">
@@ -212,21 +241,34 @@
                                                 <span class="cart-product-name">{{ $name }}</span>
                                             @endif
 
-                                            @if(!empty($item['color']) || !empty($item['size']))
-                                                <div class="cart-meta">
-                                                    @if(!empty($item['color']))
+                                            <div class="cart-meta">
+                                                @if($sku)
+                                                    <span class="cart-option-row">
+                                                        SKU: {{ $sku }}
+                                                    </span>
+                                                @endif
+
+                                                @if(!empty($item['color']))
+                                                    <span class="cart-option-row">
                                                         Color: {{ $item['color'] }}
-                                                    @endif
+                                                    </span>
+                                                @endif
 
-                                                    @if(!empty($item['color']) && !empty($item['size']))
-                                                        |
-                                                    @endif
-
-                                                    @if(!empty($item['size']))
+                                                @if(!empty($item['size']))
+                                                    <span class="cart-option-row">
                                                         Size: {{ $item['size'] }}
-                                                    @endif
-                                                </div>
-                                            @endif
+                                                    </span>
+                                                @endif
+
+                                                @if($displayOptions->count())
+                                                    @foreach($displayOptions as $option)
+                                                        <span class="cart-option-row">
+                                                            {{ $option['name'] ?? 'Option' }}:
+                                                            {{ $option['value'] ?? '-' }}
+                                                        </span>
+                                                    @endforeach
+                                                @endif
+                                            </div>
                                         </td>
 
                                         <td class="column-3">
@@ -331,7 +373,7 @@
                                 </div>
                             </div>
 
-                            @if($cartCouponData || $productCouponsData)
+                            @if($cartCouponData || !empty($productCouponsData))
                                 <div class="p-t-15">
                                     @if($cartCouponData)
                                         <span class="coupon-active-badge">
@@ -339,13 +381,13 @@
                                         </span>
                                     @endif
 
-                                   @if(!empty($productCouponsData))
-    @foreach($productCouponsData as $coupon)
-        <span class="coupon-active-badge">
-            Product Coupon: {{ $coupon['code'] }}
-        </span>
-    @endforeach
-@endif
+                                    @if(!empty($productCouponsData))
+                                        @foreach($productCouponsData as $coupon)
+                                            <span class="coupon-active-badge">
+                                                Product Coupon: {{ $coupon['code'] }}
+                                            </span>
+                                        @endforeach
+                                    @endif
                                 </div>
                             @endif
                         </div>
@@ -374,29 +416,29 @@
                             </div>
                         </div>
 
-                       @if(!empty($productCouponsData))
-    @foreach($productCouponsData as $coupon)
-        <div class="flex-w flex-t p-b-16">
-            <div class="size-208">
-                <span class="stext-110 cl2">Product Coupon</span>
-            </div>
-            <div class="size-209">
-                <span class="mtext-110 cl2">{{ $coupon['code'] }}</span>
-            </div>
-        </div>
-    @endforeach
+                        @if(!empty($productCouponsData))
+                            @foreach($productCouponsData as $coupon)
+                                <div class="flex-w flex-t p-b-16">
+                                    <div class="size-208">
+                                        <span class="stext-110 cl2">Product Coupon</span>
+                                    </div>
+                                    <div class="size-209">
+                                        <span class="mtext-110 cl2">{{ $coupon['code'] }}</span>
+                                    </div>
+                                </div>
+                            @endforeach
 
-    <div class="flex-w flex-t p-b-16">
-        <div class="size-208">
-            <span class="stext-110 cl2">Product Discount</span>
-        </div>
-        <div class="size-209">
-            <span class="mtext-110 cl2">
-                - {{ number_format($productDiscount, 2) }} {{ $currency }}
-            </span>
-        </div>
-    </div>
-@endif
+                            <div class="flex-w flex-t p-b-16">
+                                <div class="size-208">
+                                    <span class="stext-110 cl2">Product Discount</span>
+                                </div>
+                                <div class="size-209">
+                                    <span class="mtext-110 cl2">
+                                        - {{ number_format($productDiscount, 2) }} {{ $currency }}
+                                    </span>
+                                </div>
+                            </div>
+                        @endif
 
                         @if($cartCouponData)
                             <div class="flex-w flex-t p-b-16">
@@ -458,10 +500,10 @@
                             </div>
                         </div>
 
-                       <a href="{{ route('shipping.index') }}"
-   class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer m-t-10">
-    Continue to Shipping
-</a>
+                        <a href="{{ route('shipping.index') }}"
+                           class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer m-t-10">
+                            Continue to Shipping
+                        </a>
                     </div>
                 </div>
             </div>

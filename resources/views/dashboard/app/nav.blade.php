@@ -24,13 +24,16 @@
             <a class="nav-link" data-widget="navbar-search" href="#" role="button">
                 <i class="fas fa-search"></i>
             </a>
+
             <div class="navbar-search-block">
                 <form class="form-inline" method="GET" action="#">
                     <div class="input-group input-group-sm">
-                        <input class="form-control form-control-navbar"
-                               type="search"
-                               placeholder="Search"
-                               aria-label="Search">
+                        <input
+                            class="form-control form-control-navbar"
+                            type="search"
+                            placeholder="Search"
+                            aria-label="Search"
+                        >
                         <div class="input-group-append">
                             <button class="btn btn-navbar" type="submit">
                                 <i class="fas fa-search"></i>
@@ -124,6 +127,48 @@
 
                 <a href="{{ route('dashboard.contact-messages.index') }}" class="dropdown-item dropdown-footer">
                     See All Messages
+                </a>
+            </div>
+        </li>
+
+        {{-- Reviews Notifications --}}
+        <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#">
+                <i class="fas fa-comments"></i>
+                @if(($dashboardPendingReviewsCount ?? 0) > 0)
+                    <span class="badge badge-warning navbar-badge">
+                        {{ $dashboardPendingReviewsCount }}
+                    </span>
+                @endif
+            </a>
+
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                <span class="dropdown-item dropdown-header">
+                    {{ $dashboardPendingReviewsCount ?? 0 }} Pending Reviews
+                </span>
+
+                <div class="dropdown-divider"></div>
+
+                @forelse(($dashboardPendingReviews ?? []) as $review)
+                    <a href="{{ route('dashboard.reviews.show', $review->id) }}" class="dropdown-item">
+                        <div>
+                            <strong>{{ $review->user->name ?? 'Customer' }}</strong>
+                            <span class="float-right text-muted text-sm">
+                                {{ $review->created_at?->diffForHumans() }}
+                            </span>
+                        </div>
+                        <div class="text-sm text-muted">
+                            {{ $review->product->name ?? $review->product->sku ?? 'Product' }} — {{ $review->rating }}/5
+                        </div>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                @empty
+                    <span class="dropdown-item text-muted">No pending reviews</span>
+                    <div class="dropdown-divider"></div>
+                @endforelse
+
+                <a href="{{ route('dashboard.reviews.index', ['status' => 'pending']) }}" class="dropdown-item dropdown-footer">
+                    See Pending Reviews
                 </a>
             </div>
         </li>

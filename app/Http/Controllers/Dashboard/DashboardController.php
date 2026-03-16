@@ -11,14 +11,22 @@ use App\Models\Product;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use App\Services\Dashboard\DashboardStatsService;
 
 class DashboardController extends Controller
+
+
 {
+
+     public function __construct(
+        protected DashboardStatsService $statsService
+    ) {}
     public function index()
     {
         $lowStockThreshold = 5;
 
         // Main stats
+        $stats = $this->statsService->get();
         $totalSales = Order::where('payment_status', 'paid')->sum('total');
         $ordersCount = Order::count();
         $paidOrdersCount = Order::where('payment_status', 'paid')->count();
@@ -91,7 +99,8 @@ class DashboardController extends Controller
             'topProducts',
             'salesChartLabels',
             'salesChartData',
-            'recentActivities'
+            'recentActivities',
+            'stats'
         ));
     }
 }

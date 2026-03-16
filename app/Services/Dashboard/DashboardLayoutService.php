@@ -4,6 +4,7 @@ namespace App\Services\Dashboard;
 
 use App\Models\ContactMessage;
 use App\Models\Order;
+use App\Models\Review;
 
 class DashboardLayoutService
 {
@@ -27,6 +28,17 @@ class DashboardLayoutService
 
             'dashboardUnreadMessages' => ContactMessage::query()
                 ->where('is_read', false)
+                ->latest()
+                ->take(5)
+                ->get(),
+
+            'dashboardPendingReviewsCount' => Review::query()
+                ->where('is_approved', false)
+                ->count(),
+
+            'dashboardPendingReviews' => Review::query()
+                ->with(['product.translations', 'user'])
+                ->where('is_approved', false)
                 ->latest()
                 ->take(5)
                 ->get(),

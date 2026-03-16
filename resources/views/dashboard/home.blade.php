@@ -1,5 +1,7 @@
 @extends('dashboard.app.layout')
 
+@section('title', 'Dashboard')
+
 @section('content')
 <div class="content-wrapper" style="background: #f4f6f9;">
     <section class="content-header">
@@ -22,7 +24,9 @@
     <section class="content">
         <div class="container-fluid">
 
-            {{-- Top Stats --}}
+            @include('dashboard.app.partials.alerts')
+
+            {{-- Top Sales Stats --}}
             <div class="row">
                 <div class="col-lg-3 col-md-6 col-12">
                     <div class="small-box shadow-sm" style="border-radius:18px; background:linear-gradient(135deg,#111827,#1f2937); color:#fff;">
@@ -45,6 +49,9 @@
                         <div class="icon">
                             <i class="fas fa-shopping-bag"></i>
                         </div>
+                        <a href="{{ route('dashboard.orders.index') }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
+                            More info <i class="fas fa-arrow-circle-right"></i>
+                        </a>
                     </div>
                 </div>
 
@@ -57,6 +64,9 @@
                         <div class="icon">
                             <i class="fas fa-circle-check"></i>
                         </div>
+                        <a href="{{ route('dashboard.orders.index') }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
+                            More info <i class="fas fa-arrow-circle-right"></i>
+                        </a>
                     </div>
                 </div>
 
@@ -69,6 +79,72 @@
                         <div class="icon">
                             <i class="fas fa-hourglass-half"></i>
                         </div>
+                        <a href="{{ route('dashboard.orders.index') }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
+                            More info <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Review Stats --}}
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-12">
+                    <div class="small-box shadow-sm" style="border-radius:18px; background:linear-gradient(135deg,#0ea5e9,#0284c7); color:#fff;">
+                        <div class="inner">
+                            <h3>{{ $stats['totalReviews'] ?? 0 }}</h3>
+                            <p>Total Reviews</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <a href="{{ route('dashboard.reviews.index') }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
+                            More info <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-12">
+                    <div class="small-box shadow-sm" style="border-radius:18px; background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff;">
+                        <div class="inner">
+                            <h3>{{ $stats['pendingReviews'] ?? 0 }}</h3>
+                            <p>Pending Reviews</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <a href="{{ route('dashboard.reviews.index', ['status' => 'pending']) }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
+                            More info <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-12">
+                    <div class="small-box shadow-sm" style="border-radius:18px; background:linear-gradient(135deg,#10b981,#059669); color:#fff;">
+                        <div class="inner">
+                            <h3>{{ $stats['approvedReviews'] ?? 0 }}</h3>
+                            <p>Approved Reviews</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <a href="{{ route('dashboard.reviews.index', ['status' => 'approved']) }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
+                            More info <i class="fas fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-12">
+                    <div class="small-box shadow-sm" style="border-radius:18px; background:linear-gradient(135deg,#6366f1,#4f46e5); color:#fff;">
+                        <div class="inner">
+                            <h3>{{ number_format((float) ($stats['averageRating'] ?? 0), 1) }}</h3>
+                            <p>Average Rating</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <a href="{{ route('dashboard.reviews.index') }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
+                            More info <i class="fas fa-arrow-circle-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -80,12 +156,17 @@
                         <div class="card-body d-flex align-items-center justify-content-between">
                             <div>
                                 <div class="text-muted mb-1">Products Count</div>
-                                <h3 class="mb-0 font-weight-bold">{{ $productsCount }}</h3>
+                                <h3 class="mb-0 font-weight-bold">{{ $productsCount ?? ($stats['totalProducts'] ?? 0) }}</h3>
                             </div>
                             <div class="rounded-circle d-flex align-items-center justify-content-center"
                                  style="width:52px;height:52px;background:#eef2ff;color:#4338ca;">
                                 <i class="fas fa-box fa-lg"></i>
                             </div>
+                        </div>
+                        <div class="px-3 pb-3">
+                            <a href="{{ route('dashboard.products.index') }}" class="btn btn-sm btn-outline-dark btn-block" style="border-radius:10px;">
+                                More info
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -132,28 +213,61 @@
                                 <i class="fas fa-star fa-lg"></i>
                             </div>
                         </div>
+                        <div class="px-3 pb-3">
+                            <a href="{{ route('dashboard.reviews.index') }}" class="btn btn-sm btn-outline-dark btn-block" style="border-radius:10px;">
+                                More info
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Unread messages + Chart --}}
+            {{-- Extra Stats --}}
             <div class="row">
                 <div class="col-lg-3 col-md-6 col-12">
                     <div class="card shadow-sm border-0" style="border-radius:18px;">
                         <div class="card-body d-flex align-items-center justify-content-between">
                             <div>
-                                <div class="text-muted mb-1">Unread Contact Messages</div>
-                                <h3 class="mb-0 font-weight-bold">{{ $unreadContactMessagesCount }}</h3>
+                                <div class="text-muted mb-1">Active Products</div>
+                                <h3 class="mb-0 font-weight-bold">{{ $stats['activeProducts'] ?? 0 }}</h3>
+                            </div>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width:52px;height:52px;background:#ecfdf5;color:#059669;">
+                                <i class="fas fa-cubes fa-lg"></i>
+                            </div>
+                        </div>
+                        <div class="px-3 pb-3">
+                            <a href="{{ route('dashboard.products.index', ['status' => 'active']) }}" class="btn btn-sm btn-outline-dark btn-block" style="border-radius:10px;">
+                                More info
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-12">
+                    <div class="card shadow-sm border-0" style="border-radius:18px;">
+                        <div class="card-body d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-muted mb-1">Unread Messages</div>
+                                <h3 class="mb-0 font-weight-bold">{{ $unreadContactMessagesCount ?? ($stats['unreadMessages'] ?? 0) }}</h3>
                             </div>
                             <div class="rounded-circle d-flex align-items-center justify-content-center"
                                  style="width:52px;height:52px;background:#fef2f2;color:#dc2626;">
                                 <i class="fas fa-envelope fa-lg"></i>
                             </div>
                         </div>
+                        <div class="px-3 pb-3">
+                            <a href="{{ route('dashboard.contact-messages.index') }}" class="btn btn-sm btn-outline-dark btn-block" style="border-radius:10px;">
+                                More info
+                            </a>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="col-lg-9 col-12">
+            {{-- Sales Chart --}}
+            <div class="row">
+                <div class="col-lg-12 col-12">
                     <div class="card shadow-sm border-0" style="border-radius:20px;">
                         <div class="card-header bg-white border-0 pt-4 pb-0">
                             <div class="d-flex justify-content-between align-items-center flex-wrap">
@@ -162,7 +276,9 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <canvas id="salesChart" height="100"></canvas>
+                            <div style="height: 320px;">
+                                <canvas id="salesChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -343,6 +459,7 @@
             }]
         },
         options: {
+            responsive: true,
             maintainAspectRatio: false,
             plugins: {
                 legend: {

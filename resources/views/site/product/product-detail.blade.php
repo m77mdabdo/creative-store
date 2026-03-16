@@ -162,9 +162,9 @@
 
                                         <div class="size-204 respon6-next">
 
-                                            @if(isset($colorVariants) && $colorVariants->count())
+                                            @if(isset($colorButtons) && $colorButtons->count())
                                                 <div class="d-flex flex-wrap m-b-10" id="colorVariantButtons">
-                                                    @foreach($colorVariants as $colorVariant)
+                                                    @foreach($colorButtons as $colorVariant)
                                                         <button
                                                             type="button"
                                                             class="btn btn-outline-dark mr-2 mb-2 color-variant-btn"
@@ -538,463 +538,472 @@
         </div>
     </section>
 
-<script>
-    function copyCouponCode(code) {
-        const input = document.getElementById('couponCodeInput');
+    <script>
+        function copyCouponCode(code) {
+            const input = document.getElementById('couponCodeInput');
 
-        if (input) {
-            input.value = code;
-            input.dispatchEvent(new Event('input'));
-        }
-
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(code);
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const couponInput = document.getElementById('couponCodeInput');
-        const applyBtn = document.getElementById('applyCouponBtn');
-        const priceDiscounted = document.getElementById('priceDiscounted');
-        const discountRow = document.getElementById('discountRow');
-        const couponMsg = document.getElementById('couponMsg');
-
-        const sizeSelect = document.getElementById('sizeSelect');
-        const colorSelect = document.getElementById('colorSelect');
-        const variantInput = document.getElementById('variantInput');
-        const variantError = document.getElementById('variantError');
-        const productPrice = document.getElementById('productPrice');
-        const dynamicSku = document.getElementById('dynamicSku');
-        const dynamicStock = document.getElementById('dynamicStock');
-        const skuInfo = document.getElementById('skuInfo');
-        const footerSku = document.getElementById('footerSku');
-        const priceOriginal = document.getElementById('priceOriginal');
-
-        const colorButtons = document.querySelectorAll('.color-variant-btn');
-
-        const productId = {{ (int) $product->id }};
-        const currency = @json($productCurrency);
-        const basePrice = {{ (float) $productPrice }};
-        const baseSku = @json($productSku);
-
-        const variantMap = @json($variantMap);
-        const colorDefaultVariantMap = @json($colorDefaultVariantMap ?? []);
-        const defaultGallery = @json($generalGallery);
-
-        function selectedSize() {
-            return sizeSelect ? String(sizeSelect.value || '') : '';
-        }
-
-        function selectedColor() {
-            return colorSelect ? String(colorSelect.value || '') : '';
-        }
-
-        function hasSizes() {
-            return !!sizeSelect;
-        }
-
-        function hasColors() {
-            return !!colorSelect;
-        }
-
-        function uniqueImages(images) {
-            const seen = new Set();
-
-            return (images || []).filter(img => {
-                const key = String(img.path || img.url || `${img.id || ''}`);
-
-                if (!key) return false;
-                if (seen.has(key)) return false;
-
-                seen.add(key);
-                return true;
-            });
-        }
-
-        function destroySlickIfExists() {
-            if (!(window.jQuery && $('.wrap-slick3').length)) {
-                return;
+            if (input) {
+                input.value = code;
+                input.dispatchEvent(new Event('input'));
             }
 
-            const $slider = $('.wrap-slick3 .slick3');
-
-            if ($slider.hasClass('slick-initialized')) {
-                $slider.slick('unslick');
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(code);
             }
-
-            $('.wrap-slick3-dots').html('');
-            $('.wrap-slick3-arrows').html('');
         }
 
-        function initProductGallery(imageCount) {
-            if (!(window.jQuery && $('.wrap-slick3').length)) {
-                return;
+        document.addEventListener('DOMContentLoaded', function () {
+            const couponInput = document.getElementById('couponCodeInput');
+            const applyBtn = document.getElementById('applyCouponBtn');
+            const priceDiscounted = document.getElementById('priceDiscounted');
+            const discountRow = document.getElementById('discountRow');
+            const couponMsg = document.getElementById('couponMsg');
+
+            const sizeSelect = document.getElementById('sizeSelect');
+            const colorSelect = document.getElementById('colorSelect');
+            const variantInput = document.getElementById('variantInput');
+            const variantError = document.getElementById('variantError');
+            const productPrice = document.getElementById('productPrice');
+            const dynamicSku = document.getElementById('dynamicSku');
+            const dynamicStock = document.getElementById('dynamicStock');
+            const skuInfo = document.getElementById('skuInfo');
+            const footerSku = document.getElementById('footerSku');
+            const priceOriginal = document.getElementById('priceOriginal');
+
+            const colorButtons = document.querySelectorAll('.color-variant-btn');
+
+            const productId = {{ (int) $product->id }};
+            const currency = @json($productCurrency);
+            const basePrice = {{ (float) $productPrice }};
+            const baseSku = @json($productSku);
+
+            const variantMap = @json($variantMap);
+            const colorDefaultVariantMap = @json($colorDefaultVariantMap ?? []);
+            const colorGalleryMap = @json($colorGalleryMap ?? []);
+            const defaultGallery = @json($generalGallery);
+
+            function selectedSize() {
+                return sizeSelect ? String(sizeSelect.value || '') : '';
             }
 
-            destroySlickIfExists();
+            function selectedColor() {
+                return colorSelect ? String(colorSelect.value || '') : '';
+            }
 
-            $('.wrap-slick3').each(function () {
-                $(this).find('.slick3').slick({
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    fade: true,
-                    infinite: false,
-                    autoplay: false,
-                    autoplaySpeed: 6000,
-                    arrows: imageCount > 1,
-                    appendArrows: $(this).find('.wrap-slick3-arrows'),
-                    prevArrow: '<button class="arrow-slick3 prev-slick3"><i class="fa fa-angle-left" aria-hidden="true"></i></button>',
-                    nextArrow: '<button class="arrow-slick3 next-slick3"><i class="fa fa-angle-right" aria-hidden="true"></i></button>',
-                    dots: imageCount > 1,
-                    appendDots: $(this).find('.wrap-slick3-dots'),
-                    dotsClass: 'slick3-dots',
-                    customPaging: function (slick, index) {
-                        const portrait = $(slick.$slides[index]).data('thumb');
-                        return '<img src="' + portrait + '"/><div class="slick3-dot-overlay"></div>';
-                    }
+            function hasSizes() {
+                return !!sizeSelect;
+            }
+
+            function hasColors() {
+                return !!colorSelect;
+            }
+
+            function uniqueImages(images) {
+                const seen = new Set();
+
+                return (images || []).filter(img => {
+                    const key = String(img.path || img.url || `${img.id || ''}`);
+
+                    if (!key) return false;
+                    if (seen.has(key)) return false;
+
+                    seen.add(key);
+                    return true;
                 });
-            });
-        }
-
-        function setGallery(images) {
-            const gallery = document.getElementById('productGallery');
-            if (!gallery) return;
-
-            let finalImages = uniqueImages((images && images.length) ? images : defaultGallery);
-
-            if (!finalImages.length) {
-                finalImages = uniqueImages(defaultGallery);
             }
 
-            gallery.innerHTML = finalImages.map(img => {
-                const thumb = img.thumb || img.url;
-                const url = img.url || img;
-                const alt = img.alt || @json($productName);
+            function destroySlickIfExists() {
+                if (!(window.jQuery && $('.wrap-slick3').length)) {
+                    return;
+                }
 
-                return `
-                    <div class="item-slick3" data-thumb="${thumb}">
-                        <div class="wrap-pic-w pos-relative">
-                            <img src="${url}" alt="${alt}">
-                            <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="${url}">
-                                <i class="fa fa-expand"></i>
-                            </a>
+                const $slider = $('.wrap-slick3 .slick3');
+
+                if ($slider.hasClass('slick-initialized')) {
+                    $slider.slick('unslick');
+                }
+
+                $('.wrap-slick3-dots').html('');
+                $('.wrap-slick3-arrows').html('');
+            }
+
+            function initProductGallery(imageCount) {
+                if (!(window.jQuery && $('.wrap-slick3').length)) {
+                    return;
+                }
+
+                destroySlickIfExists();
+
+                $('.wrap-slick3').each(function () {
+                    $(this).find('.slick3').slick({
+                        slidesToShow: 1,
+                        slidesToScroll: 1,
+                        fade: true,
+                        infinite: false,
+                        autoplay: false,
+                        autoplaySpeed: 6000,
+                        arrows: imageCount > 1,
+                        appendArrows: $(this).find('.wrap-slick3-arrows'),
+                        prevArrow: '<button class="arrow-slick3 prev-slick3"><i class="fa fa-angle-left" aria-hidden="true"></i></button>',
+                        nextArrow: '<button class="arrow-slick3 next-slick3"><i class="fa fa-angle-right" aria-hidden="true"></i></button>',
+                        dots: imageCount > 1,
+                        appendDots: $(this).find('.wrap-slick3-dots'),
+                        dotsClass: 'slick3-dots',
+                        customPaging: function (slick, index) {
+                            const portrait = $(slick.$slides[index]).data('thumb');
+                            return '<img src="' + portrait + '"/><div class="slick3-dot-overlay"></div>';
+                        }
+                    });
+                });
+            }
+
+            function setGallery(images) {
+                const gallery = document.getElementById('productGallery');
+                if (!gallery) return;
+
+                let finalImages = uniqueImages((images && images.length) ? images : defaultGallery);
+
+                if (!finalImages.length) {
+                    finalImages = uniqueImages(defaultGallery);
+                }
+
+                gallery.innerHTML = finalImages.map(img => {
+                    const thumb = img.thumb || img.url;
+                    const url = img.url || img;
+                    const alt = img.alt || @json($productName);
+
+                    return `
+                        <div class="item-slick3" data-thumb="${thumb}">
+                            <div class="wrap-pic-w pos-relative">
+                                <img src="${url}" alt="${alt}">
+                                <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="${url}">
+                                    <i class="fa fa-expand"></i>
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                `;
-            }).join('');
+                    `;
+                }).join('');
 
-            initProductGallery(finalImages.length);
-        }
+                initProductGallery(finalImages.length);
+            }
 
-        function setActiveColorButtonByColorId(colorId) {
-            colorButtons.forEach(btn => {
-                const btnColorId = String(btn.dataset.colorId || '');
-                btn.classList.toggle('active', colorId && btnColorId === String(colorId));
-            });
-        }
+            function setActiveColorButtonByColorId(colorId) {
+                colorButtons.forEach(btn => {
+                    const btnColorId = String(btn.dataset.colorId || '');
+                    btn.classList.toggle('active', colorId && btnColorId === String(colorId));
+                });
+            }
 
-        function selectColorButton(button) {
-            if (!button) return;
+            function selectColorButton(button) {
+                if (!button) return;
 
-            colorButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
+                colorButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
 
-            const colorId = button.dataset.colorId || '';
+                const colorId = button.dataset.colorId || '';
 
-            if (colorSelect) {
-                colorSelect.value = colorId;
+                if (colorSelect) {
+                    colorSelect.value = colorId;
 
-                if (window.jQuery && $(colorSelect).hasClass('select2-hidden-accessible')) {
-                    $(colorSelect).trigger('change.select2');
+                    if (window.jQuery && $(colorSelect).hasClass('select2-hidden-accessible')) {
+                        $(colorSelect).trigger('change.select2');
+                    }
+                }
+
+                updateVariantUI(true, button);
+            }
+
+            function getBestVariant() {
+                const size = selectedSize();
+                const color = selectedColor();
+
+                if (size && color && variantMap[`${size}-${color}`]) {
+                    return variantMap[`${size}-${color}`];
+                }
+
+                if (color && colorDefaultVariantMap[color]) {
+                    return colorDefaultVariantMap[color];
+                }
+
+                if (size && variantMap[size]) {
+                    return variantMap[size];
+                }
+
+                return null;
+            }
+
+            function getBestGallery() {
+                const size = selectedSize();
+                const color = selectedColor();
+
+                if (size && color && variantMap[`${size}-${color}`]?.images?.length) {
+                    return variantMap[`${size}-${color}`].images;
+                }
+
+                if (color && colorGalleryMap[color]?.length) {
+                    return colorGalleryMap[color];
+                }
+
+                if (size && variantMap[size]?.images?.length) {
+                    return variantMap[size].images;
+                }
+
+                if (color && colorDefaultVariantMap[color]?.images?.length) {
+                    return colorDefaultVariantMap[color].images;
+                }
+
+                return defaultGallery;
+            }
+
+            function resetBaseUI() {
+                if (productPrice) {
+                    productPrice.textContent = `${Number(basePrice).toFixed(2)} ${currency}`;
+                }
+
+                if (priceOriginal) {
+                    priceOriginal.textContent = `${Number(basePrice).toFixed(2)} ${currency}`;
+                }
+
+                if (dynamicSku) dynamicSku.textContent = baseSku || 'N/A';
+                if (skuInfo) skuInfo.textContent = baseSku || 'N/A';
+                if (footerSku) footerSku.textContent = baseSku || 'N/A';
+                if (dynamicStock) dynamicStock.textContent = 'N/A';
+
+                if (variantInput) {
+                    variantInput.value = '';
                 }
             }
 
-            updateVariantUI(true, button);
-        }
+            function updateVariantUI(fromColorButton = false, clickedButton = null) {
+                const size = selectedSize();
+                const color = selectedColor();
 
-        function getBestVariant() {
-            const size = selectedSize();
-            const color = selectedColor();
+                const bestVariant = getBestVariant();
+                const bestGallery = getBestGallery();
 
-            if (size && color && variantMap[`${size}-${color}`]) {
-                return variantMap[`${size}-${color}`];
-            }
+                if (!fromColorButton) {
+                    setActiveColorButtonByColorId(color);
+                }
 
-            if (color && colorDefaultVariantMap[color]) {
-                return colorDefaultVariantMap[color];
-            }
+                setGallery(bestGallery);
 
-            if (size && variantMap[size]) {
-                return variantMap[size];
-            }
+                if (size && color) {
+                    const exactKey = `${size}-${color}`;
 
-            return null;
-        }
+                    if (variantMap[exactKey]) {
+                        const exactVariant = variantMap[exactKey];
 
-        function getBestGallery() {
-            const size = selectedSize();
-            const color = selectedColor();
+                        if (variantInput) variantInput.value = exactVariant.id || '';
+                        if (productPrice) productPrice.textContent = `${Number(exactVariant.price).toFixed(2)} ${currency}`;
+                        if (priceOriginal) priceOriginal.textContent = `${Number(exactVariant.price).toFixed(2)} ${currency}`;
+                        if (dynamicSku) dynamicSku.textContent = exactVariant.sku || 'N/A';
+                        if (skuInfo) skuInfo.textContent = exactVariant.sku || 'N/A';
+                        if (footerSku) footerSku.textContent = exactVariant.sku || 'N/A';
+                        if (dynamicStock) dynamicStock.textContent = exactVariant.stock ?? 'N/A';
 
-            if (size && color && variantMap[`${size}-${color}`]?.images?.length) {
-                return variantMap[`${size}-${color}`].images;
-            }
+                        if (variantError) {
+                            variantError.style.display = 'none';
+                        }
 
-            if (size && variantMap[size]?.images?.length) {
-                return variantMap[size].images;
-            }
+                        return;
+                    }
 
-            if (color && colorDefaultVariantMap[color]?.images?.length) {
-                return colorDefaultVariantMap[color].images;
-            }
-
-            return defaultGallery;
-        }
-
-        function resetBaseUI() {
-            if (productPrice) {
-                productPrice.textContent = `${Number(basePrice).toFixed(2)} ${currency}`;
-            }
-
-            if (priceOriginal) {
-                priceOriginal.textContent = `${Number(basePrice).toFixed(2)} ${currency}`;
-            }
-
-            if (dynamicSku) dynamicSku.textContent = baseSku || 'N/A';
-            if (skuInfo) skuInfo.textContent = baseSku || 'N/A';
-            if (footerSku) footerSku.textContent = baseSku || 'N/A';
-            if (dynamicStock) dynamicStock.textContent = 'N/A';
-
-            if (variantInput) {
-                variantInput.value = '';
-            }
-        }
-
-        function updateVariantUI(fromColorButton = false, clickedButton = null) {
-            const size = selectedSize();
-            const color = selectedColor();
-
-            const bestVariant = getBestVariant();
-            const bestGallery = getBestGallery();
-
-            if (!fromColorButton) {
-                setActiveColorButtonByColorId(color);
-            }
-
-            setGallery(bestGallery);
-
-            if (size && color) {
-                const exactKey = `${size}-${color}`;
-
-                if (variantMap[exactKey]) {
-                    const exactVariant = variantMap[exactKey];
-
-                    if (variantInput) variantInput.value = exactVariant.id || '';
-                    if (productPrice) productPrice.textContent = `${Number(exactVariant.price).toFixed(2)} ${currency}`;
-                    if (priceOriginal) priceOriginal.textContent = `${Number(exactVariant.price).toFixed(2)} ${currency}`;
-                    if (dynamicSku) dynamicSku.textContent = exactVariant.sku || 'N/A';
-                    if (skuInfo) skuInfo.textContent = exactVariant.sku || 'N/A';
-                    if (footerSku) footerSku.textContent = exactVariant.sku || 'N/A';
-                    if (dynamicStock) dynamicStock.textContent = exactVariant.stock ?? 'N/A';
+                    resetBaseUI();
 
                     if (variantError) {
-                        variantError.style.display = 'none';
+                        variantError.textContent = 'Selected combination is not available.';
+                        variantError.style.display = 'block';
                     }
 
                     return;
                 }
 
-                resetBaseUI();
+                if (fromColorButton && clickedButton) {
+                    const clickedColorId = String(clickedButton.dataset.colorId || '');
+                    const galleryFromColorMap = colorGalleryMap[clickedColorId] || [];
+                    const galleryFromButton = JSON.parse(clickedButton.dataset.gallery || '[]');
+                    const imageFromButton = clickedButton.dataset.image || '';
+                    const priceFromButton = clickedButton.dataset.price || '';
+                    const stockFromButton = clickedButton.dataset.stock || '';
+                    const skuFromButton = clickedButton.dataset.sku || '';
+                    const variantIdFromButton = clickedButton.dataset.variantId || '';
+
+                    if (galleryFromColorMap.length) {
+                        setGallery(galleryFromColorMap);
+                    } else if (galleryFromButton.length) {
+                        setGallery(galleryFromButton.map(url => ({
+                            url: url,
+                            thumb: url,
+                            alt: @json($productName)
+                        })));
+                    } else if (imageFromButton) {
+                        setGallery([{
+                            url: imageFromButton,
+                            thumb: imageFromButton,
+                            alt: @json($productName)
+                        }]);
+                    }
+
+                    if (!size) {
+                        if (variantInput) variantInput.value = variantIdFromButton;
+                        if (productPrice && priceFromButton) productPrice.textContent = `${Number(priceFromButton).toFixed(2)} ${currency}`;
+                        if (priceOriginal && priceFromButton) priceOriginal.textContent = `${Number(priceFromButton).toFixed(2)} ${currency}`;
+                        if (dynamicSku) dynamicSku.textContent = skuFromButton || 'N/A';
+                        if (skuInfo) skuInfo.textContent = skuFromButton || 'N/A';
+                        if (footerSku) footerSku.textContent = skuFromButton || 'N/A';
+                        if (dynamicStock) dynamicStock.textContent = stockFromButton || 'N/A';
+                    }
+                } else if (bestVariant) {
+                    if (variantInput) variantInput.value = bestVariant.id || '';
+                    if (productPrice) productPrice.textContent = `${Number(bestVariant.price).toFixed(2)} ${currency}`;
+                    if (priceOriginal) priceOriginal.textContent = `${Number(bestVariant.price).toFixed(2)} ${currency}`;
+                    if (dynamicSku) dynamicSku.textContent = bestVariant.sku || 'N/A';
+                    if (skuInfo) skuInfo.textContent = bestVariant.sku || 'N/A';
+                    if (footerSku) footerSku.textContent = bestVariant.sku || 'N/A';
+                    if (dynamicStock) dynamicStock.textContent = bestVariant.stock ?? 'N/A';
+                } else {
+                    resetBaseUI();
+                }
 
                 if (variantError) {
-                    variantError.textContent = 'Selected combination is not available.';
-                    variantError.style.display = 'block';
+                    variantError.style.display = 'none';
                 }
-
-                return;
             }
 
-            if (fromColorButton && clickedButton) {
-                const galleryFromButton = JSON.parse(clickedButton.dataset.gallery || '[]');
-                const imageFromButton = clickedButton.dataset.image || '';
-                const priceFromButton = clickedButton.dataset.price || '';
-                const stockFromButton = clickedButton.dataset.stock || '';
-                const skuFromButton = clickedButton.dataset.sku || '';
-                const variantIdFromButton = clickedButton.dataset.variantId || '';
+            function validateVariantBeforeSubmit(e) {
+                const requireSize = hasSizes();
+                const requireColor = hasColors();
 
-                if (galleryFromButton.length) {
-                    setGallery(galleryFromButton.map(url => ({
-                        url: url,
-                        thumb: url,
-                        alt: @json($productName)
-                    })));
-                } else if (imageFromButton) {
-                    setGallery([{
-                        url: imageFromButton,
-                        thumb: imageFromButton,
-                        alt: @json($productName)
-                    }]);
+                const size = selectedSize();
+                const color = selectedColor();
+
+                if (!requireSize && !requireColor) {
+                    return true;
                 }
 
-                if (!size) {
-                    if (variantInput) variantInput.value = variantIdFromButton;
-                    if (productPrice && priceFromButton) productPrice.textContent = `${Number(priceFromButton).toFixed(2)} ${currency}`;
-                    if (priceOriginal && priceFromButton) priceOriginal.textContent = `${Number(priceFromButton).toFixed(2)} ${currency}`;
-                    if (dynamicSku) dynamicSku.textContent = skuFromButton || 'N/A';
-                    if (skuInfo) skuInfo.textContent = skuFromButton || 'N/A';
-                    if (footerSku) footerSku.textContent = skuFromButton || 'N/A';
-                    if (dynamicStock) dynamicStock.textContent = stockFromButton || 'N/A';
+                if ((requireSize && !size) || (requireColor && !color)) {
+                    e.preventDefault();
+
+                    if (variantError) {
+                        variantError.textContent = 'Please select all required options.';
+                        variantError.style.display = 'block';
+                    }
+
+                    return false;
                 }
-            } else if (bestVariant) {
-                if (variantInput) variantInput.value = bestVariant.id || '';
-                if (productPrice) productPrice.textContent = `${Number(bestVariant.price).toFixed(2)} ${currency}`;
-                if (priceOriginal) priceOriginal.textContent = `${Number(bestVariant.price).toFixed(2)} ${currency}`;
-                if (dynamicSku) dynamicSku.textContent = bestVariant.sku || 'N/A';
-                if (skuInfo) skuInfo.textContent = bestVariant.sku || 'N/A';
-                if (footerSku) footerSku.textContent = bestVariant.sku || 'N/A';
-                if (dynamicStock) dynamicStock.textContent = bestVariant.stock ?? 'N/A';
-            } else {
-                resetBaseUI();
-            }
 
-            if (variantError) {
-                variantError.style.display = 'none';
-            }
-        }
+                const key = `${size}-${color}`;
 
-        function validateVariantBeforeSubmit(e) {
-            const requireSize = hasSizes();
-            const requireColor = hasColors();
+                if (requireSize && requireColor && !variantMap[key]) {
+                    e.preventDefault();
 
-            const size = selectedSize();
-            const color = selectedColor();
+                    if (variantError) {
+                        variantError.textContent = 'Selected combination is not available.';
+                        variantError.style.display = 'block';
+                    }
 
-            if (!requireSize && !requireColor) {
+                    return false;
+                }
+
+                if (variantError) {
+                    variantError.style.display = 'none';
+                }
+
                 return true;
             }
 
-            if ((requireSize && !size) || (requireColor && !color)) {
-                e.preventDefault();
+            async function runCouponPreview() {
+                const code = (couponInput?.value || '').trim();
 
-                if (variantError) {
-                    variantError.textContent = 'Please select all required options.';
-                    variantError.style.display = 'block';
-                }
-
-                return false;
-            }
-
-            const key = `${size}-${color}`;
-
-            if (requireSize && requireColor && !variantMap[key]) {
-                e.preventDefault();
-
-                if (variantError) {
-                    variantError.textContent = 'Selected combination is not available.';
-                    variantError.style.display = 'block';
-                }
-
-                return false;
-            }
-
-            if (variantError) {
-                variantError.style.display = 'none';
-            }
-
-            return true;
-        }
-
-        async function runCouponPreview() {
-            const code = (couponInput?.value || '').trim();
-
-            if (!code) {
-                if (discountRow) discountRow.style.display = 'none';
-                if (couponMsg) couponMsg.style.display = 'none';
-                return;
-            }
-
-            const payload = new FormData();
-            payload.append('_token', @json(csrf_token()));
-            payload.append('product_id', productId);
-            payload.append('variant_id', variantInput?.value || '');
-            payload.append('coupon_code', code);
-
-            try {
-                const res = await fetch(@json(route('cart.coupon.preview')), {
-                    method: 'POST',
-                    body: payload
-                });
-
-                const data = await res.json();
-
-                couponMsg.style.display = 'block';
-
-                if (!data.ok) {
-                    discountRow.style.display = 'none';
-                    couponMsg.style.color = '#e3342f';
-                    couponMsg.textContent = data.message || 'Invalid coupon';
+                if (!code) {
+                    if (discountRow) discountRow.style.display = 'none';
+                    if (couponMsg) couponMsg.style.display = 'none';
                     return;
                 }
 
-                discountRow.style.display = 'block';
-                priceDiscounted.textContent = data.final.toFixed(2) + ' ' + currency;
-                couponMsg.style.color = '#38a169';
-                couponMsg.textContent = `${data.code} applied ✅ (-${data.discount.toFixed(2)} ${currency})`;
-            } catch (e) {
-                discountRow.style.display = 'none';
-                couponMsg.style.display = 'block';
-                couponMsg.style.color = '#e3342f';
-                couponMsg.textContent = 'Something went wrong while checking the coupon.';
-            }
-        }
+                const payload = new FormData();
+                payload.append('_token', @json(csrf_token()));
+                payload.append('product_id', productId);
+                payload.append('variant_id', variantInput?.value || '');
+                payload.append('coupon_code', code);
 
-        if (applyBtn) {
-            applyBtn.addEventListener('click', runCouponPreview);
-        }
+                try {
+                    const res = await fetch(@json(route('cart.coupon.preview')), {
+                        method: 'POST',
+                        body: payload
+                    });
 
-        if (couponInput) {
-            couponInput.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    runCouponPreview();
+                    const data = await res.json();
+
+                    couponMsg.style.display = 'block';
+
+                    if (!data.ok) {
+                        discountRow.style.display = 'none';
+                        couponMsg.style.color = '#e3342f';
+                        couponMsg.textContent = data.message || 'Invalid coupon';
+                        return;
+                    }
+
+                    discountRow.style.display = 'block';
+                    priceDiscounted.textContent = data.final.toFixed(2) + ' ' + currency;
+                    couponMsg.style.color = '#38a169';
+                    couponMsg.textContent = `${data.code} applied ✅ (-${data.discount.toFixed(2)} ${currency})`;
+                } catch (e) {
+                    discountRow.style.display = 'none';
+                    couponMsg.style.display = 'block';
+                    couponMsg.style.color = '#e3342f';
+                    couponMsg.textContent = 'Something went wrong while checking the coupon.';
                 }
-            });
-        }
+            }
 
-        if (sizeSelect) {
-            sizeSelect.addEventListener('change', function () {
+            if (applyBtn) {
+                applyBtn.addEventListener('click', runCouponPreview);
+            }
+
+            if (couponInput) {
+                couponInput.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        runCouponPreview();
+                    }
+                });
+            }
+
+            if (sizeSelect) {
+                sizeSelect.addEventListener('change', function () {
+                    updateVariantUI();
+                    setTimeout(runCouponPreview, 80);
+                });
+            }
+
+            if (colorSelect) {
+                colorSelect.addEventListener('change', function () {
+                    updateVariantUI();
+                    setTimeout(runCouponPreview, 80);
+                });
+            }
+
+            colorButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    selectColorButton(this);
+                    setTimeout(runCouponPreview, 80);
+                });
+            });
+
+            const addToCartForm = document.getElementById('addToCartForm');
+            if (addToCartForm) {
+                addToCartForm.addEventListener('submit', validateVariantBeforeSubmit);
+            }
+
+            setGallery(defaultGallery);
+            resetBaseUI();
+
+            const initialColorBtn = document.querySelector('.color-variant-btn');
+            if (initialColorBtn && colorSelect && !colorSelect.value) {
+                selectColorButton(initialColorBtn);
+            } else {
                 updateVariantUI();
-                setTimeout(runCouponPreview, 80);
-            });
-        }
-
-        if (colorSelect) {
-            colorSelect.addEventListener('change', function () {
-                updateVariantUI();
-                setTimeout(runCouponPreview, 80);
-            });
-        }
-
-        colorButtons.forEach(btn => {
-            btn.addEventListener('click', function () {
-                selectColorButton(this);
-                setTimeout(runCouponPreview, 80);
-            });
+            }
         });
-
-        const addToCartForm = document.getElementById('addToCartForm');
-        if (addToCartForm) {
-            addToCartForm.addEventListener('submit', validateVariantBeforeSubmit);
-        }
-
-        setGallery(defaultGallery);
-        resetBaseUI();
-
-        const initialColorBtn = document.querySelector('.color-variant-btn');
-        if (initialColorBtn && colorSelect && !colorSelect.value) {
-            selectColorButton(initialColorBtn);
-        } else {
-            updateVariantUI();
-        }
-    });
-</script>
-@endsection
+    </script>
+@endsection 

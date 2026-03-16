@@ -184,26 +184,26 @@ class ProductVariantController extends Controller
         return back()->with('success', 'Variant deleted successfully.');
     }
 
-    private function normalizePayload(Request $request): array
-    {
-        $values = collect($request->input('values', []))
-            ->map(fn($row) => [
-                'attribute_id' => (int) $row['attribute_id'],
-                'attribute_value_id' => (int) $row['attribute_value_id'],
-            ])
-            ->sortBy('attribute_id')
-            ->values()
-            ->all();
+private function normalizePayload(Request $request): array
+{
+    $values = collect($request->input('values', []))
+        ->map(fn($row) => [
+            'attribute_id' => (int) $row['attribute_id'],
+            'attribute_value_id' => (int) $row['attribute_value_id'],
+        ])
+        ->sortBy('attribute_id')
+        ->values()
+        ->all();
 
-        return [
-            'sku' => trim((string) $request->sku),
-            'price' => (float) $request->price,
-            'stock' => (int) $request->stock,
-            'weight' => (float) $request->input('weight', 0),
-            'is_active' => $request->boolean('is_active'),
-            'values' => $values,
-        ];
-    }
+    return [
+        'sku' => trim((string) $request->input('sku')),
+        'price' => (float) $request->input('price', 0),
+        'stock' => max(0, (int) $request->input('stock', 0)),
+        'weight' => (float) $request->input('weight', 0),
+        'is_active' => $request->boolean('is_active'),
+        'values' => $values,
+    ];
+}
 
     private function buildCombinationKey(array $attributeValueIds): string
     {

@@ -13,172 +13,198 @@ class CartController extends Controller
     private const VAT_RATE = 0.15;
     private const MAX_QTY_PER_ITEM = 20;
 
-public function index()
-{
-    $cart = session()->get('cart', []);
-    $cart = $this->syncCartWithDatabase($cart);
-
-    if (empty($cart)) {
-        session()->forget('cart');
-        session()->forget('cart_coupon');
-        session()->forget('cart_product_coupons');
-    } else {
-        session()->put('cart', $cart);
-    }
-
-    $this->refreshCoupons();
-
-    $subtotal = $this->getCartSubtotal($cart);
-
-    $cartCouponData = session()->get('cart_coupon');
-    $productCouponsData = session()->get('cart_product_coupons', []);
-
-    $productDiscount = $this->calculateAllProductCouponsDiscount($cart, $productCouponsData);
-    $cartDiscount = (float) ($cartCouponData['discount'] ?? 0);
-    $discount = $productDiscount + $cartDiscount;
-
-    $netTotal = max($subtotal - $discount, 0);
-    $vatValue = $netTotal * self::VAT_RATE;
-    $grandTotal = $netTotal + $vatValue;
-
-    /*
-    حفظ ملخص الكارت النهائي في session
-    */
-    session([
-        'cart_summary' => [
-            'subtotal' => $subtotal,
-            'discount' => $discount,
-            'tax_total' => $vatValue,
-            'total' => $grandTotal,
-        ]
-    ]);
-
-    return view('site.cart.cart-panel', [
-        'cart' => $cart,
-        'subtotal' => $subtotal,
-        'cartDiscount' => $cartDiscount,
-        'productDiscount' => $productDiscount,
-        'discount' => $discount,
-        'netTotal' => $netTotal,
-        'vatValue' => $vatValue,
-        'grandTotal' => $grandTotal,
-        'cartCouponData' => $cartCouponData,
-        'productCouponsData' => $productCouponsData,
-    ]);
-}
-
-    public function add(Request $request)
+    public function index()
     {
-        $validated = $request->validate([
-            'product_id' => ['required', 'integer', 'exists:products,id'],
-            'quantity' => ['required', 'integer', 'min:1', 'max:' . self::MAX_QTY_PER_ITEM],
-            'variant_id' => ['nullable', 'integer', 'exists:product_variants,id'],
-            'coupon_code' => ['nullable', 'string', 'max:100'],
-        ]);
-
-        $product = Product::with('primaryImage')->findOrFail($validated['product_id']);
-
-        $variant = null;
-        $price = (float) $product->base_price;
-
-        if (!empty($validated['variant_id'])) {
-            $variant = ProductVariant::query()
-                ->where('id', $validated['variant_id'])
-                ->where('product_id', $product->id)
-                ->firstOrFail();
-
-            if (isset($variant->stock) && (int) $variant->stock < 1) {
-                return back()->with('error', 'Selected variant is out of stock.');
-            }
-
-            if (!is_null($variant->price)) {
-                $price = (float) $variant->price;
-            }
-        }
-
-        $image = null;
-        if ($variant && !empty($variant->image)) {
-            $image = $variant->image;
-        } elseif ($product->primaryImage?->path) {
-            $image = $product->primaryImage->path;
-        }
-
-        $cartKey = $variant
-            ? $product->id . '_' . $variant->id
-            : (string) $product->id;
-
         $cart = session()->get('cart', []);
-        $newQuantity = (int) $validated['quantity'];
+        $cart = $this->syncCartWithDatabase($cart);
 
-        if (isset($cart[$cartKey])) {
-            $newQuantity += (int) ($cart[$cartKey]['quantity'] ?? 0);
-        }
-
-        $newQuantity = min($newQuantity, self::MAX_QTY_PER_ITEM);
-
-        $cart[$cartKey] = [
-            'product_id' => $product->id,
-            'variant_id' => $variant?->id,
-            'slug' => $product->slug,
-            'name' => $product->name ?? $product->slug,
-            'price' => $price,
-            'quantity' => $newQuantity,
-            'image' => $image,
-            'currency' => $product->currency ?? 'SAR',
-            'color' => $variant->color ?? null,
-            'size' => $variant->size ?? null,
-            'total_price' => $price * $newQuantity,
-        ];
-
-        session()->put('cart', $cart);
-
-        if (!empty($validated['coupon_code'])) {
-            $code = strtoupper(trim($validated['coupon_code']));
-            $coupon = Coupon::whereRaw('UPPER(code) = ?', [$code])->first();
-
-            if (!$coupon) {
-                $this->refreshCoupons();
-                return back()->with('error', 'Invalid coupon code.');
-            }
-
-            $subtotal = $this->getCartSubtotal($cart);
-
-            if (!$this->isCouponValid($coupon, $subtotal)) {
-                return back()->with('error', $this->getCouponErrorMessage($coupon, $subtotal));
-            }
-
-            // كوبون خاص بمنتج
-            if (!is_null($coupon->product_id)) {
-                if ((int) $coupon->product_id !== (int) $product->id) {
-                    return back()->with('error', 'This coupon is not valid for this product.');
-                }
-
-                $this->storeProductCoupon($coupon, $cart);
-                $this->refreshCoupons();
-
-                return back()->with('success', 'Product added to cart and product coupon applied successfully.');
-            }
-
-            // كوبون خاص بالسلة
-            $discount = $this->calculateCouponDiscount($coupon, $subtotal);
-
-            session()->put('cart_coupon', [
-                'id' => $coupon->id,
-                'code' => $coupon->code,
-                'type' => $coupon->type,
-                'value' => (float) $coupon->value,
-                'discount' => $discount,
-            ]);
-
-            $this->refreshCoupons();
-
-            return back()->with('success', 'Product added to cart and cart coupon applied successfully.');
+        if (empty($cart)) {
+            session()->forget('cart');
+            session()->forget('cart_coupon');
+            session()->forget('cart_product_coupons');
+        } else {
+            session()->put('cart', $cart);
         }
 
         $this->refreshCoupons();
 
-        return back()->with('success', 'Product added to cart successfully.');
+        $subtotal = $this->getCartSubtotal($cart);
+
+        $cartCouponData = session()->get('cart_coupon');
+        $productCouponsData = session()->get('cart_product_coupons', []);
+
+        $productDiscount = $this->calculateAllProductCouponsDiscount($cart, $productCouponsData);
+        $cartDiscount = (float) ($cartCouponData['discount'] ?? 0);
+        $discount = $productDiscount + $cartDiscount;
+
+        $netTotal = max($subtotal - $discount, 0);
+        $vatValue = $netTotal * self::VAT_RATE;
+        $grandTotal = $netTotal + $vatValue;
+
+        session([
+            'cart_summary' => [
+                'subtotal' => $subtotal,
+                'discount' => $discount,
+                'tax_total' => $vatValue,
+                'total' => $grandTotal,
+            ]
+        ]);
+
+        return view('site.cart.cart-panel', [
+            'cart' => $cart,
+            'subtotal' => $subtotal,
+            'cartDiscount' => $cartDiscount,
+            'productDiscount' => $productDiscount,
+            'discount' => $discount,
+            'netTotal' => $netTotal,
+            'vatValue' => $vatValue,
+            'grandTotal' => $grandTotal,
+            'cartCouponData' => $cartCouponData,
+            'productCouponsData' => $productCouponsData,
+        ]);
     }
+
+public function add(Request $request)
+{
+    $validated = $request->validate([
+        'product_id' => ['required', 'integer', 'exists:products,id'],
+        'quantity' => ['required', 'integer', 'min:1', 'max:' . self::MAX_QTY_PER_ITEM],
+        'variant_id' => ['nullable', 'integer', 'exists:product_variants,id'],
+        'coupon_code' => ['nullable', 'string', 'max:100'],
+    ]);
+
+    $product = Product::with('primaryImage')->findOrFail($validated['product_id']);
+
+    $variant = null;
+    $price = (float) $product->base_price;
+    $image = $product->primaryImage?->path ?? null;
+
+    $selectedOptions = [
+        'color' => null,
+        'size' => null,
+        'options' => [],
+    ];
+
+    if (!empty($validated['variant_id'])) {
+        $variant = ProductVariant::query()
+            ->with([
+                'values.attribute:id,slug,name,is_active',
+                'values.value:id,attribute_id,value,slug,sort_order,is_active',
+                'images:id,product_id,variant_id,path,alt_text,is_primary,sort_order',
+            ])
+            ->where('id', $validated['variant_id'])
+            ->where('product_id', $product->id)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        if ((int) $variant->stock < 1) {
+            return back()->with('error', 'Selected variant is out of stock.');
+        }
+
+        if ((int) $validated['quantity'] > (int) $variant->stock) {
+            return back()->with('error', 'Requested quantity exceeds available stock.');
+        }
+
+        if (!is_null($variant->price)) {
+            $price = (float) $variant->price;
+        }
+
+        $variantImage = $variant->images
+            ? $variant->images->sortBy([
+                ['is_primary', 'desc'],
+                ['sort_order', 'asc'],
+                ['id', 'asc'],
+            ])->first()
+            : null;
+
+        if ($variantImage?->path) {
+            $image = $variantImage->path;
+        }
+
+        $selectedOptions = $this->extractVariantOptions($variant);
+    }
+
+    $cartKey = $variant
+        ? $product->id . '_' . $variant->id
+        : (string) $product->id;
+
+    $cart = session()->get('cart', []);
+    $newQuantity = (int) $validated['quantity'];
+
+    if (isset($cart[$cartKey])) {
+        $newQuantity += (int) ($cart[$cartKey]['quantity'] ?? 0);
+    }
+
+    $newQuantity = min($newQuantity, self::MAX_QTY_PER_ITEM);
+
+    if ($variant && $newQuantity > (int) $variant->stock) {
+        return back()->with('error', 'Requested quantity exceeds available stock.');
+    }
+
+    $cart[$cartKey] = [
+        'product_id' => $product->id,
+        'variant_id' => $variant?->id,
+        'slug' => $product->slug,
+        'name' => $product->name ?? $product->slug,
+        'sku' => $variant?->sku ?? $product->sku ?? ('SKU-' . $product->id),
+        'price' => $price,
+        'quantity' => $newQuantity,
+        'image' => $image,
+        'currency' => $product->currency ?? 'SAR',
+        'color' => $selectedOptions['color'],
+        'size' => $selectedOptions['size'],
+        'variant_options' => $selectedOptions['options'],
+        'tax_rate' => 0,
+        'total_price' => $price * $newQuantity,
+    ];
+
+    session()->put('cart', $cart);
+
+    if (!empty($validated['coupon_code'])) {
+        $code = strtoupper(trim($validated['coupon_code']));
+        $coupon = Coupon::whereRaw('UPPER(code) = ?', [$code])->first();
+
+        if (!$coupon) {
+            $this->refreshCoupons();
+            return back()->with('error', 'Invalid coupon code.');
+        }
+
+        $subtotal = $this->getCartSubtotal($cart);
+
+        if (!$this->isCouponValid($coupon, $subtotal)) {
+            return back()->with('error', $this->getCouponErrorMessage($coupon, $subtotal));
+        }
+
+        if (!is_null($coupon->product_id)) {
+            if ((int) $coupon->product_id !== (int) $product->id) {
+                return back()->with('error', 'This coupon is not valid for this product.');
+            }
+
+            $this->storeProductCoupon($coupon, $cart);
+            $this->refreshCoupons();
+
+            return back()->with('success', 'Product added to cart and product coupon applied successfully.');
+        }
+
+        $discount = $this->calculateCouponDiscount($coupon, $subtotal);
+
+        session()->put('cart_coupon', [
+            'id' => $coupon->id,
+            'code' => $coupon->code,
+            'type' => $coupon->type,
+            'value' => (float) $coupon->value,
+            'discount' => $discount,
+        ]);
+
+        $this->refreshCoupons();
+
+        return back()->with('success', 'Product added to cart and cart coupon applied successfully.');
+    }
+
+    $this->refreshCoupons();
+
+    return back()->with('success', 'Product added to cart successfully.');
+}
 
     public function remove(string $key)
     {
@@ -218,7 +244,7 @@ public function index()
         }
 
         $item = $cart[$validated['key']];
-        $product = Product::find($item['product_id'] ?? null);
+        $product = Product::with('primaryImage')->find($item['product_id'] ?? null);
 
         if (!$product) {
             unset($cart[$validated['key']]);
@@ -230,11 +256,24 @@ public function index()
 
         $variant = null;
         $price = (float) $product->base_price;
+        $image = $product->primaryImage?->path ?? null;
+
+        $selectedOptions = [
+            'color' => null,
+            'size' => null,
+            'options' => [],
+        ];
 
         if (!empty($item['variant_id'])) {
             $variant = ProductVariant::query()
+                ->with([
+                    'values.attribute:id,slug,name,is_active',
+                    'values.value:id,attribute_id,value,slug,sort_order,is_active',
+                    'images:id,product_id,variant_id,path,alt_text,is_primary,sort_order',
+                ])
                 ->where('id', $item['variant_id'])
                 ->where('product_id', $product->id)
+                ->where('is_active', true)
                 ->first();
 
             if (!$variant) {
@@ -248,12 +287,43 @@ public function index()
             if (!is_null($variant->price)) {
                 $price = (float) $variant->price;
             }
+
+            if (isset($variant->stock) && (int) $validated['quantity'] > (int) $variant->stock) {
+                return back()->with('error', 'Requested quantity exceeds available stock.');
+            }
+
+            $variantImage = $variant->images
+                ? $variant->images->sortBy([
+                    ['is_primary', 'desc'],
+                    ['sort_order', 'asc'],
+                    ['id', 'asc'],
+                ])->first()
+                : null;
+
+            if ($variantImage?->path) {
+                $image = $variantImage->path;
+            }
+
+            $selectedOptions = $this->extractVariantOptions($variant);
         }
 
         $quantity = max(1, min((int) $validated['quantity'], self::MAX_QTY_PER_ITEM));
 
+        if ($variant && isset($variant->stock)) {
+            $quantity = min($quantity, (int) $variant->stock);
+        }
+
+        if ($quantity < 1) {
+            return back()->with('error', 'Invalid quantity.');
+        }
+
         $cart[$validated['key']]['price'] = $price;
         $cart[$validated['key']]['quantity'] = $quantity;
+        $cart[$validated['key']]['image'] = $image;
+        $cart[$validated['key']]['sku'] = $variant?->sku ?? $product->sku ?? ('SKU-' . $product->id);
+        $cart[$validated['key']]['color'] = $selectedOptions['color'];
+        $cart[$validated['key']]['size'] = $selectedOptions['size'];
+        $cart[$validated['key']]['variant_options'] = $selectedOptions['options'];
         $cart[$validated['key']]['total_price'] = $price * $quantity;
 
         session()->put('cart', $cart);
@@ -295,7 +365,6 @@ public function index()
             return back()->with('error', $this->getCouponErrorMessage($coupon, $subtotal));
         }
 
-        // لو كوبون منتج، خزنه ضمن array كوبونات المنتجات
         if (!is_null($coupon->product_id)) {
             $targetSubtotal = $this->getTargetSubtotalForProduct($cart, (int) $coupon->product_id);
 
@@ -309,7 +378,6 @@ public function index()
             return back()->with('success', 'Product coupon applied successfully.');
         }
 
-        // كوبون السلة
         $discount = $this->calculateCouponDiscount($coupon, $subtotal);
 
         session()->put('cart_coupon', [
@@ -663,13 +731,23 @@ public function index()
             $variant = null;
             $price = (float) $product->base_price;
             $image = $product->primaryImage?->path ?? null;
-            $color = null;
-            $size = null;
+
+            $selectedOptions = [
+                'color' => null,
+                'size' => null,
+                'options' => [],
+            ];
 
             if (!empty($item['variant_id'])) {
                 $variant = ProductVariant::query()
+                    ->with([
+                        'values.attribute:id,slug,name,is_active',
+                        'values.value:id,attribute_id,value,slug,sort_order,is_active',
+                        'images:id,product_id,variant_id,path,alt_text,is_primary,sort_order',
+                    ])
                     ->where('id', $item['variant_id'])
                     ->where('product_id', $product->id)
+                    ->where('is_active', true)
                     ->first();
 
                 if (!$variant) {
@@ -681,32 +759,115 @@ public function index()
                     $price = (float) $variant->price;
                 }
 
-                if (!empty($variant->image)) {
-                    $image = $variant->image;
+                $variantImage = $variant->images
+                    ? $variant->images->sortBy([
+                        ['is_primary', 'desc'],
+                        ['sort_order', 'asc'],
+                        ['id', 'asc'],
+                    ])->first()
+                    : null;
+
+                if ($variantImage?->path) {
+                    $image = $variantImage->path;
                 }
 
-                $color = $variant->color ?? null;
-                $size = $variant->size ?? null;
+                $selectedOptions = $this->extractVariantOptions($variant);
             }
 
             $quantity = (int) ($item['quantity'] ?? 1);
             $quantity = max(1, min($quantity, self::MAX_QTY_PER_ITEM));
+
+            if ($variant && isset($variant->stock)) {
+                $quantity = min($quantity, (int) $variant->stock);
+            }
+
+            if ($quantity < 1) {
+                unset($cart[$key]);
+                continue;
+            }
 
             $cart[$key] = [
                 'product_id' => $product->id,
                 'variant_id' => $variant?->id,
                 'slug' => $product->slug,
                 'name' => $product->name ?? $product->slug,
+                'sku' => $variant?->sku ?? $product->sku ?? ('SKU-' . $product->id),
                 'price' => $price,
                 'quantity' => $quantity,
                 'image' => $image,
                 'currency' => $product->currency ?? 'SAR',
-                'color' => $color,
-                'size' => $size,
+                'color' => $selectedOptions['color'],
+                'size' => $selectedOptions['size'],
+                'variant_options' => $selectedOptions['options'],
+                'tax_rate' => (float) ($item['tax_rate'] ?? 0),
                 'total_price' => $price * $quantity,
             ];
         }
 
         return $cart;
     }
+
+    private function extractVariantOptions(ProductVariant $variant): array
+    {
+        $color = null;
+        $size = null;
+        $options = [];
+
+        foreach ($variant->values ?? [] as $row) {
+            $attribute = $row->attribute;
+            $value = $row->value;
+
+            if (!$attribute || !$value || !$value->is_active) {
+                continue;
+            }
+
+            $attributeName = trim((string) ($attribute->name ?? $attribute->slug ?? 'Option'));
+            $attributeSlug = strtolower(trim((string) ($attribute->slug ?? '')));
+            $valueText = trim((string) ($value->value ?? ''));
+
+            if ($valueText === '') {
+                continue;
+            }
+
+            $options[] = [
+                'attribute_id' => $attribute->id,
+                'attribute_value_id' => $value->id,
+                'name' => $attributeName,
+                'slug' => $attributeSlug,
+                'value' => $valueText,
+            ];
+
+            if ($this->isColorAttribute($attributeSlug, $attributeName)) {
+                $color = $valueText;
+            }
+
+            if ($this->isSizeAttribute($attributeSlug, $attributeName)) {
+                $size = $valueText;
+            }
+        }
+
+        return [
+            'color' => $color,
+            'size' => $size,
+            'options' => $options,
+        ];
+    }
+
+    private function isColorAttribute(string $slug, string $name): bool
+    {
+        $name = strtolower(trim($name));
+
+        return in_array($slug, ['color', 'colors'], true)
+            || in_array($name, ['color', 'colors', 'اللون', 'الألوان'], true);
+    }
+
+    private function isSizeAttribute(string $slug, string $name): bool
+    {
+        $name = strtolower(trim($name));
+
+        return in_array($slug, ['size', 'sizes'], true)
+            || in_array($name, ['size', 'sizes', 'المقاس', 'الحجم'], true);
+    }
+
+
 }

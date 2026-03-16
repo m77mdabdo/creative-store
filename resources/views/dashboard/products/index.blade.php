@@ -172,6 +172,10 @@
                                                     <i class="fas fa-eye"></i>
                                                 </a>
 
+                                                <a href="{{ route('dashboard.products.reviews.index', $product) }}" class="btn btn-sm btn-light">
+                                                    <i class="fas fa-comments"></i>
+                                                </a>
+
                                                 @if($canEdit)
                                                     <a href="{{ route('dashboard.products.edit', $product) }}" class="btn btn-sm btn-primary">
                                                         <i class="fas fa-edit"></i>
