@@ -8,17 +8,25 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Coupon extends Model
 {
-    use SoftDeletes;
-
-      use HasFactory;
+    use SoftDeletes, HasFactory;
 
     protected $fillable = [
-        'code','type','value','min_order_amount','max_discount_amount',
-        'usage_limit','per_user_limit','used_count',
-        'starts_at','expires_at','is_active'
+        'product_id',
+        'code',
+        'type',
+        'value',
+        'min_order_amount',
+        'max_discount_amount',
+        'usage_limit',
+        'per_user_limit',
+        'used_count',
+        'starts_at',
+        'expires_at',
+        'is_active',
     ];
 
     protected $casts = [
+        'product_id' => 'integer',
         'value' => 'decimal:2',
         'min_order_amount' => 'decimal:2',
         'max_discount_amount' => 'decimal:2',
@@ -41,12 +49,17 @@ class Coupon extends Model
     }
 
     public function product()
-{
-    return $this->belongsTo(\App\Models\Product::class);
-}
+    {
+        return $this->belongsTo(Product::class);
+    }
 
-public function coupons()
-{
-    return $this->hasMany(\App\Models\Coupon::class);
-}
+    public function isProductCoupon(): bool
+    {
+        return !is_null($this->product_id);
+    }
+
+    public function isCartCoupon(): bool
+    {
+        return is_null($this->product_id);
+    }
 }

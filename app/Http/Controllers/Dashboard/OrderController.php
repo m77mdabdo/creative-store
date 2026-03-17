@@ -3,9 +3,532 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\Order\CancelOrderRequest;
+use App\Http\Requests\Dashboard\Order\UpdateOrderStatusesRequest;
+use App\Http\Requests\Dashboard\Order\UpsertShipmentRequest;
+use App\Models\InventoryMovement;
+use App\Models\Order;
+use App\Models\OrderStatusLog;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends Controller
 {
-    //
+    public function index(Request $request): View
+    {
+        $filters = [
+            'search'          => trim((string) $request->input('search', '')),
+            'status'          => (string) $request->input('status', ''),
+            'payment_status'  => (string) $request->input('payment_status', ''),
+            'shipping_status' => (string) $request->input('shipping_status', ''),
+            'payment_method'  => (string) $request->input('payment_method', ''),
+            'date_from'       => (string) $request->input('date_from', ''),
+            'date_to'         => (string) $request->input('date_to', ''),
+        ];
+
+        $query = Order::query()
+            ->with([
+                'user:id,name,email,phone',
+                'shippingMethod:id,name,code',
+                'items:id,order_id,quantity,line_total',
+            ])
+            ->withCount('items');
+
+        if ($filters['search'] !== '') {
+            $search = $filters['search'];
+
+            $query->where(function ($q) use ($search) {
+                $q->where('order_number', 'like', "%{$search}%")
+                    ->orWhere('guest_email', 'like', "%{$search}%")
+                    ->orWhere('guest_phone', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($u) use ($search) {
+                        $u->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        if ($filters['status'] !== '') {
+            $query->where('status', $filters['status']);
+        }
+
+        if ($filters['payment_status'] !== '') {
+            $query->where('payment_status', $filters['payment_status']);
+        }
+
+        if ($filters['shipping_status'] !== '') {
+            $query->where('shipping_status', $filters['shipping_status']);
+        }
+
+        if ($filters['payment_method'] !== '') {
+            $query->where('payment_method', $filters['payment_method']);
+        }
+
+        if ($filters['date_from'] !== '') {
+            $query->whereDate('created_at', '>=', $filters['date_from']);
+        }
+
+        if ($filters['date_to'] !== '') {
+            $query->whereDate('created_at', '<=', $filters['date_to']);
+        }
+
+        $orders = $query
+            ->latest('id')
+            ->paginate(15)
+            ->withQueryString();
+
+        $stats = [
+            'totalOrders' => Order::count(),
+            'paidOrders' => Order::where('payment_status', 'paid')->count(),
+            'pendingOrders' => Order::whereIn('status', ['pending', 'processing'])->count(),
+            'cancelledOrders' => Order::where('status', 'cancelled')->count(),
+            'totalSales' => (float) Order::where('payment_status', 'paid')->sum('total'),
+        ];
+
+        return view('dashboard.orders.index', [
+            'orders' => $orders,
+            'filters' => $filters,
+            'stats' => $stats,
+            'canView' => $this->canCurrentUser('orders.view'),
+            'canEdit' => $this->canCurrentUser('orders.edit'),
+        ]);
+    }
+
+    public function show(Order $order): View
+    {
+        $order->load([
+            'user:id,name,email,phone',
+            'shippingAddress',
+            'shippingMethod:id,name,code,description',
+            'addressSnapshot',
+            'items.product:id,slug,sku',
+            'items.variant:id,product_id,sku,stock',
+            'statusLogs.changer:id,name,email',
+            'payments' => fn ($q) => $q->latest('id'),
+            'shipment.method:id,name,code',
+            'coupon:id,code,type,value',
+            'couponUsage',
+            'returnRequests.items.orderItem',
+            'returnRequests.refunds.payment',
+        ]);
+
+        return view('dashboard.orders.show', [
+            'order' => $order,
+            'canView' => $this->canCurrentUser('orders.view'),
+            'canEdit' => $this->canCurrentUser('orders.edit'),
+        ]);
+    }
+
+    public function updateStatuses(UpdateOrderStatusesRequest $request, Order $order): RedirectResponse
+    {
+        $newStatus = (string) $request->input('status');
+        $newPaymentStatus = (string) $request->input('payment_status');
+        $newShippingStatus = (string) $request->input('shipping_status');
+        $note = trim((string) $request->input('note', ''));
+
+        $oldStatus = (string) $order->status;
+        $oldPaymentStatus = (string) $order->payment_status;
+        $oldShippingStatus = (string) $order->shipping_status;
+
+        if (
+            $oldStatus === $newStatus &&
+            $oldPaymentStatus === $newPaymentStatus &&
+            $oldShippingStatus === $newShippingStatus
+        ) {
+            return back()->with('error', 'No status changes were made.');
+        }
+
+        if ($oldStatus === 'cancelled' && $newStatus !== 'cancelled') {
+            return back()->with('error', 'Cancelled orders cannot be reopened from this action.');
+        }
+
+        if ($oldShippingStatus === 'delivered' && $newShippingStatus !== 'delivered') {
+            return back()->with('error', 'Delivered shipment status cannot be rolled back from this action.');
+        }
+
+        if ($newStatus === 'completed' && $newPaymentStatus !== 'paid') {
+            return back()->with('error', 'Order cannot be marked as completed unless payment status is paid.');
+        }
+
+        if ($newShippingStatus === 'delivered' && !in_array($newStatus, ['processing', 'completed'], true)) {
+            return back()->with('error', 'Shipping cannot be marked delivered unless order is processing or completed.');
+        }
+
+        DB::transaction(function () use (
+            $order,
+            $newStatus,
+            $newPaymentStatus,
+            $newShippingStatus,
+            $note,
+            $oldStatus,
+            $oldPaymentStatus,
+            $oldShippingStatus
+        ) {
+            $updateData = [
+                'status' => $newStatus,
+                'payment_status' => $newPaymentStatus,
+                'shipping_status' => $newShippingStatus,
+            ];
+
+            if ($oldPaymentStatus !== 'paid' && $newPaymentStatus === 'paid' && is_null($order->paid_at)) {
+                $updateData['paid_at'] = now();
+            }
+
+            if ($newStatus === 'cancelled' && is_null($order->cancelled_at)) {
+                $updateData['cancelled_at'] = now();
+                $updateData['cancelled_by'] = auth()->id();
+                $updateData['cancellation_reason'] = $note !== '' ? $note : $order->cancellation_reason;
+            }
+
+            $order->update($updateData);
+
+            if ($oldStatus !== $newStatus) {
+                OrderStatusLog::create([
+                    'order_id' => $order->id,
+                    'from_status' => $oldStatus,
+                    'to_status' => $newStatus,
+                    'changed_by' => auth()->id(),
+                    'note' => $this->buildStatusLogNote('Order status', $note, $oldStatus, $newStatus),
+                ]);
+            }
+
+            if ($oldPaymentStatus !== $newPaymentStatus) {
+                OrderStatusLog::create([
+                    'order_id' => $order->id,
+                    'from_status' => 'payment:' . $oldPaymentStatus,
+                    'to_status' => 'payment:' . $newPaymentStatus,
+                    'changed_by' => auth()->id(),
+                    'note' => $this->buildStatusLogNote('Payment status', $note, $oldPaymentStatus, $newPaymentStatus),
+                ]);
+            }
+
+            if ($oldShippingStatus !== $newShippingStatus) {
+                OrderStatusLog::create([
+                    'order_id' => $order->id,
+                    'from_status' => 'shipping:' . $oldShippingStatus,
+                    'to_status' => 'shipping:' . $newShippingStatus,
+                    'changed_by' => auth()->id(),
+                    'note' => $this->buildStatusLogNote('Shipping status', $note, $oldShippingStatus, $newShippingStatus),
+                ]);
+            }
+        });
+
+        return back()->with('success', 'Order statuses updated successfully.');
+    }
+
+    public function quickAction(Request $request, Order $order): RedirectResponse
+    {
+        $request->validate([
+            'action' => ['required', 'string', 'in:mark_processing,mark_paid,mark_completed,mark_shipped,mark_delivered'],
+        ]);
+
+        if ($order->status === 'cancelled') {
+            return back()->with('error', 'Cancelled orders cannot be updated by quick actions.');
+        }
+
+        $action = (string) $request->input('action');
+
+        return match ($action) {
+            'mark_processing' => $this->applyQuickAction(
+                order: $order,
+                status: 'processing',
+                paymentStatus: $order->payment_status,
+                shippingStatus: $order->shipping_status,
+                note: 'Quick action: order marked as processing.'
+            ),
+            'mark_paid' => $this->applyQuickAction(
+                order: $order,
+                status: $order->status === 'pending' ? 'processing' : $order->status,
+                paymentStatus: 'paid',
+                shippingStatus: $order->shipping_status,
+                note: 'Quick action: payment marked as paid.'
+            ),
+            'mark_completed' => $this->applyQuickAction(
+                order: $order,
+                status: 'completed',
+                paymentStatus: 'paid',
+                shippingStatus: $order->shipping_status,
+                note: 'Quick action: order marked as completed.'
+            ),
+            'mark_shipped' => $this->applyQuickAction(
+                order: $order,
+                status: in_array($order->status, ['pending', 'processing'], true) ? 'processing' : $order->status,
+                paymentStatus: $order->payment_status,
+                shippingStatus: 'shipped',
+                note: 'Quick action: shipment marked as shipped.'
+            ),
+            'mark_delivered' => $this->applyQuickAction(
+                order: $order,
+                status: $order->payment_status === 'paid' ? 'completed' : 'processing',
+                paymentStatus: $order->payment_status === 'pending' ? 'paid' : $order->payment_status,
+                shippingStatus: 'delivered',
+                note: 'Quick action: shipment marked as delivered.'
+            ),
+            default => back()->with('error', 'Invalid quick action.'),
+        };
+    }
+
+    public function upsertShipment(UpsertShipmentRequest $request, Order $order): RedirectResponse
+    {
+        if ($order->status === 'cancelled') {
+            return back()->with('error', 'Cannot manage shipment for a cancelled order.');
+        }
+
+        $data = [
+            'shipping_method_id' => $order->shipping_method_id,
+            'carrier' => trim((string) $request->input('carrier', '')),
+            'tracking_number' => trim((string) $request->input('tracking_number', '')),
+            'status' => (string) $request->input('status'),
+            'current_location' => trim((string) $request->input('current_location', '')),
+            'carrier_status' => trim((string) $request->input('carrier_status', '')),
+            'shipped_at' => $request->filled('shipped_at') ? $request->input('shipped_at') : null,
+            'delivered_at' => $request->filled('delivered_at') ? $request->input('delivered_at') : null,
+            'notes' => trim((string) $request->input('notes', '')),
+        ];
+
+        DB::transaction(function () use ($order, $data) {
+            $shipment = $order->shipment()->updateOrCreate(
+                ['order_id' => $order->id],
+                $data
+            );
+
+            $oldShippingStatus = (string) $order->shipping_status;
+            $newShippingStatus = (string) $shipment->status;
+
+            $orderUpdate = [
+                'shipping_status' => $newShippingStatus,
+            ];
+
+            if ($newShippingStatus === 'shipped' && $order->status === 'pending') {
+                $orderUpdate['status'] = 'processing';
+            }
+
+            if ($newShippingStatus === 'delivered') {
+                if ($order->payment_status === 'paid') {
+                    $orderUpdate['status'] = 'completed';
+                } elseif ($order->status === 'pending') {
+                    $orderUpdate['status'] = 'processing';
+                }
+            }
+
+            $order->update($orderUpdate);
+
+            if ($oldShippingStatus !== $newShippingStatus) {
+                OrderStatusLog::create([
+                    'order_id' => $order->id,
+                    'from_status' => 'shipping:' . $oldShippingStatus,
+                    'to_status' => 'shipping:' . $newShippingStatus,
+                    'changed_by' => auth()->id(),
+                    'note' => 'Shipment record updated from dashboard.',
+                ]);
+            }
+        });
+
+        return back()->with('success', 'Shipment information saved successfully.');
+    }
+
+    public function cancel(CancelOrderRequest $request, Order $order): RedirectResponse
+    {
+        if ($order->status === 'cancelled') {
+            return back()->with('error', 'This order is already cancelled.');
+        }
+
+        if ($order->shipping_status === 'delivered') {
+            return back()->with('error', 'Delivered orders cannot be cancelled.');
+        }
+
+        $reason = trim((string) $request->input('reason', ''));
+
+        $order->loadMissing([
+            'items.variant',
+            'items.product',
+        ]);
+
+        DB::transaction(function () use ($order, $reason) {
+            $oldStatus = (string) $order->status;
+            $oldShippingStatus = (string) $order->shipping_status;
+
+            foreach ($order->items as $item) {
+                $qty = max(1, (int) $item->quantity);
+
+                if ($item->variant_id && $item->variant) {
+                    $item->variant->increment('stock', $qty);
+
+                    InventoryMovement::create([
+                        'product_id' => $item->product_id,
+                        'variant_id' => $item->variant_id,
+                        'type' => 'restock_from_cancel',
+                        'quantity' => $qty,
+                        'reference_type' => Order::class,
+                        'reference_id' => $order->id,
+                        'note' => 'Stock restored after order cancellation. Order #' . $order->order_number,
+                        'created_by' => auth()->id(),
+                    ]);
+                } else {
+                    InventoryMovement::create([
+                        'product_id' => $item->product_id,
+                        'variant_id' => null,
+                        'type' => 'restock_from_cancel',
+                        'quantity' => $qty,
+                        'reference_type' => Order::class,
+                        'reference_id' => $order->id,
+                        'note' => 'Simple product restock logged after order cancellation. Order #' . $order->order_number,
+                        'created_by' => auth()->id(),
+                    ]);
+                }
+            }
+
+            $order->update([
+                'status' => 'cancelled',
+                'shipping_status' => 'cancelled',
+                'cancelled_at' => now(),
+                'cancelled_by' => auth()->id(),
+                'cancellation_reason' => $reason,
+            ]);
+
+            if ($oldStatus !== 'cancelled') {
+                OrderStatusLog::create([
+                    'order_id' => $order->id,
+                    'from_status' => $oldStatus,
+                    'to_status' => 'cancelled',
+                    'changed_by' => auth()->id(),
+                    'note' => 'Order cancelled from dashboard. Reason: ' . $reason,
+                ]);
+            }
+
+            if ($oldShippingStatus !== 'cancelled') {
+                OrderStatusLog::create([
+                    'order_id' => $order->id,
+                    'from_status' => 'shipping:' . $oldShippingStatus,
+                    'to_status' => 'shipping:cancelled',
+                    'changed_by' => auth()->id(),
+                    'note' => 'Shipping status cancelled because order was cancelled. Reason: ' . $reason,
+                ]);
+            }
+        });
+
+        return back()->with('success', 'Order cancelled and stock restored successfully.');
+    }
+
+    public function invoice(Order $order): Response
+    {
+        $order->load([
+            'user:id,name,email,phone',
+            'addressSnapshot',
+            'items.product:id,slug,sku',
+            'items.variant:id,product_id,sku',
+            'shippingMethod:id,name,code',
+            'coupon:id,code,type,value',
+        ]);
+
+        $pdf = Pdf::loadView('dashboard.orders.invoice', [
+            'order' => $order,
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->stream('invoice-' . $order->order_number . '.pdf');
+    }
+
+    private function applyQuickAction(
+        Order $order,
+        string $status,
+        string $paymentStatus,
+        string $shippingStatus,
+        string $note
+    ): RedirectResponse {
+        $oldStatus = (string) $order->status;
+        $oldPaymentStatus = (string) $order->payment_status;
+        $oldShippingStatus = (string) $order->shipping_status;
+
+        if ($oldShippingStatus === 'delivered' && $shippingStatus !== 'delivered') {
+            return back()->with('error', 'Delivered shipment status cannot be rolled back.');
+        }
+
+        if ($status === 'completed' && $paymentStatus !== 'paid') {
+            return back()->with('error', 'Completed orders must be paid.');
+        }
+
+        DB::transaction(function () use (
+            $order,
+            $status,
+            $paymentStatus,
+            $shippingStatus,
+            $note,
+            $oldStatus,
+            $oldPaymentStatus,
+            $oldShippingStatus
+        ) {
+            $updateData = [
+                'status' => $status,
+                'payment_status' => $paymentStatus,
+                'shipping_status' => $shippingStatus,
+            ];
+
+            if ($oldPaymentStatus !== 'paid' && $paymentStatus === 'paid' && is_null($order->paid_at)) {
+                $updateData['paid_at'] = now();
+            }
+
+            $order->update($updateData);
+
+            if ($oldStatus !== $status) {
+                OrderStatusLog::create([
+                    'order_id' => $order->id,
+                    'from_status' => $oldStatus,
+                    'to_status' => $status,
+                    'changed_by' => auth()->id(),
+                    'note' => $note,
+                ]);
+            }
+
+            if ($oldPaymentStatus !== $paymentStatus) {
+                OrderStatusLog::create([
+                    'order_id' => $order->id,
+                    'from_status' => 'payment:' . $oldPaymentStatus,
+                    'to_status' => 'payment:' . $paymentStatus,
+                    'changed_by' => auth()->id(),
+                    'note' => $note,
+                ]);
+            }
+
+            if ($oldShippingStatus !== $shippingStatus) {
+                OrderStatusLog::create([
+                    'order_id' => $order->id,
+                    'from_status' => 'shipping:' . $oldShippingStatus,
+                    'to_status' => 'shipping:' . $shippingStatus,
+                    'changed_by' => auth()->id(),
+                    'note' => $note,
+                ]);
+            }
+        });
+
+        return back()->with('success', 'Quick action applied successfully.');
+    }
+
+    private function buildStatusLogNote(string $label, string $note, string $from, string $to): string
+    {
+        $base = $label . " changed from {$from} to {$to}.";
+
+        if ($note !== '') {
+            return $base . ' Note: ' . $note;
+        }
+
+        return $base;
+    }
+
+    private function canCurrentUser(string $permission): bool
+    {
+        $user = auth()->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        return $user->hasRole('owner')
+            || $user->hasRole('admin')
+            || $user->hasPermission($permission);
+    }
 }

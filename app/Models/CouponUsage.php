@@ -7,11 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CouponUsage extends Model
 {
-
-      use HasFactory;
+    use HasFactory;
 
     protected $fillable = [
-        'coupon_id','user_id','order_id','discount_amount'
+        'coupon_id',
+        'user_id',
+        'order_id',
+        'discount_amount',
     ];
 
     protected $casts = [
