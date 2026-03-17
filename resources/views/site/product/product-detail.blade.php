@@ -71,6 +71,10 @@
                             <div class="stext-102 cl3 p-t-5">
                                 Stock: <span id="dynamicStock">{{ $product->variants?->first()?->stock ?? 'N/A' }}</span>
                             </div>
+
+                            <p class="stext-102 p-t-5" id="stockMessage" style="display:none;color:#e3342f;">
+                                This variant is out of stock.
+                            </p>
                         </div>
 
                         @if($reviewsCount > 0)
@@ -1006,4 +1010,4 @@
             }
         });
     </script>
-@endsection 
+@endsection

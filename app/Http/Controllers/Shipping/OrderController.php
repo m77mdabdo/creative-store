@@ -41,19 +41,22 @@ class OrderController extends Controller
         return view('site.shipping.orders.show', compact('order'));
     }
 
-    public function cancel(Order $order): RedirectResponse
-    {
-        abort_unless($order->user_id === auth()->id(), 403);
+  public function cancel(Order $order)
+{
+    abort_unless($order->user_id === auth()->id(), 403);
 
-        if ($order->status === 'cancelled') {
-            return back()->with('error', 'Order already cancelled.');
-        }
+    if ($order->status === 'cancelled') {
+        return back()->with('error', 'Order already cancelled.');
+    }
 
-        if ($order->created_at->diffInHours(now()) >= 3) {
-            return back()->with('error', 'Order can no longer be cancelled after 3 hours.');
-        }
+    if ($order->created_at->diffInHours(now()) >= 3) {
+        return back()->with('error', 'Order can no longer be cancelled after 3 hours.');
+    }
 
-        $oldStatus = $order->status;
+    $oldStatus = $order->status;
+
+    \DB::transaction(function () use ($order, $oldStatus) {
+        $order->loadMissing('items.variant');
 
         $order->update([
             'status' => 'cancelled',
@@ -62,6 +65,12 @@ class OrderController extends Controller
             'cancellation_reason' => 'Cancelled by customer',
         ]);
 
+        foreach ($order->items as $item) {
+            if ($item->variant_id && $item->variant) {
+                $item->variant->increment('stock', (int) $item->quantity);
+            }
+        }
+
         OrderStatusLog::create([
             'order_id' => $order->id,
             'from_status' => $oldStatus,
@@ -69,9 +78,10 @@ class OrderController extends Controller
             'changed_by' => auth()->id(),
             'note' => 'Order cancelled by customer within allowed time.',
         ]);
+    });
 
-        return back()->with('success', 'Order cancelled successfully.');
-    }
+    return back()->with('success', 'Order cancelled successfully.');
+}
 
     public function invoice(Order $order)
     {

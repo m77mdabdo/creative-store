@@ -230,107 +230,107 @@ public function add(Request $request)
         return back()->with('success', 'Item removed from cart successfully.');
     }
 
-    public function update(Request $request)
-    {
-        $validated = $request->validate([
-            'key' => ['required', 'string'],
-            'quantity' => ['required', 'integer', 'min:1', 'max:' . self::MAX_QTY_PER_ITEM],
-        ]);
+  public function update(Request $request)
+{
+    $validated = $request->validate([
+        'key' => ['required', 'string'],
+        'quantity' => ['required', 'integer', 'min:1', 'max:' . self::MAX_QTY_PER_ITEM],
+    ]);
 
-        $cart = session()->get('cart', []);
+    $cart = session()->get('cart', []);
 
-        if (!array_key_exists($validated['key'], $cart)) {
-            return back()->with('error', 'Cart item not found.');
-        }
+    if (!array_key_exists($validated['key'], $cart)) {
+        return back()->with('error', 'Cart item not found.');
+    }
 
-        $item = $cart[$validated['key']];
-        $product = Product::with('primaryImage')->find($item['product_id'] ?? null);
+    $item = $cart[$validated['key']];
+    $product = Product::with('primaryImage')->find($item['product_id'] ?? null);
 
-        if (!$product) {
+    if (!$product) {
+        unset($cart[$validated['key']]);
+        session()->put('cart', $cart);
+        $this->refreshCoupons();
+
+        return back()->with('error', 'Product no longer exists and was removed from cart.');
+    }
+
+    $variant = null;
+    $price = (float) $product->base_price;
+    $image = $product->primaryImage?->path ?? null;
+
+    $selectedOptions = [
+        'color' => null,
+        'size' => null,
+        'options' => [],
+    ];
+
+    if (!empty($item['variant_id'])) {
+        $variant = ProductVariant::query()
+            ->with([
+                'values.attribute:id,slug,name,is_active',
+                'values.value:id,attribute_id,value,slug,sort_order,is_active',
+                'images:id,product_id,variant_id,path,alt_text,is_primary,sort_order',
+            ])
+            ->where('id', $item['variant_id'])
+            ->where('product_id', $product->id)
+            ->where('is_active', true)
+            ->first();
+
+        if (!$variant) {
             unset($cart[$validated['key']]);
             session()->put('cart', $cart);
             $this->refreshCoupons();
 
-            return back()->with('error', 'Product no longer exists and was removed from cart.');
+            return back()->with('error', 'Variant no longer exists and was removed from cart.');
         }
 
-        $variant = null;
-        $price = (float) $product->base_price;
-        $image = $product->primaryImage?->path ?? null;
+        if ((int) $variant->stock < 1) {
+            unset($cart[$validated['key']]);
+            session()->put('cart', $cart);
+            $this->refreshCoupons();
 
-        $selectedOptions = [
-            'color' => null,
-            'size' => null,
-            'options' => [],
-        ];
-
-        if (!empty($item['variant_id'])) {
-            $variant = ProductVariant::query()
-                ->with([
-                    'values.attribute:id,slug,name,is_active',
-                    'values.value:id,attribute_id,value,slug,sort_order,is_active',
-                    'images:id,product_id,variant_id,path,alt_text,is_primary,sort_order',
-                ])
-                ->where('id', $item['variant_id'])
-                ->where('product_id', $product->id)
-                ->where('is_active', true)
-                ->first();
-
-            if (!$variant) {
-                unset($cart[$validated['key']]);
-                session()->put('cart', $cart);
-                $this->refreshCoupons();
-
-                return back()->with('error', 'Variant no longer exists and was removed from cart.');
-            }
-
-            if (!is_null($variant->price)) {
-                $price = (float) $variant->price;
-            }
-
-            if (isset($variant->stock) && (int) $validated['quantity'] > (int) $variant->stock) {
-                return back()->with('error', 'Requested quantity exceeds available stock.');
-            }
-
-            $variantImage = $variant->images
-                ? $variant->images->sortBy([
-                    ['is_primary', 'desc'],
-                    ['sort_order', 'asc'],
-                    ['id', 'asc'],
-                ])->first()
-                : null;
-
-            if ($variantImage?->path) {
-                $image = $variantImage->path;
-            }
-
-            $selectedOptions = $this->extractVariantOptions($variant);
+            return back()->with('error', 'Selected variant is out of stock and was removed from cart.');
         }
 
-        $quantity = max(1, min((int) $validated['quantity'], self::MAX_QTY_PER_ITEM));
-
-        if ($variant && isset($variant->stock)) {
-            $quantity = min($quantity, (int) $variant->stock);
+        if (!is_null($variant->price)) {
+            $price = (float) $variant->price;
         }
 
-        if ($quantity < 1) {
-            return back()->with('error', 'Invalid quantity.');
+        $variantImage = $variant->images
+            ? $variant->images->sortBy([
+                ['is_primary', 'desc'],
+                ['sort_order', 'asc'],
+                ['id', 'asc'],
+            ])->first()
+            : null;
+
+        if ($variantImage?->path) {
+            $image = $variantImage->path;
         }
 
-        $cart[$validated['key']]['price'] = $price;
-        $cart[$validated['key']]['quantity'] = $quantity;
-        $cart[$validated['key']]['image'] = $image;
-        $cart[$validated['key']]['sku'] = $variant?->sku ?? $product->sku ?? ('SKU-' . $product->id);
-        $cart[$validated['key']]['color'] = $selectedOptions['color'];
-        $cart[$validated['key']]['size'] = $selectedOptions['size'];
-        $cart[$validated['key']]['variant_options'] = $selectedOptions['options'];
-        $cart[$validated['key']]['total_price'] = $price * $quantity;
-
-        session()->put('cart', $cart);
-        $this->refreshCoupons();
-
-        return back()->with('success', 'Cart updated successfully.');
+        $selectedOptions = $this->extractVariantOptions($variant);
     }
+
+    $quantity = max(1, min((int) $validated['quantity'], self::MAX_QTY_PER_ITEM));
+
+    if ($variant && $quantity > (int) $variant->stock) {
+        return back()->with('error', 'Requested quantity exceeds available stock.');
+    }
+
+    $cart[$validated['key']]['price'] = $price;
+    $cart[$validated['key']]['quantity'] = $quantity;
+    $cart[$validated['key']]['image'] = $image;
+    $cart[$validated['key']]['sku'] = $variant?->sku ?? $product->sku ?? ('SKU-' . $product->id);
+    $cart[$validated['key']]['color'] = $selectedOptions['color'];
+    $cart[$validated['key']]['size'] = $selectedOptions['size'];
+    $cart[$validated['key']]['variant_options'] = $selectedOptions['options'];
+    $cart[$validated['key']]['total_price'] = $price * $quantity;
+
+    session()->put('cart', $cart);
+    $this->refreshCoupons();
+
+    return back()->with('success', 'Cart updated successfully.');
+}
 
     public function clear()
     {
