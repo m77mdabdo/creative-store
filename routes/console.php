@@ -8,10 +8,5 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-
-
-
-
-
-Schedule::command('carts:process-abandoned')->everyMinute()->withoutOverlapping();
+// The cart reminders run from bootstrap/app.php with the other store jobs.
 Schedule::command('shipments:sync')->everyThirtyMinutes()->withoutOverlapping();
