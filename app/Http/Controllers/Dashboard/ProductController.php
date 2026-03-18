@@ -120,6 +120,7 @@ class ProductController extends Controller
                 'has_variants' => $payload['has_variants'],
                 'tax_rate' => $payload['tax_rate'],
                 'weight' => $payload['weight'],
+                'stock' => $payload['stock'],
                 'is_featured' => $payload['is_featured'],
                 'meta_title' => $payload['meta_title'],
                 'meta_description' => $payload['meta_description'],
@@ -191,6 +192,7 @@ class ProductController extends Controller
                 'has_variants' => $payload['has_variants'],
                 'tax_rate' => $payload['tax_rate'],
                 'weight' => $payload['weight'],
+                'stock' => $payload['stock'],
                 'is_featured' => $payload['is_featured'],
                 'meta_title' => $payload['meta_title'],
                 'meta_description' => $payload['meta_description'],
@@ -344,6 +346,7 @@ class ProductController extends Controller
         'has_variants' => old('has_variants', $product?->has_variants ?? false),
         'tax_rate' => old('tax_rate', $product->tax_rate ?? 0),
         'weight' => old('weight', $product->weight ?? 0),
+        'stock' => old('stock', $product->stock ?? ''),
         'is_featured' => old('is_featured', $product?->is_featured ?? false),
         'meta_title' => old('meta_title', $product->meta_title ?? ''),
         'meta_description' => old('meta_description', $product->meta_description ?? ''),
@@ -386,6 +389,11 @@ class ProductController extends Controller
             'has_variants' => $request->boolean('has_variants'),
             'tax_rate' => (float) $request->input('tax_rate', 0),
             'weight' => (float) $request->input('weight', 0),
+            // Variant products keep their stock on each variant; an empty
+            // field means the product is not stock-tracked.
+            'stock' => $request->boolean('has_variants') || ! $request->filled('stock')
+                ? null
+                : (int) $request->input('stock'),
             'is_featured' => $request->boolean('is_featured'),
             'meta_title' => trim((string) $request->input('meta_title', '')),
             'meta_description' => trim((string) $request->input('meta_description', '')),

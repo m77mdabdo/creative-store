@@ -124,6 +124,13 @@
                 </div>
 
                 <div class="form-group">
+                    <label>{{ __('Stock') }}</label>
+                    <input type="number" step="1" min="0" name="stock" class="form-control"
+                        value="{{ $form['stock'] }}">
+                    <small class="form-text text-muted">{{ __('For products without variants. Leave empty to sell without a stock limit.') }}</small>
+                </div>
+
+                <div class="form-group">
                     <div class="custom-control custom-switch">
                         <input type="checkbox" class="custom-control-input" id="has_variants" name="has_variants"
                             value="1" {{ $form['has_variants'] ? 'checked' : '' }}>
