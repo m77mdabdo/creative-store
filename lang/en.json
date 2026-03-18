@@ -1368,5 +1368,7 @@
     "Update tracking": "Update tracking",
     "Waybill :number created.": "Waybill :number created.",
     "This shipment already has a waybill.": "This shipment already has a waybill.",
-    "{0} Tracking is up to date.|{1} 1 new tracking update.|[2,*] :count new tracking updates.": "{0} Tracking is up to date.|{1} 1 new tracking update.|[2,*] :count new tracking updates."
+    "{0} Tracking is up to date.|{1} 1 new tracking update.|[2,*] :count new tracking updates.": "{0} Tracking is up to date.|{1} 1 new tracking update.|[2,*] :count new tracking updates.",
+    "This product is out of stock.": "This product is out of stock.",
+    "For products without variants. Leave empty to sell without a stock limit.": "For products without variants. Leave empty to sell without a stock limit."
 }

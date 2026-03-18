@@ -121,9 +121,7 @@ class OrderController extends Controller
                 ]);
 
                 foreach ($order->items as $item) {
-                    if ($item->variant_id && $item->variant) {
-                        $item->variant->increment('stock', (int) $item->quantity);
-                    }
+                    $item->restock();
                 }
 
                 $this->coupons->release($order);

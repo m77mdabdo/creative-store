@@ -54,4 +54,21 @@ class OrderItem extends Model
     {
         return $this->hasMany(ReturnItem::class, 'order_item_id');
     }
+
+    /**
+     * Put this line's units back on the shelf: on the variant when there is
+     * one, otherwise on the product if that product tracks stock.
+     */
+    public function restock(): void
+    {
+        $quantity = (int) $this->quantity;
+
+        if ($this->variant_id) {
+            ProductVariant::query()->whereKey($this->variant_id)->increment('stock', $quantity);
+
+            return;
+        }
+
+        Product::query()->whereKey($this->product_id)->whereNotNull('stock')->increment('stock', $quantity);
+    }
 }

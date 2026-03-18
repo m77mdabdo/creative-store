@@ -103,7 +103,11 @@ class CheckoutService
             $this->coupons->redeem($order, $couponDiscounts);
 
             foreach ($lines as $line) {
-                $line['variant']?->decrement('stock', $line['quantity']);
+                if ($line['variant']) {
+                    $line['variant']->decrement('stock', $line['quantity']);
+                } elseif (! is_null($line['product']->stock)) {
+                    $line['product']->decrement('stock', $line['quantity']);
+                }
 
                 OrderItem::create([
                     'order_id'              => $order->id,
@@ -152,7 +156,15 @@ class CheckoutService
         $productIds = collect($cart)->pluck('product_id')->filter()->unique()->all();
         $variantIds = collect($cart)->pluck('variant_id')->filter()->unique()->all();
 
-        $products = Product::query()->whereIn('id', $productIds)->get()->keyBy('id');
+        // Products are locked before variants, always in id order, so two
+        // checkouts for the same items wait for each other instead of
+        // both selling the last unit.
+        $products = Product::query()
+            ->whereIn('id', $productIds)
+            ->orderBy('id')
+            ->lockForUpdate()
+            ->get()
+            ->keyBy('id');
 
         $variants = ProductVariant::query()
             ->whereIn('id', $variantIds)
@@ -188,6 +200,10 @@ class CheckoutService
                 if (! is_null($variant->price)) {
                     $unitPrice = (float) $variant->price;
                 }
+            }
+
+            if (! $variant && ! is_null($product->stock) && $product->stock < $quantity) {
+                throw new CheckoutException(__('Not enough stock for :sku.', ['sku' => $product->sku]));
             }
 
             $lines[] = [

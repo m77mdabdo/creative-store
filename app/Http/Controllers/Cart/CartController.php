@@ -150,6 +150,12 @@ public function add(Request $request)
 
     $newQuantity = min($newQuantity, self::MAX_QTY_PER_ITEM);
 
+    if (! $variant && ! is_null($product->stock) && $newQuantity > $product->stock) {
+        return back()->with('error', $product->stock < 1
+            ? __('This product is out of stock.')
+            : __('Requested quantity exceeds available stock.'));
+    }
+
     if ($variant && $newQuantity > (int) $variant->stock) {
         return back()->with('error', __('Requested quantity exceeds available stock.'));
     }
@@ -339,6 +345,10 @@ public function add(Request $request)
     }
 
     $quantity = max(1, min((int) $validated['quantity'], self::MAX_QTY_PER_ITEM));
+
+    if (! $variant && ! is_null($product->stock) && $quantity > $product->stock) {
+        return back()->with('error', __('Requested quantity exceeds available stock.'));
+    }
 
     if ($variant && $quantity > (int) $variant->stock) {
         return back()->with('error', __('Requested quantity exceeds available stock.'));

@@ -28,6 +28,7 @@ class Product extends Model
         'has_variants',
         'tax_rate',
         'weight',
+        'stock',
         'is_featured',
         'meta_title',
         'meta_description',
@@ -37,6 +38,7 @@ class Product extends Model
         'base_price' => 'decimal:2',
         'tax_rate' => 'decimal:2',
         'weight' => 'decimal:2',
+        'stock' => 'integer',
         'has_variants' => 'boolean',
         'is_featured' => 'boolean',
     ];

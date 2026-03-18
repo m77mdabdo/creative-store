@@ -448,11 +448,7 @@ public function cancel(CancelOrderRequest $request, Order $order): RedirectRespo
 
             // 6) Optional: return stock back
             foreach ($order->items as $item) {
-                if ($item->variant_id) {
-                    DB::table('product_variants')
-                        ->where('id', $item->variant_id)
-                        ->increment('stock', (int) $item->quantity);
-                }
+                $item->restock();
 
                 InventoryMovement::create([
                     'product_id' => $item->product_id,

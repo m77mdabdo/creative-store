@@ -52,7 +52,7 @@ class ExpireUnpaidOrdersCommand extends Command
             }
 
             foreach ($order->items as $item) {
-                $item->variant?->increment('stock', (int) $item->quantity);
+                $item->restock();
             }
 
             $this->coupons->release($order);

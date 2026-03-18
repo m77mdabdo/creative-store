@@ -29,7 +29,7 @@
             'url'           => url()->current(),
             'priceCurrency' => $productCurrency,
             'price'         => number_format((float) $productPrice, 2, '.', ''),
-            'availability'  => $variantStocks->isEmpty() || $variantStocks->sum('stock') > 0
+            'availability'  => ($variantStocks->isEmpty() ? ($product->stock ?? 1) > 0 : $variantStocks->sum('stock') > 0)
                 ? 'https://schema.org/InStock'
                 : 'https://schema.org/OutOfStock',
         ],
@@ -127,7 +127,7 @@
 
                         <div class="stext-102 cl3 p-t-5">
                             {{ __('site.stock') }}:
-                            <span id="dynamicStock">{{ count($variantMatrix) ? __('site.choose_options_first') : __('site.n_a') }}</span>
+                            <span id="dynamicStock">{{ count($variantMatrix) ? __('site.choose_options_first') : ($product->stock ?? __('site.n_a')) }}</span>
                         </div>
 
                         <p class="stext-102 p-t-5" id="stockMessage" style="display:none;color:#e3342f;">

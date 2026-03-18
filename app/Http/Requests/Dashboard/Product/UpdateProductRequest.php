@@ -31,6 +31,7 @@ class UpdateProductRequest extends FormRequest
             'has_variants' => ['nullable', 'boolean'],
             'tax_rate' => ['nullable', 'numeric', 'min:0'],
             'weight' => ['nullable', 'numeric', 'min:0'],
+            'stock' => ['nullable', 'integer', 'min:0', 'max:1000000'],
             'is_featured' => ['nullable', 'boolean'],
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:1000'],
