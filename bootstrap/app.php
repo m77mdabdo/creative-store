@@ -93,7 +93,8 @@ return Application::configure(basePath: dirname(__DIR__))
                         'exception' => get_class($e),
                         'file'      => $e->getFile(),
                         'line'      => $e->getLine(),
-                        'url'       => request()?->fullUrl(),
+                        // Path only: query strings can hold reset tokens and link signatures.
+                        'url'       => request()?->url(),
                         'method'    => request()?->method(),
                         'user_id'   => auth()->id(),
                         'ip'        => request()?->ip(),
