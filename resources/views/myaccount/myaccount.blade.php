@@ -182,6 +182,13 @@
                 </span>
             </div>
             <div class="acc-card-body">
+                @if (session('password_upgrade'))
+                    <div class="cs-alert cs-alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                        {{ session('password_upgrade') }}
+                    </div>
+                @endif
+
                 @if (session('success_password'))
                     <div class="cs-alert cs-alert-success" role="status">
                         <i class="fas fa-check-circle" aria-hidden="true"></i>
