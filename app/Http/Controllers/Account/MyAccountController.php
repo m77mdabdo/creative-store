@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Account;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\UpdatePasswordRequest;
+use App\Support\Auth\StaffPassword;
 use App\Http\Requests\Account\UpdateProfileRequest;
 use App\Mail\ConfirmEmailChangeMail;
 use App\Models\Order;
@@ -132,6 +133,8 @@ class MyAccountController extends Controller
 
         $user->password = Hash::make($request->password);
         $user->save();
+
+        $request->session()->forget(StaffPassword::UPGRADE_FLAG);
 
         // Other devices are signed out; this one stays signed in.
         app(AccountSessions::class)->revokeOthers($user, $request->session()->getId());

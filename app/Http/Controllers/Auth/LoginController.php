@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Support\Auth\StaffPassword;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,6 +37,13 @@ class LoginController extends Controller
         }
 
         $request->session()->regenerate();
+
+        // Staff whose password predates the stronger rule are asked to change
+        // it before they can use the dashboard. Nobody is locked out: the
+        // current password keeps working for the change itself.
+        if ($user->isDashboardUser() && StaffPassword::isWeak($credentials['password'])) {
+            $request->session()->put(StaffPassword::UPGRADE_FLAG, true);
+        }
 
         return $user->isDashboardUser()
             ? redirect()->intended(route('dashboard.home'))

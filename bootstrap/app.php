@@ -64,6 +64,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role'       => \App\Http\Middleware\CheckRole::class,
             'permission' => \App\Http\Middleware\CheckPermission::class,
+            'staff.password' => \App\Http\Middleware\RequireStrongStaffPassword::class,
             'localeSessionRedirect' => LocaleSessionRedirect::class,
             'localizationRedirect' => LaravelLocalizationRedirectFilter::class,
              'localeViewPath' => LaravelLocalizationViewPath::class,

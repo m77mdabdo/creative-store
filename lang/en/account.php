@@ -52,6 +52,7 @@ return [
     'profile_updated' => 'Your profile was updated.',
     'show_password' => 'Show password',
     'password_rules' => 'At least 8 characters, with letters and numbers.',
+    'password_upgrade_required' => 'Your password no longer meets the dashboard requirements. Please choose a new one with at least 10 characters, upper and lower case letters and a number to continue.',
     'email_change' => [
         'subject' => 'Confirm your new email for :store',
         'title' => 'Hi :name, confirm your new email',

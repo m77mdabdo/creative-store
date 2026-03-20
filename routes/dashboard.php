@@ -54,6 +54,7 @@ Route::group([
         'localeViewPath',
         'auth',
         'role:owner,admin,employee',
+        'staff.password',
         'throttle:dashboard',
     ],
 ], function () {
