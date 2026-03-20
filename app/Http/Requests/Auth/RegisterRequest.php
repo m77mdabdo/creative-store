@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 use Propaganistas\LaravelPhone\Rules\Phone;
 use Illuminate\Support\Facades\Cache;
 
@@ -34,8 +35,8 @@ class RegisterRequest extends FormRequest
             'password' => [
                 'required',
                 'confirmed',
-                'min:6',
                 'string',
+                Password::min(8)->letters()->numbers(),
             ],
         ];
     }
