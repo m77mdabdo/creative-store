@@ -27,7 +27,8 @@ class ReviewController extends Controller
         ]);
 
 
-        $product = Product::findOrFail($validated['product_id']);
+        // Reviews are taken only for products that are on sale.
+        $product = Product::query()->where('status', 'active')->findOrFail($validated['product_id']);
 
 
         // منع تكرار التعليق لنفس المستخدم
