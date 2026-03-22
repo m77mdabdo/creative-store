@@ -173,7 +173,9 @@ class OrderController extends Controller
                 if ($wasPaid && ! $alreadyRefunded) {
                     $this->refundService->refundOrder(
                         order: $order,
-                        amount: (float) $returnRequest->grand_refund_total,
+                        // Line totals are before the coupon discount, so a
+                        // discounted order would otherwise ask for more than was paid.
+                        amount: round(min((float) $returnRequest->grand_refund_total, (float) $order->total), 2),
                         reason: 'Order cancelled by customer before shipment.',
                         returnId: $returnRequest->id
                     );
