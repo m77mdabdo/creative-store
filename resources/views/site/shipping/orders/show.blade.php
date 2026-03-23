@@ -443,7 +443,7 @@
                                     @csrf
                                     <button type="submit"
                                             class="main-action-btn danger-btn w-100"
-                                            onclick="return confirm('{{ __('site.cancel_order_confirm') }}')">
+                                            onclick="return confirm({{ Js::from(__('site.cancel_order_confirm')) }})">
                                         <i class="fas fa-times m-r-8"></i>
                                         {{ __('site.cancel_order') }}
                                     </button>

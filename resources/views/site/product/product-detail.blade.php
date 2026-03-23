@@ -180,7 +180,7 @@
                                         </div>
 
                                         <button type="button"
-                                                onclick="copyCouponCode('{{ $coupon['code'] }}')"
+                                                onclick="copyCouponCode({{ Js::from($coupon['code']) }})"
                                                 class="offer-copy-btn flex-c-m stext-101 cl2 bg8 bor13 hov-btn3 p-lr-15 trans-04">
                                             {{ __('site.copy_code') }}
                                         </button>
