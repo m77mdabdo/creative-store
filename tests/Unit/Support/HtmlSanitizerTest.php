@@ -38,6 +38,7 @@ class HtmlSanitizerTest extends TestCase
             'iframe'              => ['<iframe src="https://evil.test"></iframe>', '<iframe'],
             'inline style'        => ['<p style="position:fixed">x</p>', 'style='],
             'protocol relative'   => ['<img src="//evil.test/x.png">', 'evil.test'],
+            'backslash relative'  => ['<a href="/\\evil.test">x</a>', 'evil.test'],
             'svg payload'         => ['<svg onload="alert(1)"></svg>', '<svg'],
         ];
     }
