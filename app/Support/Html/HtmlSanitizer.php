@@ -125,7 +125,8 @@ final class HtmlSanitizer
         $url = trim(html_entity_decode($url, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
 
         if ($url === '' || str_starts_with($url, '/') || str_starts_with($url, '#')) {
-            return ! str_starts_with($url, '//');
+            // "//host" and "/\host" both leave the site in a browser.
+            return ! str_starts_with($url, '//') && ! str_starts_with($url, '/\\');
         }
 
         $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
