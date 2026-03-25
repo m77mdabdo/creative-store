@@ -31,10 +31,10 @@ class RefundReturnSeeder extends Seeder
                 'order_id' => $order->id,
                 'user_id' => $order->user_id,
                 'status' => fake()->randomElement([
-                    'pending',
-                    'approved',
-                    'completed',
-                    'rejected',
+                    ReturnRequest::STATUS_REQUESTED,
+                    ReturnRequest::STATUS_APPROVED,
+                    ReturnRequest::STATUS_REFUNDED,
+                    ReturnRequest::STATUS_REJECTED,
                 ]),
                 'reason' => fake()->randomElement([
                     'Damaged product',
@@ -74,7 +74,7 @@ class RefundReturnSeeder extends Seeder
                 $itemsRefundTotal += $refundAmount;
             }
 
-            if (in_array($returnRequest->status, ['approved', 'completed'])) {
+            if (in_array($returnRequest->status, [ReturnRequest::STATUS_APPROVED, ReturnRequest::STATUS_REFUNDED], true)) {
                 Refund::create([
                     'payment_id' => $payment->id,
                     'return_id' => $returnRequest->id,
