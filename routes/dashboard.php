@@ -19,7 +19,9 @@ use App\Http\Controllers\Dashboard\CouponController;
 use App\Http\Controllers\Dashboard\PaymentController;
 use App\Http\Controllers\Dashboard\RefundController;
 use App\Http\Controllers\Dashboard\ReturnController;
-
+use App\Http\Controllers\Dashboard\ShippingMethodController;
+use App\Http\Controllers\Dashboard\ShippingZoneController;
+use App\Http\Controllers\Dashboard\ShippingRateController;
 
 
 Route::prefix('dashboard')
@@ -447,3 +449,104 @@ Route::get('/returns', [ReturnController::class, 'index'])
 Route::get('/returns/{returnRequest}', [ReturnController::class, 'show'])
     ->middleware('permission:returns.view')
     ->name('dashboard.returns.show');
+
+
+    /*
+|--------------------------------------------------------------------------
+| Shipping Methods
+|--------------------------------------------------------------------------
+*/
+Route::get('/shipping-methods', [ShippingMethodController::class, 'index'])
+    ->middleware('permission:shipping-methods.view')
+    ->name('dashboard.shipping-methods.index');
+
+Route::get('/shipping-methods/create', [ShippingMethodController::class, 'create'])
+    ->middleware('permission:shipping-methods.create')
+    ->name('dashboard.shipping-methods.create');
+
+Route::post('/shipping-methods', [ShippingMethodController::class, 'store'])
+    ->middleware('permission:shipping-methods.create')
+    ->name('dashboard.shipping-methods.store');
+
+Route::get('/shipping-methods/{shippingMethod}/edit', [ShippingMethodController::class, 'edit'])
+    ->middleware('permission:shipping-methods.edit')
+    ->name('dashboard.shipping-methods.edit');
+
+Route::put('/shipping-methods/{shippingMethod}', [ShippingMethodController::class, 'update'])
+    ->middleware('permission:shipping-methods.edit')
+    ->name('dashboard.shipping-methods.update');
+
+Route::patch('/shipping-methods/{shippingMethod}/toggle-status', [ShippingMethodController::class, 'toggleStatus'])
+    ->middleware('permission:shipping-methods.edit')
+    ->name('dashboard.shipping-methods.toggle-status');
+
+Route::delete('/shipping-methods/{shippingMethod}', [ShippingMethodController::class, 'destroy'])
+    ->middleware('permission:shipping-methods.delete')
+    ->name('dashboard.shipping-methods.destroy');
+
+    /*
+|--------------------------------------------------------------------------
+| Shipping Zones
+|--------------------------------------------------------------------------
+*/
+Route::get('/shipping-zones', [ShippingZoneController::class, 'index'])
+    ->middleware('permission:shipping-zones.view')
+    ->name('dashboard.shipping-zones.index');
+
+Route::get('/shipping-zones/create', [ShippingZoneController::class, 'create'])
+    ->middleware('permission:shipping-zones.create')
+    ->name('dashboard.shipping-zones.create');
+
+Route::post('/shipping-zones', [ShippingZoneController::class, 'store'])
+    ->middleware('permission:shipping-zones.create')
+    ->name('dashboard.shipping-zones.store');
+
+Route::get('/shipping-zones/{shippingZone}/edit', [ShippingZoneController::class, 'edit'])
+    ->middleware('permission:shipping-zones.edit')
+    ->name('dashboard.shipping-zones.edit');
+
+Route::put('/shipping-zones/{shippingZone}', [ShippingZoneController::class, 'update'])
+    ->middleware('permission:shipping-zones.edit')
+    ->name('dashboard.shipping-zones.update');
+
+Route::patch('/shipping-zones/{shippingZone}/toggle-status', [ShippingZoneController::class, 'toggleStatus'])
+    ->middleware('permission:shipping-zones.edit')
+    ->name('dashboard.shipping-zones.toggle-status');
+
+Route::delete('/shipping-zones/{shippingZone}', [ShippingZoneController::class, 'destroy'])
+    ->middleware('permission:shipping-zones.delete')
+    ->name('dashboard.shipping-zones.destroy');
+
+
+    /*
+|--------------------------------------------------------------------------
+| Shipping Rates
+|--------------------------------------------------------------------------
+*/
+Route::get('/shipping-rates', [ShippingRateController::class, 'index'])
+    ->middleware('permission:shipping-rates.view')
+    ->name('dashboard.shipping-rates.index');
+
+Route::get('/shipping-rates/create', [ShippingRateController::class, 'create'])
+    ->middleware('permission:shipping-rates.create')
+    ->name('dashboard.shipping-rates.create');
+
+Route::post('/shipping-rates', [ShippingRateController::class, 'store'])
+    ->middleware('permission:shipping-rates.create')
+    ->name('dashboard.shipping-rates.store');
+
+Route::get('/shipping-rates/{shippingRate}/edit', [ShippingRateController::class, 'edit'])
+    ->middleware('permission:shipping-rates.edit')
+    ->name('dashboard.shipping-rates.edit');
+
+Route::put('/shipping-rates/{shippingRate}', [ShippingRateController::class, 'update'])
+    ->middleware('permission:shipping-rates.edit')
+    ->name('dashboard.shipping-rates.update');
+
+Route::patch('/shipping-rates/{shippingRate}/toggle-status', [ShippingRateController::class, 'toggleStatus'])
+    ->middleware('permission:shipping-rates.edit')
+    ->name('dashboard.shipping-rates.toggle-status');
+
+Route::delete('/shipping-rates/{shippingRate}', [ShippingRateController::class, 'destroy'])
+    ->middleware('permission:shipping-rates.delete')
+    ->name('dashboard.shipping-rates.destroy');

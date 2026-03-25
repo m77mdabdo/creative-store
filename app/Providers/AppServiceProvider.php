@@ -14,6 +14,8 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use App\Models\ShippingMethod;
+use App\Models\Shipment;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -48,6 +50,10 @@ class AppServiceProvider extends ServiceProvider
             $dashboardUnreadMessagesCount = 0;
             $dashboardProductsCount = 0;
             $dashboardPendingReviewsCount = 0;
+                // ✅ Shipping counters
+                $dashboardShippingMethodsCount = 0;
+                $dashboardActiveShippingMethodsCount = 0;
+                $dashboardShipmentsInTransitCount = 0;
 
             $user = Auth::user();
 
@@ -84,6 +90,18 @@ class AppServiceProvider extends ServiceProvider
                 $dashboardPendingReviewsCount = class_exists(ProductReview::class)
                     ? ProductReview::query()->where('status', 'pending')->count()
                     : 0;
+
+                // ================= Shipping =================
+                $dashboardShippingMethodsCount = ShippingMethod::query()->count();
+                $dashboardActiveShippingMethodsCount = ShippingMethod::query()->where('is_active', true)->count();
+                $dashboardShipmentsInTransitCount = Shipment::query()->whereIn('status', [
+                    'pending',
+                    'processing',
+                    'shipped',
+                ])->count();
+
+
+
             }
 
             $sidebar = app(SidebarBuilder::class)->build($user, [
@@ -92,6 +110,11 @@ class AppServiceProvider extends ServiceProvider
                 'dashboardUnreadMessagesCount'  => $dashboardUnreadMessagesCount,
                 'dashboardProductsCount'        => $dashboardProductsCount,
                 'dashboardPendingReviewsCount'  => $dashboardPendingReviewsCount,
+                // ✅ Shipping
+                'dashboardShippingMethodsCount'       => $dashboardShippingMethodsCount,
+                'dashboardActiveShippingMethodsCount' => $dashboardActiveShippingMethodsCount,
+                'dashboardShipmentsInTransitCount'    => $dashboardShipmentsInTransitCount,
+
             ]);
 
             $view->with([
@@ -103,9 +126,14 @@ class AppServiceProvider extends ServiceProvider
                 'dashboardProductsCount'         => $dashboardProductsCount,
                 'dashboardPendingReviewsCount'   => $dashboardPendingReviewsCount,
                 'sidebar'                        => $sidebar,
+                'dashboardShippingMethodsCount'       => $dashboardShippingMethodsCount,
+                'dashboardActiveShippingMethodsCount' => $dashboardActiveShippingMethodsCount,
+                'dashboardShipmentsInTransitCount'    => $dashboardShipmentsInTransitCount,
+
             ]);
         });
 
         Paginator::useBootstrapFive();
     }
 }
+

@@ -34,6 +34,11 @@ class SidebarBuilder
         $productsCount        = max(0, (int) ($counters['dashboardProductsCount'] ?? 0));
         $pendingReviewsCount  = max(0, (int) ($counters['dashboardPendingReviewsCount'] ?? 0));
 
+        // ✅ Shipping Counters
+        $shippingMethodsCount       = max(0, (int) ($counters['dashboardShippingMethodsCount'] ?? 0));
+        $activeShippingMethodsCount = max(0, (int) ($counters['dashboardActiveShippingMethodsCount'] ?? 0));
+        $shipmentsInTransitCount    = max(0, (int) ($counters['dashboardShipmentsInTransitCount'] ?? 0));
+
         $salesAlertCount = $pendingOrdersCount + $pendingPaymentsCount;
 
         $items = [];
@@ -116,6 +121,70 @@ class SidebarBuilder
                 badge: $this->normalizeBadge([
                     'value' => $salesAlertCount,
                     'class' => 'badge badge-warning',
+                ])
+            ));
+        }
+
+        $shippingChildren = [];
+
+        if ($this->canAny($user, ['shipping-methods.view'])) {
+            $shippingChildren[] = $this->childItem(
+                title: 'Shipping Methods',
+                routeName: 'dashboard.shipping-methods.index',
+                routePatterns: ['dashboard.shipping-methods.*'],
+                icon: 'fas fa-truck',
+                badge: $this->normalizeBadge([
+                    'value' => $activeShippingMethodsCount,
+                    'class' => 'badge badge-success',
+                ])
+            );
+        }
+
+        if ($this->canAny($user, ['shipping-zones.view'])) {
+            $shippingChildren[] = $this->childItem(
+                title: 'Shipping Zones',
+                routeName: 'dashboard.shipping-zones.index',
+                routePatterns: ['dashboard.shipping-zones.*'],
+                icon: 'fas fa-map-marked-alt'
+            );
+        }
+
+        if ($this->canAny($user, ['shipping-rates.view'])) {
+            $shippingChildren[] = $this->childItem(
+                title: 'Shipping Rates',
+                routeName: 'dashboard.shipping-rates.index',
+                routePatterns: ['dashboard.shipping-rates.*'],
+                icon: 'fas fa-money-check-alt'
+            );
+        }
+
+        if ($this->canAny($user, ['shipments.view'])) {
+            $shippingChildren[] = $this->childItem(
+                title: 'Shipments',
+                routeName: 'dashboard.shipments.index',
+                routePatterns: ['dashboard.shipments.*'],
+                icon: 'fas fa-shipping-fast',
+                badge: $this->normalizeBadge([
+                    'value' => $shipmentsInTransitCount,
+                    'class' => 'badge badge-warning',
+                ])
+            );
+        }
+
+        if (! empty(array_filter($shippingChildren))) {
+            $this->pushItem($items, $this->treeItem(
+                title: 'Shipping',
+                icon: 'fas fa-truck-loading',
+                routePatterns: [
+                    'dashboard.shipping-methods.*',
+                    'dashboard.shipping-zones.*',
+                    'dashboard.shipping-rates.*',
+                    'dashboard.shipments.*',
+                ],
+                children: $shippingChildren,
+                badge: $this->normalizeBadge([
+                    'value' => $shippingMethodsCount,
+                    'class' => 'badge badge-info',
                 ])
             ));
         }
