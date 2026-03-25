@@ -7,12 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ReturnItem extends Model
 {
-
-      use HasFactory;
-
+    use HasFactory;
 
     protected $fillable = [
-        'return_id','order_item_id','quantity','condition_note','refund_amount'
+        'return_id',
+        'order_item_id',
+        'quantity',
+        'condition_note',
+        'refund_amount',
     ];
 
     protected $casts = [

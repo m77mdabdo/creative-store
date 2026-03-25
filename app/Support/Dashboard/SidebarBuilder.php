@@ -11,13 +11,13 @@ class SidebarBuilder
     {
         $brand = [
             'title' => config('app.name', 'Creative Store'),
-            'logo'  => asset('AdminLTE/dist/img/AdminLTELogo.png'),
+            'logo'  => asset('AdminLTE/dist/img/logo-01.png'),
             'route' => $this->safeRoute('dashboard.home'),
         ];
 
         $sidebarUser = [
             'name'   => $user?->name ?: 'Dashboard User',
-            'avatar' => asset('AdminLTE/dist/img/user2-160x160.jpg'),
+            'avatar' => asset('AdminLTE/dist/img/user1-128x128.jpg'),
         ];
 
         if (! $user) {
@@ -29,13 +29,15 @@ class SidebarBuilder
         }
 
         $pendingOrdersCount   = max(0, (int) ($counters['dashboardPendingOrdersCount'] ?? 0));
+        $pendingPaymentsCount = max(0, (int) ($counters['dashboardPendingPaymentsCount'] ?? 0));
         $unreadMessagesCount  = max(0, (int) ($counters['dashboardUnreadMessagesCount'] ?? 0));
         $productsCount        = max(0, (int) ($counters['dashboardProductsCount'] ?? 0));
         $pendingReviewsCount  = max(0, (int) ($counters['dashboardPendingReviewsCount'] ?? 0));
 
+        $salesAlertCount = $pendingOrdersCount + $pendingPaymentsCount;
+
         $items = [];
 
-        // Dashboard
         $this->pushItem($items, $this->singleItem(
             title: 'Dashboard',
             icon: 'fas fa-tachometer-alt',
@@ -43,7 +45,6 @@ class SidebarBuilder
             routePatterns: ['dashboard.home']
         ));
 
-        // Users
         if ($this->canAny($user, ['users.view'])) {
             $this->pushItem($items, $this->singleItem(
                 title: 'Users',
@@ -53,50 +54,54 @@ class SidebarBuilder
             ));
         }
 
-        // Sales
         $salesChildren = [];
 
-        if ($this->canAny($user, ['orders.view']) && $this->routeExists('dashboard.orders.index')) {
+        if ($this->canAny($user, ['orders.view'])) {
             $salesChildren[] = $this->childItem(
                 title: 'Orders',
                 routeName: 'dashboard.orders.index',
-                routePatterns: ['dashboard.orders.*']
+                routePatterns: ['dashboard.orders.*'],
+                icon: 'fas fa-shopping-cart'
             );
         }
 
-        if ($this->canAny($user, ['payments.view']) && $this->routeExists('dashboard.payments.index')) {
+        if ($this->canAny($user, ['payments.view'])) {
             $salesChildren[] = $this->childItem(
                 title: 'Payments',
                 routeName: 'dashboard.payments.index',
-                routePatterns: ['dashboard.payments.*']
+                routePatterns: ['dashboard.payments.*'],
+                icon: 'fas fa-credit-card'
             );
         }
 
-        if ($this->canAny($user, ['refunds.view']) && $this->routeExists('dashboard.refunds.index')) {
+        if ($this->canAny($user, ['refunds.view'])) {
             $salesChildren[] = $this->childItem(
                 title: 'Refunds',
                 routeName: 'dashboard.refunds.index',
-                routePatterns: ['dashboard.refunds.*']
+                routePatterns: ['dashboard.refunds.*'],
+                icon: 'fas fa-undo'
             );
         }
 
-        if ($this->canAny($user, ['returns.view']) && $this->routeExists('dashboard.returns.index')) {
+        if ($this->canAny($user, ['returns.view'])) {
             $salesChildren[] = $this->childItem(
                 title: 'Returns',
                 routeName: 'dashboard.returns.index',
-                routePatterns: ['dashboard.returns.*']
+                routePatterns: ['dashboard.returns.*'],
+                icon: 'fas fa-box-open'
             );
         }
 
-        if ($this->canAny($user, ['coupons.view']) && $this->routeExists('dashboard.coupons.index')) {
+        if ($this->canAny($user, ['coupons.view'])) {
             $salesChildren[] = $this->childItem(
                 title: 'Coupons',
                 routeName: 'dashboard.coupons.index',
-                routePatterns: ['dashboard.coupons.*']
+                routePatterns: ['dashboard.coupons.*'],
+                icon: 'fas fa-ticket-alt'
             );
         }
 
-        if (! empty($salesChildren)) {
+        if (! empty(array_filter($salesChildren))) {
             $this->pushItem($items, $this->treeItem(
                 title: 'Sales',
                 icon: 'fas fa-shopping-bag',
@@ -109,65 +114,54 @@ class SidebarBuilder
                 ],
                 children: $salesChildren,
                 badge: $this->normalizeBadge([
-                    'value' => $pendingOrdersCount,
+                    'value' => $salesAlertCount,
                     'class' => 'badge badge-warning',
                 ])
             ));
         }
 
-        // Catalog
-        // Catalog
         $catalogChildren = [];
 
-        if ($this->canAny($user, ['categories.view']) && $this->routeExists('dashboard.categories.index')) {
+        if ($this->canAny($user, ['categories.view'])) {
             $catalogChildren[] = $this->childItem(
                 title: 'Categories',
                 routeName: 'dashboard.categories.index',
-                routePatterns: ['dashboard.categories.*']
+                routePatterns: ['dashboard.categories.*'],
+                icon: 'fas fa-tags'
             );
         }
 
-        if ($this->canAny($user, ['products.view']) && $this->routeExists('dashboard.products.index')) {
+        if ($this->canAny($user, ['products.view'])) {
             $catalogChildren[] = $this->childItem(
                 title: 'Products',
                 routeName: 'dashboard.products.index',
-                routePatterns: ['dashboard.products.*']
+                routePatterns: ['dashboard.products.*'],
+                icon: 'fas fa-box'
             );
         }
 
-        if ($this->canAny($user, ['attributes.view']) && $this->routeExists('dashboard.attributes.index')) {
+        if ($this->canAny($user, ['attributes.view'])) {
             $catalogChildren[] = $this->childItem(
                 title: 'Attributes',
                 routeName: 'dashboard.attributes.index',
-                routePatterns: ['dashboard.attributes.*']
+                routePatterns: ['dashboard.attributes.*'],
+                icon: 'fas fa-sliders-h'
             );
         }
 
-        if ($this->canAny($user, ['attribute-values.view']) && $this->routeExists('dashboard.attribute-values.index')) {
-            $catalogChildren[] = $this->childItem(
-                title: 'Attribute Values',
-                routeName: 'dashboard.attribute-values.index',
-                routePatterns: ['dashboard.attribute-values.*']
-            );
-        }
-
-        if ($this->canAny($user, ['product-variants.view']) && $this->routeExists('dashboard.product-variants.index')) {
-            $catalogChildren[] = $this->childItem(
-                title: 'Product Variants',
-                routeName: 'dashboard.product-variants.index',
-                routePatterns: ['dashboard.product-variants.*']
-            );
-        }
-
-        if ($this->canAny($user, ['reviews.view']) && $this->routeExists('dashboard.reviews.index')) {
+        if ($this->canAny($user, ['reviews.view'])) {
             $catalogChildren[] = $this->childItem(
                 title: 'Product Reviews',
                 routeName: 'dashboard.reviews.index',
-                routePatterns: ['dashboard.reviews.*']
+                routePatterns: [
+                    'dashboard.reviews.*',
+                    'dashboard.products.reviews.*',
+                ],
+                icon: 'fas fa-star'
             );
         }
 
-        if (! empty($catalogChildren)) {
+        if (! empty(array_filter($catalogChildren))) {
             $catalogBadgeValue = $pendingReviewsCount > 0 ? $pendingReviewsCount : $productsCount;
             $catalogBadgeClass = $pendingReviewsCount > 0 ? 'badge badge-warning' : 'badge badge-info';
 
@@ -178,9 +172,8 @@ class SidebarBuilder
                     'dashboard.categories.*',
                     'dashboard.products.*',
                     'dashboard.attributes.*',
-                    'dashboard.attribute-values.*',
-                    'dashboard.product-variants.*',
                     'dashboard.reviews.*',
+                    'dashboard.products.reviews.*',
                 ],
                 children: $catalogChildren,
                 badge: $this->normalizeBadge([
@@ -190,50 +183,58 @@ class SidebarBuilder
             ));
         }
 
-        // Content
         $contentChildren = [];
 
-        if ($this->canAny($user, ['blogs.view']) && $this->routeExists('dashboard.blogs.index')) {
+        if ($this->canAny($user, ['blogs.view'])) {
             $contentChildren[] = $this->childItem(
                 title: 'Blogs',
                 routeName: 'dashboard.blogs.index',
-                routePatterns: ['dashboard.blogs.*']
+                routePatterns: ['dashboard.blogs.*'],
+                icon: 'fas fa-blog'
             );
         }
 
-        if ($this->canAny($user, ['blog-categories.view']) && $this->routeExists('dashboard.blog-categories.index')) {
+        if ($this->canAny($user, ['blog-categories.view'])) {
             $contentChildren[] = $this->childItem(
                 title: 'Blog Categories',
                 routeName: 'dashboard.blog-categories.index',
-                routePatterns: ['dashboard.blog-categories.*']
+                routePatterns: ['dashboard.blog-categories.*'],
+                icon: 'fas fa-folder-open'
             );
         }
 
-        if ($this->canAny($user, ['blog-comments.view']) && $this->routeExists('dashboard.blog-comments.index')) {
+        if ($this->canAny($user, ['blog-comments.view'])) {
             $contentChildren[] = $this->childItem(
                 title: 'Comments',
                 routeName: 'dashboard.blog-comments.index',
-                routePatterns: ['dashboard.blog-comments.*']
+                routePatterns: ['dashboard.blog-comments.*'],
+                icon: 'fas fa-comments'
             );
         }
 
-        if ($this->canAny($user, ['pages.view']) && $this->routeExists('dashboard.pages.index')) {
+        if ($this->canAny($user, ['pages.view'])) {
             $contentChildren[] = $this->childItem(
                 title: 'Static Pages',
                 routeName: 'dashboard.pages.index',
-                routePatterns: ['dashboard.pages.*']
+                routePatterns: ['dashboard.pages.*'],
+                icon: 'fas fa-file-alt'
             );
         }
 
-        if ($this->canAny($user, ['contact.view']) && $this->routeExists('dashboard.contact-messages.index')) {
+        if ($this->canAny($user, ['contact.view'])) {
             $contentChildren[] = $this->childItem(
                 title: 'Contact Messages',
                 routeName: 'dashboard.contact-messages.index',
-                routePatterns: ['dashboard.contact-messages.*']
+                routePatterns: ['dashboard.contact-messages.*'],
+                icon: 'fas fa-envelope',
+                badge: $this->normalizeBadge([
+                    'value' => $unreadMessagesCount,
+                    'class' => 'badge badge-danger',
+                ])
             );
         }
 
-        if (! empty($contentChildren)) {
+        if (! empty(array_filter($contentChildren))) {
             $this->pushItem($items, $this->treeItem(
                 title: 'Content',
                 icon: 'fas fa-copy',
@@ -252,14 +253,14 @@ class SidebarBuilder
             ));
         }
 
-        // System
         $systemChildren = [];
 
-        if ($this->canAny($user, ['audit.view']) && $this->routeExists('dashboard.audit.index')) {
+        if ($this->canAny($user, ['audit.view'])) {
             $systemChildren[] = $this->childItem(
                 title: 'Audit Logs',
                 routeName: 'dashboard.audit.index',
-                routePatterns: ['dashboard.audit.*']
+                routePatterns: ['dashboard.audit.*'],
+                icon: 'fas fa-history'
             );
         }
 
@@ -267,7 +268,8 @@ class SidebarBuilder
             $systemChildren[] = $this->childItem(
                 title: 'Error Logs',
                 routeName: 'dashboard.error-logs.index',
-                routePatterns: ['dashboard.error-logs.*']
+                routePatterns: ['dashboard.error-logs.*'],
+                icon: 'fas fa-bug'
             );
         }
 
@@ -275,7 +277,8 @@ class SidebarBuilder
             $systemChildren[] = $this->childItem(
                 title: 'Backup History',
                 routeName: 'dashboard.backups.index',
-                routePatterns: ['dashboard.backups.*']
+                routePatterns: ['dashboard.backups.*'],
+                icon: 'fas fa-database'
             );
         }
 
@@ -283,7 +286,8 @@ class SidebarBuilder
             $systemChildren[] = $this->childItem(
                 title: 'Settings',
                 routeName: 'dashboard.settings.index',
-                routePatterns: ['dashboard.settings.*']
+                routePatterns: ['dashboard.settings.*'],
+                icon: 'fas fa-cog'
             );
         }
 
@@ -291,7 +295,8 @@ class SidebarBuilder
             $systemChildren[] = $this->childItem(
                 title: 'UAT',
                 routeName: 'dashboard.uat.index',
-                routePatterns: ['dashboard.uat.*']
+                routePatterns: ['dashboard.uat.*'],
+                icon: 'fas fa-vial'
             );
         }
 
@@ -299,7 +304,8 @@ class SidebarBuilder
             $systemChildren[] = $this->childItem(
                 title: 'Privacy Requests',
                 routeName: 'dashboard.privacy-requests.index',
-                routePatterns: ['dashboard.privacy-requests.*']
+                routePatterns: ['dashboard.privacy-requests.*'],
+                icon: 'fas fa-user-shield'
             );
         }
 
@@ -307,11 +313,12 @@ class SidebarBuilder
             $systemChildren[] = $this->childItem(
                 title: 'Retention Policies',
                 routeName: 'dashboard.retention-policies.index',
-                routePatterns: ['dashboard.retention-policies.*']
+                routePatterns: ['dashboard.retention-policies.*'],
+                icon: 'fas fa-shield-alt'
             );
         }
 
-        if (! empty($systemChildren)) {
+        if (! empty(array_filter($systemChildren))) {
             $this->pushItem($items, $this->treeItem(
                 title: 'System',
                 icon: 'fas fa-cogs',
@@ -366,7 +373,9 @@ class SidebarBuilder
     protected function childItem(
         string $title,
         string $routeName,
-        array $routePatterns = []
+        array $routePatterns = [],
+        ?string $icon = null,
+        ?array $badge = null
     ): ?array {
         if (! $this->routeExists($routeName)) {
             return null;
@@ -376,6 +385,8 @@ class SidebarBuilder
             'title'  => $title,
             'url'    => $this->safeRoute($routeName),
             'active' => $this->isActive($routePatterns),
+            'icon'   => $icon,
+            'badge'  => $this->normalizeBadge($badge),
         ];
     }
 

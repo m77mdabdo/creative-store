@@ -4,6 +4,7 @@ namespace App\Services\Dashboard;
 
 use App\Models\ContactMessage;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 
@@ -15,14 +16,14 @@ class SidebarService
 
         return [
             'brand' => [
-                'route' => route('dashboard.home'),
-                'logo' => asset('dashboard/dist/img/AdminLTELogo.png'),
+                'route' => Route::has('dashboard.home') ? route('dashboard.home') : '#',
+                'logo' => asset('AdminLTE/dist/img/logo-01.png'),
                 'title' => 'Creative Store',
             ],
 
             'user' => [
                 'name' => $user?->name ?? 'Dashboard User',
-                'avatar' => asset('dashboard/dist/img/user2-160x160.jpg'),
+                'avatar' => asset('AdminLTE/dist/img/user1-128x128.jpg'),
             ],
 
             'items' => array_values(array_filter([
@@ -39,13 +40,26 @@ class SidebarService
                     can: $this->can('users.view')
                 ),
 
-                $this->single(
-                    title: 'Orders',
+                $this->tree(
+                    title: 'Sales',
                     icon: 'fas fa-shopping-bag',
-                    routeName: 'dashboard.orders.index',
-                    can: $this->can('orders.view'),
+                    children: array_filter([
+                        $this->child('Orders', 'dashboard.orders.index', $this->can('orders.view')),
+                        $this->child('Payments', 'dashboard.payments.index', $this->can('payments.view')),
+                        $this->child('Refunds', 'dashboard.refunds.index', $this->can('refunds.view')),
+                        $this->child('Returns', 'dashboard.returns.index', $this->can('returns.view')),
+                        $this->child('Coupons', 'dashboard.coupons.index', $this->can('coupons.view')),
+                    ]),
+                    activePatterns: [
+                        'dashboard.orders.*',
+                        'dashboard.payments.*',
+                        'dashboard.refunds.*',
+                        'dashboard.returns.*',
+                        'dashboard.coupons.*',
+                    ],
                     badge: [
-                        'value' => Order::where('payment_status', 'pending')->count(),
+                        'value' => Order::where('payment_status', 'pending')->count()
+                            + (class_exists(Payment::class) ? Payment::where('status', 'pending')->count() : 0),
                         'class' => 'badge badge-warning'
                     ]
                 ),
@@ -64,6 +78,7 @@ class SidebarService
                         'dashboard.products.*',
                         'dashboard.attributes.*',
                         'dashboard.reviews.*',
+                        'dashboard.products.reviews.*',
                     ],
                     badge: [
                         'value' => Product::count(),
@@ -120,11 +135,15 @@ class SidebarService
         array $activePatterns = [],
         ?array $badge = null
     ): ?array {
+        $children = array_values(array_filter($children));
+
         if (empty($children)) {
             return null;
         }
 
-        $active = collect($activePatterns)->contains(fn($pattern) => request()->routeIs($pattern));
+        $active = collect($activePatterns)->contains(
+            fn ($pattern) => request()->routeIs($pattern)
+        );
 
         return [
             'type' => 'tree',
@@ -134,12 +153,16 @@ class SidebarService
             'active' => $active,
             'open' => $active,
             'badge' => $this->normalizeBadge($badge),
-            'children' => array_values($children),
+            'children' => $children,
         ];
     }
 
-    private function child(string $title, string $routeName, bool $can = true): ?array
-    {
+    private function child(
+        string $title,
+        string $routeName,
+        bool $can = true,
+        ?array $badge = null
+    ): ?array {
         if (! $can || ! Route::has($routeName)) {
             return null;
         }
@@ -148,17 +171,24 @@ class SidebarService
             'title' => $title,
             'url' => route($routeName),
             'active' => request()->routeIs($routeName),
+            'badge' => $this->normalizeBadge($badge),
         ];
     }
 
     private function normalizeBadge(?array $badge): ?array
     {
-        if (! $badge || empty($badge['value'])) {
+        if (! $badge) {
+            return null;
+        }
+
+        $value = (int) ($badge['value'] ?? 0);
+
+        if ($value <= 0) {
             return null;
         }
 
         return [
-            'value' => $badge['value'],
+            'value' => $value,
             'class' => $badge['class'] ?? 'badge badge-info',
         ];
     }

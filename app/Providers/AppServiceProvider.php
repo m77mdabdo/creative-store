@@ -4,21 +4,19 @@ namespace App\Providers;
 
 use App\Models\ContactMessage;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Models\Product;
 use App\Models\ProductReview;
+use App\Services\Dashboard\DashboardLayoutService;
 use App\Support\Dashboard\SidebarBuilder;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use App\Services\Dashboard\DashboardLayoutService;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         $this->app->singleton('files', function () {
@@ -30,9 +28,6 @@ class AppServiceProvider extends ServiceProvider
         });
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         View::composer('dashboard.app.nav', function ($view) {
@@ -49,26 +44,14 @@ class AppServiceProvider extends ServiceProvider
             $dashboardUnreadMessages = collect();
 
             $dashboardPendingOrdersCount = 0;
+            $dashboardPendingPaymentsCount = 0;
             $dashboardUnreadMessagesCount = 0;
             $dashboardProductsCount = 0;
             $dashboardPendingReviewsCount = 0;
 
-            $sidebar = [
-                'brand' => [
-                    'title' => config('app.name', 'Creative Store'),
-                    'logo'  => asset('AdminLTE/dist/img/AdminLTELogo.png'),
-                    'route' => route('dashboard.home'),
-                ],
-                'user' => [
-                    'name'   => 'Dashboard User',
-                    'avatar' => asset('AdminLTE/dist/img/user2-160x160.jpg'),
-                ],
-                'items' => [],
-            ];
-
             $user = Auth::user();
 
-            if ($user && method_exists($user, 'isDashboardUser') && $user->isDashboardUser()) {
+            if ($user) {
                 $dashboardPendingOrders = Order::query()
                     ->with(['user:id,name'])
                     ->whereIn('status', ['pending', 'processing'])
@@ -79,6 +62,12 @@ class AppServiceProvider extends ServiceProvider
                 $dashboardPendingOrdersCount = Order::query()
                     ->whereIn('status', ['pending', 'processing'])
                     ->count();
+
+                $dashboardPendingPaymentsCount = class_exists(Payment::class)
+                    ? Payment::query()
+                        ->whereIn('status', ['pending', 'initiated', 'unpaid'])
+                        ->count()
+                    : 0;
 
                 $dashboardUnreadMessages = ContactMessage::query()
                     ->where('is_read', false)
@@ -95,26 +84,28 @@ class AppServiceProvider extends ServiceProvider
                 $dashboardPendingReviewsCount = class_exists(ProductReview::class)
                     ? ProductReview::query()->where('status', 'pending')->count()
                     : 0;
-
-                $sidebar = app(SidebarBuilder::class)->build($user, [
-                    'dashboardPendingOrdersCount'  => $dashboardPendingOrdersCount,
-                    'dashboardUnreadMessagesCount' => $dashboardUnreadMessagesCount,
-                    'dashboardProductsCount'       => $dashboardProductsCount,
-                    'dashboardPendingReviewsCount' => $dashboardPendingReviewsCount,
-                ]);
             }
 
-            $view->with([
-                'dashboardPendingOrders'        => $dashboardPendingOrders,
+            $sidebar = app(SidebarBuilder::class)->build($user, [
                 'dashboardPendingOrdersCount'   => $dashboardPendingOrdersCount,
-                'dashboardUnreadMessages'       => $dashboardUnreadMessages,
+                'dashboardPendingPaymentsCount' => $dashboardPendingPaymentsCount,
                 'dashboardUnreadMessagesCount'  => $dashboardUnreadMessagesCount,
                 'dashboardProductsCount'        => $dashboardProductsCount,
                 'dashboardPendingReviewsCount'  => $dashboardPendingReviewsCount,
-                'sidebar'                       => $sidebar,
+            ]);
+
+            $view->with([
+                'dashboardPendingOrders'         => $dashboardPendingOrders,
+                'dashboardPendingOrdersCount'    => $dashboardPendingOrdersCount,
+                'dashboardPendingPaymentsCount'  => $dashboardPendingPaymentsCount,
+                'dashboardUnreadMessages'        => $dashboardUnreadMessages,
+                'dashboardUnreadMessagesCount'   => $dashboardUnreadMessagesCount,
+                'dashboardProductsCount'         => $dashboardProductsCount,
+                'dashboardPendingReviewsCount'   => $dashboardPendingReviewsCount,
+                'sidebar'                        => $sidebar,
             ]);
         });
 
-        Paginator::useBootstrap();
+        Paginator::useBootstrapFive();
     }
 }

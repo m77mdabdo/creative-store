@@ -16,6 +16,9 @@ use App\Http\Controllers\Dashboard\AttributeController;
 use App\Http\Controllers\Dashboard\AttributeValueController;
 use App\Http\Controllers\Dashboard\ProductReviewController;
 use App\Http\Controllers\Dashboard\CouponController;
+use App\Http\Controllers\Dashboard\PaymentController;
+use App\Http\Controllers\Dashboard\RefundController;
+use App\Http\Controllers\Dashboard\ReturnController;
 
 
 
@@ -364,7 +367,7 @@ Route::get('/coupons/trash', [CouponController::class, 'trash'])
     ->middleware('permission:coupons.view')
     ->name('coupons.trash');
 
-Route::post('/coupons/bulk-action', [CouponController::class, 'bulkAction'])
+Route::patch('/coupons/bulk-action', [CouponController::class, 'bulkAction'])
     ->middleware('permission:coupons.edit')
     ->name('coupons.bulk-action');
 
@@ -404,3 +407,43 @@ Route::delete('/coupons/{id}/force-delete', [CouponController::class, 'forceDele
     ->middleware('permission:coupons.delete')
     ->name('coupons.force-delete');
     });
+
+
+    /*
+|--------------------------------------------------------------------------
+| Payments
+|--------------------------------------------------------------------------
+*/
+Route::get('/payments', [PaymentController::class, 'index'])
+    ->middleware('permission:payments.view')
+    ->name('dashboard.payments.index');
+
+Route::get('/payments/{payment}', [PaymentController::class, 'show'])
+    ->middleware('permission:payments.view')
+    ->name('dashboard.payments.show');
+
+
+    /*
+|--------------------------------------------------------------------------
+| Refunds
+|--------------------------------------------------------------------------
+*/
+Route::get('/refunds', [RefundController::class, 'index'])
+    ->middleware('permission:refunds.view')
+    ->name('dashboard.refunds.index');
+
+Route::get('/refunds/{refund}', [RefundController::class, 'show'])
+    ->middleware('permission:refunds.view')
+    ->name('dashboard.refunds.show');
+/*
+|--------------------------------------------------------------------------
+| Returns
+|--------------------------------------------------------------------------
+*/
+Route::get('/returns', [ReturnController::class, 'index'])
+    ->middleware('permission:returns.view')
+    ->name('dashboard.returns.index');
+
+Route::get('/returns/{returnRequest}', [ReturnController::class, 'show'])
+    ->middleware('permission:returns.view')
+    ->name('dashboard.returns.show');

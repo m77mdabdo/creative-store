@@ -73,15 +73,23 @@ class OrderSeeder extends Seeder
                 /* -------------------------
                  * Order base
                  * ------------------------- */
-                $order = Order::factory()->create([
-                    'user_id' => $user->id,
-                    'shipping_address_id' => $address->id,
-                    'coupon_id' => (rand(1, 100) <= 25 && $coupon) ? $coupon->id : null,
-                    'status' => 'confirmed',
-                    'payment_status' => 'paid',
-                    'placed_at' => now()->subDays(rand(0, 20)),
-                    'paid_at' => now()->subDays(rand(0, 20)),
-                ]);
+               /* -------------------------
+| 1) Create Order
+* ------------------------- */
+$order = Order::factory()->create([
+    'user_id' => $user->id,
+    'shipping_address_id' => $address->id,
+    'coupon_id' => (rand(1, 100) <= 25 && $coupon) ? $coupon->id : null,
+    'status' => 'confirmed',
+    'payment_status' => 'paid',
+    'payment_method' => fake()->randomElement([
+        'moyasar',
+        'cash_on_delivery',
+        'bank_transfer',
+    ]),
+    'placed_at' => now()->subDays(rand(0, 20)),
+    'paid_at' => now()->subDays(rand(0, 20)),
+]);
 
                 /* -------------------------
                  * Order items

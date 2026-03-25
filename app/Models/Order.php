@@ -111,4 +111,8 @@ class Order extends Model
 {
     return $this->belongsTo(ShippingMethod::class, 'shipping_method_id');
 }
+public function latestPayment()
+{
+    return $this->hasOne(\App\Models\Payment::class)->latestOfMany();
+}
 }

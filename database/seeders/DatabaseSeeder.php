@@ -15,6 +15,10 @@ class DatabaseSeeder extends Seeder
             CustomerSeeder::class,  // Carts + Wishlists + Reviews + Addresses
             OrderSeeder::class,     // Orders + Payments + Shipping
             OpsSeeder::class,       // Settings + CMS + Logs + Ops
+            paymentPermissionSeeder::class, // Payment Permissions
+             AssignPaymentPermissionsSeeder::class,
+             RefundReturnSeeder::class,
+
         ]);
     }
 }
