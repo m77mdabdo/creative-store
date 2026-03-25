@@ -22,6 +22,9 @@ use App\Http\Controllers\Dashboard\ReturnController;
 use App\Http\Controllers\Dashboard\ShippingMethodController;
 use App\Http\Controllers\Dashboard\ShippingZoneController;
 use App\Http\Controllers\Dashboard\ShippingRateController;
+use App\Http\Controllers\Dashboard\ShipmentController;
+
+
 
 
 Route::prefix('dashboard')
@@ -550,3 +553,41 @@ Route::patch('/shipping-rates/{shippingRate}/toggle-status', [ShippingRateContro
 Route::delete('/shipping-rates/{shippingRate}', [ShippingRateController::class, 'destroy'])
     ->middleware('permission:shipping-rates.delete')
     ->name('dashboard.shipping-rates.destroy');
+
+
+    /*
+|--------------------------------------------------------------------------
+| Shipments
+|--------------------------------------------------------------------------
+*/
+Route::get('/shipments', [ShipmentController::class, 'index'])
+    ->middleware('permission:shipments.view')
+    ->name('dashboard.shipments.index');
+
+Route::get('/shipments/create', [ShipmentController::class, 'create'])
+    ->middleware('permission:shipments.create')
+    ->name('dashboard.shipments.create');
+
+Route::post('/shipments', [ShipmentController::class, 'store'])
+    ->middleware('permission:shipments.create')
+    ->name('dashboard.shipments.store');
+
+Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])
+    ->middleware('permission:shipments.view')
+    ->name('dashboard.shipments.show');
+
+Route::get('/shipments/{shipment}/edit', [ShipmentController::class, 'edit'])
+    ->middleware('permission:shipments.edit')
+    ->name('dashboard.shipments.edit');
+
+Route::put('/shipments/{shipment}', [ShipmentController::class, 'update'])
+    ->middleware('permission:shipments.edit')
+    ->name('dashboard.shipments.update');
+
+Route::patch('/shipments/{shipment}/toggle-status', [ShipmentController::class, 'toggleStatus'])
+    ->middleware('permission:shipments.edit')
+    ->name('dashboard.shipments.toggle-status');
+
+Route::delete('/shipments/{shipment}', [ShipmentController::class, 'destroy'])
+    ->middleware('permission:shipments.delete')
+    ->name('dashboard.shipments.destroy');
