@@ -23,7 +23,8 @@ use App\Http\Controllers\Dashboard\ShippingMethodController;
 use App\Http\Controllers\Dashboard\ShippingZoneController;
 use App\Http\Controllers\Dashboard\ShippingRateController;
 use App\Http\Controllers\Dashboard\ShipmentController;
-
+use App\Http\Controllers\Dashboard\ShipmentTrackingController;
+use App\Http\Controllers\Dashboard\DeliveryMonitoringController;
 
 
 
@@ -591,3 +592,18 @@ Route::patch('/shipments/{shipment}/toggle-status', [ShipmentController::class, 
 Route::delete('/shipments/{shipment}', [ShipmentController::class, 'destroy'])
     ->middleware('permission:shipments.delete')
     ->name('dashboard.shipments.destroy');
+
+
+    //tracking
+    Route::post('/shipments/{shipment}/tracking', [ShipmentTrackingController::class, 'store'])
+    ->name('dashboard.shipments.tracking.store');
+
+
+    /*
+|--------------------------------------------------------------------------
+| Delivery Monitoring
+|--------------------------------------------------------------------------
+*/
+Route::post('/shipments/{shipment}/delivery-attempts', [DeliveryMonitoringController::class, 'storeAttempt'])
+    ->middleware('permission:shipments.edit')
+    ->name('dashboard.shipments.delivery-attempts.store');

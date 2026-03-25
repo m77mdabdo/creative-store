@@ -115,4 +115,7 @@ public function latestPayment()
 {
     return $this->hasOne(\App\Models\Payment::class)->latestOfMany();
 }
+
+
+
 }

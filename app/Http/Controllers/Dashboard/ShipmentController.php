@@ -11,6 +11,7 @@ use App\Models\ShippingMethod;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Models\ShipmentTrackingLog;
 
 class ShipmentController extends Controller
 {
@@ -126,6 +127,8 @@ class ShipmentController extends Controller
             'order.user:id,name,email,phone',
             'order.items',
             'method:id,name,code,description',
+            'trackingLogs',
+             'deliveryAttempts',
         ]);
 
         return view('dashboard.shipments.show', compact('shipment'));
@@ -150,24 +153,60 @@ class ShipmentController extends Controller
         ));
     }
 
-    public function update(UpdateShipmentRequest $request, Shipment $shipment): RedirectResponse
-    {
-        $data = $request->validated();
+public function update(UpdateShipmentRequest $request, Shipment $shipment): RedirectResponse
+{
+    $data = $request->validated();
 
-        if ($data['status'] === Shipment::STATUS_SHIPPED && empty($data['shipped_at']) && ! $shipment->shipped_at) {
-            $data['shipped_at'] = now();
-        }
-
-        if ($data['status'] === Shipment::STATUS_DELIVERED && empty($data['delivered_at']) && ! $shipment->delivered_at) {
-            $data['delivered_at'] = now();
-        }
-
-        $shipment->update($data);
-
-        return redirect()
-            ->route('dashboard.shipments.index')
-            ->with('success', 'Shipment updated successfully.');
+    // =========================
+    // Handle timestamps
+    // =========================
+    if (
+        $data['status'] === Shipment::STATUS_SHIPPED
+        && empty($data['shipped_at'])
+        && ! $shipment->shipped_at
+    ) {
+        $data['shipped_at'] = now();
     }
+
+    if (
+        $data['status'] === Shipment::STATUS_DELIVERED
+        && empty($data['delivered_at'])
+        && ! $shipment->delivered_at
+    ) {
+        $data['delivered_at'] = now();
+    }
+
+    // =========================
+    // Detect changes (IMPORTANT 🔥)
+    // =========================
+    $shouldTrack =
+        ($shipment->status !== ($data['status'] ?? $shipment->status)) ||
+        ($shipment->current_location !== ($data['current_location'] ?? $shipment->current_location)) ||
+        ($shipment->carrier_status !== ($data['carrier_status'] ?? $shipment->carrier_status));
+
+    // =========================
+    // Update shipment
+    // =========================
+    $shipment->update($data);
+
+    // =========================
+    // Create tracking log ONLY if changed
+    // =========================
+    if ($shouldTrack) {
+        \App\Models\ShipmentTrackingLog::create([
+            'shipment_id' => $shipment->id,
+            'status' => $data['status'] ?? $shipment->status,
+            'location' => $data['current_location'] ?? $shipment->current_location,
+            'carrier_status' => $data['carrier_status'] ?? $shipment->carrier_status,
+            'note' => 'Auto update from dashboard',
+            'tracked_at' => now(),
+        ]);
+    }
+
+    return redirect()
+        ->route('dashboard.shipments.index')
+        ->with('success', 'Shipment updated successfully.');
+}
 
     public function toggleStatus(Shipment $shipment): RedirectResponse
     {

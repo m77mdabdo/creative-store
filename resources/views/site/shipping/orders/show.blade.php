@@ -192,7 +192,7 @@
                     {{ $order->shipment->tracking_number ?? 'Not available yet' }}
                 </p>
 
-                <p><strong>Status:</strong> {{ $order->shipment->status }}</p>
+                <p><strong>Status:</strong> {{ ucfirst(str_replace('_', ' ', $order->shipment->status ?? '-')) }}</p>
 
                 <p>
                     <strong>Current Location:</strong>
@@ -203,6 +203,14 @@
                     <strong>Carrier Status:</strong>
                     {{ $order->shipment->carrier_status ?? '-' }}
                 </p>
+
+                @if($order->shipment->tracking_number)
+                    <a href="{{ route('tracking.search-form', ['tracking_number' => $order->shipment->tracking_number]) }}"
+                       class="btn btn-primary mt-3">
+                        <i class="fas fa-map-marker-alt mr-1"></i>
+                        Track Full Shipment
+                    </a>
+                @endif
             @else
                 <p class="text-muted">Shipment not created yet.</p>
             @endif

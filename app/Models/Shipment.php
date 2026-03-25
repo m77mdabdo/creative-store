@@ -99,4 +99,16 @@ class Shipment extends Model
             default => 'badge badge-secondary',
         };
     }
+
+    public function trackingLogs()
+{
+    return $this->hasMany(ShipmentTrackingLog::class)->latest('tracked_at');
+}
+
+public function deliveryAttempts()
+{
+    return $this->hasMany(DeliveryAttempt::class)->latest('attempted_at');
+}
+
+
 }

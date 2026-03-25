@@ -28,6 +28,8 @@ use App\Http\Controllers\Shipping\OrderController;
 
 use App\Http\Controllers\Checkout\CheckoutController;
 use App\Http\Controllers\MoyasarPayment\MoyasarPaymentController;
+  use App\Http\Controllers\Tracking\CustomerTrackingController;
+
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 // Route::get('/dashboard', function () {
@@ -244,5 +246,12 @@ Route::middleware(['auth'])->group(function () {
 Route::post('/webhooks/moyasar', [MoyasarPaymentController::class, 'webhook'])
     ->name('webhooks.moyasar');
 
-// Dashboard: ممنوع على customer
 
+
+
+
+Route::get('/track-order', [CustomerTrackingController::class, 'searchForm'])
+    ->name('tracking.search-form');
+
+Route::post('/track-order', [CustomerTrackingController::class, 'track'])
+    ->name('tracking.track');
