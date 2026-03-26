@@ -12,10 +12,23 @@ class WishlistController extends Controller
 {
     public function index()
     {
-        $wishlist = Wishlist::with(['items.product', 'items.variant'])
-            ->firstOrCreate([
-                'user_id' => Auth::id()
-            ]);
+        $wishlist = Wishlist::with([
+            'items' => function ($query) {
+                $query->latest();
+            },
+            'items.product.primaryImage',
+            'items.product.translations',
+            'items.variant',
+        ])->firstOrCreate([
+            'user_id' => Auth::id()
+        ]);
+
+        // تنظيف العناصر المكسورة: لو المنتج اتحذف من قاعدة البيانات
+        $validItems = $wishlist->items
+            ->filter(fn ($item) => !is_null($item->product))
+            ->values();
+
+        $wishlist->setRelation('items', $validItems);
 
         return view('site.wishlist.index', compact('wishlist'));
     }
@@ -44,6 +57,7 @@ class WishlistController extends Controller
 
         if ($item) {
             $item->delete();
+
             return back()->with('success', 'Removed from wishlist');
         }
 

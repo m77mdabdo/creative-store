@@ -26,4 +26,6 @@ class Cart extends Model
     {
         return $this->hasMany(InventoryReservation::class);
     }
+
+    
 }

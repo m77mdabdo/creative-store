@@ -2,11 +2,17 @@
 
 namespace App\Providers;
 
+use App\Models\Address;
+use App\Models\Cart;
 use App\Models\ContactMessage;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\ProductReview;
+use App\Models\Shipment;
+use App\Models\ShippingMethod;
+use App\Models\User;
+use App\Models\Wishlist;
 use App\Services\Dashboard\DashboardLayoutService;
 use App\Support\Dashboard\SidebarBuilder;
 use Illuminate\Filesystem\Filesystem;
@@ -14,8 +20,6 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use App\Models\ShippingMethod;
-use App\Models\Shipment;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -50,10 +54,18 @@ class AppServiceProvider extends ServiceProvider
             $dashboardUnreadMessagesCount = 0;
             $dashboardProductsCount = 0;
             $dashboardPendingReviewsCount = 0;
-                // ✅ Shipping counters
-                $dashboardShippingMethodsCount = 0;
-                $dashboardActiveShippingMethodsCount = 0;
-                $dashboardShipmentsInTransitCount = 0;
+
+            // ✅ Shipping counters
+            $dashboardShippingMethodsCount = 0;
+            $dashboardActiveShippingMethodsCount = 0;
+            $dashboardShipmentsInTransitCount = 0;
+
+            // ✅ Customers counters
+            $dashboardUsersCount = 0;
+            $dashboardAddressesCount = 0;
+            $dashboardWishlistsCount = 0;
+            $dashboardCartsCount = 0;
+            $dashboardAbandonedCartsCount = 0;
 
             $user = Auth::user();
 
@@ -93,47 +105,89 @@ class AppServiceProvider extends ServiceProvider
 
                 // ================= Shipping =================
                 $dashboardShippingMethodsCount = ShippingMethod::query()->count();
-                $dashboardActiveShippingMethodsCount = ShippingMethod::query()->where('is_active', true)->count();
-                $dashboardShipmentsInTransitCount = Shipment::query()->whereIn('status', [
-                    'pending',
-                    'processing',
-                    'shipped',
-                ])->count();
 
+                $dashboardActiveShippingMethodsCount = ShippingMethod::query()
+                    ->where('is_active', true)
+                    ->count();
 
+                $dashboardShipmentsInTransitCount = Shipment::query()
+                    ->whereIn('status', [
+                        'pending',
+                        'processing',
+                        'shipped',
+                    ])
+                    ->count();
 
+                // ================= Customers =================
+                $dashboardUsersCount = class_exists(User::class)
+                    ? User::query()->count()
+                    : 0;
+
+                $dashboardAddressesCount = class_exists(Address::class)
+                    ? Address::query()->count()
+                    : 0;
+
+                $dashboardWishlistsCount = class_exists(Wishlist::class)
+                    ? Wishlist::query()->count()
+                    : 0;
+
+                $dashboardCartsCount = class_exists(Cart::class)
+                    ? Cart::query()->count()
+                    : 0;
+
+                // ✅ abandoned carts لاحقًا
+                // مثال مبدئي: أي cart فيه عناصر واتأخر أكتر من 24 ساعة
+                $dashboardAbandonedCartsCount = class_exists(Cart::class)
+                    ? Cart::query()
+                        ->where('updated_at', '<', now()->subDay())
+                        ->count()
+                    : 0;
             }
 
             $sidebar = app(SidebarBuilder::class)->build($user, [
-                'dashboardPendingOrdersCount'   => $dashboardPendingOrdersCount,
-                'dashboardPendingPaymentsCount' => $dashboardPendingPaymentsCount,
-                'dashboardUnreadMessagesCount'  => $dashboardUnreadMessagesCount,
-                'dashboardProductsCount'        => $dashboardProductsCount,
-                'dashboardPendingReviewsCount'  => $dashboardPendingReviewsCount,
+                'dashboardPendingOrdersCount'         => $dashboardPendingOrdersCount,
+                'dashboardPendingPaymentsCount'       => $dashboardPendingPaymentsCount,
+                'dashboardUnreadMessagesCount'        => $dashboardUnreadMessagesCount,
+                'dashboardProductsCount'              => $dashboardProductsCount,
+                'dashboardPendingReviewsCount'        => $dashboardPendingReviewsCount,
+
                 // ✅ Shipping
                 'dashboardShippingMethodsCount'       => $dashboardShippingMethodsCount,
                 'dashboardActiveShippingMethodsCount' => $dashboardActiveShippingMethodsCount,
                 'dashboardShipmentsInTransitCount'    => $dashboardShipmentsInTransitCount,
 
+                // ✅ Customers
+                'dashboardUsersCount'                 => $dashboardUsersCount,
+                'dashboardAddressesCount'             => $dashboardAddressesCount,
+                'dashboardWishlistsCount'             => $dashboardWishlistsCount,
+                'dashboardCartsCount'                 => $dashboardCartsCount,
+                'dashboardAbandonedCartsCount'        => $dashboardAbandonedCartsCount,
             ]);
 
             $view->with([
-                'dashboardPendingOrders'         => $dashboardPendingOrders,
-                'dashboardPendingOrdersCount'    => $dashboardPendingOrdersCount,
-                'dashboardPendingPaymentsCount'  => $dashboardPendingPaymentsCount,
-                'dashboardUnreadMessages'        => $dashboardUnreadMessages,
-                'dashboardUnreadMessagesCount'   => $dashboardUnreadMessagesCount,
-                'dashboardProductsCount'         => $dashboardProductsCount,
-                'dashboardPendingReviewsCount'   => $dashboardPendingReviewsCount,
-                'sidebar'                        => $sidebar,
+                'dashboardPendingOrders'              => $dashboardPendingOrders,
+                'dashboardPendingOrdersCount'         => $dashboardPendingOrdersCount,
+                'dashboardPendingPaymentsCount'       => $dashboardPendingPaymentsCount,
+                'dashboardUnreadMessages'             => $dashboardUnreadMessages,
+                'dashboardUnreadMessagesCount'        => $dashboardUnreadMessagesCount,
+                'dashboardProductsCount'              => $dashboardProductsCount,
+                'dashboardPendingReviewsCount'        => $dashboardPendingReviewsCount,
+                'sidebar'                             => $sidebar,
+
+                // ✅ Shipping
                 'dashboardShippingMethodsCount'       => $dashboardShippingMethodsCount,
                 'dashboardActiveShippingMethodsCount' => $dashboardActiveShippingMethodsCount,
                 'dashboardShipmentsInTransitCount'    => $dashboardShipmentsInTransitCount,
 
+                // ✅ Customers
+                'dashboardUsersCount'                 => $dashboardUsersCount,
+                'dashboardAddressesCount'             => $dashboardAddressesCount,
+                'dashboardWishlistsCount'             => $dashboardWishlistsCount,
+                'dashboardCartsCount'                 => $dashboardCartsCount,
+                'dashboardAbandonedCartsCount'        => $dashboardAbandonedCartsCount,
             ]);
         });
 
         Paginator::useBootstrapFive();
     }
 }
-

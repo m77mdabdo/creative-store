@@ -82,7 +82,7 @@ class User extends Authenticatable
         $this->roles()->sync($roleIds);
     }
 
-   
+
 
     /* باقي العلاقات زي ما هي عندك */
     /* =========================

@@ -3,12 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\AuditLog\AuditLogController;
-use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\Dashboard\OrderController as DashboardOrderController;
-use App\Http\Controllers\Dashboard\ProductController as DashboardProductController;
+use App\Http\Controllers\Dashboard\ProductController;
 use App\Http\Controllers\Dashboard\CategoryController as DashboardCategoryController;
 use App\Http\Controllers\Dashboard\ContactMessageController as DashboardContactMessageController;
-use App\Http\Controllers\Dashboard\ProductController;
 use App\Http\Controllers\Dashboard\ProductVariantController;
 use App\Http\Controllers\Dashboard\ProductImageController;
 use App\Http\Controllers\Dashboard\VariantImageController;
@@ -25,6 +24,11 @@ use App\Http\Controllers\Dashboard\ShippingRateController;
 use App\Http\Controllers\Dashboard\ShipmentController;
 use App\Http\Controllers\Dashboard\ShipmentTrackingController;
 use App\Http\Controllers\Dashboard\DeliveryMonitoringController;
+use App\Http\Controllers\Dashboard\AddressController;
+use App\Http\Controllers\Dashboard\WishlistController;
+
+
+
 
 
 
@@ -35,14 +39,69 @@ Route::prefix('dashboard')
 
         Route::get('/', [DashboardController::class, 'index'])->name('home');
 
+        /*
+        |--------------------------------------------------------------------------
+        | Users
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/users/trash', [UserController::class, 'trash'])
+            ->middleware('permission:users.view')
+            ->name('users.trash');
+
+        Route::post('/users/bulk-action', [UserController::class, 'bulkAction'])
+            ->middleware('permission:users.edit')
+            ->name('users.bulk-action');
+
+        Route::patch('/users/{user}/restore', [UserController::class, 'restore'])
+            ->middleware('permission:users.edit')
+            ->name('users.restore');
+
+        Route::delete('/users/{user}/force-delete', [UserController::class, 'forceDelete'])
+            ->middleware('permission:users.delete')
+            ->name('users.force-delete');
+
         Route::get('/users', [UserController::class, 'index'])
             ->middleware('permission:users.view')
             ->name('users.index');
 
+        Route::get('/users/create', [UserController::class, 'create'])
+            ->middleware('permission:users.create')
+            ->name('users.create');
+
+        Route::post('/users', [UserController::class, 'store'])
+            ->middleware('permission:users.create')
+            ->name('users.store');
+
+        Route::get('/users/{user}', [UserController::class, 'show'])
+            ->middleware('permission:users.view')
+            ->name('users.show');
+
+        Route::get('/users/{user}/edit', [UserController::class, 'edit'])
+            ->middleware('permission:users.edit')
+            ->name('users.edit');
+
+        Route::put('/users/{user}', [UserController::class, 'update'])
+            ->middleware('permission:users.edit')
+            ->name('users.update');
+
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])
+            ->middleware('permission:users.delete')
+            ->name('users.destroy');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Audit Logs
+        |--------------------------------------------------------------------------
+        */
         Route::get('/audit-logs', [AuditLogController::class, 'index'])
             ->middleware('permission:audit.view')
             ->name('audit.index');
 
+        /*
+        |--------------------------------------------------------------------------
+        | Orders
+        |--------------------------------------------------------------------------
+        */
         Route::get('/orders', [DashboardOrderController::class, 'index'])
             ->middleware('permission:orders.view')
             ->name('orders.index');
@@ -70,11 +129,12 @@ Route::prefix('dashboard')
         Route::post('/orders/{order}/shipment', [DashboardOrderController::class, 'upsertShipment'])
             ->middleware('permission:orders.edit')
             ->name('orders.shipment.upsert');
+
         /*
-|--------------------------------------------------------------------------
-| Products
-|--------------------------------------------------------------------------
-*/
+        |--------------------------------------------------------------------------
+        | Products
+        |--------------------------------------------------------------------------
+        */
         Route::get('/products', [ProductController::class, 'index'])
             ->middleware('permission:products.view')
             ->name('products.index');
@@ -128,10 +188,10 @@ Route::prefix('dashboard')
             ->name('products.force-delete');
 
         /*
-|--------------------------------------------------------------------------
-| Product Variants
-|--------------------------------------------------------------------------
-*/
+        |--------------------------------------------------------------------------
+        | Product Variants
+        |--------------------------------------------------------------------------
+        */
         Route::get('/products/{product}/variants', [ProductVariantController::class, 'index'])
             ->middleware('permission:products.edit')
             ->name('products.variants.index');
@@ -157,10 +217,10 @@ Route::prefix('dashboard')
             ->name('products.variants.destroy');
 
         /*
-|--------------------------------------------------------------------------
-| Product Images
-|--------------------------------------------------------------------------
-*/
+        |--------------------------------------------------------------------------
+        | Product Images
+        |--------------------------------------------------------------------------
+        */
         Route::get('/products/{product}/images', [ProductImageController::class, 'index'])
             ->middleware('permission:products.edit')
             ->name('products.images.index');
@@ -182,10 +242,10 @@ Route::prefix('dashboard')
             ->name('products.images.destroy');
 
         /*
-|--------------------------------------------------------------------------
-| Variant Images
-|--------------------------------------------------------------------------
-*/
+        |--------------------------------------------------------------------------
+        | Variant Images
+        |--------------------------------------------------------------------------
+        */
         Route::post('/products/{product}/variants/{variant}/images', [VariantImageController::class, 'store'])
             ->middleware('permission:products.edit')
             ->name('products.variants.images.store');
@@ -197,6 +257,7 @@ Route::prefix('dashboard')
         Route::delete('/products/{product}/variants/{variant}/images/{image}', [VariantImageController::class, 'destroy'])
             ->middleware('permission:products.edit')
             ->name('products.variants.images.destroy');
+
         /*
         |--------------------------------------------------------------------------
         | Categories
@@ -264,10 +325,10 @@ Route::prefix('dashboard')
             ->name('contact-messages.show');
 
         /*
-|--------------------------------------------------------------------------
-| Attributes
-|--------------------------------------------------------------------------
-*/
+        |--------------------------------------------------------------------------
+        | Attributes
+        |--------------------------------------------------------------------------
+        */
         Route::get('/attributes', [AttributeController::class, 'index'])
             ->middleware('permission:attributes.view')
             ->name('attributes.index');
@@ -301,10 +362,10 @@ Route::prefix('dashboard')
             ->name('attributes.destroy');
 
         /*
-|--------------------------------------------------------------------------
-| Attribute Values
-|--------------------------------------------------------------------------
-*/
+        |--------------------------------------------------------------------------
+        | Attribute Values
+        |--------------------------------------------------------------------------
+        */
         Route::get('/attributes/{attribute}/values/create', [AttributeValueController::class, 'create'])
             ->middleware('permission:attributes.edit')
             ->name('attributes.values.create');
@@ -329,13 +390,11 @@ Route::prefix('dashboard')
             ->middleware('permission:attributes.edit')
             ->name('attributes.values.destroy');
 
-
-
         /*
-|--------------------------------------------------------------------------
-| Product Reviews
-|--------------------------------------------------------------------------
-*/
+        |--------------------------------------------------------------------------
+        | Product Reviews
+        |--------------------------------------------------------------------------
+        */
         Route::get('/reviews', [ProductReviewController::class, 'index'])
             ->middleware('permission:reviews.view')
             ->name('reviews.index');
@@ -360,250 +419,333 @@ Route::prefix('dashboard')
             ->middleware('permission:reviews.view')
             ->name('products.reviews.index');
 
+        /*
+        |--------------------------------------------------------------------------
+        | Coupons
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/coupons', [CouponController::class, 'index'])
+            ->middleware('permission:coupons.view')
+            ->name('coupons.index');
+
+        Route::get('/coupons/trash', [CouponController::class, 'trash'])
+            ->middleware('permission:coupons.view')
+            ->name('coupons.trash');
+
+        Route::patch('/coupons/bulk-action', [CouponController::class, 'bulkAction'])
+            ->middleware('permission:coupons.edit')
+            ->name('coupons.bulk-action');
+
+        Route::get('/coupons/create', [CouponController::class, 'create'])
+            ->middleware('permission:coupons.create')
+            ->name('coupons.create');
+
+        Route::post('/coupons', [CouponController::class, 'store'])
+            ->middleware('permission:coupons.create')
+            ->name('coupons.store');
+
+        Route::get('/coupons/{coupon}', [CouponController::class, 'show'])
+            ->middleware('permission:coupons.view')
+            ->name('coupons.show');
+
+        Route::get('/coupons/{coupon}/edit', [CouponController::class, 'edit'])
+            ->middleware('permission:coupons.edit')
+            ->name('coupons.edit');
+
+        Route::put('/coupons/{coupon}', [CouponController::class, 'update'])
+            ->middleware('permission:coupons.edit')
+            ->name('coupons.update');
+
+        Route::patch('/coupons/{coupon}/toggle-status', [CouponController::class, 'toggleStatus'])
+            ->middleware('permission:coupons.edit')
+            ->name('coupons.toggle-status');
+
+        Route::post('/coupons/{id}/restore', [CouponController::class, 'restore'])
+            ->middleware('permission:coupons.edit')
+            ->name('coupons.restore');
+
+        Route::delete('/coupons/{coupon}', [CouponController::class, 'destroy'])
+            ->middleware('permission:coupons.delete')
+            ->name('coupons.destroy');
+
+        Route::delete('/coupons/{id}/force-delete', [CouponController::class, 'forceDelete'])
+            ->middleware('permission:coupons.delete')
+            ->name('coupons.force-delete');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Payments
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/payments', [PaymentController::class, 'index'])
+            ->middleware('permission:payments.view')
+            ->name('payments.index');
+
+        Route::get('/payments/{payment}', [PaymentController::class, 'show'])
+            ->middleware('permission:payments.view')
+            ->name('payments.show');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Refunds
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/refunds', [RefundController::class, 'index'])
+            ->middleware('permission:refunds.view')
+            ->name('refunds.index');
+
+        Route::get('/refunds/{refund}', [RefundController::class, 'show'])
+            ->middleware('permission:refunds.view')
+            ->name('refunds.show');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Returns
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/returns', [ReturnController::class, 'index'])
+            ->middleware('permission:returns.view')
+            ->name('returns.index');
+
+        Route::get('/returns/{returnRequest}', [ReturnController::class, 'show'])
+            ->middleware('permission:returns.view')
+            ->name('returns.show');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Shipping Methods
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/shipping-methods', [ShippingMethodController::class, 'index'])
+            ->middleware('permission:shipping-methods.view')
+            ->name('shipping-methods.index');
+
+        Route::get('/shipping-methods/create', [ShippingMethodController::class, 'create'])
+            ->middleware('permission:shipping-methods.create')
+            ->name('shipping-methods.create');
+
+        Route::post('/shipping-methods', [ShippingMethodController::class, 'store'])
+            ->middleware('permission:shipping-methods.create')
+            ->name('shipping-methods.store');
+
+        Route::get('/shipping-methods/{shippingMethod}/edit', [ShippingMethodController::class, 'edit'])
+            ->middleware('permission:shipping-methods.edit')
+            ->name('shipping-methods.edit');
+
+        Route::put('/shipping-methods/{shippingMethod}', [ShippingMethodController::class, 'update'])
+            ->middleware('permission:shipping-methods.edit')
+            ->name('shipping-methods.update');
+
+        Route::patch('/shipping-methods/{shippingMethod}/toggle-status', [ShippingMethodController::class, 'toggleStatus'])
+            ->middleware('permission:shipping-methods.edit')
+            ->name('shipping-methods.toggle-status');
+
+        Route::delete('/shipping-methods/{shippingMethod}', [ShippingMethodController::class, 'destroy'])
+            ->middleware('permission:shipping-methods.delete')
+            ->name('shipping-methods.destroy');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Shipping Zones
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/shipping-zones', [ShippingZoneController::class, 'index'])
+            ->middleware('permission:shipping-zones.view')
+            ->name('shipping-zones.index');
+
+        Route::get('/shipping-zones/create', [ShippingZoneController::class, 'create'])
+            ->middleware('permission:shipping-zones.create')
+            ->name('shipping-zones.create');
+
+        Route::post('/shipping-zones', [ShippingZoneController::class, 'store'])
+            ->middleware('permission:shipping-zones.create')
+            ->name('shipping-zones.store');
+
+        Route::get('/shipping-zones/{shippingZone}/edit', [ShippingZoneController::class, 'edit'])
+            ->middleware('permission:shipping-zones.edit')
+            ->name('shipping-zones.edit');
+
+        Route::put('/shipping-zones/{shippingZone}', [ShippingZoneController::class, 'update'])
+            ->middleware('permission:shipping-zones.edit')
+            ->name('shipping-zones.update');
+
+        Route::patch('/shipping-zones/{shippingZone}/toggle-status', [ShippingZoneController::class, 'toggleStatus'])
+            ->middleware('permission:shipping-zones.edit')
+            ->name('shipping-zones.toggle-status');
+
+        Route::delete('/shipping-zones/{shippingZone}', [ShippingZoneController::class, 'destroy'])
+            ->middleware('permission:shipping-zones.delete')
+            ->name('shipping-zones.destroy');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Shipping Rates
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/shipping-rates', [ShippingRateController::class, 'index'])
+            ->middleware('permission:shipping-rates.view')
+            ->name('shipping-rates.index');
+
+        Route::get('/shipping-rates/create', [ShippingRateController::class, 'create'])
+            ->middleware('permission:shipping-rates.create')
+            ->name('shipping-rates.create');
+
+        Route::post('/shipping-rates', [ShippingRateController::class, 'store'])
+            ->middleware('permission:shipping-rates.create')
+            ->name('shipping-rates.store');
+
+        Route::get('/shipping-rates/{shippingRate}/edit', [ShippingRateController::class, 'edit'])
+            ->middleware('permission:shipping-rates.edit')
+            ->name('shipping-rates.edit');
+
+        Route::put('/shipping-rates/{shippingRate}', [ShippingRateController::class, 'update'])
+            ->middleware('permission:shipping-rates.edit')
+            ->name('shipping-rates.update');
+
+        Route::patch('/shipping-rates/{shippingRate}/toggle-status', [ShippingRateController::class, 'toggleStatus'])
+            ->middleware('permission:shipping-rates.edit')
+            ->name('shipping-rates.toggle-status');
+
+        Route::delete('/shipping-rates/{shippingRate}', [ShippingRateController::class, 'destroy'])
+            ->middleware('permission:shipping-rates.delete')
+            ->name('shipping-rates.destroy');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Shipments
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/shipments', [ShipmentController::class, 'index'])
+            ->middleware('permission:shipments.view')
+            ->name('shipments.index');
+
+        Route::get('/shipments/create', [ShipmentController::class, 'create'])
+            ->middleware('permission:shipments.create')
+            ->name('shipments.create');
+
+        Route::post('/shipments', [ShipmentController::class, 'store'])
+            ->middleware('permission:shipments.create')
+            ->name('shipments.store');
+
+        Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])
+            ->middleware('permission:shipments.view')
+            ->name('shipments.show');
+
+        Route::get('/shipments/{shipment}/edit', [ShipmentController::class, 'edit'])
+            ->middleware('permission:shipments.edit')
+            ->name('shipments.edit');
+
+        Route::put('/shipments/{shipment}', [ShipmentController::class, 'update'])
+            ->middleware('permission:shipments.edit')
+            ->name('shipments.update');
+
+        Route::patch('/shipments/{shipment}/toggle-status', [ShipmentController::class, 'toggleStatus'])
+            ->middleware('permission:shipments.edit')
+            ->name('shipments.toggle-status');
+
+        Route::delete('/shipments/{shipment}', [ShipmentController::class, 'destroy'])
+            ->middleware('permission:shipments.delete')
+            ->name('shipments.destroy');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Shipment Tracking
+        |--------------------------------------------------------------------------
+        */
+        Route::post('/shipments/{shipment}/tracking', [ShipmentTrackingController::class, 'store'])
+            ->middleware('permission:shipments.edit')
+            ->name('shipments.tracking.store');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Delivery Monitoring
+        |--------------------------------------------------------------------------
+        */
+        Route::post('/shipments/{shipment}/delivery-attempts', [DeliveryMonitoringController::class, 'storeAttempt'])
+            ->middleware('permission:shipments.edit')
+            ->name('shipments.delivery-attempts.store');
+
+
+        /*
+|--------------------------------------------------------------------------
+| Addresses
+|--------------------------------------------------------------------------
+*/
+        Route::get('/addresses', [AddressController::class, 'index'])
+            ->middleware('permission:addresses.view')
+            ->name('addresses.index');
+
+        Route::get('/addresses/{address}', [AddressController::class, 'show'])
+            ->middleware('permission:addresses.view')
+            ->name('addresses.show');
+
+        Route::get('/addresses/{address}/edit', [AddressController::class, 'edit'])
+            ->middleware('permission:addresses.edit')
+            ->name('addresses.edit');
+
+        Route::put('/addresses/{address}', [AddressController::class, 'update'])
+            ->middleware('permission:addresses.edit')
+            ->name('addresses.update');
+
+        Route::patch('/addresses/{address}/toggle-default', [AddressController::class, 'toggleDefault'])
+            ->middleware('permission:addresses.edit')
+            ->name('addresses.toggle-default');
+
+        Route::delete('/addresses/{address}', [AddressController::class, 'destroy'])
+            ->middleware('permission:addresses.delete')
+            ->name('addresses.destroy');
+
             /*
 |--------------------------------------------------------------------------
-| Coupons
+| Wishlists
 |--------------------------------------------------------------------------
 */
-Route::get('/coupons', [CouponController::class, 'index'])
-    ->middleware('permission:coupons.view')
-    ->name('coupons.index');
+Route::get('/wishlists', [WishlistController::class, 'index'])
+    ->middleware('permission:wishlists.view')
+    ->name('wishlists.index');
 
-Route::get('/coupons/trash', [CouponController::class, 'trash'])
-    ->middleware('permission:coupons.view')
-    ->name('coupons.trash');
+Route::get('/wishlists/{wishlist}', [WishlistController::class, 'show'])
+    ->middleware('permission:wishlists.view')
+    ->name('wishlists.show');
 
-Route::patch('/coupons/bulk-action', [CouponController::class, 'bulkAction'])
-    ->middleware('permission:coupons.edit')
-    ->name('coupons.bulk-action');
+Route::delete('/wishlists/{wishlist}', [WishlistController::class, 'destroy'])
+    ->middleware('permission:wishlists.delete')
+    ->name('wishlists.destroy');
 
-Route::get('/coupons/create', [CouponController::class, 'create'])
-    ->middleware('permission:coupons.create')
-    ->name('coupons.create');
+Route::delete('/wishlists/{wishlist}/items/{item}', [WishlistController::class, 'destroyItem'])
+    ->middleware('permission:wishlists.edit')
+    ->name('wishlists.items.destroy');
+    Route::post('/wishlists/{wishlist}/move-all-to-cart', [WishlistController::class, 'moveAllToCart'])
+    ->middleware('permission:wishlists.edit')
+    ->name('wishlists.move-all-to-cart');
 
-Route::post('/coupons', [CouponController::class, 'store'])
-    ->middleware('permission:coupons.create')
-    ->name('coupons.store');
+Route::post('/wishlists/{wishlist}/items/{item}/move-to-cart', [WishlistController::class, 'moveItemToCart'])
+    ->middleware('permission:wishlists.edit')
+    ->name('wishlists.items.move-to-cart');
 
-Route::get('/coupons/{coupon}', [CouponController::class, 'show'])
-    ->middleware('permission:coupons.view')
-    ->name('coupons.show');
 
-Route::get('/coupons/{coupon}/edit', [CouponController::class, 'edit'])
-    ->middleware('permission:coupons.edit')
-    ->name('coupons.edit');
+    /*
+|--------------------------------------------------------------------------
+| Carts
+|--------------------------------------------------------------------------
+*/
+Route::get('/carts', [\App\Http\Controllers\Dashboard\CartController::class, 'index'])
+    ->middleware('permission:carts.view')
+    ->name('carts.index');
 
-Route::put('/coupons/{coupon}', [CouponController::class, 'update'])
-    ->middleware('permission:coupons.edit')
-    ->name('coupons.update');
+Route::get('/carts/abandoned', [\App\Http\Controllers\Dashboard\CartController::class, 'abandoned'])
+    ->middleware('permission:carts.view')
+    ->name('carts.abandoned');
 
-Route::patch('/coupons/{coupon}/toggle-status', [CouponController::class, 'toggleStatus'])
-    ->middleware('permission:coupons.edit')
-    ->name('coupons.toggle-status');
+Route::get('/carts/{cart}', [\App\Http\Controllers\Dashboard\CartController::class, 'show'])
+    ->middleware('permission:carts.view')
+    ->name('carts.show');
 
-Route::post('/coupons/{id}/restore', [CouponController::class, 'restore'])
-    ->middleware('permission:coupons.edit')
-    ->name('coupons.restore');
+Route::delete('/carts/{cart}', [\App\Http\Controllers\Dashboard\CartController::class, 'destroy'])
+    ->middleware('permission:carts.delete')
+    ->name('carts.destroy');
 
-Route::delete('/coupons/{coupon}', [CouponController::class, 'destroy'])
-    ->middleware('permission:coupons.delete')
-    ->name('coupons.destroy');
-
-Route::delete('/coupons/{id}/force-delete', [CouponController::class, 'forceDelete'])
-    ->middleware('permission:coupons.delete')
-    ->name('coupons.force-delete');
+Route::delete('/carts/{cart}/items/{item}', [\App\Http\Controllers\Dashboard\CartController::class, 'destroyItem'])
+    ->middleware('permission:carts.edit')
+    ->name('carts.items.destroy');
     });
-
-
-    /*
-|--------------------------------------------------------------------------
-| Payments
-|--------------------------------------------------------------------------
-*/
-Route::get('/payments', [PaymentController::class, 'index'])
-    ->middleware('permission:payments.view')
-    ->name('dashboard.payments.index');
-
-Route::get('/payments/{payment}', [PaymentController::class, 'show'])
-    ->middleware('permission:payments.view')
-    ->name('dashboard.payments.show');
-
-
-    /*
-|--------------------------------------------------------------------------
-| Refunds
-|--------------------------------------------------------------------------
-*/
-Route::get('/refunds', [RefundController::class, 'index'])
-    ->middleware('permission:refunds.view')
-    ->name('dashboard.refunds.index');
-
-Route::get('/refunds/{refund}', [RefundController::class, 'show'])
-    ->middleware('permission:refunds.view')
-    ->name('dashboard.refunds.show');
-/*
-|--------------------------------------------------------------------------
-| Returns
-|--------------------------------------------------------------------------
-*/
-Route::get('/returns', [ReturnController::class, 'index'])
-    ->middleware('permission:returns.view')
-    ->name('dashboard.returns.index');
-
-Route::get('/returns/{returnRequest}', [ReturnController::class, 'show'])
-    ->middleware('permission:returns.view')
-    ->name('dashboard.returns.show');
-
-
-    /*
-|--------------------------------------------------------------------------
-| Shipping Methods
-|--------------------------------------------------------------------------
-*/
-Route::get('/shipping-methods', [ShippingMethodController::class, 'index'])
-    ->middleware('permission:shipping-methods.view')
-    ->name('dashboard.shipping-methods.index');
-
-Route::get('/shipping-methods/create', [ShippingMethodController::class, 'create'])
-    ->middleware('permission:shipping-methods.create')
-    ->name('dashboard.shipping-methods.create');
-
-Route::post('/shipping-methods', [ShippingMethodController::class, 'store'])
-    ->middleware('permission:shipping-methods.create')
-    ->name('dashboard.shipping-methods.store');
-
-Route::get('/shipping-methods/{shippingMethod}/edit', [ShippingMethodController::class, 'edit'])
-    ->middleware('permission:shipping-methods.edit')
-    ->name('dashboard.shipping-methods.edit');
-
-Route::put('/shipping-methods/{shippingMethod}', [ShippingMethodController::class, 'update'])
-    ->middleware('permission:shipping-methods.edit')
-    ->name('dashboard.shipping-methods.update');
-
-Route::patch('/shipping-methods/{shippingMethod}/toggle-status', [ShippingMethodController::class, 'toggleStatus'])
-    ->middleware('permission:shipping-methods.edit')
-    ->name('dashboard.shipping-methods.toggle-status');
-
-Route::delete('/shipping-methods/{shippingMethod}', [ShippingMethodController::class, 'destroy'])
-    ->middleware('permission:shipping-methods.delete')
-    ->name('dashboard.shipping-methods.destroy');
-
-    /*
-|--------------------------------------------------------------------------
-| Shipping Zones
-|--------------------------------------------------------------------------
-*/
-Route::get('/shipping-zones', [ShippingZoneController::class, 'index'])
-    ->middleware('permission:shipping-zones.view')
-    ->name('dashboard.shipping-zones.index');
-
-Route::get('/shipping-zones/create', [ShippingZoneController::class, 'create'])
-    ->middleware('permission:shipping-zones.create')
-    ->name('dashboard.shipping-zones.create');
-
-Route::post('/shipping-zones', [ShippingZoneController::class, 'store'])
-    ->middleware('permission:shipping-zones.create')
-    ->name('dashboard.shipping-zones.store');
-
-Route::get('/shipping-zones/{shippingZone}/edit', [ShippingZoneController::class, 'edit'])
-    ->middleware('permission:shipping-zones.edit')
-    ->name('dashboard.shipping-zones.edit');
-
-Route::put('/shipping-zones/{shippingZone}', [ShippingZoneController::class, 'update'])
-    ->middleware('permission:shipping-zones.edit')
-    ->name('dashboard.shipping-zones.update');
-
-Route::patch('/shipping-zones/{shippingZone}/toggle-status', [ShippingZoneController::class, 'toggleStatus'])
-    ->middleware('permission:shipping-zones.edit')
-    ->name('dashboard.shipping-zones.toggle-status');
-
-Route::delete('/shipping-zones/{shippingZone}', [ShippingZoneController::class, 'destroy'])
-    ->middleware('permission:shipping-zones.delete')
-    ->name('dashboard.shipping-zones.destroy');
-
-
-    /*
-|--------------------------------------------------------------------------
-| Shipping Rates
-|--------------------------------------------------------------------------
-*/
-Route::get('/shipping-rates', [ShippingRateController::class, 'index'])
-    ->middleware('permission:shipping-rates.view')
-    ->name('dashboard.shipping-rates.index');
-
-Route::get('/shipping-rates/create', [ShippingRateController::class, 'create'])
-    ->middleware('permission:shipping-rates.create')
-    ->name('dashboard.shipping-rates.create');
-
-Route::post('/shipping-rates', [ShippingRateController::class, 'store'])
-    ->middleware('permission:shipping-rates.create')
-    ->name('dashboard.shipping-rates.store');
-
-Route::get('/shipping-rates/{shippingRate}/edit', [ShippingRateController::class, 'edit'])
-    ->middleware('permission:shipping-rates.edit')
-    ->name('dashboard.shipping-rates.edit');
-
-Route::put('/shipping-rates/{shippingRate}', [ShippingRateController::class, 'update'])
-    ->middleware('permission:shipping-rates.edit')
-    ->name('dashboard.shipping-rates.update');
-
-Route::patch('/shipping-rates/{shippingRate}/toggle-status', [ShippingRateController::class, 'toggleStatus'])
-    ->middleware('permission:shipping-rates.edit')
-    ->name('dashboard.shipping-rates.toggle-status');
-
-Route::delete('/shipping-rates/{shippingRate}', [ShippingRateController::class, 'destroy'])
-    ->middleware('permission:shipping-rates.delete')
-    ->name('dashboard.shipping-rates.destroy');
-
-
-    /*
-|--------------------------------------------------------------------------
-| Shipments
-|--------------------------------------------------------------------------
-*/
-Route::get('/shipments', [ShipmentController::class, 'index'])
-    ->middleware('permission:shipments.view')
-    ->name('dashboard.shipments.index');
-
-Route::get('/shipments/create', [ShipmentController::class, 'create'])
-    ->middleware('permission:shipments.create')
-    ->name('dashboard.shipments.create');
-
-Route::post('/shipments', [ShipmentController::class, 'store'])
-    ->middleware('permission:shipments.create')
-    ->name('dashboard.shipments.store');
-
-Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])
-    ->middleware('permission:shipments.view')
-    ->name('dashboard.shipments.show');
-
-Route::get('/shipments/{shipment}/edit', [ShipmentController::class, 'edit'])
-    ->middleware('permission:shipments.edit')
-    ->name('dashboard.shipments.edit');
-
-Route::put('/shipments/{shipment}', [ShipmentController::class, 'update'])
-    ->middleware('permission:shipments.edit')
-    ->name('dashboard.shipments.update');
-
-Route::patch('/shipments/{shipment}/toggle-status', [ShipmentController::class, 'toggleStatus'])
-    ->middleware('permission:shipments.edit')
-    ->name('dashboard.shipments.toggle-status');
-
-Route::delete('/shipments/{shipment}', [ShipmentController::class, 'destroy'])
-    ->middleware('permission:shipments.delete')
-    ->name('dashboard.shipments.destroy');
-
-
-    //tracking
-    Route::post('/shipments/{shipment}/tracking', [ShipmentTrackingController::class, 'store'])
-    ->name('dashboard.shipments.tracking.store');
-
-
-    /*
-|--------------------------------------------------------------------------
-| Delivery Monitoring
-|--------------------------------------------------------------------------
-*/
-Route::post('/shipments/{shipment}/delivery-attempts', [DeliveryMonitoringController::class, 'storeAttempt'])
-    ->middleware('permission:shipments.edit')
-    ->name('dashboard.shipments.delivery-attempts.store');

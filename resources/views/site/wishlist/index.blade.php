@@ -36,36 +36,47 @@
                             <th class="column-1">Product</th>
                             <th class="column-2"></th>
                             <th class="column-3">Price</th>
-                            {{-- <th class="column-4">Variant</th> --}}
-                            {{-- <th class="column-5">Action</th> --}}
                         </tr>
 
                         @foreach($wishlist->items as $item)
                             @php
                                 $product = $item->product;
                                 $variant = $item->variant;
+                            @endphp
 
-                                $image = $variant && $variant->image
+                            @if(!$product)
+                                @continue
+                            @endif
+
+                            @php
+                                $translation = $product->translations->firstWhere('locale', app()->getLocale())
+                                    ?? $product->translations->firstWhere('locale', config('app.fallback_locale'))
+                                    ?? $product->translations->first();
+
+                                $productName = $translation->name ?? $product->name ?? ('Product #' . $product->id);
+
+                                $image = ($variant && !empty($variant->image))
                                     ? asset('storage/' . $variant->image)
-                                    : ($product->primaryImage?->path
+                                    : (($product?->primaryImage?->path)
                                         ? \Illuminate\Support\Facades\Storage::url($product->primaryImage->path)
                                         : asset('cozastore/images/product-01.jpg'));
 
-                                $price = $variant->price ?? $product->base_price ?? 0;
-                                $currency = $product->currency ?? 'SAR';
+                                $price = $variant?->price ?? $product?->base_price ?? 0;
+                                $currency = $product?->currency ?? 'SAR';
+                                $productUrl = url('/products/' . $product->slug);
                             @endphp
 
                             <tr class="table_row">
                                 <td class="column-1">
                                     <div class="how-itemcart1">
-                                        <img src="{{ $image }}" alt="{{ $product->name }}">
+                                        <img src="{{ $image }}" alt="{{ $productName }}">
                                     </div>
                                 </td>
 
                                 <td class="column-2">
-                                    <a href="{{ url('/products/' . $product->slug) }}"
+                                    <a href="{{ $productUrl }}"
                                        class="stext-104 cl4 hov-cl1 trans-04">
-                                        {{ $product->name }}
+                                        {{ $productName }}
                                     </a>
                                 </td>
 
@@ -73,11 +84,9 @@
                                     {{ number_format((float) $price, 2) }} {{ $currency }}
                                 </td>
 
-
-
                                 <td class="column-5">
                                     <div class="flex-w">
-                                        <a href="{{ url('/products/' . $product->slug) }}"
+                                        <a href="{{ $productUrl }}"
                                            class="flex-c-m stext-101 cl0 size-107 bg3 bor2 hov-btn3 p-lr-15 trans-04 m-r-10 m-b-10">
                                             View
                                         </a>

@@ -39,6 +39,13 @@ class SidebarBuilder
         $activeShippingMethodsCount = max(0, (int) ($counters['dashboardActiveShippingMethodsCount'] ?? 0));
         $shipmentsInTransitCount    = max(0, (int) ($counters['dashboardShipmentsInTransitCount'] ?? 0));
 
+        // ✅ Customers Counters
+        $usersCount          = max(0, (int) ($counters['dashboardUsersCount'] ?? 0));
+        $addressesCount      = max(0, (int) ($counters['dashboardAddressesCount'] ?? 0));
+        $wishlistsCount      = max(0, (int) ($counters['dashboardWishlistsCount'] ?? 0));
+        $cartsCount          = max(0, (int) ($counters['dashboardCartsCount'] ?? 0));
+        $abandonedCartsCount = max(0, (int) ($counters['dashboardAbandonedCartsCount'] ?? 0));
+
         $salesAlertCount = $pendingOrdersCount + $pendingPaymentsCount;
 
         $items = [];
@@ -49,15 +56,6 @@ class SidebarBuilder
             routeName: 'dashboard.home',
             routePatterns: ['dashboard.home']
         ));
-
-        if ($this->canAny($user, ['users.view'])) {
-            $this->pushItem($items, $this->singleItem(
-                title: 'Users',
-                icon: 'fas fa-users',
-                routeName: 'dashboard.users.index',
-                routePatterns: ['dashboard.users.*']
-            ));
-        }
 
         $salesChildren = [];
 
@@ -248,6 +246,94 @@ class SidebarBuilder
                 badge: $this->normalizeBadge([
                     'value' => $catalogBadgeValue,
                     'class' => $catalogBadgeClass,
+                ])
+            ));
+        }
+
+        // ✅ Customers
+        $customersChildren = [];
+
+        if ($this->canAny($user, ['users.view'])) {
+            $customersChildren[] = $this->childItem(
+                title: 'Users',
+                routeName: 'dashboard.users.index',
+                routePatterns: ['dashboard.users.*'],
+                icon: 'fas fa-users',
+                badge: $this->normalizeBadge([
+                    'value' => $usersCount,
+                    'class' => 'badge badge-info',
+                ])
+            );
+        }
+
+        if ($this->canAny($user, ['addresses.view'])) {
+            $customersChildren[] = $this->childItem(
+                title: 'Addresses',
+                routeName: 'dashboard.addresses.index',
+                routePatterns: ['dashboard.addresses.*'],
+                icon: 'fas fa-map-marker-alt',
+                badge: $this->normalizeBadge([
+                    'value' => $addressesCount,
+                    'class' => 'badge badge-secondary',
+                ])
+            );
+        }
+
+        if ($this->canAny($user, ['wishlists.view'])) {
+            $customersChildren[] = $this->childItem(
+                title: 'Wishlist Activity',
+                routeName: 'dashboard.wishlists.index',
+                routePatterns: ['dashboard.wishlists.*'],
+                icon: 'fas fa-heart',
+                badge: $this->normalizeBadge([
+                    'value' => $wishlistsCount,
+                    'class' => 'badge badge-danger',
+                ])
+            );
+        }
+
+        if ($this->canAny($user, ['carts.view'])) {
+            $customersChildren[] = $this->childItem(
+                title: 'Carts',
+                routeName: 'dashboard.carts.index',
+                routePatterns: ['dashboard.carts.*'],
+                icon: 'fas fa-shopping-basket',
+                badge: $this->normalizeBadge([
+                    'value' => $cartsCount,
+                    'class' => 'badge badge-warning',
+                ])
+            );
+        }
+
+        if ($this->canAny($user, ['carts.view']) && $this->routeExists('dashboard.carts.abandoned')) {
+            $customersChildren[] = $this->childItem(
+                title: 'Abandoned Carts',
+                routeName: 'dashboard.carts.abandoned',
+                routePatterns: ['dashboard.carts.abandoned'],
+                icon: 'fas fa-cart-arrow-down',
+                badge: $this->normalizeBadge([
+                    'value' => $abandonedCartsCount,
+                    'class' => 'badge badge-dark',
+                ])
+            );
+        }
+
+        if (! empty(array_filter($customersChildren))) {
+            $customersBadgeValue = $usersCount + $cartsCount;
+
+            $this->pushItem($items, $this->treeItem(
+                title: 'Customers',
+                icon: 'fas fa-user-friends',
+                routePatterns: [
+                    'dashboard.users.*',
+                    'dashboard.addresses.*',
+                    'dashboard.wishlists.*',
+                    'dashboard.carts.*',
+                ],
+                children: $customersChildren,
+                badge: $this->normalizeBadge([
+                    'value' => $customersBadgeValue,
+                    'class' => 'badge badge-primary',
                 ])
             ));
         }
