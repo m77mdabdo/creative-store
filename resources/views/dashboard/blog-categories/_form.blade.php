@@ -74,7 +74,7 @@
 </div>
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     document.addEventListener('DOMContentLoaded', function () {
         const nameInput = document.getElementById('name');
         const slugInput = document.getElementById('slug');

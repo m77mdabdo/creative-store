@@ -484,7 +484,7 @@
 
 @push('scripts')
     @if(auth()->user()->hasPermission('dashboard.sales-totals.view'))
-        <script>
+        <script nonce="{{ Vite::cspNonce() }}">
             const salesChartLabels = @json($salesChartLabels);
             const salesChartData = @json($salesChartData);
 

@@ -69,7 +69,7 @@
                                         @endif
 
                                         @if($canDelete)
-                                            <form action="{{ route('dashboard.reviews.destroy', $review) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Delete this review?')));">
+                                            <form action="{{ route('dashboard.reviews.destroy', $review) }}" method="POST" class="d-inline" data-confirm="{{ __('Delete this review?') }}">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">

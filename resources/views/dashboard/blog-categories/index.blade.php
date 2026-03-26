@@ -100,7 +100,7 @@
                                             @if(auth()->user()->hasRole('owner') || auth()->user()->hasRole('admin') || auth()->user()->hasPermission('blog-categories.delete'))
                                                 <form action="{{ route('dashboard.blog-categories.destroy', $category) }}"
                                                       method="POST"
-                                                      onsubmit="return confirm(@js(__('Are you sure you want to delete this category?')));"
+                                                      data-confirm="{{ __('Are you sure you want to delete this category?') }}"
                                                       style="display:inline-block;">
                                                     @csrf
                                                     @method('DELETE')

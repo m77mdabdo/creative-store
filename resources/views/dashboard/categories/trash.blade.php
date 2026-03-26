@@ -66,7 +66,7 @@
                                                 action="{{ route('dashboard.categories.force-delete', $category->id) }}"
                                                 method="POST"
                                                 class="d-inline"
-                                                onsubmit="return confirm(@js(__('Are you sure you want to permanently delete this category?')));"
+                                                data-confirm="{{ __('Are you sure you want to permanently delete this category?') }}"
                                             >
                                                 @csrf
                                                 @method('DELETE')

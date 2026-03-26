@@ -43,7 +43,7 @@
 </head>
 <body>
     <div class="no-print" style="margin-bottom:20px;">
-        <button onclick="window.print()">{{ __('Print') }}</button>
+        <button type="button" id="print-btn">{{ __('Print') }}</button>
     </div>
 
     <h1>{{ __('Audit Logs') }}</h1>
@@ -82,5 +82,10 @@
             @endforeach
         </tbody>
     </table>
+    <script nonce="{{ Vite::cspNonce() }}">
+        document.getElementById('print-btn').addEventListener('click', function () {
+            window.print();
+        });
+    </script>
 </body>
 </html>

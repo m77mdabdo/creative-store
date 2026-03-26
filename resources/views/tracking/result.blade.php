@@ -232,7 +232,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 (function () {
     document.querySelectorAll('.trk-copy').forEach(function (button) {
         button.addEventListener('click', function () {

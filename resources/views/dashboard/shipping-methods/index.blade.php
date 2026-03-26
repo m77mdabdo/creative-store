@@ -169,7 +169,7 @@
                                             </button>
                                         </form>
 
-                                        <form action="{{ route('dashboard.shipping-methods.destroy', $method) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Delete this shipping method?')))">
+                                        <form action="{{ route('dashboard.shipping-methods.destroy', $method) }}" method="POST" class="d-inline" data-confirm="{{ __('Delete this shipping method?') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger">

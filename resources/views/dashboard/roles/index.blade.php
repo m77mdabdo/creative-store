@@ -160,7 +160,7 @@
                                                 <button
                                                     type="submit"
                                                     class="btn btn-sm btn-danger"
-                                                    onclick="return confirm(@js(__('Delete this role?')))"
+                                                    data-confirm="{{ __('Delete this role?') }}"
                                                 >
                                                     {{ __('Delete') }}
                                                 </button>

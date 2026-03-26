@@ -154,7 +154,7 @@
 </div>
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 document.addEventListener('DOMContentLoaded', function () {
     const titleInput = document.getElementById('title');
     const slugInput = document.getElementById('slug');

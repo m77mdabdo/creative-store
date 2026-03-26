@@ -151,7 +151,7 @@
                     <div class="card card-outline card-danger">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h3 class="card-title mb-0">{{ __('Message') }}</h3>
-                            <button type="button" class="btn btn-xs btn-outline-secondary" onclick="copyBlock('error-message-block')">
+                            <button type="button" class="btn btn-xs btn-outline-secondary" data-copy-block="error-message-block">
                                 <i class="fas fa-copy mr-1"></i> {{ __('Copy') }}
                             </button>
                         </div>
@@ -165,7 +165,7 @@
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h3 class="card-title mb-0">{{ __('Context') }}</h3>
                             @if($contextJson)
-                                <button type="button" class="btn btn-xs btn-outline-secondary" onclick="copyBlock('error-context-block')">
+                                <button type="button" class="btn btn-xs btn-outline-secondary" data-copy-block="error-context-block">
                                     <i class="fas fa-copy mr-1"></i> {{ __('Copy') }}
                                 </button>
                             @endif
@@ -184,7 +184,7 @@
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h3 class="card-title mb-0">{{ __('Trace') }}</h3>
                             @if($errorLog->trace)
-                                <button type="button" class="btn btn-xs btn-outline-secondary" onclick="copyBlock('error-trace-block')">
+                                <button type="button" class="btn btn-xs btn-outline-secondary" data-copy-block="error-trace-block">
                                     <i class="fas fa-copy mr-1"></i> {{ __('Copy') }}
                                 </button>
                             @endif
@@ -208,7 +208,13 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
+    document.querySelectorAll('[data-copy-block]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            copyBlock(button.dataset.copyBlock);
+        });
+    });
+
     function copyBlock(id) {
         const el = document.getElementById(id);
         if (!el) return;

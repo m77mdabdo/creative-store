@@ -171,9 +171,9 @@
 </section>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script nonce="{{ Vite::cspNonce() }}" src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 document.addEventListener('DOMContentLoaded', function () {
     const latInput = document.getElementById('lat');
     const lngInput = document.getElementById('lng');

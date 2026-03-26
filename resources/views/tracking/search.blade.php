@@ -94,7 +94,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 (function () {
     var tabs = document.querySelectorAll('.trk-tab');
     var panes = document.querySelectorAll('.trk-pane');

@@ -79,7 +79,7 @@
 
                                     <form action="{{ route('shipping.addresses.destroy', $address->id) }}"
                                           method="POST"
-                                          onsubmit="return confirm('{{ __('site.delete_confirm') }}')">
+                                          data-confirm="{{ __('site.delete_confirm') }}">
                                         @csrf
                                         @method('DELETE')
 
@@ -201,7 +201,7 @@
     </div>
 </section>
 
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 document.addEventListener('DOMContentLoaded', function () {
 
     const addressInputs = document.querySelectorAll('input[name="address_id"]');

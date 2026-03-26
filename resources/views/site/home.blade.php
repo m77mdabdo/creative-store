@@ -58,7 +58,7 @@
 
                         <li class="header-cart-item flex-w flex-t m-b-12">
                             <div class="header-cart-item-img">
-                                <form action="{{ route('cart.remove', $key) }}" method="POST" onsubmit="return confirm('{{ __('site.remove_item_confirm') }}')">
+                                <form action="{{ route('cart.remove', $key) }}" method="POST" data-confirm="{{ __('site.remove_item_confirm') }}">
                                     @csrf
                                     @method('DELETE')
 

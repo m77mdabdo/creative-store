@@ -190,7 +190,7 @@
 
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 document.addEventListener('DOMContentLoaded', function () {
     const hasVariants = document.getElementById('has_variants');
     const wrapper = document.getElementById('product-attributes-wrapper');

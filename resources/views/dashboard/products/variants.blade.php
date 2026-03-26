@@ -124,7 +124,7 @@
                                     </button>
                                 </form>
 
-                                <form action="{{ route('dashboard.products.variants.destroy', [$product, $variant]) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Delete this variant?')));">
+                                <form action="{{ route('dashboard.products.variants.destroy', [$product, $variant]) }}" method="POST" class="d-inline" data-confirm="{{ __('Delete this variant?') }}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm">
@@ -162,7 +162,7 @@
                                                     </button>
                                                 </form>
 
-                                                <form action="{{ route('dashboard.products.variants.images.destroy', [$product, $variant, $image]) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Delete image?')));">
+                                                <form action="{{ route('dashboard.products.variants.images.destroy', [$product, $variant, $image]) }}" method="POST" class="d-inline" data-confirm="{{ __('Delete image?') }}">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger btn-sm">

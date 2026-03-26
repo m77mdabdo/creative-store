@@ -161,7 +161,7 @@
                                             </button>
                                         </form>
 
-                                        <form action="{{ route('dashboard.shipping-zones.destroy', $zone) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Delete this shipping zone?')))">
+                                        <form action="{{ route('dashboard.shipping-zones.destroy', $zone) }}" method="POST" class="d-inline" data-confirm="{{ __('Delete this shipping zone?') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger">

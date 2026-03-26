@@ -227,7 +227,7 @@
                             type="submit"
                             class="btn btn-dark"
                             form="bulkActionForm"
-                            onclick="return confirmBulkAction()"
+                            id="bulk-action-submit"
                         >
                             {{ __('Apply') }}
                         </button>
@@ -353,7 +353,7 @@
                                                 <button
                                                     type="submit"
                                                     class="btn btn-sm btn-danger"
-                                                    onclick="return confirm(@js(__('Move this user to trash?')))"
+                                                    data-confirm="{{ __('Move this user to trash?') }}"
                                                 >
                                                     {{ __('Delete') }}
                                                 </button>
@@ -380,11 +380,17 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     document.getElementById('check-all')?.addEventListener('change', function () {
         document.querySelectorAll('.user-checkbox').forEach((checkbox) => {
             checkbox.checked = this.checked;
         });
+    });
+
+    document.getElementById('bulk-action-submit')?.addEventListener('click', function (event) {
+        if (! confirmBulkAction()) {
+            event.preventDefault();
+        }
     });
 
     function confirmBulkAction() {

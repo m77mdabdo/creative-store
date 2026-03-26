@@ -7,8 +7,8 @@
     $analyticsEvents = \App\Support\Analytics\Analytics::pending();
 @endphp
 @if ($gaId)
-<script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
-<script>
+<script nonce="{{ Vite::cspNonce() }}" async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
+<script nonce="{{ Vite::cspNonce() }}">
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
@@ -16,25 +16,25 @@
 </script>
 @endif
 @if ($metaId)
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', @json($metaId));
     fbq('track', 'PageView');
 </script>
 @endif
 @if ($snapId)
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     (function(e,t,n){if(e.snaptr)return;var a=e.snaptr=function(){a.handleRequest?a.handleRequest.apply(a,arguments):a.queue.push(arguments)};a.queue=[];var s='script';var r=t.createElement(s);r.async=!0;r.src=n;var u=t.getElementsByTagName(s)[0];u.parentNode.insertBefore(r,u);})(window,document,'https://sc-static.net/scevent.min.js');
     snaptr('init', @json($snapId));
     snaptr('track', 'PAGE_VIEW');
 </script>
 @endif
 @if ($tiktokId)
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     !function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.load=function(e){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=i;var o=d.createElement("script");o.type="text/javascript";o.async=!0;o.src=i+"?sdkid="+e+"&lib="+t;var a=d.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};ttq.load(@json($tiktokId));ttq.page();}(window,document,'ttq');
 </script>
 @endif
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     // One call sends a GA4-style e-commerce event to every configured tag.
     window.csTrack = function (event, p) {
         p = p || {};

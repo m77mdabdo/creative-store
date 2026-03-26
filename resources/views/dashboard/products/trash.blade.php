@@ -48,7 +48,7 @@
                                         @endif
 
                                         @if($canDelete)
-                                            <form action="{{ route('dashboard.products.force-delete', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Permanently delete product?')));">
+                                            <form action="{{ route('dashboard.products.force-delete', $product->id) }}" method="POST" class="d-inline" data-confirm="{{ __('Permanently delete product?') }}">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">

@@ -426,7 +426,7 @@
 
                                             <div class="mt-3">
                                                 <button type="submit" class="btn btn-danger px-4"
-                                                        onclick="return confirm(@js(__('Are you sure you want to cancel this order?')))">
+                                                        data-confirm="{{ __('Are you sure you want to cancel this order?') }}">
                                                     <i class="fas fa-ban mr-1"></i> {{ __('Cancel Order') }}
                                                 </button>
                                             </div>
