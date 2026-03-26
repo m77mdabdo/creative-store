@@ -175,7 +175,7 @@
                                     <form action="{{ route('dashboard.addresses.destroy', $address) }}" method="POST" style="display:inline-block;">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn btn-sm btn-danger" onclick="return confirm(@js(__('Delete this address?')))">{{ __('Delete') }}</button>
+                                        <button class="btn btn-sm btn-danger" data-confirm="{{ __('Delete this address?') }}">{{ __('Delete') }}</button>
                                     </form>
                                 </td>
                             </tr>

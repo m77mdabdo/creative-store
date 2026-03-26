@@ -47,7 +47,7 @@
 <link rel="stylesheet" href="{{ versioned_asset('css/site/base.css') }}">
 <link rel="stylesheet" href="{{ versioned_asset('css/site/site-app-head-1.css') }}">
 
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 document.addEventListener('DOMContentLoaded', function () {
     const hamburger = document.querySelector('.btn-show-menu-mobile');
     const drawer    = document.querySelector('.js-mobile-drawer');

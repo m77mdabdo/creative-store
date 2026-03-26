@@ -191,7 +191,7 @@
                                                 <form action="{{ route('dashboard.blogs.destroy', $blog) }}"
                                                       method="POST"
                                                       style="display:inline-block;"
-                                                      onsubmit="return confirm(@js(__('Are you sure you want to delete this blog?')));">
+                                                      data-confirm="{{ __('Are you sure you want to delete this blog?') }}">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-danger">

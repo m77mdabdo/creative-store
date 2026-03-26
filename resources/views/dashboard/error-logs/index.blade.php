@@ -201,15 +201,15 @@
                         <h3 class="card-title mb-0">{{ __('Error Logs') }}</h3>
 
                         <div class="d-flex flex-wrap">
-                            <button type="button" class="btn btn-success btn-sm mr-2" onclick="submitBulkResolve()">
+                            <button type="button" class="btn btn-success btn-sm mr-2" id="bulk-resolve-btn">
                                 <i class="fas fa-check mr-1"></i> {{ __('Resolve Selected') }}
                             </button>
 
-                            <button type="button" class="btn btn-danger btn-sm mr-2" onclick="submitBulkDelete()">
+                            <button type="button" class="btn btn-danger btn-sm mr-2" id="bulk-delete-btn">
                                 <i class="fas fa-trash mr-1"></i> {{ __('Delete Selected') }}
                             </button>
 
-                            <form action="{{ route('dashboard.error-logs.clear-resolved') }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Are you sure you want to clear all resolved error logs?')));">
+                            <form action="{{ route('dashboard.error-logs.clear-resolved') }}" method="POST" class="d-inline" data-confirm="{{ __('Are you sure you want to clear all resolved error logs?') }}">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-outline-danger btn-sm">
@@ -323,7 +323,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     document.addEventListener('DOMContentLoaded', function () {
         const selectAll = document.getElementById('select-all');
 
@@ -339,6 +339,9 @@
     function getCheckedIds() {
         return Array.from(document.querySelectorAll('.row-checkbox:checked'));
     }
+
+    document.getElementById('bulk-resolve-btn')?.addEventListener('click', submitBulkResolve);
+    document.getElementById('bulk-delete-btn')?.addEventListener('click', submitBulkDelete);
 
     function submitBulkResolve() {
         const checked = getCheckedIds();

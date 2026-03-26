@@ -107,9 +107,10 @@
     @yield('content')
 </main>
 
-<script src="{{ asset('AdminLTE/plugins/jquery/jquery.min.js') }}"></script>
-<script src="{{ asset('AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-<script>
+<script nonce="{{ Vite::cspNonce() }}" src="{{ asset('AdminLTE/plugins/jquery/jquery.min.js') }}"></script>
+<script nonce="{{ Vite::cspNonce() }}" src="{{ versioned_asset('js/confirm-actions.js') }}"></script>
+<script nonce="{{ Vite::cspNonce() }}" src="{{ asset('AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script nonce="{{ Vite::cspNonce() }}">
 const sidebar = document.getElementById('sidebar');
 const toggle  = document.getElementById('sidebarToggle');
 const overlay = document.getElementById('sidebarOverlay');

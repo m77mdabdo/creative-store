@@ -40,7 +40,7 @@
         ] : null,
     ]);
 @endphp
-<script type="application/ld+json">{!! json_encode($structuredProduct, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) !!}</script>
+<script nonce="{{ Vite::cspNonce() }}" type="application/ld+json">{!! json_encode($structuredProduct, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) !!}</script>
 @endpush
 
 @section('content')
@@ -180,7 +180,7 @@
                                         </div>
 
                                         <button type="button"
-                                                onclick="copyCouponCode({{ Js::from($coupon['code']) }})"
+                                                data-copy-coupon="{{ $coupon['code'] }}"
                                                 class="offer-copy-btn flex-c-m stext-101 cl2 bg8 bor13 hov-btn3 p-lr-15 trans-04">
                                             {{ __('site.copy_code') }}
                                         </button>
@@ -631,7 +631,13 @@
     </div>
 </section>
 
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
+    document.querySelectorAll('[data-copy-coupon]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            copyCouponCode(button.dataset.copyCoupon);
+        });
+    });
+
     function copyCouponCode(code) {
         const input = document.getElementById('couponCodeInput');
 

@@ -46,7 +46,7 @@
         <a href="{{ route('register') }}" class="otp-link">{{ __('site.verify_email_wrong_address') }}</a>
     </main>
 
-    <script>
+    <script nonce="{{ Vite::cspNonce() }}">
         (function () {
             const inputs = Array.from(document.querySelectorAll('.otp-input'));
             const form = document.getElementById('otpForm');

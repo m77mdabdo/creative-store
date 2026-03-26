@@ -99,7 +99,7 @@
                                         @endif
 
                                         @if($canDelete)
-                                            <form action="{{ route('dashboard.attributes.destroy', $attribute) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Delete this attribute?')));">
+                                            <form action="{{ route('dashboard.attributes.destroy', $attribute) }}" method="POST" class="d-inline" data-confirm="{{ __('Delete this attribute?') }}">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">

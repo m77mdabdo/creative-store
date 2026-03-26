@@ -299,7 +299,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 (function () {
     var input = document.getElementById('avatarInput');
     var preview = document.getElementById('avatarPreview');

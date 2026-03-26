@@ -129,7 +129,7 @@
                                 </select>
                             </div>
 
-                            <button type="submit" class="btn btn-dark" onclick="return confirm(@js(__('Apply selected action?')))">
+                            <button type="submit" class="btn btn-dark" data-confirm="{{ __('Apply selected action?') }}">
                                 {{ __('Apply') }}
                             </button>
                         </div>
@@ -198,7 +198,7 @@
                                                 <form action="{{ route('dashboard.contact-messages.destroy', $message) }}"
                                                       method="POST"
                                                       style="display:inline-block;"
-                                                      onsubmit="return confirm(@js(__('Are you sure you want to delete this message?')));">
+                                                      data-confirm="{{ __('Are you sure you want to delete this message?') }}">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-danger" title="{{ __('Delete') }}">
@@ -230,7 +230,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 document.addEventListener('DOMContentLoaded', function () {
     const checkAll = document.getElementById('check-all');
     const rowChecks = document.querySelectorAll('.row-check');

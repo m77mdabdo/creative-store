@@ -33,7 +33,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 document.querySelectorAll('.toggle-group').forEach(button => {
     button.addEventListener('click', function () {
         const group = this.dataset.group;

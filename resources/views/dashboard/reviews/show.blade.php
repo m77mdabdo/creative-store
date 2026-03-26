@@ -97,7 +97,7 @@
                     @if($canDelete)
                         <div class="card">
                             <div class="card-body">
-                                <form action="{{ route('dashboard.reviews.destroy', $review) }}" method="POST" onsubmit="return confirm(@js(__('Delete this review?')));">
+                                <form action="{{ route('dashboard.reviews.destroy', $review) }}" method="POST" data-confirm="{{ __('Delete this review?') }}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-block">

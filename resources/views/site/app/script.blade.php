@@ -1,23 +1,24 @@
 {{-- RTL flag for JS --}}
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     window.isRTL = {{ app()->getLocale() === 'ar' ? 'true' : 'false' }};
 </script>
 
 {{-- jQuery 3.7.1, Bootstrap 4.6.2 (bundle includes Popper) and Select2 4.0.13. --}}
-<script src="{{ asset('cozastore/vendor/jquery/jquery-3.7.1.min.js') }}"></script>
-<script src="{{ asset('cozastore/vendor/animsition/js/animsition.min.js') }}"></script>
-<script src="{{ asset('cozastore/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('cozastore/vendor/select2/select2.min.js') }}"></script>
-<script src="{{ asset('cozastore/vendor/slick/slick.min.js') }}"></script>
-<script src="{{ versioned_asset('cozastore/js/slick-custom.js') }}"></script>
-<script src="{{ asset('cozastore/vendor/parallax100/parallax100.js') }}"></script>
-<script src="{{ asset('cozastore/vendor/MagnificPopup/jquery.magnific-popup.min.js') }}"></script>
-<script src="{{ asset('cozastore/vendor/isotope/isotope.pkgd.min.js') }}"></script>
-<script src="{{ asset('cozastore/vendor/sweetalert/sweetalert.min.js') }}"></script>
-<script src="{{ asset('cozastore/vendor/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
-<script src="{{ versioned_asset('cozastore/js/main.js') }}"></script>
+<script nonce="{{ Vite::cspNonce() }}" src="{{ asset('cozastore/vendor/jquery/jquery-3.7.1.min.js') }}"></script>
+<script nonce="{{ Vite::cspNonce() }}" src="{{ versioned_asset('js/confirm-actions.js') }}"></script>
+<script nonce="{{ Vite::cspNonce() }}" src="{{ asset('cozastore/vendor/animsition/js/animsition.min.js') }}"></script>
+<script nonce="{{ Vite::cspNonce() }}" src="{{ asset('cozastore/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script nonce="{{ Vite::cspNonce() }}" src="{{ asset('cozastore/vendor/select2/select2.min.js') }}"></script>
+<script nonce="{{ Vite::cspNonce() }}" src="{{ asset('cozastore/vendor/slick/slick.min.js') }}"></script>
+<script nonce="{{ Vite::cspNonce() }}" src="{{ versioned_asset('cozastore/js/slick-custom.js') }}"></script>
+<script nonce="{{ Vite::cspNonce() }}" src="{{ asset('cozastore/vendor/parallax100/parallax100.js') }}"></script>
+<script nonce="{{ Vite::cspNonce() }}" src="{{ asset('cozastore/vendor/MagnificPopup/jquery.magnific-popup.min.js') }}"></script>
+<script nonce="{{ Vite::cspNonce() }}" src="{{ asset('cozastore/vendor/isotope/isotope.pkgd.min.js') }}"></script>
+<script nonce="{{ Vite::cspNonce() }}" src="{{ asset('cozastore/vendor/sweetalert/sweetalert.min.js') }}"></script>
+<script nonce="{{ Vite::cspNonce() }}" src="{{ asset('cozastore/vendor/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+<script nonce="{{ Vite::cspNonce() }}" src="{{ versioned_asset('cozastore/js/main.js') }}"></script>
 
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 document.addEventListener('DOMContentLoaded', function () {
     const i18n = {
         wishlistAdded: @json(__('site.wishlist_added')),

@@ -105,7 +105,7 @@
                                                 <form action="{{ route('dashboard.blog-comments.destroy', $comment) }}"
                                                       method="POST"
                                                       style="display:inline-block;"
-                                                      onsubmit="return confirm(@js(__('Are you sure you want to delete this comment?')));">
+                                                      data-confirm="{{ __('Are you sure you want to delete this comment?') }}">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-danger">

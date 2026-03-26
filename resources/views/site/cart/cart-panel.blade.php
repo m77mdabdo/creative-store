@@ -48,7 +48,7 @@
 
             @if($items->count())
                 <form action="{{ route('cart.clear') }}" method="POST"
-                      onsubmit="return confirm('{{ __('site.clear_cart_confirm') }}')">
+                      data-confirm="{{ __('site.clear_cart_confirm') }}">
                     @csrf
                     <button type="submit" class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04">
                         {{ __('site.clear_cart') }}
@@ -175,7 +175,7 @@
                                                 <div class="wrap-num-product flex-w m-l-auto m-r-0 m-r-10">
                                                     <button type="button"
                                                         class="qty-btn cl8 hov-btn3 trans-04 flex-c-m"
-                                                        onclick="changeQty('{{ $safeKey }}', -1)">
+                                                        data-qty-target="{{ $safeKey }}" data-qty-step="-1">
                                                         <i class="fs-16 zmdi zmdi-minus"></i>
                                                     </button>
 
@@ -189,7 +189,7 @@
 
                                                     <button type="button"
                                                         class="qty-btn cl8 hov-btn3 trans-04 flex-c-m"
-                                                        onclick="changeQty('{{ $safeKey }}', 1)">
+                                                        data-qty-target="{{ $safeKey }}" data-qty-step="1">
                                                         <i class="fs-16 zmdi zmdi-plus"></i>
                                                     </button>
                                                 </div>
@@ -208,7 +208,7 @@
 
                                         <td class="column-6" data-label="{{ __('site.remove') }}">
                                             <form action="{{ route('cart.remove', ['key' => $key]) }}" method="POST"
-                                                onsubmit="return confirm('{{ __('site.remove_item_confirm') }}')">
+                                                data-confirm="{{ __('site.remove_item_confirm') }}">
                                                 @csrf
                                                 @method('DELETE')
 
@@ -424,7 +424,13 @@
     </div>
 </section>
 
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
+    document.querySelectorAll('[data-qty-step]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            changeQty(button.dataset.qtyTarget, Number(button.dataset.qtyStep));
+        });
+    });
+
     function changeQty(safeKey, delta) {
         const input = document.getElementById('qty-' + safeKey);
         if (!input) return;

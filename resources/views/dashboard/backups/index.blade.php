@@ -321,7 +321,7 @@
                                                         action="{{ route('dashboard.backups.destroy', $backup) }}"
                                                         method="POST"
                                                         class="d-inline"
-                                                        onsubmit="return confirm(@js(__('Are you sure you want to delete this backup record and file?')));"
+                                                        data-confirm="{{ __('Are you sure you want to delete this backup record and file?') }}"
                                                     >
                                                         @csrf
                                                         @method('DELETE')
@@ -360,7 +360,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     document.addEventListener('DOMContentLoaded', function () {
         const checkAll = document.getElementById('checkAll');
         const rowCheckboxes = document.querySelectorAll('.row-checkbox');

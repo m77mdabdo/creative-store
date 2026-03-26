@@ -59,7 +59,7 @@
                                     <form action="{{ route('dashboard.users.force-delete', $user->id) }}" method="POST" style="display:inline-block;">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn btn-sm btn-danger" onclick="return confirm(@js(__('Delete permanently?')))">
+                                        <button class="btn btn-sm btn-danger" data-confirm="{{ __('Delete permanently?') }}">
                                             {{ __('Delete Permanently') }}
                                         </button>
                                     </form>

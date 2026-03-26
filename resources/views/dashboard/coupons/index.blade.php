@@ -99,7 +99,7 @@
                                     <thead>
                                         <tr>
                                             <th style="width:40px;">
-                                                <input type="checkbox" onclick="document.querySelectorAll('.coupon-check').forEach(el => el.checked = this.checked)">
+                                                <input type="checkbox" id="coupon-check-all">
                                             </th>
                                             <th>{{ __('Code') }}</th>
                                             <th>{{ __('Scope') }}</th>
@@ -153,7 +153,7 @@
                                                     @endif
 
                                                     @if($canDelete)
-                                                        <form action="{{ route('dashboard.coupons.destroy', $coupon) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Move this coupon to trash?')))">
+                                                        <form action="{{ route('dashboard.coupons.destroy', $coupon) }}" method="POST" class="d-inline" data-confirm="{{ __('Move this coupon to trash?') }}">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit" class="btn btn-sm btn-outline-danger">{{ __('Delete') }}</button>
@@ -183,4 +183,14 @@
         </div>
     </section>
 </div>
-@endsection 
+@endsection
+
+@push('scripts')
+<script nonce="{{ Vite::cspNonce() }}">
+    document.getElementById('coupon-check-all')?.addEventListener('change', function () {
+        document.querySelectorAll('.coupon-check').forEach((checkbox) => {
+            checkbox.checked = this.checked;
+        });
+    });
+</script>
+@endpush

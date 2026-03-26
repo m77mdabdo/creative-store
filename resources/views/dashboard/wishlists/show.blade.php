@@ -131,7 +131,7 @@
                                     <form action="{{ route('dashboard.wishlists.items.destroy', [$wishlist, $item]) }}" method="POST" style="display:inline-block;">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn btn-sm btn-danger" onclick="return confirm(@js(__('Delete this item?')))">{{ __('Delete') }}</button>
+                                        <button class="btn btn-sm btn-danger" data-confirm="{{ __('Delete this item?') }}">{{ __('Delete') }}</button>
                                     </form>
                                 </td>
                             </tr>

@@ -164,7 +164,7 @@
                                             <button type="submit" class="btn btn-sm btn-outline-warning">{{ __('Next Status') }}</button>
                                         </form>
 
-                                        <form action="{{ route('dashboard.shipments.destroy', $shipment) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Delete this shipment?')))">
+                                        <form action="{{ route('dashboard.shipments.destroy', $shipment) }}" method="POST" class="d-inline" data-confirm="{{ __('Delete this shipment?') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger">{{ __('Delete') }}</button>

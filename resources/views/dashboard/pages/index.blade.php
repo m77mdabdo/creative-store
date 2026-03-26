@@ -142,7 +142,7 @@
                                                 <form action="{{ route('dashboard.pages.destroy', $page) }}"
                                                       method="POST"
                                                       style="display:inline-block;"
-                                                      onsubmit="return confirm(@js(__('Are you sure you want to delete this page?')));">
+                                                      data-confirm="{{ __('Are you sure you want to delete this page?') }}">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-danger" title="{{ __('Delete') }}">

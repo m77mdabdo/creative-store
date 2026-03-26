@@ -96,9 +96,9 @@
 </section>
 
 <link rel="stylesheet" href="https://cdn.moyasar.com/mpf/1.15.0/moyasar.css">
-<script src="https://cdn.moyasar.com/mpf/1.15.0/moyasar.js"></script>
+<script nonce="{{ Vite::cspNonce() }}" src="https://cdn.moyasar.com/mpf/1.15.0/moyasar.js"></script>
 
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 Moyasar.init({
     element: '.mysr-form',
     amount: {{ (int) round($order->total * 100) }},

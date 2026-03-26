@@ -9,7 +9,7 @@
 <body class="site-body {{ app()->getLocale() === 'ar' ? 'rtl-site' : 'ltr-site' }}">
 
     @auth
-        <script>
+        <script nonce="{{ Vite::cspNonce() }}">
             window.Laravel = {
                 userId: {{ auth()->id() }}
             };

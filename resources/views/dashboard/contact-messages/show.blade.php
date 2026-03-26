@@ -43,7 +43,7 @@
                             </form>
                         @endif
 
-                        <form action="{{ route('dashboard.contact-messages.destroy', $message) }}" method="POST" class="d-inline-block" onsubmit="return confirm(@js(__('Are you sure you want to delete this message?')));">
+                        <form action="{{ route('dashboard.contact-messages.destroy', $message) }}" method="POST" class="d-inline-block" data-confirm="{{ __('Are you sure you want to delete this message?') }}">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">

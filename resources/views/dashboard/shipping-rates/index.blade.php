@@ -175,7 +175,7 @@
                                             </button>
                                         </form>
 
-                                        <form action="{{ route('dashboard.shipping-rates.destroy', $rate) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Delete this shipping rate?')))">
+                                        <form action="{{ route('dashboard.shipping-rates.destroy', $rate) }}" method="POST" class="d-inline" data-confirm="{{ __('Delete this shipping rate?') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger">

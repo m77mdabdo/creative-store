@@ -145,7 +145,7 @@
                                         @endif
 
                                         @if($canDelete)
-                                            <form action="{{ route('dashboard.reviews.destroy', $review) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Delete this review?')));">
+                                            <form action="{{ route('dashboard.reviews.destroy', $review) }}" method="POST" class="d-inline" data-confirm="{{ __('Delete this review?') }}">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">
@@ -175,7 +175,7 @@
 </div>
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 document.addEventListener('DOMContentLoaded', function () {
     const checkAll = document.getElementById('check-all-reviews');
     const boxes = document.querySelectorAll('.review-checkbox');

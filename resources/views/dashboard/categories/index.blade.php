@@ -186,7 +186,7 @@
                                                         action="{{ route('dashboard.categories.destroy', $category) }}"
                                                         method="POST"
                                                         class="d-inline"
-                                                        onsubmit="return confirm(@js(__('Are you sure you want to move this category to trash?')));"
+                                                        data-confirm="{{ __('Are you sure you want to move this category to trash?') }}"
                                                     >
                                                         @csrf
                                                         @method('DELETE')
@@ -277,7 +277,7 @@
 </div>
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
     document.addEventListener('DOMContentLoaded', function () {
         const checkAll = document.getElementById('check-all');
         const boxes = document.querySelectorAll('.row-checkbox');

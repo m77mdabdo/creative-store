@@ -153,7 +153,7 @@
                                             <form action="{{ route('dashboard.carts.items.destroy', [$cart, $item]) }}" method="POST" style="display:inline-block;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="btn btn-sm btn-danger" onclick="return confirm(@js(__('Delete this cart item?')))">{{ __('Delete') }}</button>
+                                                <button class="btn btn-sm btn-danger" data-confirm="{{ __('Delete this cart item?') }}">{{ __('Delete') }}</button>
                                             </form>
                                         </td>
                                     </tr>

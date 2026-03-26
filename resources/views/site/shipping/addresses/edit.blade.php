@@ -185,7 +185,7 @@
     </div>
 </section>
 
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 let autocomplete;
 
 function initGoogleAddressAutocomplete() {
@@ -279,7 +279,7 @@ function initGoogleAddressAutocomplete() {
 window.initGoogleAddressAutocomplete = initGoogleAddressAutocomplete;
 </script>
 
-<script async
+<script nonce="{{ Vite::cspNonce() }}" async
 src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.key') }}&libraries=places&callback=initGoogleAddressAutocomplete">
 </script>
 

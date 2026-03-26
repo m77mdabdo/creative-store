@@ -400,7 +400,7 @@
 </div>
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 document.addEventListener('DOMContentLoaded', function () {
     const slugInput = document.getElementById('slug');
     const aboutFields = document.getElementById('about-fields');

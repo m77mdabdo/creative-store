@@ -210,7 +210,7 @@
                                                 @endif
 
                                                 @if($canDelete)
-                                                    <form action="{{ route('dashboard.products.destroy', $product) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Move product to trash?')));">
+                                                    <form action="{{ route('dashboard.products.destroy', $product) }}" method="POST" class="d-inline" data-confirm="{{ __('Move product to trash?') }}">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-sm btn-danger">
@@ -242,7 +242,7 @@
 </div>
 
 @push('scripts')
-<script>
+<script nonce="{{ Vite::cspNonce() }}">
 document.addEventListener('DOMContentLoaded', function () {
     const checkAll = document.getElementById('check-all-products');
     const boxes = document.querySelectorAll('.product-checkbox');

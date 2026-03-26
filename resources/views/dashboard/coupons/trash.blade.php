@@ -47,7 +47,7 @@
                                         @endif
 
                                         @if($canDelete)
-                                            <form action="{{ route('dashboard.coupons.force-delete', $coupon->id) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Delete this coupon permanently?')))">
+                                            <form action="{{ route('dashboard.coupons.force-delete', $coupon->id) }}" method="POST" class="d-inline" data-confirm="{{ __('Delete this coupon permanently?') }}">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">{{ __('Delete Permanently') }}</button>
