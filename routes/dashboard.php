@@ -28,6 +28,7 @@ use App\Http\Controllers\Dashboard\AddressController;
 use App\Http\Controllers\Dashboard\WishlistController;
 use App\Http\Controllers\Dashboard\AbandonedCartRecoveryController ;
 use App\Http\Controllers\Dashboard\BlogCategoryController ;
+use App\Http\Controllers\Dashboard\BlogController;
 
 
 
@@ -792,6 +793,46 @@ Route::delete('/blog-categories/{blog_category}', [BlogCategoryController::class
     ->middleware('permission:blog-categories.delete')
     ->name('blog-categories.destroy');
 
+    /*
+|--------------------------------------------------------------------------
+| Blogs
+|--------------------------------------------------------------------------
+*/
+Route::get('/blogs', [BlogController::class, 'index'])
+    ->middleware('permission:blogs.view')
+    ->name('blogs.index');
+
+Route::get('/blogs/create', [BlogController::class, 'create'])
+    ->middleware('permission:blogs.create')
+    ->name('blogs.create');
+
+Route::post('/blogs', [BlogController::class, 'store'])
+    ->middleware('permission:blogs.create')
+    ->name('blogs.store');
+
+Route::get('/blogs/{blog}', [BlogController::class, 'show'])
+    ->middleware('permission:blogs.view')
+    ->name('blogs.show');
+
+Route::get('/blogs/{blog}/edit', [BlogController::class, 'edit'])
+    ->middleware('permission:blogs.edit')
+    ->name('blogs.edit');
+
+Route::put('/blogs/{blog}', [BlogController::class, 'update'])
+    ->middleware('permission:blogs.edit')
+    ->name('blogs.update');
+
+Route::patch('/blogs/{blog}/toggle-status', [BlogController::class, 'toggleStatus'])
+    ->middleware('permission:blogs.edit')
+    ->name('blogs.toggle-status');
+
+Route::patch('/blogs/{blog}/toggle-featured', [BlogController::class, 'toggleFeatured'])
+    ->middleware('permission:blogs.edit')
+    ->name('blogs.toggle-featured');
+
+Route::delete('/blogs/{blog}', [BlogController::class, 'destroy'])
+    ->middleware('permission:blogs.delete')
+    ->name('blogs.destroy');
 
 
     });

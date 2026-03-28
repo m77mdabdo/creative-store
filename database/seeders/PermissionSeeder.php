@@ -10,19 +10,25 @@ class PermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        $permissions = [
+        $permissionNames = [
             'blog-categories.view',
             'blog-categories.create',
             'blog-categories.edit',
             'blog-categories.delete',
+            'blogs.view',
+            'blogs.create',
+            'blogs.edit',
+            'blogs.delete',
         ];
 
-        foreach ($permissions as $permissionName) {
+        foreach ($permissionNames as $permissionName) {
+            $code = Str::upper(
+                str_replace(['.', '-'], '_', $permissionName)
+            );
+
             Permission::firstOrCreate(
                 ['name' => $permissionName],
-                [
-                    'code' => Str::upper(Str::replace(['.', '-'], '_', $permissionName)),
-                ]
+                ['code' => $code]
             );
         }
     }
