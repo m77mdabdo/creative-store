@@ -2,15 +2,24 @@
 
 namespace App\Http\Controllers\Shipping;
 
-use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderStatusLog;
+use App\Models\ReturnRequest;
+use App\Services\Payments\RefundService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use RuntimeException;
 
 class OrderController extends Controller
 {
+    public function __construct(
+        protected RefundService $refundService
+    ) {}
+
     public function index(): View
     {
         $orders = Order::query()
@@ -18,6 +27,7 @@ class OrderController extends Controller
                 'shipment',
                 'items',
                 'shippingMethod',
+                'latestPayment',
             ])
             ->where('user_id', auth()->id())
             ->latest()
@@ -36,52 +46,151 @@ class OrderController extends Controller
             'addressSnapshot',
             'shippingMethod',
             'statusLogs',
+            'latestPayment',
         ]);
 
         return view('site.shipping.orders.show', compact('order'));
     }
 
-  public function cancel(Order $order)
-{
-    abort_unless($order->user_id === auth()->id(), 403);
+    public function cancel(Order $order): RedirectResponse
+    {
+        abort_unless($order->user_id === auth()->id(), 403);
 
-    if ($order->status === 'cancelled') {
-        return back()->with('error', 'Order already cancelled.');
-    }
-
-    if ($order->created_at->diffInHours(now()) >= 3) {
-        return back()->with('error', 'Order can no longer be cancelled after 3 hours.');
-    }
-
-    $oldStatus = $order->status;
-
-    \DB::transaction(function () use ($order, $oldStatus) {
-        $order->loadMissing('items.variant');
-
-        $order->update([
-            'status' => 'cancelled',
-            'cancelled_at' => now(),
-            'cancelled_by' => auth()->id(),
-            'cancellation_reason' => 'Cancelled by customer',
-        ]);
-
-        foreach ($order->items as $item) {
-            if ($item->variant_id && $item->variant) {
-                $item->variant->increment('stock', (int) $item->quantity);
-            }
+        if ($order->status === 'cancelled') {
+            return back()->with('error', 'Order already cancelled.');
         }
 
-        OrderStatusLog::create([
-            'order_id' => $order->id,
-            'from_status' => $oldStatus,
-            'to_status' => 'cancelled',
-            'changed_by' => auth()->id(),
-            'note' => 'Order cancelled by customer within allowed time.',
-        ]);
-    });
+        if (! in_array($order->shipping_status, ['pending', 'processing', null], true)) {
+            return back()->with('error', 'This order cannot be cancelled after shipping has started.');
+        }
 
-    return back()->with('success', 'Order cancelled successfully.');
-}
+        if (! $order->created_at || $order->created_at->diffInHours(now()) >= 3) {
+            return back()->with('error', 'Order can no longer be cancelled after 3 hours.');
+        }
+
+        try {
+            DB::transaction(function () use ($order) {
+                $order->loadMissing([
+                    'items.variant',
+                    'latestPayment',
+                ]);
+
+                $oldStatus = $order->status;
+                $userId = Auth::id();
+                $payment = $order->latestPayment;
+
+                $wasPaid = $order->payment_status === 'paid'
+                    || in_array(optional($payment)->status, ['paid', 'captured', 'partially_refunded'], true);
+
+                $alreadyRefunded = in_array($order->payment_status, ['refunded'], true)
+                    || in_array(optional($payment)->status, ['refunded'], true);
+
+                $nextPaymentStatus = $order->payment_status;
+
+                if ($alreadyRefunded) {
+                    $nextPaymentStatus = 'refunded';
+                } elseif ($wasPaid) {
+                    $nextPaymentStatus = 'paid';
+                } else {
+                    $nextPaymentStatus = $order->payment_status ?: 'unpaid';
+                }
+
+                $order->update([
+                    'status'              => 'cancelled',
+                    'shipping_status'     => 'cancelled',
+                    'payment_status'      => $nextPaymentStatus,
+                    'cancelled_at'        => now(),
+                    'cancelled_by'        => $userId,
+                    'cancellation_reason' => 'Cancelled by customer',
+                ]);
+
+                foreach ($order->items as $item) {
+                    if ($item->variant_id && $item->variant) {
+                        $item->variant->increment('stock', (int) $item->quantity);
+                    }
+                }
+
+                OrderStatusLog::create([
+                    'order_id'    => $order->id,
+                    'from_status' => $oldStatus,
+                    'to_status'   => 'cancelled',
+                    'changed_by'  => $userId,
+                    'note'        => 'Order cancelled by customer within allowed time.',
+                ]);
+
+                $returnRequest = ReturnRequest::firstOrCreate(
+                    ['order_id' => $order->id],
+                    [
+                        'user_id'                => $order->user_id,
+                        'status'                 => ReturnRequest::STATUS_APPROVED,
+                        'reason'                 => 'Order cancelled by customer before shipment.',
+                        'refund_shipping'        => true,
+                        'refund_tax'             => true,
+                        'shipping_refund_amount' => (float) ($order->shipping_fee ?? 0),
+                        'tax_refund_amount'      => (float) ($order->tax_total ?? 0),
+                        'requested_at'           => now(),
+                        'processed_at'           => now(),
+                    ]
+                );
+
+                foreach ($order->items as $item) {
+                    $refundAmount = (float) (
+                        $item->line_total
+                        ?? $item->total
+                        ?? (($item->price ?? 0) * ($item->quantity ?? 0))
+                    );
+
+                    $returnRequest->items()->firstOrCreate(
+                        [
+                            'return_id'     => $returnRequest->id,
+                            'order_item_id' => $item->id,
+                        ],
+                        [
+                            'quantity'       => (int) $item->quantity,
+                            'condition_note' => 'Cancelled before shipment',
+                            'refund_amount'  => $refundAmount,
+                        ]
+                    );
+                }
+
+                if ($wasPaid && ! $alreadyRefunded) {
+                    $this->refundService->refundOrder(
+                        order: $order,
+                        amount: (float) $returnRequest->grand_refund_total,
+                        reason: 'Order cancelled by customer before shipment.',
+                        returnId: $returnRequest->id
+                    );
+
+                    $order->refresh();
+
+                    $returnRequest->update([
+                        'status'       => $order->payment_status === 'partially_refunded'
+                            ? ReturnRequest::STATUS_PARTIAL_REFUNDED
+                            : ReturnRequest::STATUS_REFUNDED,
+                        'processed_at' => now(),
+                    ]);
+                } elseif ($alreadyRefunded) {
+                    $returnRequest->update([
+                        'status'       => ReturnRequest::STATUS_REFUNDED,
+                        'processed_at' => now(),
+                    ]);
+                } else {
+                    $returnRequest->update([
+                        'status'       => ReturnRequest::STATUS_APPROVED,
+                        'processed_at' => now(),
+                    ]);
+                }
+            });
+        } catch (RuntimeException $e) {
+            return back()->with('error', $e->getMessage());
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->with('error', 'Unable to cancel order right now. Please try again.');
+        }
+
+        return back()->with('success', 'Order cancelled successfully.');
+    }
 
     public function invoice(Order $order)
     {

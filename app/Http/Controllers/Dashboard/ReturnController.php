@@ -46,11 +46,13 @@ class ReturnController extends Controller
         $statsBase = ReturnRequest::query();
 
         $stats = [
-            'total_returns'     => (clone $statsBase)->count(),
-            'pending_returns'   => (clone $statsBase)->where('status', ReturnRequest::STATUS_PENDING)->count(),
-            'approved_returns'  => (clone $statsBase)->where('status', ReturnRequest::STATUS_APPROVED)->count(),
-            'rejected_returns'  => (clone $statsBase)->where('status', ReturnRequest::STATUS_REJECTED)->count(),
-            'completed_returns' => (clone $statsBase)->where('status', ReturnRequest::STATUS_COMPLETED)->count(),
+            'total_returns'            => (clone $statsBase)->count(),
+            'requested_returns'        => (clone $statsBase)->where('status', ReturnRequest::STATUS_REQUESTED)->count(),
+            'approved_returns'         => (clone $statsBase)->where('status', ReturnRequest::STATUS_APPROVED)->count(),
+            'received_returns'         => (clone $statsBase)->where('status', ReturnRequest::STATUS_RECEIVED)->count(),
+            'refunded_returns'         => (clone $statsBase)->where('status', ReturnRequest::STATUS_REFUNDED)->count(),
+            'partial_refunded_returns' => (clone $statsBase)->where('status', ReturnRequest::STATUS_PARTIAL_REFUNDED)->count(),
+            'rejected_returns'         => (clone $statsBase)->where('status', ReturnRequest::STATUS_REJECTED)->count(),
         ];
 
         return view('dashboard.returns.index', compact('returns', 'stats'));

@@ -34,7 +34,7 @@
     $shipmentStatus = $shippingStatusMap[$order->shipment->status ?? 'pending'] ?? ['label' => ucfirst($order->shipment->status ?? 'pending'), 'class' => 'secondary', 'row_class' => ''];
 
     $canCancel = $order->status !== 'cancelled'
-        && $order->shipping_status === 'pending'
+        && in_array($order->shipping_status, ['pending', 'processing', null], true)
         && $order->created_at
         && $order->created_at->diffInHours(now()) < 3;
 
@@ -49,7 +49,18 @@
 <section class="order-details-page bg0 p-t-80 p-b-90">
     <div class="container">
 
-        {{-- PAGE HEADER --}}
+        @if(session('success'))
+            <div class="alert alert-success m-b-20">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger m-b-20">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="page-header-box m-b-25">
             <div class="row align-items-center">
                 <div class="col-lg-8 m-b-15">
@@ -70,10 +81,8 @@
         </div>
 
         <div class="row">
-            {{-- LEFT SIDE --}}
             <div class="col-lg-8">
 
-                {{-- TABLE 1: ORDER SUMMARY --}}
                 <div class="table-box m-b-24">
                     <div class="table-box-head">
                         <h4>Order Summary</h4>
@@ -104,7 +113,6 @@
                     </div>
                 </div>
 
-                {{-- TABLE 2: STATUS DETAILS --}}
                 <div class="table-box m-b-24">
                     <div class="table-box-head">
                         <h4>Status Details</h4>
@@ -150,7 +158,6 @@
                     </div>
                 </div>
 
-                {{-- TABLE 3: ORDER ITEMS --}}
                 <div class="table-box m-b-24">
                     <div class="table-box-head">
                         <h4>Order Items</h4>
@@ -235,7 +242,6 @@
                     </div>
                 </div>
 
-                {{-- TABLE 4: SHIPMENT DETAILS --}}
                 <div class="table-box m-b-24">
                     <div class="table-box-head">
                         <h4>Shipment Details</h4>
@@ -288,11 +294,9 @@
                 </div>
             </div>
 
-            {{-- RIGHT SIDE --}}
             <div class="col-lg-4">
                 <div class="sticky-sidebar">
 
-                    {{-- TABLE 5: SHIPPING ADDRESS --}}
                     <div class="table-box m-b-24">
                         <div class="table-box-head">
                             <h4>Shipping Address</h4>
@@ -361,7 +365,6 @@
                         @endif
                     </div>
 
-                    {{-- TABLE 6: ORDER TOTALS --}}
                     <div class="table-box m-b-24">
                         <div class="table-box-head">
                             <h4>Order Totals</h4>
@@ -400,7 +403,6 @@
                         </div>
                     </div>
 
-                    {{-- TABLE 7: ACTIONS --}}
                     <div class="table-box">
                         <div class="table-box-head">
                             <h4>Actions</h4>
@@ -414,7 +416,8 @@
                             @if($canCancel)
                                 <form action="{{ route('shipping.orders.cancel', $order->id) }}" method="POST" class="w-100 m-b-0">
                                     @csrf
-                                    <button class="main-action-btn danger-btn w-100"
+                                    <button type="submit"
+                                            class="main-action-btn danger-btn w-100"
                                             onclick="return confirm('Are you sure you want to cancel this order?')">
                                         <i class="fas fa-times m-r-8"></i>
                                         Cancel Order
@@ -501,9 +504,6 @@
         color: #1f2937;
     }
 
-    /* =========================
-       CLOSED TABLE STYLE
-    ========================= */
     .details-grid-table,
     .items-main-table {
         width: 100%;
@@ -730,4 +730,3 @@
     }
 </style>
 @endpush
-

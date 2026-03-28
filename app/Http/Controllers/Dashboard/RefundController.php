@@ -59,7 +59,7 @@ class RefundController extends Controller
             'total_refunds'     => (clone $statsBase)->count(),
             'pending_refunds'   => (clone $statsBase)->where('status', Refund::STATUS_PENDING)->count(),
             'processed_refunds' => (clone $statsBase)->where('status', Refund::STATUS_PROCESSED)->count(),
-            'failed_refunds'    => (clone $statsBase)->whereIn('status', [Refund::STATUS_FAILED, Refund::STATUS_CANCELLED])->count(),
+            'failed_refunds'    => (clone $statsBase)->where('status', Refund::STATUS_FAILED)->count(),
             'total_amount'      => (float) (clone $statsBase)->sum('amount'),
         ];
 

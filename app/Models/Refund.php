@@ -10,6 +10,8 @@ class Refund extends Model
 {
     use HasFactory;
 
+    protected $table = 'refunds';
+
     protected $fillable = [
         'payment_id',
         'return_id',
@@ -27,7 +29,6 @@ class Refund extends Model
     public const STATUS_PENDING = 'pending';
     public const STATUS_PROCESSED = 'processed';
     public const STATUS_FAILED = 'failed';
-    public const STATUS_CANCELLED = 'cancelled';
 
     public static function statuses(): array
     {
@@ -35,7 +36,6 @@ class Refund extends Model
             self::STATUS_PENDING,
             self::STATUS_PROCESSED,
             self::STATUS_FAILED,
-            self::STATUS_CANCELLED,
         ];
     }
 
@@ -77,7 +77,7 @@ class Refund extends Model
         return match ($this->status) {
             self::STATUS_PROCESSED => 'badge badge-success',
             self::STATUS_PENDING => 'badge badge-warning',
-            self::STATUS_FAILED, self::STATUS_CANCELLED => 'badge badge-danger',
+            self::STATUS_FAILED => 'badge badge-danger',
             default => 'badge badge-secondary',
         };
     }

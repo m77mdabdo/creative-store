@@ -9,6 +9,8 @@ class ReturnItem extends Model
 {
     use HasFactory;
 
+    protected $table = 'return_items';
+
     protected $fillable = [
         'return_id',
         'order_item_id',

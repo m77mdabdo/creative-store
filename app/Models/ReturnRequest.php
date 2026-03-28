@@ -34,20 +34,22 @@ class ReturnRequest extends Model
         'processed_at' => 'datetime',
     ];
 
-    public const STATUS_PENDING = 'pending';
+    public const STATUS_REQUESTED = 'requested';
     public const STATUS_APPROVED = 'approved';
     public const STATUS_REJECTED = 'rejected';
-    public const STATUS_COMPLETED = 'completed';
-    public const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_RECEIVED = 'received';
+    public const STATUS_REFUNDED = 'refunded';
+    public const STATUS_PARTIAL_REFUNDED = 'partial_refunded';
 
     public static function statuses(): array
     {
         return [
-            self::STATUS_PENDING,
+            self::STATUS_REQUESTED,
             self::STATUS_APPROVED,
             self::STATUS_REJECTED,
-            self::STATUS_COMPLETED,
-            self::STATUS_CANCELLED,
+            self::STATUS_RECEIVED,
+            self::STATUS_REFUNDED,
+            self::STATUS_PARTIAL_REFUNDED,
         ];
     }
 
@@ -94,10 +96,12 @@ class ReturnRequest extends Model
     public function getStatusBadgeClassAttribute(): string
     {
         return match ($this->status) {
-            self::STATUS_PENDING => 'badge badge-warning',
+            self::STATUS_REQUESTED => 'badge badge-warning',
             self::STATUS_APPROVED => 'badge badge-info',
-            self::STATUS_COMPLETED => 'badge badge-success',
-            self::STATUS_REJECTED, self::STATUS_CANCELLED => 'badge badge-danger',
+            self::STATUS_RECEIVED => 'badge badge-primary',
+            self::STATUS_REFUNDED => 'badge badge-success',
+            self::STATUS_PARTIAL_REFUNDED => 'badge badge-warning',
+            self::STATUS_REJECTED => 'badge badge-danger',
             default => 'badge badge-secondary',
         };
     }
