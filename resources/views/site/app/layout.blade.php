@@ -1,4 +1,11 @@
 @include('site.app.head')
+@auth
+<script>
+    window.Laravel = {
+        userId: {{ auth()->id() }}
+    };
+</script>
+@endauth
 <body class="animsition">
 
 	<!-- Header -->

@@ -173,6 +173,53 @@
             </div>
         </li>
 
+        {{-- User Notifications --}}
+        <li class="nav-item dropdown mr-3">
+            <a class="nav-link" data-toggle="dropdown" href="#" style="position:relative;">
+                <i class="far fa-bell"></i>
+
+                <span id="notif-count" class="badge badge-danger navbar-badge">
+                    {{ auth()->check() ? auth()->user()->unreadNotifications()->count() : 0 }}
+                </span>
+            </a>
+
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right"
+                 id="notif-dropdown"
+                 style="max-height:400px;overflow:auto;min-width:320px;">
+
+                @auth
+                    @forelse(auth()->user()->notifications()->latest()->take(10)->get() as $notification)
+                        <a href="#" class="dropdown-item">
+                            <div>
+                                <strong>{{ $notification->data['title'] ?? 'Notification' }}</strong>
+                                <span class="float-right text-muted text-sm">
+                                    {{ $notification->created_at?->diffForHumans() }}
+                                </span>
+                            </div>
+
+                            <div class="text-sm text-muted mt-1">
+                                {{ $notification->data['message'] ?? '' }}
+                            </div>
+
+                            @if(!empty($notification->data['order_number']))
+                                <div class="text-xs text-primary mt-1">
+                                    Order #{{ $notification->data['order_number'] }}
+                                </div>
+                            @endif
+                        </a>
+                        <div class="dropdown-divider"></div>
+                    @empty
+                        <span class="dropdown-item text-muted">No notifications</span>
+                        <div class="dropdown-divider"></div>
+                    @endforelse
+
+                    <a href="#" class="dropdown-item dropdown-footer">
+                        See All Notifications
+                    </a>
+                @endauth
+            </div>
+        </li>
+
         {{-- Fullscreen --}}
         <li class="nav-item">
             <a class="nav-link" data-widget="fullscreen" href="#" role="button">

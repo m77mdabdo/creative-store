@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Shipping;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendOrderCancelledNotificationJob;
 use App\Models\Order;
 use App\Models\OrderStatusLog;
 use App\Models\ReturnRequest;
@@ -69,10 +70,13 @@ class OrderController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($order) {
+            $wasPaidOnline = false;
+
+            DB::transaction(function () use ($order, &$wasPaidOnline) {
                 $order->loadMissing([
                     'items.variant',
                     'latestPayment',
+                    'user',
                 ]);
 
                 $oldStatus = $order->status;
@@ -84,6 +88,8 @@ class OrderController extends Controller
 
                 $alreadyRefunded = in_array($order->payment_status, ['refunded'], true)
                     || in_array(optional($payment)->status, ['refunded'], true);
+
+                $wasPaidOnline = $wasPaid && filled(optional($payment)->transaction_id);
 
                 $nextPaymentStatus = $order->payment_status;
 
@@ -181,6 +187,8 @@ class OrderController extends Controller
                     ]);
                 }
             });
+
+            SendOrderCancelledNotificationJob::dispatch($order->id, $wasPaidOnline);
         } catch (RuntimeException $e) {
             return back()->with('error', $e->getMessage());
         } catch (\Throwable $e) {

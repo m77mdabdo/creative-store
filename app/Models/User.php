@@ -2,28 +2,23 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Traits\Auditable;
-
-
-// use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-
-    use HasFactory, Notifiable , Auditable ;
-    // use HasApiTokens;
+    use HasFactory, Notifiable, Auditable, SoftDeletes;
 
     protected $fillable = [
         'name',
         'email',
         'password',
-         'otp',
-         'email_verified_at',
-         'phone',
-
+        'otp',
+        'email_verified_at',
+        'phone',
     ];
 
     protected $hidden = [
@@ -35,7 +30,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'deleted_at'        => 'datetime',
+            'password'          => 'hashed',
         ];
     }
 
@@ -61,18 +57,16 @@ class User extends Authenticatable
     public function hasPermission(string $code): bool
     {
         return $this->roles()
-            ->whereHas('permissions', fn($q) => $q->where('code', $code))
+            ->whereHas('permissions', fn ($q) => $q->where('code', $code))
             ->exists();
     }
 
-    // ✅ بديل assignRole بتاع Spatie
     public function assignRole(string $roleName): void
     {
         $role = Role::firstOrCreate(['name' => $roleName]);
         $this->roles()->syncWithoutDetaching([$role->id]);
     }
 
-    // ✅ لو عايز تستبدل كل الرولات (مش إضافة)
     public function syncRoles(array $roleNames): void
     {
         $roleIds = collect($roleNames)->map(function ($name) {
@@ -82,9 +76,6 @@ class User extends Authenticatable
         $this->roles()->sync($roleIds);
     }
 
-
-
-    /* باقي العلاقات زي ما هي عندك */
     /* =========================
      * Catalog
      * ========================= */
@@ -127,16 +118,15 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
-    // Payments من خلال Orders
     public function payments()
     {
         return $this->hasManyThrough(
             Payment::class,
             Order::class,
-            'user_id',   // FK on orders table
-            'order_id',  // FK on payments table
-            'id',        // local key on users
-            'id'         // local key on orders
+            'user_id',
+            'order_id',
+            'id',
+            'id'
         );
     }
 
@@ -159,15 +149,14 @@ class User extends Authenticatable
     }
 
     public function isDashboardUser(): bool
-{
-    return $this->hasRole('owner')
-        || $this->hasRole('admin')
-        || $this->hasRole('employee');
-}
+    {
+        return $this->hasRole('owner')
+            || $this->hasRole('admin')
+            || $this->hasRole('employee');
+    }
 
-public function abandonedCartRecoveries()
-{
-    return $this->hasMany(AbandonedCartRecovery::class);
-}
-
+    public function abandonedCartRecoveries()
+    {
+        return $this->hasMany(AbandonedCartRecovery::class);
+    }
 }
