@@ -31,6 +31,7 @@ use App\Http\Controllers\MoyasarPayment\MoyasarPaymentController;
   use App\Http\Controllers\Tracking\CustomerTrackingController;
 use App\Http\Controllers\Cart\CartRecoveryController;
 use App\Http\Controllers\Frontend\BlogController as FrontBlogController;
+ use App\Http\Controllers\Frontend\PageController as FrontPageController;
 
 
 
@@ -267,3 +268,7 @@ Route::get('/cart/recover/{token}', [CartRecoveryController::class, 'recover'])
 
     Route::get('/blog/{slug}', [FrontBlogController::class, 'show'])
     ->name('frontend.blog.show');
+
+
+Route::get('/pages/{slug}', [FrontPageController::class, 'show'])
+    ->name('frontend.pages.show');

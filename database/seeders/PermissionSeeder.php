@@ -21,6 +21,11 @@ class PermissionSeeder extends Seeder
             'blogs.delete',
             'blog-comments.view',
             'blog-comments.delete',
+            'pages.view',
+            'pages.create',
+            'pages.edit',
+            'pages.delete'
+
         ];
 
         foreach ($permissionNames as $permissionName) {

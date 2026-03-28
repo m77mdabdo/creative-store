@@ -7,11 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PageTranslation extends Model
 {
+    use HasFactory;
 
-
-      use HasFactory;
-
-    protected $fillable = ['page_id','locale','title','content'];
+    protected $fillable = [
+        'page_id',
+        'locale',
+        'title',
+        'content',
+    ];
 
     public function page()
     {

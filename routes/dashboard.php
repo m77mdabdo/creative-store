@@ -30,6 +30,7 @@ use App\Http\Controllers\Dashboard\AbandonedCartRecoveryController ;
 use App\Http\Controllers\Dashboard\BlogCategoryController ;
 use App\Http\Controllers\Dashboard\BlogController;
 use App\Http\Controllers\Dashboard\BlogCommentController;
+use App\Http\Controllers\Dashboard\PageController;
 
 
 
@@ -851,6 +852,43 @@ Route::get('/blog-comments/{blogComment}', [BlogCommentController::class, 'show'
 Route::delete('/blog-comments/{blogComment}', [BlogCommentController::class, 'destroy'])
     ->middleware('permission:blog-comments.delete')
     ->name('blog-comments.destroy');
+
+    /*
+|--------------------------------------------------------------------------
+| Pages
+|--------------------------------------------------------------------------
+*/
+Route::get('/pages', [PageController::class, 'index'])
+    ->middleware('permission:pages.view')
+    ->name('pages.index');
+
+Route::get('/pages/create', [PageController::class, 'create'])
+    ->middleware('permission:pages.create')
+    ->name('pages.create');
+
+Route::post('/pages', [PageController::class, 'store'])
+    ->middleware('permission:pages.create')
+    ->name('pages.store');
+
+Route::get('/pages/{page}', [PageController::class, 'show'])
+    ->middleware('permission:pages.view')
+    ->name('pages.show');
+
+Route::get('/pages/{page}/edit', [PageController::class, 'edit'])
+    ->middleware('permission:pages.edit')
+    ->name('pages.edit');
+
+Route::put('/pages/{page}', [PageController::class, 'update'])
+    ->middleware('permission:pages.edit')
+    ->name('pages.update');
+
+Route::patch('/pages/{page}/toggle-status', [PageController::class, 'toggleStatus'])
+    ->middleware('permission:pages.edit')
+    ->name('pages.toggle-status');
+
+Route::delete('/pages/{page}', [PageController::class, 'destroy'])
+    ->middleware('permission:pages.delete')
+    ->name('pages.destroy');
 
 
     });
