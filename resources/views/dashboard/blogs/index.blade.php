@@ -113,7 +113,11 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <div class="font-weight-bold">{{ $blog->title }}</div>
+                                        <div class="font-weight-bold">
+                                            {{-- <a href="{{ route('dashboard.blogs.show', $blog) }}">
+                                                {{ $blog->title }}
+                                            </a> --}}
+                                        </div>
                                         <small><code>{{ $blog->slug }}</code></small>
                                     </td>
                                     <td>{{ $blog->category?->name ?? '-' }}</td>
@@ -134,8 +138,17 @@
                                     <td class="text-center">
                                         <div class="btn-group">
                                             @if(auth()->user()->hasRole('owner') || auth()->user()->hasRole('admin') || auth()->user()->hasPermission('blogs.view'))
-                                                <a href="{{ route('dashboard.blogs.show', $blog) }}" class="btn btn-sm btn-info">
+                                                <a href="{{ route('dashboard.blogs.show', $blog) }}" class="btn btn-sm btn-info" title="View in Dashboard">
                                                     <i class="fas fa-eye"></i>
+                                                </a>
+                                            @endif
+
+                                            @if(Route::has('frontend.blog.show'))
+                                                <a href="{{ route('frontend.blog.show', $blog->slug) }}"
+                                                   target="_blank"
+                                                   class="btn btn-sm btn-success"
+                                                   title="Open Frontend">
+                                                    <i class="fas fa-external-link-alt"></i>
                                                 </a>
                                             @endif
 
@@ -198,4 +211,4 @@
         </div>
     </section>
 </div>
-@endsection 
+@endsection

@@ -5,11 +5,20 @@
 @section('content')
 <div class="content-wrapper">
     <section class="content-header">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
+        <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap">
             <h1>{{ $blog->title }}</h1>
-            <a href="{{ route('dashboard.blogs.index') }}" class="btn btn-default">
-                <i class="fas fa-arrow-left"></i> Back
-            </a>
+
+            <div class="d-flex gap-2">
+                <a href="{{ route('dashboard.blogs.index') }}" class="btn btn-default">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+
+                @if(Route::has('frontend.blog.show'))
+                    <a href="{{ route('frontend.blog.show', $blog->slug) }}" target="_blank" class="btn btn-success">
+                        <i class="fas fa-external-link-alt"></i> Open Frontend
+                    </a>
+                @endif
+            </div>
         </div>
     </section>
 
@@ -92,4 +101,4 @@
         </div>
     </section>
 </div>
-@endsection 
+@endsection

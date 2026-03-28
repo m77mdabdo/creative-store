@@ -29,6 +29,7 @@ use App\Http\Controllers\Dashboard\WishlistController;
 use App\Http\Controllers\Dashboard\AbandonedCartRecoveryController ;
 use App\Http\Controllers\Dashboard\BlogCategoryController ;
 use App\Http\Controllers\Dashboard\BlogController;
+use App\Http\Controllers\Dashboard\BlogCommentController;
 
 
 
@@ -833,6 +834,23 @@ Route::patch('/blogs/{blog}/toggle-featured', [BlogController::class, 'toggleFea
 Route::delete('/blogs/{blog}', [BlogController::class, 'destroy'])
     ->middleware('permission:blogs.delete')
     ->name('blogs.destroy');
+
+    /*
+|--------------------------------------------------------------------------
+| Blog Comments
+|--------------------------------------------------------------------------
+*/
+Route::get('/blog-comments', [BlogCommentController::class, 'index'])
+    ->middleware('permission:blog-comments.view')
+    ->name('blog-comments.index');
+
+Route::get('/blog-comments/{blogComment}', [BlogCommentController::class, 'show'])
+    ->middleware('permission:blog-comments.view')
+    ->name('blog-comments.show');
+
+Route::delete('/blog-comments/{blogComment}', [BlogCommentController::class, 'destroy'])
+    ->middleware('permission:blog-comments.delete')
+    ->name('blog-comments.destroy');
 
 
     });

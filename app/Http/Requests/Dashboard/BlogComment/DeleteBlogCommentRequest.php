@@ -6,23 +6,19 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class DeleteBlogCommentRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        $user = $this->user();
+
+        return $user && (
+            $user->hasRole('owner') ||
+            $user->hasRole('admin') ||
+            $user->hasPermission('blog-comments.delete')
+        );
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 }

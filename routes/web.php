@@ -30,6 +30,9 @@ use App\Http\Controllers\Checkout\CheckoutController;
 use App\Http\Controllers\MoyasarPayment\MoyasarPaymentController;
   use App\Http\Controllers\Tracking\CustomerTrackingController;
 use App\Http\Controllers\Cart\CartRecoveryController;
+use App\Http\Controllers\Frontend\BlogController as FrontBlogController;
+
+
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 // Route::get('/dashboard', function () {
@@ -260,3 +263,7 @@ Route::post('/track-order', [CustomerTrackingController::class, 'track'])
 
 Route::get('/cart/recover/{token}', [CartRecoveryController::class, 'recover'])
     ->name('cart.recover');
+
+
+    Route::get('/blog/{slug}', [FrontBlogController::class, 'show'])
+    ->name('frontend.blog.show');

@@ -152,7 +152,7 @@ class BlogController extends Controller
 
         return redirect()
             ->route('dashboard.blogs.index')
-            ->with('success', "Blog status updated successfully.");
+            ->with('success', 'Blog status updated successfully.');
     }
 
     public function toggleFeatured(Blog $blog): RedirectResponse
@@ -163,7 +163,7 @@ class BlogController extends Controller
 
         return redirect()
             ->route('dashboard.blogs.index')
-            ->with('success', "Blog featured flag updated successfully.");
+            ->with('success', 'Blog featured flag updated successfully.');
     }
 
     public function destroy(DeleteBlogRequest $request, Blog $blog): RedirectResponse
