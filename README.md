@@ -10,7 +10,7 @@
 ![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php&logoColor=white)
 ![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-183%20passing-2ea44f)
+![Tests](https://img.shields.io/badge/tests-195%20passing-2ea44f)
 ![composer audit](https://img.shields.io/badge/composer%20audit-0%20advisories-2ea44f)
 ![npm audit](https://img.shields.io/badge/npm%20audit-0%20vulnerabilities-2ea44f)
 ![RTL](https://img.shields.io/badge/Arabic-RTL-0E7C66)
@@ -245,7 +245,7 @@ Every place where two requests can race has an explicit guard:
 
 | Scenario | Guard |
 | --- | --- |
-| Two customers buy the last unit | Variant rows are locked with `SELECT … FOR UPDATE` (in id order, so no deadlocks). The second checkout waits, sees stock is 0 and gets "Not enough stock". |
+| Two customers buy the last unit | Product and variant rows are locked with `SELECT … FOR UPDATE` (in id order, so no deadlocks). The second checkout waits, sees stock is 0 and gets "Not enough stock". |
 | Two customers redeem the last coupon use | Coupon rows are locked before `used_count` and `per_user_limit` are checked. Exactly one succeeds. |
 | Customer double-clicks "Place order" | A per-customer cache lock serializes checkout, and the cart is cleared once the order exists, so the second click cannot create a duplicate order. |
 | Callback and webhook arrive together | The order row is locked; whichever runs second sees `payment_status = paid` and does nothing. Emails are sent once. |
@@ -312,7 +312,7 @@ The goal is that request time depends on the page size, not on how big the table
 - **Uploads:** images only (`jpg`, `jpeg`, `png`, `webp`) with size limits; avatars are re-encoded to WebP so EXIF/GPS data is dropped; nothing under `/storage` can run as a script.
 - **Secrets and logs:** never committed; password hashes, tokens, OTPs and gateway payloads are redacted from audit logs; stored error logs have emails, phones, card numbers, tokens and SQL values masked; the SMS log driver never writes the number or the text; errors shown to customers never include exception details.
 - **Accounts:** the forgot-password form answers the same way for every address, so it cannot be used to discover customers. Staff passwords need 10+ characters with upper and lower case letters and a number.
-- **Headers:** CSP (enforced `object-src`, `base-uri`, `frame-ancestors`, plus a Report-Only full policy), HSTS on HTTPS, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`. Plain HTTP is redirected to HTTPS in production.
+- **Headers:** an enforced Content-Security-Policy with a fresh nonce on every request (`script-src 'nonce-…' 'strict-dynamic'`, no inline event handlers; a test fails CI if a view adds one), HSTS on HTTPS, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`. Plain HTTP is redirected to HTTPS in production.
 - **Proxies:** `X-Forwarded-*` headers are only trusted from the addresses in `TRUSTED_PROXIES`, so rate limits and logs see the real visitor IP behind a load balancer.
 - **Dependencies:** `composer audit` and `npm audit` are clean; the storefront uses jQuery 3.7.1, Bootstrap 4.6.2 and Select2 4.0.13, and the unused theme demos and docs are not published.
 - **Google sign-in:** the OAuth state is checked, accounts are matched by Google's account id, an existing account is linked only when Google reports the email as verified, and disabled or closed accounts are refused.
@@ -330,7 +330,7 @@ A full pre-launch review covered authentication, passwords, authorization and ID
 |---|---|---|---|
 | 1 | 70 known advisories in PHP packages (signed-URL path confusion and email-rule CRLF in Laravel, mail header injection in symfony/mime, local file read in dompdf, guzzle host confusion) | High | Dependencies updated; `composer audit` reports none |
 | 2 | No trusted proxies: behind a load balancer every visitor shared one IP, so one person could exhaust the login limit for everyone, and HSTS never applied | Medium | `TRUSTED_PROXIES` setting and an HTTP to HTTPS redirect in production |
-| 3 | No Content-Security-Policy | Medium | Enforced `object-src`, `base-uri`, `frame-ancestors`, plus a Report-Only policy listing every third party |
+| 3 | No Content-Security-Policy | Medium | Enforced policy with a per-request script nonce and `strict-dynamic`; 58 inline `onclick`/`onsubmit` handlers moved to scripts |
 | 4 | Storefront loaded jQuery 3.2.1 (twice), Bootstrap 4.0.0 and Select2 4.0.3, all with public XSS issues | Medium | jQuery 3.7.1, Bootstrap 4.6.2, Select2 4.0.13; unused moment.js removed |
 | 5 | Profile and password forms had no rate limit (password guessing on a stolen session, email-change mails to any inbox) | Medium | 5 password attempts per 10 minutes, 3 email-change mails per hour |
 | 6 | Dashboard home, top bar and live counters showed customer names, orders and audit entries to every staff member | Medium | Each panel and counter now follows the matching permission |
@@ -348,6 +348,9 @@ A full pre-launch review covered authentication, passwords, authorization and ID
 | 18 | `.env.example` had debug defaults and deploys did not check the settings | Low | `.env.production.example` and `php artisan app:preflight` |
 | 19 | Payment webhook trusted the status and amount in the request body once the shared secret matched | Medium | Payment read back from the Moyasar API before the order is touched |
 | 20 | A tracking number alone showed the recipient's name and street | Medium | Name and street only after the phone check, for the owner or staff |
+| 21 | Products sold without variants had no stock, so the last piece could be sold twice | Medium | Optional `products.stock` (empty = not tracked), locked and decremented at checkout, restored on cancel or expiry |
+| 22 | Staff passwords set before the 10-character rule kept working for the dashboard | Medium | Weak staff passwords are detected at sign-in; the dashboard stays closed until a strong one is chosen |
+| 23 | `migrate:fresh --seed` failed on Linux (class name case, invalid return statuses), so permissions were never seeded on a fresh server | Low | Seeder class name and return statuses fixed |
 
 Checked and found safe: no SQL injection (only bindings), `$fillable` on every model, Blade output escaped, CSRF on every form, uploads limited to real images, passwords hashed with bcrypt, sessions regenerated on login, no secrets in the code or in the Git history, no debug routes, Telescope or Debugbar.
 
