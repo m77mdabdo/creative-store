@@ -27,6 +27,7 @@ use App\Http\Controllers\Dashboard\DeliveryMonitoringController;
 use App\Http\Controllers\Dashboard\AddressController;
 use App\Http\Controllers\Dashboard\WishlistController;
 use App\Http\Controllers\Dashboard\AbandonedCartRecoveryController ;
+use App\Http\Controllers\Dashboard\BlogCategoryController ;
 
 
 
@@ -761,5 +762,36 @@ Route::get('/abandoned-cart-recoveries', [AbandonedCartRecoveryController::class
 Route::get('/abandoned-cart-recoveries/{recovery}', [AbandonedCartRecoveryController::class, 'show'])
     ->middleware('permission:abandoned-cart-recoveries.view')
     ->name('abandoned-cart-recoveries.show');
+
+    /*
+|--------------------------------------------------------------------------
+| Blog Categories
+|--------------------------------------------------------------------------
+*/
+Route::get('/blog-categories', [BlogCategoryController::class, 'index'])
+    ->middleware('permission:blog-categories.view')
+    ->name('blog-categories.index');
+
+Route::get('/blog-categories/create', [BlogCategoryController::class, 'create'])
+    ->middleware('permission:blog-categories.create')
+    ->name('blog-categories.create');
+
+Route::post('/blog-categories', [BlogCategoryController::class, 'store'])
+    ->middleware('permission:blog-categories.create')
+    ->name('blog-categories.store');
+
+Route::get('/blog-categories/{blog_category}/edit', [BlogCategoryController::class, 'edit'])
+    ->middleware('permission:blog-categories.edit')
+    ->name('blog-categories.edit');
+
+Route::put('/blog-categories/{blog_category}', [BlogCategoryController::class, 'update'])
+    ->middleware('permission:blog-categories.edit')
+    ->name('blog-categories.update');
+
+Route::delete('/blog-categories/{blog_category}', [BlogCategoryController::class, 'destroy'])
+    ->middleware('permission:blog-categories.delete')
+    ->name('blog-categories.destroy');
+
+
 
     });
