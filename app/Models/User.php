@@ -165,4 +165,9 @@ class User extends Authenticatable
         || $this->hasRole('employee');
 }
 
+public function abandonedCartRecoveries()
+{
+    return $this->hasMany(AbandonedCartRecovery::class);
+}
+
 }

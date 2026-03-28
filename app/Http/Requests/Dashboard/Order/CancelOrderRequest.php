@@ -14,7 +14,9 @@ class CancelOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'reason' => ['required', 'string', 'max:1000'],
+            'reason' => ['nullable', 'string', 'max:1000'],
+            'refund_if_paid' => ['nullable', 'boolean'],
+            'refund_amount' => ['nullable', 'numeric', 'min:0.01'],
         ];
     }
 }

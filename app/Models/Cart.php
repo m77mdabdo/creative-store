@@ -27,5 +27,9 @@ class Cart extends Model
         return $this->hasMany(InventoryReservation::class);
     }
 
-    
+    public function recoveries()
+{
+    return $this->hasMany(AbandonedCartRecovery::class);
+}
+
 }

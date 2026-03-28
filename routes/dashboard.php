@@ -26,7 +26,7 @@ use App\Http\Controllers\Dashboard\ShipmentTrackingController;
 use App\Http\Controllers\Dashboard\DeliveryMonitoringController;
 use App\Http\Controllers\Dashboard\AddressController;
 use App\Http\Controllers\Dashboard\WishlistController;
-
+use App\Http\Controllers\Dashboard\AbandonedCartRecoveryController ;
 
 
 
@@ -748,4 +748,18 @@ Route::delete('/carts/{cart}', [\App\Http\Controllers\Dashboard\CartController::
 Route::delete('/carts/{cart}/items/{item}', [\App\Http\Controllers\Dashboard\CartController::class, 'destroyItem'])
     ->middleware('permission:carts.edit')
     ->name('carts.items.destroy');
+
+/*
+|--------------------------------------------------------------------------
+| Abandoned Cart Recoveries
+|--------------------------------------------------------------------------
+*/
+Route::get('/abandoned-cart-recoveries', [AbandonedCartRecoveryController::class, 'index'])
+    ->middleware('permission:abandoned-cart-recoveries.view')
+    ->name('abandoned-cart-recoveries.index');
+
+Route::get('/abandoned-cart-recoveries/{recovery}', [AbandonedCartRecoveryController::class, 'show'])
+    ->middleware('permission:abandoned-cart-recoveries.view')
+    ->name('abandoned-cart-recoveries.show');
+
     });

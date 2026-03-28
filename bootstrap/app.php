@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\ErrorLog;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -24,7 +25,6 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-
         $exceptions->report(function (Throwable $e) {
             try {
                 ErrorLog::create([
@@ -43,5 +43,8 @@ return Application::configure(basePath: dirname(__DIR__))
                 // منع loop لو حصل خطأ أثناء تسجيل الخطأ
             }
         });
-
-    })->create();
+    })
+    ->withSchedule(function (Schedule $schedule): void {
+        $schedule->command('carts:process-abandoned')->everyMinute();
+    })
+    ->create();

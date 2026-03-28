@@ -158,6 +158,10 @@ class AuthSeeder extends Seeder
             'permissions.edit',
             'permissions.delete',
 
+            // Abandoned Carts
+            'abandoned-carts.view',
+            
+
             'audit.view',
             'error-logs.view',
             'error-logs.edit',

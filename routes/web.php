@@ -29,7 +29,7 @@ use App\Http\Controllers\Shipping\OrderController;
 use App\Http\Controllers\Checkout\CheckoutController;
 use App\Http\Controllers\MoyasarPayment\MoyasarPaymentController;
   use App\Http\Controllers\Tracking\CustomerTrackingController;
-
+use App\Http\Controllers\Cart\CartRecoveryController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 // Route::get('/dashboard', function () {
@@ -255,3 +255,8 @@ Route::get('/track-order', [CustomerTrackingController::class, 'searchForm'])
 
 Route::post('/track-order', [CustomerTrackingController::class, 'track'])
     ->name('tracking.track');
+
+
+
+Route::get('/cart/recover/{token}', [CartRecoveryController::class, 'recover'])
+    ->name('cart.recover');

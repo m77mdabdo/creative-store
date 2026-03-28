@@ -15,6 +15,14 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
+use App\Services\Payments\RefundService;
+use RuntimeException;
+
+use App\Models\ReturnRequest;
+use App\Models\Refund;
+
+
+
 
 class OrderController extends Controller
 {
@@ -332,88 +340,126 @@ class OrderController extends Controller
         return back()->with('success', 'Shipment information saved successfully.');
     }
 
-    public function cancel(CancelOrderRequest $request, Order $order): RedirectResponse
-    {
-        if ($order->status === 'cancelled') {
-            return back()->with('error', 'This order is already cancelled.');
-        }
 
-        if ($order->shipping_status === 'delivered') {
-            return back()->with('error', 'Delivered orders cannot be cancelled.');
-        }
 
-        $reason = trim((string) $request->input('reason', ''));
+public function cancel(CancelOrderRequest $request, Order $order): RedirectResponse
+{
+    if ($order->status === 'cancelled') {
+        return back()->with('error', 'Order is already cancelled.');
+    }
 
-        $order->loadMissing([
-            'items.variant',
-            'items.product',
-        ]);
+    $reason = trim((string) $request->input('reason', 'Order cancelled by admin'));
+    $refundIfPaid = (bool) $request->boolean('refund_if_paid');
+    $refundAmount = $request->filled('refund_amount')
+        ? (float) $request->input('refund_amount')
+        : null;
 
-        DB::transaction(function () use ($order, $reason) {
-            $oldStatus = (string) $order->status;
-            $oldShippingStatus = (string) $order->shipping_status;
+    try {
+        DB::transaction(function () use ($order, $reason, $refundIfPaid, $refundAmount) {
+            $order->loadMissing([
+                'items',
+                'payments' => fn ($q) => $q->latest('id'),
+            ]);
 
-            foreach ($order->items as $item) {
-                $qty = max(1, (int) $item->quantity);
-
-                if ($item->variant_id && $item->variant) {
-                    $item->variant->increment('stock', $qty);
-
-                    InventoryMovement::create([
-                        'product_id' => $item->product_id,
-                        'variant_id' => $item->variant_id,
-                        'type' => 'restock_from_cancel',
-                        'quantity' => $qty,
-                        'reference_type' => Order::class,
-                        'reference_id' => $order->id,
-                        'note' => 'Stock restored after order cancellation. Order #' . $order->order_number,
-                        'created_by' => auth()->id(),
-                    ]);
-                } else {
-                    InventoryMovement::create([
-                        'product_id' => $item->product_id,
-                        'variant_id' => null,
-                        'type' => 'restock_from_cancel',
-                        'quantity' => $qty,
-                        'reference_type' => Order::class,
-                        'reference_id' => $order->id,
-                        'note' => 'Simple product restock logged after order cancellation. Order #' . $order->order_number,
-                        'created_by' => auth()->id(),
-                    ]);
-                }
-            }
-
+            // 1) Cancel order
             $order->update([
                 'status' => 'cancelled',
-                'shipping_status' => 'cancelled',
                 'cancelled_at' => now(),
                 'cancelled_by' => auth()->id(),
                 'cancellation_reason' => $reason,
             ]);
 
-            if ($oldStatus !== 'cancelled') {
-                OrderStatusLog::create([
-                    'order_id' => $order->id,
-                    'from_status' => $oldStatus,
-                    'to_status' => 'cancelled',
-                    'changed_by' => auth()->id(),
-                    'note' => 'Order cancelled from dashboard. Reason: ' . $reason,
+            // 2) Log status change
+            OrderStatusLog::create([
+                'order_id' => $order->id,
+                'from_status' => $order->getOriginal('status') ?: 'unknown',
+                'to_status' => 'cancelled',
+                'changed_by' => auth()->id(),
+                'note' => 'Order cancelled from dashboard. Reason: ' . $reason,
+            ]);
+
+            // 3) Create return request
+            $returnRequest = ReturnRequest::create([
+                'order_id' => $order->id,
+                'user_id' => $order->user_id,
+                'status' => ReturnRequest::STATUS_APPROVED,
+                'reason' => $reason,
+                'refund_shipping' => true,
+                'refund_tax' => true,
+                'shipping_refund_amount' => (float) ($order->shipping_fee ?? 0),
+                'tax_refund_amount' => (float) ($order->tax_total ?? 0),
+                'requested_at' => now(),
+                'processed_at' => now(),
+            ]);
+
+            // 4) Create return items for full order cancellation
+            foreach ($order->items as $item) {
+                \App\Models\ReturnItem::create([
+                    'return_id' => $returnRequest->id,
+                    'order_item_id' => $item->id,
+                    'quantity' => (int) $item->quantity,
+                    'condition_note' => 'Cancelled before completion',
+                    'refund_amount' => (float) $item->line_total,
                 ]);
             }
 
-            if ($oldShippingStatus !== 'cancelled') {
+            // 5) Refund if paid and requested
+            $paidPayment = $order->payments
+                ->first(fn ($payment) => in_array($payment->status, ['paid', 'captured'], true));
+
+            if ($refundIfPaid && $paidPayment) {
+                $refund = app(RefundService::class)->refundOrder(
+                    order: $order,
+                    amount: $refundAmount,
+                    reason: $reason,
+                    returnId: $returnRequest->id
+                );
+
+                $returnRequest->update([
+                    'status' => ReturnRequest::STATUS_COMPLETED,
+                    'processed_at' => now(),
+                ]);
+
                 OrderStatusLog::create([
                     'order_id' => $order->id,
-                    'from_status' => 'shipping:' . $oldShippingStatus,
-                    'to_status' => 'shipping:cancelled',
+                    'from_status' => 'payment:' . ($order->getOriginal('payment_status') ?? 'paid'),
+                    'to_status' => 'payment:' . $order->fresh()->payment_status,
                     'changed_by' => auth()->id(),
-                    'note' => 'Shipping status cancelled because order was cancelled. Reason: ' . $reason,
+                    'note' => 'Refund created successfully. Refund ID: ' . $refund->id,
+                ]);
+            } else {
+                $order->update([
+                    'payment_status' => $paidPayment ? 'refund_pending' : 'cancelled',
+                ]);
+            }
+
+            // 6) Optional: return stock back
+            foreach ($order->items as $item) {
+                if ($item->variant_id) {
+                    DB::table('product_variants')
+                        ->where('id', $item->variant_id)
+                        ->increment('stock', (int) $item->quantity);
+                }
+
+                InventoryMovement::create([
+                    'product_id' => $item->product_id,
+                    'variant_id' => $item->variant_id,
+                    'type' => 'restock',
+                    'quantity' => (int) $item->quantity,
+                    'reference_type' => Order::class,
+                    'reference_id' => $order->id,
+                    'note' => 'Stock restored after order cancellation.',
                 ]);
             }
         });
 
-        return back()->with('success', 'Order cancelled and stock restored successfully.');
+        return back()->with('success', 'Order cancelled successfully and return/refund recorded.');
+    } catch (\Throwable $e) {
+        report($e);
+
+        return back()->with('error', $e->getMessage() ?: 'Failed to cancel order.');
     }
+}
 
     public function invoice(Order $order): Response
     {

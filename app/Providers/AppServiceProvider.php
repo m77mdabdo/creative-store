@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\AbandonedCartRecovery;
 use App\Models\Address;
 use App\Models\Cart;
 use App\Models\ContactMessage;
@@ -66,6 +67,9 @@ class AppServiceProvider extends ServiceProvider
             $dashboardWishlistsCount = 0;
             $dashboardCartsCount = 0;
             $dashboardAbandonedCartsCount = 0;
+
+            // ✅ Abandoned Cart Recovery
+            $dashboardAbandonedCartRecoveriesCount = 0;
 
             $user = Auth::user();
 
@@ -135,56 +139,69 @@ class AppServiceProvider extends ServiceProvider
                     ? Cart::query()->count()
                     : 0;
 
-                // ✅ abandoned carts لاحقًا
-                // مثال مبدئي: أي cart فيه عناصر واتأخر أكتر من 24 ساعة
+                // ✅ Abandoned carts: carts فيها عناصر وآخر تحديث مر عليه أكثر من 24 ساعة
                 $dashboardAbandonedCartsCount = class_exists(Cart::class)
                     ? Cart::query()
                         ->where('updated_at', '<', now()->subDay())
+                        ->whereHas('items')
+                        ->count()
+                    : 0;
+
+                // ================= Abandoned Cart Recovery =================
+                $dashboardAbandonedCartRecoveriesCount = class_exists(AbandonedCartRecovery::class)
+                    ? AbandonedCartRecovery::query()
+                        ->whereIn('status', ['pending', 'sent', 'failed'])
                         ->count()
                     : 0;
             }
 
             $sidebar = app(SidebarBuilder::class)->build($user, [
-                'dashboardPendingOrdersCount'         => $dashboardPendingOrdersCount,
-                'dashboardPendingPaymentsCount'       => $dashboardPendingPaymentsCount,
-                'dashboardUnreadMessagesCount'        => $dashboardUnreadMessagesCount,
-                'dashboardProductsCount'              => $dashboardProductsCount,
-                'dashboardPendingReviewsCount'        => $dashboardPendingReviewsCount,
+                'dashboardPendingOrdersCount'              => $dashboardPendingOrdersCount,
+                'dashboardPendingPaymentsCount'            => $dashboardPendingPaymentsCount,
+                'dashboardUnreadMessagesCount'             => $dashboardUnreadMessagesCount,
+                'dashboardProductsCount'                   => $dashboardProductsCount,
+                'dashboardPendingReviewsCount'             => $dashboardPendingReviewsCount,
 
                 // ✅ Shipping
-                'dashboardShippingMethodsCount'       => $dashboardShippingMethodsCount,
-                'dashboardActiveShippingMethodsCount' => $dashboardActiveShippingMethodsCount,
-                'dashboardShipmentsInTransitCount'    => $dashboardShipmentsInTransitCount,
+                'dashboardShippingMethodsCount'            => $dashboardShippingMethodsCount,
+                'dashboardActiveShippingMethodsCount'      => $dashboardActiveShippingMethodsCount,
+                'dashboardShipmentsInTransitCount'         => $dashboardShipmentsInTransitCount,
 
                 // ✅ Customers
-                'dashboardUsersCount'                 => $dashboardUsersCount,
-                'dashboardAddressesCount'             => $dashboardAddressesCount,
-                'dashboardWishlistsCount'             => $dashboardWishlistsCount,
-                'dashboardCartsCount'                 => $dashboardCartsCount,
-                'dashboardAbandonedCartsCount'        => $dashboardAbandonedCartsCount,
+                'dashboardUsersCount'                      => $dashboardUsersCount,
+                'dashboardAddressesCount'                  => $dashboardAddressesCount,
+                'dashboardWishlistsCount'                  => $dashboardWishlistsCount,
+                'dashboardCartsCount'                      => $dashboardCartsCount,
+                'dashboardAbandonedCartsCount'             => $dashboardAbandonedCartsCount,
+
+                // ✅ Recovery
+                'dashboardAbandonedCartRecoveriesCount'    => $dashboardAbandonedCartRecoveriesCount,
             ]);
 
             $view->with([
-                'dashboardPendingOrders'              => $dashboardPendingOrders,
-                'dashboardPendingOrdersCount'         => $dashboardPendingOrdersCount,
-                'dashboardPendingPaymentsCount'       => $dashboardPendingPaymentsCount,
-                'dashboardUnreadMessages'             => $dashboardUnreadMessages,
-                'dashboardUnreadMessagesCount'        => $dashboardUnreadMessagesCount,
-                'dashboardProductsCount'              => $dashboardProductsCount,
-                'dashboardPendingReviewsCount'        => $dashboardPendingReviewsCount,
-                'sidebar'                             => $sidebar,
+                'dashboardPendingOrders'                   => $dashboardPendingOrders,
+                'dashboardPendingOrdersCount'              => $dashboardPendingOrdersCount,
+                'dashboardPendingPaymentsCount'            => $dashboardPendingPaymentsCount,
+                'dashboardUnreadMessages'                  => $dashboardUnreadMessages,
+                'dashboardUnreadMessagesCount'             => $dashboardUnreadMessagesCount,
+                'dashboardProductsCount'                   => $dashboardProductsCount,
+                'dashboardPendingReviewsCount'             => $dashboardPendingReviewsCount,
+                'sidebar'                                  => $sidebar,
 
                 // ✅ Shipping
-                'dashboardShippingMethodsCount'       => $dashboardShippingMethodsCount,
-                'dashboardActiveShippingMethodsCount' => $dashboardActiveShippingMethodsCount,
-                'dashboardShipmentsInTransitCount'    => $dashboardShipmentsInTransitCount,
+                'dashboardShippingMethodsCount'            => $dashboardShippingMethodsCount,
+                'dashboardActiveShippingMethodsCount'      => $dashboardActiveShippingMethodsCount,
+                'dashboardShipmentsInTransitCount'         => $dashboardShipmentsInTransitCount,
 
                 // ✅ Customers
-                'dashboardUsersCount'                 => $dashboardUsersCount,
-                'dashboardAddressesCount'             => $dashboardAddressesCount,
-                'dashboardWishlistsCount'             => $dashboardWishlistsCount,
-                'dashboardCartsCount'                 => $dashboardCartsCount,
-                'dashboardAbandonedCartsCount'        => $dashboardAbandonedCartsCount,
+                'dashboardUsersCount'                      => $dashboardUsersCount,
+                'dashboardAddressesCount'                  => $dashboardAddressesCount,
+                'dashboardWishlistsCount'                  => $dashboardWishlistsCount,
+                'dashboardCartsCount'                      => $dashboardCartsCount,
+                'dashboardAbandonedCartsCount'             => $dashboardAbandonedCartsCount,
+
+                // ✅ Recovery
+                'dashboardAbandonedCartRecoveriesCount'    => $dashboardAbandonedCartRecoveriesCount,
             ]);
         });
 

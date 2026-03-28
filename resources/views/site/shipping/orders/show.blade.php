@@ -1,221 +1,733 @@
 @extends('site.app.layout')
 
+@php
+    $currency = $order->currency ?? 'SAR';
+
+    $orderStatusMap = [
+        'pending' => ['label' => 'Pending', 'class' => 'warning', 'row_class' => ''],
+        'processing' => ['label' => 'Processing', 'class' => 'info', 'row_class' => ''],
+        'completed' => ['label' => 'Completed', 'class' => 'success', 'row_class' => ''],
+        'cancelled' => ['label' => 'Cancelled', 'class' => 'danger', 'row_class' => 'danger-row'],
+    ];
+
+    $paymentStatusMap = [
+        'pending' => ['label' => 'Pending', 'class' => 'secondary', 'row_class' => ''],
+        'paid' => ['label' => 'Paid', 'class' => 'success', 'row_class' => ''],
+        'failed' => ['label' => 'Failed', 'class' => 'danger', 'row_class' => 'danger-row'],
+        'refund_pending' => ['label' => 'Refund Pending', 'class' => 'danger', 'row_class' => 'danger-row'],
+        'partially_refunded' => ['label' => 'Partially Refunded', 'class' => 'warning', 'row_class' => ''],
+        'refunded' => ['label' => 'Refunded', 'class' => 'dark', 'row_class' => ''],
+    ];
+
+    $shippingStatusMap = [
+        'pending' => ['label' => 'Pending', 'class' => 'secondary', 'row_class' => ''],
+        'processing' => ['label' => 'Processing', 'class' => 'info', 'row_class' => ''],
+        'shipped' => ['label' => 'Shipped', 'class' => 'primary', 'row_class' => ''],
+        'delivered' => ['label' => 'Delivered', 'class' => 'success', 'row_class' => ''],
+        'cancelled' => ['label' => 'Cancelled', 'class' => 'danger', 'row_class' => 'danger-row'],
+    ];
+
+    $orderStatus = $orderStatusMap[$order->status] ?? ['label' => ucfirst($order->status), 'class' => 'secondary', 'row_class' => ''];
+    $paymentStatus = $paymentStatusMap[$order->payment_status] ?? ['label' => ucfirst($order->payment_status), 'class' => 'secondary', 'row_class' => ''];
+    $shippingStatus = $shippingStatusMap[$order->shipping_status] ?? ['label' => ucfirst($order->shipping_status), 'class' => 'secondary', 'row_class' => ''];
+
+    $shipmentStatus = $shippingStatusMap[$order->shipment->status ?? 'pending'] ?? ['label' => ucfirst($order->shipment->status ?? 'pending'), 'class' => 'secondary', 'row_class' => ''];
+
+    $canCancel = $order->status !== 'cancelled'
+        && $order->shipping_status === 'pending'
+        && $order->created_at
+        && $order->created_at->diffInHours(now()) < 3;
+
+    $cancelExpired = $order->created_at
+        && $order->created_at->diffInHours(now()) >= 3
+        && $order->status !== 'cancelled';
+
+    $placedAt = $order->created_at?->format('d M Y - h:i A');
+@endphp
+
 @section('content')
-<section class="bg0 p-t-75 p-b-85">
+<section class="order-details-page bg0 p-t-80 p-b-90">
     <div class="container">
 
-        <div class="p-b-30">
-            <h3 class="mtext-111 cl2 m-b-10">Order Details</h3>
-            <p class="stext-115 cl6">
-                Review your order information, shipping address, items, and shipment tracking.
-            </p>
-        </div>
-
-        {{-- Order Summary --}}
-        <div class="bor10 p-4 m-b-30">
-            <h4 class="m-b-20">Order Summary</h4>
-
-            <p><strong>Order Number:</strong> {{ $order->order_number }}</p>
-            <p><strong>Status:</strong> {{ ucfirst($order->status) }}</p>
-            <p><strong>Shipping Status:</strong> {{ ucfirst($order->shipping_status) }}</p>
-            <p><strong>Payment Status:</strong> {{ ucfirst($order->payment_status) }}</p>
-            <p><strong>Shipping Method:</strong> {{ optional($order->shippingMethod)->name ?? '-' }}</p>
-            <p><strong>Placed At:</strong> {{ optional($order->created_at)->format('d M Y - h:i A') }}</p>
-            <p><strong>Total:</strong> {{ number_format((float) $order->total, 2) }} {{ $order->currency ?? 'SAR' }}</p>
-
-            @if(
-                $order->status !== 'cancelled' &&
-                $order->shipping_status === 'pending' &&
-                $order->created_at->diffInHours(now()) < 3
-            )
-                <form action="{{ route('shipping.orders.cancel', $order->id) }}"
-                      method="POST"
-                      class="mt-3">
-                    @csrf
-
-                    <button class="btn btn-danger"
-                            onclick="return confirm('Are you sure you want to cancel this order?')">
-                        <i class="fas fa-times mr-1"></i>
-                        Cancel Order
-                    </button>
-                </form>
-            @endif
-
-            @if(
-                $order->created_at->diffInHours(now()) >= 3 &&
-                $order->status !== 'cancelled'
-            )
-                <p class="text-danger mt-2">
-                    Order can no longer be cancelled after 3 hours.
-                </p>
-            @endif
-
-            <a href="{{ route('shipping.orders.invoice', $order->id) }}"
-               class="btn btn-dark mt-3">
-                <i class="fas fa-file-pdf mr-1"></i>
-                Download Invoice
-            </a>
-        </div>
-
-        {{-- Shipping Address --}}
-        <div class="bor10 p-4 m-b-30">
-            <h4 class="m-b-20">Shipping Address</h4>
-
-            @if($order->addressSnapshot)
-                <p><strong>{{ $order->addressSnapshot->full_name }}</strong></p>
-                <p>{{ $order->addressSnapshot->phone }}</p>
-
-                <p>
-                    {{ $order->addressSnapshot->country }}
-                    -
-                    {{ $order->addressSnapshot->city }}
-                    @if($order->addressSnapshot->district)
-                        - {{ $order->addressSnapshot->district }}
-                    @endif
-                </p>
-
-                <p>{{ $order->addressSnapshot->street }}</p>
-
-                @if($order->addressSnapshot->building_no)
-                    <p>Building No: {{ $order->addressSnapshot->building_no }}</p>
-                @endif
-
-                @if($order->addressSnapshot->apartment_no)
-                    <p>Apartment No: {{ $order->addressSnapshot->apartment_no }}</p>
-                @endif
-
-                @if($order->addressSnapshot->postal_code)
-                    <p>Postal Code: {{ $order->addressSnapshot->postal_code }}</p>
-                @endif
-
-                @if($order->addressSnapshot->notes)
-                    <p>Notes: {{ $order->addressSnapshot->notes }}</p>
-                @endif
-            @else
-                <p class="text-muted">No shipping address snapshot found.</p>
-            @endif
-        </div>
-
-        {{-- Order Items --}}
-        <div class="bor10 p-4 m-b-30">
-            <h4 class="m-b-20">Items</h4>
-
-            @forelse($order->items as $item)
-                @php
-                    $variantOptions = collect($item->variant_options ?? []);
-
-                    $displayOptions = $variantOptions->reject(function ($option) use ($item) {
-                        $slug = strtolower(trim((string) ($option['slug'] ?? '')));
-                        $name = strtolower(trim((string) ($option['name'] ?? '')));
-
-                        $isColor = in_array($slug, ['color', 'colors'], true)
-                            || in_array($name, ['color', 'colors', 'اللون', 'الألوان'], true);
-
-                        $isSize = in_array($slug, ['size', 'sizes'], true)
-                            || in_array($name, ['size', 'sizes', 'المقاس', 'الحجم'], true);
-
-                        if ($isColor && !empty($item->color)) {
-                            return true;
-                        }
-
-                        if ($isSize && !empty($item->size)) {
-                            return true;
-                        }
-
-                        return false;
-                    })->values();
-                @endphp
-
-                <div class="m-b-20 p-b-15" style="border-bottom:1px solid #eee;">
-                    <p class="m-b-5">
-                        <strong>{{ $item->product_name_snapshot }}</strong>
-                    </p>
-
-                    @if($item->sku_snapshot)
-                        <p class="m-b-5">SKU: {{ $item->sku_snapshot }}</p>
-                    @endif
-
-                    @if($item->color)
-                        <p class="m-b-5">Color: {{ $item->color }}</p>
-                    @endif
-
-                    @if($item->size)
-                        <p class="m-b-5">Size: {{ $item->size }}</p>
-                    @endif
-
-                    @if($displayOptions->count())
-                        @foreach($displayOptions as $option)
-                            <p class="m-b-5">
-                                {{ $option['name'] ?? 'Option' }}:
-                                {{ $option['value'] ?? '-' }}
-                            </p>
-                        @endforeach
-                    @endif
-
-                    <p class="m-b-5">Quantity: {{ (int) $item->quantity }}</p>
-                    <p class="m-b-5">Unit Price: {{ number_format((float) $item->unit_price, 2) }} {{ $order->currency ?? 'SAR' }}</p>
-                    <p class="m-b-0">
-                        <strong>Line Total: {{ number_format((float) $item->line_total, 2) }} {{ $order->currency ?? 'SAR' }}</strong>
-                    </p>
+        {{-- PAGE HEADER --}}
+        <div class="page-header-box m-b-25">
+            <div class="row align-items-center">
+                <div class="col-lg-8 m-b-15">
+                    <div class="page-mini-title">Order Details</div>
+                    <h2 class="page-main-title">Order #{{ $order->order_number }}</h2>
+                    <div class="page-sub-title">
+                        Placed on {{ $placedAt ?? '-' }}
+                    </div>
                 </div>
-            @empty
-                <p class="text-muted">No items found for this order.</p>
-            @endforelse
-        </div>
 
-        {{-- Totals --}}
-        <div class="bor10 p-4 m-b-30">
-            <h4 class="m-b-20">Order Totals</h4>
-
-            <p><strong>Subtotal:</strong> {{ number_format((float) $order->subtotal, 2) }} {{ $order->currency ?? 'SAR' }}</p>
-
-            @if((float) $order->discount > 0)
-                <p><strong>Discount:</strong> - {{ number_format((float) $order->discount, 2) }} {{ $order->currency ?? 'SAR' }}</p>
-            @endif
-
-            <p><strong>Shipping Fee:</strong> {{ number_format((float) $order->shipping_fee, 2) }} {{ $order->currency ?? 'SAR' }}</p>
-            <p><strong>VAT:</strong> {{ number_format((float) $order->tax_total, 2) }} {{ $order->currency ?? 'SAR' }}</p>
-            <p class="m-b-0">
-                <strong>Total:</strong> {{ number_format((float) $order->total, 2) }} {{ $order->currency ?? 'SAR' }}
-            </p>
-        </div>
-
-        {{-- Shipment Tracking --}}
-        <div class="bor10 p-4">
-            <h4 class="m-b-20">Shipment Tracking</h4>
-
-            @if($order->shipment)
-                <p><strong>Carrier:</strong> {{ $order->shipment->carrier }}</p>
-
-                <p>
-                    <strong>Tracking Number:</strong>
-                    {{ $order->shipment->tracking_number ?? 'Not available yet' }}
-                </p>
-
-                <p><strong>Status:</strong> {{ ucfirst(str_replace('_', ' ', $order->shipment->status ?? '-')) }}</p>
-
-                <p>
-                    <strong>Current Location:</strong>
-                    {{ $order->shipment->current_location ?? '-' }}
-                </p>
-
-                <p>
-                    <strong>Carrier Status:</strong>
-                    {{ $order->shipment->carrier_status ?? '-' }}
-                </p>
-
-                @if($order->shipment->tracking_number)
-                    <a href="{{ route('tracking.search-form', ['tracking_number' => $order->shipment->tracking_number]) }}"
-                       class="btn btn-primary mt-3">
-                        <i class="fas fa-map-marker-alt mr-1"></i>
-                        Track Full Shipment
+                <div class="col-lg-4 text-lg-right">
+                    <a href="{{ route('shipping.orders.invoice', $order->id) }}" class="main-action-btn dark-btn">
+                        <i class="fas fa-file-invoice m-r-8"></i>
+                        Download Invoice
                     </a>
-                @endif
-            @else
-                <p class="text-muted">Shipment not created yet.</p>
-            @endif
+                </div>
+            </div>
         </div>
 
+        <div class="row">
+            {{-- LEFT SIDE --}}
+            <div class="col-lg-8">
+
+                {{-- TABLE 1: ORDER SUMMARY --}}
+                <div class="table-box m-b-24">
+                    <div class="table-box-head">
+                        <h4>Order Summary</h4>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table details-grid-table mb-0">
+                            <tbody>
+                                <tr>
+                                    <th>Order Number</th>
+                                    <td>{{ $order->order_number }}</td>
+                                    <th>Placed At</th>
+                                    <td>{{ $placedAt ?? '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Payment Method</th>
+                                    <td>{{ strtoupper($order->payment_method ?? '-') }}</td>
+                                    <th>Shipping Method</th>
+                                    <td>{{ optional($order->shippingMethod)->name ?? '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Currency</th>
+                                    <td>{{ $currency }}</td>
+                                    <th>Total</th>
+                                    <td>{{ number_format((float) $order->total, 2) }} {{ $currency }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- TABLE 2: STATUS DETAILS --}}
+                <div class="table-box m-b-24">
+                    <div class="table-box-head">
+                        <h4>Status Details</h4>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table details-grid-table mb-0">
+                            <tbody>
+                                <tr class="{{ $orderStatus['row_class'] }}">
+                                    <th>Order Status</th>
+                                    <td colspan="3">
+                                        <span class="badge badge-{{ $orderStatus['class'] }} custom-badge">
+                                            {{ $orderStatus['label'] }}
+                                        </span>
+                                    </td>
+                                </tr>
+
+                                <tr class="{{ $paymentStatus['row_class'] }}">
+                                    <th>Payment Status</th>
+                                    <td colspan="3">
+                                        <span class="badge badge-{{ $paymentStatus['class'] }} custom-badge">
+                                            {{ $paymentStatus['label'] }}
+                                        </span>
+                                    </td>
+                                </tr>
+
+                                <tr class="{{ $shippingStatus['row_class'] }}">
+                                    <th>Shipping Status</th>
+                                    <td colspan="3">
+                                        <span class="badge badge-{{ $shippingStatus['class'] }} custom-badge">
+                                            {{ $shippingStatus['label'] }}
+                                        </span>
+                                    </td>
+                                </tr>
+
+                                @if($order->status === 'cancelled')
+                                    <tr class="danger-row">
+                                        <th>Cancellation Reason</th>
+                                        <td colspan="3">{{ $order->cancellation_reason ?: 'Order was cancelled.' }}</td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- TABLE 3: ORDER ITEMS --}}
+                <div class="table-box m-b-24">
+                    <div class="table-box-head">
+                        <h4>Order Items</h4>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table items-main-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width: 28%;">Product</th>
+                                    <th>Details</th>
+                                    <th class="text-center" style="width: 10%;">Qty</th>
+                                    <th class="text-right" style="width: 16%;">Unit Price</th>
+                                    <th class="text-right" style="width: 18%;">Line Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($order->items as $item)
+                                    @php
+                                        $variantOptions = collect($item->variant_options ?? []);
+
+                                        $displayOptions = $variantOptions->reject(function ($option) use ($item) {
+                                            $slug = strtolower(trim((string) ($option['slug'] ?? '')));
+                                            $name = strtolower(trim((string) ($option['name'] ?? '')));
+
+                                            $isColor = in_array($slug, ['color', 'colors'], true)
+                                                || in_array($name, ['color', 'colors', 'اللون', 'الألوان'], true);
+
+                                            $isSize = in_array($slug, ['size', 'sizes'], true)
+                                                || in_array($name, ['size', 'sizes', 'المقاس', 'الحجم'], true);
+
+                                            if ($isColor && !empty($item->color)) {
+                                                return true;
+                                            }
+
+                                            if ($isSize && !empty($item->size)) {
+                                                return true;
+                                            }
+
+                                            return false;
+                                        })->values();
+                                    @endphp
+
+                                    <tr>
+                                        <td class="product-title-cell">
+                                            <strong>{{ $item->product_name_snapshot }}</strong>
+                                        </td>
+
+                                        <td class="product-detail-cell">
+                                            @if($item->sku_snapshot)
+                                                <div><span>SKU:</span> {{ $item->sku_snapshot }}</div>
+                                            @endif
+
+                                            @if($item->color)
+                                                <div><span>Color:</span> {{ $item->color }}</div>
+                                            @endif
+
+                                            @if($item->size)
+                                                <div><span>Size:</span> {{ $item->size }}</div>
+                                            @endif
+
+                                            @if($displayOptions->count())
+                                                @foreach($displayOptions as $option)
+                                                    <div>
+                                                        <span>{{ $option['name'] ?? 'Option' }}:</span>
+                                                        {{ $option['value'] ?? '-' }}
+                                                    </div>
+                                                @endforeach
+                                            @endif
+                                        </td>
+
+                                        <td class="text-center">{{ (int) $item->quantity }}</td>
+                                        <td class="text-right">{{ number_format((float) $item->unit_price, 2) }} {{ $currency }}</td>
+                                        <td class="text-right total-strong">{{ number_format((float) $item->line_total, 2) }} {{ $currency }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="empty-row text-center">No items found for this order.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- TABLE 4: SHIPMENT DETAILS --}}
+                <div class="table-box m-b-24">
+                    <div class="table-box-head">
+                        <h4>Shipment Details</h4>
+                    </div>
+
+                    @if($order->shipment)
+                        <div class="table-responsive">
+                            <table class="table details-grid-table mb-0">
+                                <tbody>
+                                    <tr class="{{ $shipmentStatus['row_class'] }}">
+                                        <th>Shipment Status</th>
+                                        <td colspan="3">
+                                            <span class="badge badge-{{ $shipmentStatus['class'] }} custom-badge">
+                                                {{ $shipmentStatus['label'] }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Carrier</th>
+                                        <td colspan="3">{{ $order->shipment->carrier ?: '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tracking Number</th>
+                                        <td colspan="3">{{ $order->shipment->tracking_number ?? 'Not available yet' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Current Location</th>
+                                        <td colspan="3">{{ $order->shipment->current_location ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Carrier Status</th>
+                                        <td colspan="3">{{ $order->shipment->carrier_status ?? '-' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        @if($order->shipment->tracking_number)
+                            <div class="box-actions">
+                                <a href="{{ route('tracking.search-form', ['tracking_number' => $order->shipment->tracking_number]) }}"
+                                   class="main-action-btn light-btn">
+                                    <i class="fas fa-map-marker-alt m-r-8"></i>
+                                    Track Shipment
+                                </a>
+                            </div>
+                        @endif
+                    @else
+                        <div class="empty-box-text">Shipment not created yet.</div>
+                    @endif
+                </div>
+            </div>
+
+            {{-- RIGHT SIDE --}}
+            <div class="col-lg-4">
+                <div class="sticky-sidebar">
+
+                    {{-- TABLE 5: SHIPPING ADDRESS --}}
+                    <div class="table-box m-b-24">
+                        <div class="table-box-head">
+                            <h4>Shipping Address</h4>
+                        </div>
+
+                        @if($order->addressSnapshot)
+                            <div class="table-responsive">
+                                <table class="table details-grid-table mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <th>Full Name</th>
+                                            <td>{{ $order->addressSnapshot->full_name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Phone</th>
+                                            <td>{{ $order->addressSnapshot->phone }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Country / City</th>
+                                            <td>
+                                                {{ $order->addressSnapshot->country }}
+                                                -
+                                                {{ $order->addressSnapshot->city }}
+                                                @if($order->addressSnapshot->district)
+                                                    - {{ $order->addressSnapshot->district }}
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Street</th>
+                                            <td>{{ $order->addressSnapshot->street }}</td>
+                                        </tr>
+
+                                        @if($order->addressSnapshot->building_no)
+                                            <tr>
+                                                <th>Building No</th>
+                                                <td>{{ $order->addressSnapshot->building_no }}</td>
+                                            </tr>
+                                        @endif
+
+                                        @if($order->addressSnapshot->apartment_no)
+                                            <tr>
+                                                <th>Apartment No</th>
+                                                <td>{{ $order->addressSnapshot->apartment_no }}</td>
+                                            </tr>
+                                        @endif
+
+                                        @if($order->addressSnapshot->postal_code)
+                                            <tr>
+                                                <th>Postal Code</th>
+                                                <td>{{ $order->addressSnapshot->postal_code }}</td>
+                                            </tr>
+                                        @endif
+
+                                        @if($order->addressSnapshot->notes)
+                                            <tr>
+                                                <th>Notes</th>
+                                                <td>{{ $order->addressSnapshot->notes }}</td>
+                                            </tr>
+                                        @endif
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="empty-box-text">No shipping address found.</div>
+                        @endif
+                    </div>
+
+                    {{-- TABLE 6: ORDER TOTALS --}}
+                    <div class="table-box m-b-24">
+                        <div class="table-box-head">
+                            <h4>Order Totals</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table details-grid-table totals-table mb-0">
+                                <tbody>
+                                    <tr>
+                                        <th>Subtotal</th>
+                                        <td class="text-right">{{ number_format((float) $order->subtotal, 2) }} {{ $currency }}</td>
+                                    </tr>
+
+                                    @if((float) $order->discount > 0)
+                                        <tr class="danger-row-soft">
+                                            <th>Discount</th>
+                                            <td class="text-right">- {{ number_format((float) $order->discount, 2) }} {{ $currency }}</td>
+                                        </tr>
+                                    @endif
+
+                                    <tr>
+                                        <th>Shipping Fee</th>
+                                        <td class="text-right">{{ number_format((float) $order->shipping_fee, 2) }} {{ $currency }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>VAT</th>
+                                        <td class="text-right">{{ number_format((float) $order->tax_total, 2) }} {{ $currency }}</td>
+                                    </tr>
+
+                                    <tr class="grand-total-row">
+                                        <th>Total</th>
+                                        <td class="text-right">{{ number_format((float) $order->total, 2) }} {{ $currency }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {{-- TABLE 7: ACTIONS --}}
+                    <div class="table-box">
+                        <div class="table-box-head">
+                            <h4>Actions</h4>
+                        </div>
+                        <div class="actions-panel">
+                            <a href="{{ route('shipping.orders.invoice', $order->id) }}" class="main-action-btn dark-btn w-100">
+                                <i class="fas fa-file-invoice m-r-8"></i>
+                                Download Invoice
+                            </a>
+
+                            @if($canCancel)
+                                <form action="{{ route('shipping.orders.cancel', $order->id) }}" method="POST" class="w-100 m-b-0">
+                                    @csrf
+                                    <button class="main-action-btn danger-btn w-100"
+                                            onclick="return confirm('Are you sure you want to cancel this order?')">
+                                        <i class="fas fa-times m-r-8"></i>
+                                        Cancel Order
+                                    </button>
+                                </form>
+                            @endif
+
+                            @if($cancelExpired)
+                                <div class="cancel-note-box">
+                                    Order can no longer be cancelled after 3 hours.
+                                </div>
+                            @endif
+
+                            @if($order->status === 'cancelled')
+                                <div class="cancel-note-box strong-red">
+                                    This order has been cancelled.
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 @endsection
+
+
+@push('styles')
+<style>
+    .order-details-page {
+        background: #f7f8fa;
+    }
+
+    .page-header-box,
+    .table-box {
+        background: #fff;
+        border: 1px solid #dfe3e8;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .page-header-box {
+        padding: 28px 30px;
+    }
+
+    .page-mini-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #8b95a7;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: 8px;
+    }
+
+    .page-main-title {
+        font-size: 30px;
+        font-weight: 700;
+        color: #1f2937;
+        line-height: 1.2;
+        margin-bottom: 8px;
+    }
+
+    .page-sub-title {
+        font-size: 15px;
+        color: #6b7280;
+    }
+
+    .table-box {
+        overflow: hidden;
+    }
+
+    .table-box-head {
+        padding: 18px 22px;
+        border-bottom: 1px solid #dfe3e8;
+        background: #f8fafc;
+    }
+
+    .table-box-head h4 {
+        margin: 0;
+        font-size: 19px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    /* =========================
+       CLOSED TABLE STYLE
+    ========================= */
+    .details-grid-table,
+    .items-main-table {
+        width: 100%;
+        margin-bottom: 0;
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    .details-grid-table {
+        border: 1px solid #bfc7d1;
+    }
+
+    .items-main-table {
+        border: 1px solid #bfc7d1;
+    }
+
+    .details-grid-table th,
+    .details-grid-table td,
+    .items-main-table th,
+    .items-main-table td {
+        border: 1px solid #bfc7d1 !important;
+        padding: 14px 16px;
+        vertical-align: top;
+        font-size: 14px;
+    }
+
+    .details-grid-table th {
+        background: #f8fafc;
+        color: #4b5563;
+        font-weight: 700;
+        white-space: nowrap;
+        width: 24%;
+    }
+
+    .details-grid-table td {
+        background: #fff;
+        color: #111827;
+        font-weight: 500;
+    }
+
+    .items-main-table thead th {
+        background: #f1f5f9;
+        color: #374151;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        font-weight: 700;
+    }
+
+    .items-main-table tbody td {
+        background: #fff;
+        color: #111827;
+    }
+
+    .product-title-cell strong {
+        font-size: 15px;
+        color: #1f2937;
+        font-weight: 700;
+    }
+
+    .product-detail-cell div {
+        margin-bottom: 6px;
+        color: #4b5563;
+    }
+
+    .product-detail-cell div:last-child {
+        margin-bottom: 0;
+    }
+
+    .product-detail-cell span {
+        font-weight: 700;
+        color: #374151;
+    }
+
+    .total-strong {
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .custom-badge {
+        padding: 9px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .danger-row th,
+    .danger-row td {
+        background: #fff1f2 !important;
+        color: #b91c1c !important;
+        font-weight: 700;
+    }
+
+    .danger-row-soft th,
+    .danger-row-soft td {
+        background: #fff5f5 !important;
+        color: #c62828 !important;
+        font-weight: 700;
+    }
+
+    .grand-total-row th,
+    .grand-total-row td {
+        background: #f8fafc !important;
+        font-size: 17px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .box-actions {
+        padding: 18px 20px;
+        border-top: 1px solid #dfe3e8;
+        background: #fff;
+    }
+
+    .actions-panel {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .main-action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 0 18px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none !important;
+        border: 1px solid transparent;
+        transition: .2s ease;
+    }
+
+    .dark-btn {
+        background: #111827;
+        color: #fff !important;
+    }
+
+    .dark-btn:hover {
+        background: #0f172a;
+        color: #fff !important;
+    }
+
+    .light-btn {
+        background: #fff;
+        color: #111827 !important;
+        border-color: #d1d5db;
+    }
+
+    .light-btn:hover {
+        background: #f8fafc;
+        color: #111827 !important;
+    }
+
+    .danger-btn {
+        background: #d32f2f;
+        color: #fff;
+        border: 0;
+    }
+
+    .danger-btn:hover {
+        background: #b71c1c;
+        color: #fff;
+    }
+
+    .cancel-note-box {
+        background: #fff5f5;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+        padding: 13px 14px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .cancel-note-box.strong-red {
+        background: #fee2e2;
+        border-color: #fca5a5;
+        color: #991b1b;
+    }
+
+    .empty-box-text,
+    .empty-row {
+        padding: 22px !important;
+        color: #6b7280;
+        font-size: 14px;
+        background: #fff !important;
+    }
+
+    .sticky-sidebar {
+        position: sticky;
+        top: 100px;
+    }
+
+    @media (max-width: 991.98px) {
+        .sticky-sidebar {
+            position: relative;
+            top: auto;
+        }
+
+        .page-header-box {
+            padding: 24px;
+        }
+
+        .page-main-title {
+            font-size: 26px;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .details-grid-table th,
+        .details-grid-table td,
+        .items-main-table th,
+        .items-main-table td {
+            padding: 12px 13px;
+            font-size: 13px;
+        }
+
+        .main-action-btn {
+            width: 100%;
+        }
+    }
+</style>
+@endpush
+
