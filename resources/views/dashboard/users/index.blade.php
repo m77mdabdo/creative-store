@@ -42,7 +42,7 @@
             @endif
 
             <div class="row">
-                <div class="col-lg-3 col-6">
+                <div class="col-lg-2 col-6">
                     <div class="small-box bg-info">
                         <div class="inner">
                             <h3>{{ $stats['total_users'] }}</h3>
@@ -52,33 +52,53 @@
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-6">
+                <div class="col-lg-2 col-6">
+                    <div class="small-box bg-dark">
+                        <div class="inner">
+                            <h3>{{ $stats['owners'] }}</h3>
+                            <p>Owners</p>
+                        </div>
+                        <div class="icon"><i class="fas fa-crown"></i></div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-6">
+                    <div class="small-box bg-primary">
+                        <div class="inner">
+                            <h3>{{ $stats['admins'] }}</h3>
+                            <p>Admins</p>
+                        </div>
+                        <div class="icon"><i class="fas fa-user-shield"></i></div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-6">
                     <div class="small-box bg-success">
                         <div class="inner">
-                            <h3>{{ $stats['verified_users'] }}</h3>
-                            <p>Verified Users</p>
+                            <h3>{{ $stats['employees'] }}</h3>
+                            <p>Employees</p>
                         </div>
-                        <div class="icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="icon"><i class="fas fa-user-tie"></i></div>
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-6">
+                <div class="col-lg-2 col-6">
                     <div class="small-box bg-warning">
                         <div class="inner">
-                            <h3>{{ $stats['unverified_users'] }}</h3>
-                            <p>Unverified Users</p>
+                            <h3>{{ $stats['customers'] }}</h3>
+                            <p>Customers</p>
                         </div>
-                        <div class="icon"><i class="fas fa-clock"></i></div>
+                        <div class="icon"><i class="fas fa-user"></i></div>
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-6">
+                <div class="col-lg-2 col-6">
                     <div class="small-box bg-secondary">
                         <div class="inner">
-                            <h3>{{ $stats['users_with_phone'] }}</h3>
-                            <p>Users With Phone</p>
+                            <h3>{{ $stats['verified_users'] }}</h3>
+                            <p>Verified</p>
                         </div>
-                        <div class="icon"><i class="fas fa-phone"></i></div>
+                        <div class="icon"><i class="fas fa-check-circle"></i></div>
                     </div>
                 </div>
             </div>
@@ -90,12 +110,12 @@
                 <div class="card-body">
                     <form method="GET" action="{{ route('dashboard.users.index') }}">
                         <div class="row">
-                            <div class="col-md-3 mb-2">
+                            <div class="col-md-2 mb-2">
                                 <input
                                     type="text"
                                     name="q"
                                     class="form-control"
-                                    placeholder="Search by name, email, phone"
+                                    placeholder="Search"
                                     value="{{ $filters['q'] ?? '' }}"
                                 >
                             </div>
@@ -104,8 +124,19 @@
                                 <select name="role" class="form-control">
                                     <option value="">All Roles</option>
                                     @foreach($roles as $role)
-                                        <option value="{{ $role }}" @selected(($filters['role'] ?? '') === $role)>
-                                            {{ $role }}
+                                        <option value="{{ $role->name }}" @selected(($filters['role'] ?? '') === $role->name)>
+                                            {{ ucfirst($role->name) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-2 mb-2">
+                                <select name="type" class="form-control">
+                                    <option value="">All Types</option>
+                                    @foreach(['owner','admin','employee','customer'] as $type)
+                                        <option value="{{ $type }}" @selected(($filters['type'] ?? '') === $type)>
+                                            {{ ucfirst($type) }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -120,10 +151,10 @@
                             </div>
 
                             <div class="col-md-2 mb-2">
-                                <select name="has_phone" class="form-control">
-                                    <option value="">Phone</option>
-                                    <option value="1" @selected(($filters['has_phone'] ?? '') === '1')>Has Phone</option>
-                                    <option value="0" @selected(($filters['has_phone'] ?? '') === '0')>No Phone</option>
+                                <select name="is_active" class="form-control">
+                                    <option value="">Account Status</option>
+                                    <option value="1" @selected(($filters['is_active'] ?? '') === '1')>Active</option>
+                                    <option value="0" @selected(($filters['is_active'] ?? '') === '0')>Inactive</option>
                                 </select>
                             </div>
 
@@ -137,16 +168,39 @@
                                     <option value="email_desc" @selected(($filters['sort'] ?? '') === 'email_desc')>Email DESC</option>
                                 </select>
                             </div>
+                        </div>
 
-                            <div class="col-md-1 mb-2">
+                        <div class="row mt-2">
+                            <div class="col-md-2 mb-2">
+                                <select name="has_phone" class="form-control">
+                                    <option value="">Phone</option>
+                                    <option value="1" @selected(($filters['has_phone'] ?? '') === '1')>Has Phone</option>
+                                    <option value="0" @selected(($filters['has_phone'] ?? '') === '0')>No Phone</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-2 mb-2">
+                                <select name="per_page" class="form-control">
+                                    @foreach([15, 25, 50, 100] as $size)
+                                        <option value="{{ $size }}" @selected((int)($filters['per_page'] ?? 15) === $size)>
+                                            {{ $size }} / page
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-2 mb-2">
                                 <button type="submit" class="btn btn-primary btn-block">Filter</button>
+                            </div>
+
+                            <div class="col-md-2 mb-2">
+                                <a href="{{ route('dashboard.users.index') }}" class="btn btn-light btn-block">Reset</a>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
 
-            {{-- Bulk action form مستقل تمامًا --}}
             <form method="POST" action="{{ route('dashboard.users.bulk-action') }}" id="bulkActionForm">
                 @csrf
             </form>
@@ -185,6 +239,8 @@
                                 <th>Phone</th>
                                 <th>Roles</th>
                                 <th>Verified</th>
+                                <th>Active</th>
+                                <th>Direct Permissions</th>
                                 <th>Addresses</th>
                                 <th>Orders</th>
                                 <th>Reviews</th>
@@ -224,6 +280,33 @@
                                             <span class="badge badge-success">Verified</span>
                                         @else
                                             <span class="badge badge-warning">Unverified</span>
+                                        @endif
+                                    </td>
+
+                                    <td>
+                                        @if($user->is_active)
+                                            <span class="badge badge-success">Active</span>
+                                        @else
+                                            <span class="badge badge-danger">Inactive</span>
+                                        @endif
+                                    </td>
+
+                                    <td>
+                                        @php
+                                            $allowCount = $user->permissions->filter(fn($permission) => ! $permission->pivot->is_denied)->count();
+                                            $denyCount = $user->permissions->filter(fn($permission) => $permission->pivot->is_denied)->count();
+                                        @endphp
+
+                                        @if($allowCount > 0)
+                                            <span class="badge badge-success">Allow: {{ $allowCount }}</span>
+                                        @endif
+
+                                        @if($denyCount > 0)
+                                            <span class="badge badge-danger">Deny: {{ $denyCount }}</span>
+                                        @endif
+
+                                        @if($allowCount === 0 && $denyCount === 0)
+                                            <span class="text-muted">None</span>
                                         @endif
                                     </td>
 
@@ -274,7 +357,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="13" class="text-center py-4">No users found.</td>
+                                    <td colspan="15" class="text-center py-4">No users found.</td>
                                 </tr>
                             @endforelse
                         </tbody>

@@ -7,14 +7,22 @@ use App\Http\Requests\Dashboard\User\StoreUserRequest;
 use App\Http\Requests\Dashboard\User\UpdateUserRequest;
 use App\Http\Requests\Dashboard\User\UserBulkActionRequest;
 use App\Http\Requests\Dashboard\User\UserIndexRequest;
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
+use App\Services\Security\ProtectOwnerService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class UserController extends Controller
 {
+    public function __construct(
+        protected ProtectOwnerService $protectOwnerService
+    ) {}
+
     public function index(UserIndexRequest $request): View
     {
         $filters = $request->validated();
@@ -23,6 +31,7 @@ class UserController extends Controller
         $query = User::query()
             ->with([
                 'roles:id,name',
+                'permissions:id,code,name',
                 'addresses:id,user_id,city,is_default',
                 'wishlist:id,user_id',
                 'carts:id,user_id,session_id,updated_at',
@@ -34,96 +43,129 @@ class UserController extends Controller
                 'carts',
             ]);
 
-        $query->when(!empty($filters['q']), function ($q) use ($filters) {
+        if (!empty($filters['q'])) {
             $search = trim((string) $filters['q']);
 
-            $q->where(function ($sub) use ($search) {
+            $query->where(function ($sub) use ($search) {
                 $sub->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
                     ->orWhere('phone', 'like', "%{$search}%");
             });
-        });
+        }
 
-        $query->when(!empty($filters['role']), function ($q) use ($filters) {
+        if (!empty($filters['role'])) {
             $role = $filters['role'];
 
-            $q->whereHas('roles', function ($roleQuery) use ($role) {
+            $query->whereHas('roles', function ($roleQuery) use ($role) {
                 $roleQuery->where('name', $role);
             });
-        });
+        }
 
-        $query->when(isset($filters['email_verified']) && $filters['email_verified'] !== '', function ($q) use ($filters) {
+        if (!empty($filters['type'])) {
+            $type = $filters['type'];
+
+            $query->whereHas('roles', function ($roleQuery) use ($type) {
+                $roleQuery->where('name', $type);
+            });
+        }
+
+        if (isset($filters['email_verified']) && $filters['email_verified'] !== '') {
             if ((string) $filters['email_verified'] === '1') {
-                $q->whereNotNull('email_verified_at');
+                $query->whereNotNull('email_verified_at');
             } elseif ((string) $filters['email_verified'] === '0') {
-                $q->whereNull('email_verified_at');
+                $query->whereNull('email_verified_at');
             }
-        });
+        }
 
-        $query->when(isset($filters['has_phone']) && $filters['has_phone'] !== '', function ($q) use ($filters) {
+        if (isset($filters['has_phone']) && $filters['has_phone'] !== '') {
             if ((string) $filters['has_phone'] === '1') {
-                $q->whereNotNull('phone')->where('phone', '!=', '');
+                $query->whereNotNull('phone')->where('phone', '!=', '');
             } elseif ((string) $filters['has_phone'] === '0') {
-                $q->where(function ($sub) {
+                $query->where(function ($sub) {
                     $sub->whereNull('phone')->orWhere('phone', '');
                 });
             }
-        });
+        }
+
+        if (isset($filters['is_active']) && $filters['is_active'] !== '') {
+            $query->where('is_active', (int) $filters['is_active'] === 1);
+        }
 
         $sort = $filters['sort'] ?? 'latest';
 
         match ($sort) {
-            'name_asc'       => $query->orderBy('name'),
-            'name_desc'      => $query->orderByDesc('name'),
-            'email_asc'      => $query->orderBy('email'),
-            'email_desc'     => $query->orderByDesc('email'),
-            'oldest'         => $query->oldest(),
-            default          => $query->latest(),
+            'name_asc'   => $query->orderBy('name'),
+            'name_desc'  => $query->orderByDesc('name'),
+            'email_asc'  => $query->orderBy('email'),
+            'email_desc' => $query->orderByDesc('email'),
+            'oldest'     => $query->oldest(),
+            default      => $query->latest(),
         };
 
         $users = $query->paginate($perPage)->withQueryString();
 
         $stats = [
-            'total_users'         => User::count(),
-            'verified_users'      => User::whereNotNull('email_verified_at')->count(),
-            'unverified_users'    => User::whereNull('email_verified_at')->count(),
-            'users_with_phone'    => User::whereNotNull('phone')->where('phone', '!=', '')->count(),
+            'total_users'      => User::count(),
+            'verified_users'   => User::whereNotNull('email_verified_at')->count(),
+            'unverified_users' => User::whereNull('email_verified_at')->count(),
+            'users_with_phone' => User::whereNotNull('phone')->where('phone', '!=', '')->count(),
+            'owners'           => User::whereHas('roles', fn ($q) => $q->where('name', 'owner'))->count(),
+            'admins'           => User::whereHas('roles', fn ($q) => $q->where('name', 'admin'))->count(),
+            'employees'        => User::whereHas('roles', fn ($q) => $q->where('name', 'employee'))->count(),
+            'customers'        => User::whereHas('roles', fn ($q) => $q->where('name', 'customer'))->count(),
         ];
 
-        $roles = DB::table('roles')
-            ->select('name')
-            ->orderBy('name')
-            ->pluck('name');
-
-        return view('dashboard.users.index', compact('users', 'filters', 'stats', 'roles'));
-    }
-
-    public function create(): View
-    {
-        $roles = DB::table('roles')
+        $roles = Role::query()
             ->select('id', 'name')
             ->orderBy('name')
             ->get();
 
-        return view('dashboard.users.create', compact('roles'));
+        return view('dashboard.users.index', [
+            'users' => $users,
+            'filters' => $filters,
+            'stats' => $stats,
+            'roles' => $roles,
+        ]);
+    }
+
+    public function create(): View
+    {
+        $roles = Role::query()
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
+
+        $permissionsGrouped = Permission::query()
+            ->select('id', 'code', 'name', 'group')
+            ->orderBy('group')
+            ->orderBy('name')
+            ->get()
+            ->groupBy(fn ($permission) => $permission->group ?: 'general');
+
+        return view('dashboard.users.create', compact('roles', 'permissionsGrouped'));
     }
 
     public function store(StoreUserRequest $request): RedirectResponse
     {
         $data = $request->validated();
 
-        DB::transaction(function () use ($data) {
+        DB::transaction(function () use ($data, $request) {
             $user = User::create([
                 'name'              => $data['name'],
                 'email'             => $data['email'],
                 'phone'             => $data['phone'] ?? null,
                 'password'          => Hash::make($data['password']),
                 'email_verified_at' => !empty($data['email_verified']) ? now() : null,
+                'is_active'         => (bool) ($data['is_active'] ?? true),
+                'created_by'        => $request->user()->id,
             ]);
 
-            if (!empty($data['roles'])) {
-                $user->roles()->sync($data['roles']);
-            }
+            $this->syncRoles($user, $data['roles'] ?? [], $request->user());
+            $this->syncDirectPermissions(
+                $user,
+                $data['direct_permissions'] ?? [],
+                $data['denied_permissions'] ?? []
+            );
         });
 
         return redirect()
@@ -135,6 +177,7 @@ class UserController extends Controller
     {
         $user->load([
             'roles:id,name',
+            'permissions:id,code,name',
             'addresses',
             'wishlist.items.product',
             'carts.items.product',
@@ -156,37 +199,61 @@ class UserController extends Controller
 
     public function edit(User $user): View
     {
-        $user->load('roles:id,name');
+        $user->load([
+            'roles:id,name',
+            'permissions:id,code,name',
+        ]);
 
-        $roles = DB::table('roles')
+        $roles = Role::query()
             ->select('id', 'name')
             ->orderBy('name')
             ->get();
 
-        return view('dashboard.users.edit', compact('user', 'roles'));
+        $permissionsGrouped = Permission::query()
+            ->select('id', 'code', 'name', 'group')
+            ->orderBy('group')
+            ->orderBy('name')
+            ->get()
+            ->groupBy(fn ($permission) => $permission->group ?: 'general');
+
+        return view('dashboard.users.edit', compact('user', 'roles', 'permissionsGrouped'));
     }
 
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
         $data = $request->validated();
 
-        DB::transaction(function () use ($data, $user) {
+        DB::transaction(function () use ($data, $user, $request) {
+            $this->protectOwnerService->ensureUserCanBeUpdated($request->user(), $user);
+
             $updateData = [
                 'name'              => $data['name'],
                 'email'             => $data['email'],
                 'phone'             => $data['phone'] ?? null,
-                'email_verified_at' => !empty($data['email_verified']) ? ($user->email_verified_at ?? now()) : null,
+                'is_active'         => (bool) ($data['is_active'] ?? true),
+                'email_verified_at' => !empty($data['email_verified'])
+                    ? ($user->email_verified_at ?? now())
+                    : null,
             ];
 
             if (!empty($data['password'])) {
                 $updateData['password'] = Hash::make($data['password']);
             }
 
+            if ($user->isOwner() && isset($updateData['is_active']) && !$updateData['is_active']) {
+                throw ValidationException::withMessages([
+                    'is_active' => ['Owner accounts cannot be deactivated.'],
+                ]);
+            }
+
             $user->update($updateData);
 
-            if (array_key_exists('roles', $data)) {
-                $user->roles()->sync($data['roles'] ?? []);
-            }
+            $this->syncRoles($user, $data['roles'] ?? [], $request->user());
+            $this->syncDirectPermissions(
+                $user,
+                $data['direct_permissions'] ?? [],
+                $data['denied_permissions'] ?? []
+            );
         });
 
         return redirect()
@@ -198,6 +265,13 @@ class UserController extends Controller
     {
         if (auth()->id() === $user->id) {
             return back()->with('error', 'You cannot delete your own account.');
+        }
+
+        try {
+            $this->protectOwnerService->ensureUserCanBeUpdated(auth()->user(), $user);
+            $this->protectOwnerService->ensureUserCanBeDeleted($user);
+        } catch (\LogicException $e) {
+            return back()->with('error', $e->getMessage());
         }
 
         $user->delete();
@@ -233,6 +307,13 @@ class UserController extends Controller
     public function restore(int $user): RedirectResponse
     {
         $record = User::onlyTrashed()->findOrFail($user);
+
+        try {
+            $this->protectOwnerService->ensureUserCanBeUpdated(auth()->user(), $record);
+        } catch (\LogicException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
         $record->restore();
 
         return redirect()
@@ -242,13 +323,24 @@ class UserController extends Controller
 
     public function forceDelete(int $user): RedirectResponse
     {
-        $record = User::onlyTrashed()->findOrFail($user);
+        $record = User::onlyTrashed()->with(['roles', 'permissions'])->findOrFail($user);
 
         if (auth()->id() === $record->id) {
             return back()->with('error', 'You cannot permanently delete your own account.');
         }
 
-        $record->forceDelete();
+        try {
+            $this->protectOwnerService->ensureUserCanBeUpdated(auth()->user(), $record);
+            $this->protectOwnerService->ensureUserCanBeDeleted($record);
+        } catch (\LogicException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        DB::transaction(function () use ($record) {
+            $record->roles()->detach();
+            $record->permissions()->detach();
+            $record->forceDelete();
+        });
 
         return redirect()
             ->route('dashboard.users.trash')
@@ -280,14 +372,98 @@ class UserController extends Controller
                     break;
 
                 case 'delete':
-                    $ids = $users->pluck('id')->reject(fn ($id) => $id === auth()->id())->values();
-                    if ($ids->isNotEmpty()) {
-                        User::whereIn('id', $ids)->delete();
+                    foreach ($users as $user) {
+                        if (auth()->id() === $user->id) {
+                            continue;
+                        }
+
+                        $this->protectOwnerService->ensureUserCanBeUpdated(auth()->user(), $user);
+                        $this->protectOwnerService->ensureUserCanBeDeleted($user);
+                        $user->delete();
                     }
                     break;
             }
         });
 
         return back()->with('success', 'Bulk action applied successfully.');
+    }
+
+    protected function syncRoles(User $user, array $roleIds, User $actor): void
+    {
+        $roleIds = collect($roleIds)
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values();
+
+        $roleNames = Role::query()
+            ->whereIn('id', $roleIds)
+            ->pluck('name')
+            ->all();
+
+        if (!$actor->hasRole('owner')) {
+            $ownerRoleId = Role::query()->where('name', 'owner')->value('id');
+            $roleIds = $roleIds->reject(fn ($id) => $id === (int) $ownerRoleId)->values();
+            $roleNames = array_values(array_diff($roleNames, ['owner']));
+        }
+
+        if ($user->hasRole('owner')) {
+            $ownersCount = User::query()
+                ->whereHas('roles', fn ($q) => $q->where('name', 'owner'))
+                ->count();
+
+            if (!in_array('owner', $roleNames, true) && $ownersCount <= 1) {
+                throw ValidationException::withMessages([
+                    'roles' => ['You cannot remove the last owner role.'],
+                ]);
+            }
+        }
+
+        $user->roles()->sync($roleIds->all());
+    }
+
+    protected function syncDirectPermissions(User $user, array $allowCodes, array $denyCodes): void
+    {
+        $allowCodes = collect($allowCodes)
+            ->map(fn ($code) => trim((string) $code))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $denyCodes = collect($denyCodes)
+            ->map(fn ($code) => trim((string) $code))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $conflicts = array_intersect($allowCodes, $denyCodes);
+
+        if (!empty($conflicts)) {
+            throw ValidationException::withMessages([
+                'direct_permissions' => ['The same permission cannot be allowed and denied together.'],
+            ]);
+        }
+
+        $permissions = Permission::query()
+            ->whereIn('code', array_merge($allowCodes, $denyCodes))
+            ->pluck('id', 'code');
+
+        $syncData = [];
+
+        foreach ($allowCodes as $code) {
+            if (isset($permissions[$code])) {
+                $syncData[$permissions[$code]] = ['is_denied' => false];
+            }
+        }
+
+        foreach ($denyCodes as $code) {
+            if (isset($permissions[$code])) {
+                $syncData[$permissions[$code]] = ['is_denied' => true];
+            }
+        }
+
+        $user->permissions()->sync($syncData);
     }
 }
