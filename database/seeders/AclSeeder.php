@@ -53,6 +53,13 @@ class AclSeeder extends Seeder
         $owner->permissions()->sync($allPermissionIds);
 
         $adminCodes = [
+            'dashboard.view',
+
+            'roles.view',
+            'roles.create',
+            'roles.edit',
+            'permissions.view',
+
             'users.view',
             'users.create',
             'users.edit',
@@ -149,6 +156,8 @@ class AclSeeder extends Seeder
         ];
 
         $employeeCodes = [
+            'dashboard.view',
+
             'orders.view',
             'orders.edit',
 
@@ -208,6 +217,21 @@ class AclSeeder extends Seeder
     protected function permissions(): array
     {
         return [
+            'dashboard' => [
+                ['code' => 'dashboard.view', 'name' => 'View dashboard'],
+            ],
+
+            'roles' => [
+                ['code' => 'roles.view', 'name' => 'View roles'],
+                ['code' => 'roles.create', 'name' => 'Create roles'],
+                ['code' => 'roles.edit', 'name' => 'Edit roles'],
+                ['code' => 'roles.delete', 'name' => 'Delete roles'],
+            ],
+
+            'permissions' => [
+                ['code' => 'permissions.view', 'name' => 'View permissions'],
+            ],
+
             'users' => [
                 ['code' => 'users.view', 'name' => 'View users'],
                 ['code' => 'users.create', 'name' => 'Create users'],

@@ -34,32 +34,42 @@ class SidebarBuilder
         $productsCount        = max(0, (int) ($counters['dashboardProductsCount'] ?? 0));
         $pendingReviewsCount  = max(0, (int) ($counters['dashboardPendingReviewsCount'] ?? 0));
 
-        // ✅ Shipping Counters
         $shippingMethodsCount       = max(0, (int) ($counters['dashboardShippingMethodsCount'] ?? 0));
         $activeShippingMethodsCount = max(0, (int) ($counters['dashboardActiveShippingMethodsCount'] ?? 0));
         $shipmentsInTransitCount    = max(0, (int) ($counters['dashboardShipmentsInTransitCount'] ?? 0));
 
-        // ✅ Customers Counters
         $usersCount          = max(0, (int) ($counters['dashboardUsersCount'] ?? 0));
         $addressesCount      = max(0, (int) ($counters['dashboardAddressesCount'] ?? 0));
         $wishlistsCount      = max(0, (int) ($counters['dashboardWishlistsCount'] ?? 0));
         $cartsCount          = max(0, (int) ($counters['dashboardCartsCount'] ?? 0));
         $abandonedCartsCount = max(0, (int) ($counters['dashboardAbandonedCartsCount'] ?? 0));
 
-        // ✅ Recovery Counters
         $abandonedCartRecoveriesCount = max(0, (int) ($counters['dashboardAbandonedCartRecoveriesCount'] ?? 0));
 
-        $salesAlertCount = $pendingOrdersCount + $pendingPaymentsCount;
+        $salesOperationsAlertCount = $pendingOrdersCount;
+        $financeAlertCount         = $pendingPaymentsCount;
 
         $items = [];
 
-        $this->pushItem($items, $this->singleItem(
-            title: 'Dashboard',
-            icon: 'fas fa-tachometer-alt',
-            routeName: 'dashboard.home',
-            routePatterns: ['dashboard.home']
-        ));
+        /*
+        |--------------------------------------------------------------------------
+        | Dashboard
+        |--------------------------------------------------------------------------
+        */
+        if ($this->canAny($user, ['dashboard.view']) || $user->hasRole('owner')) {
+            $this->pushItem($items, $this->singleItem(
+                title: 'Dashboard',
+                icon: 'fas fa-tachometer-alt',
+                routeName: 'dashboard.home',
+                routePatterns: ['dashboard.home']
+            ));
+        }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Sales Operations
+        |--------------------------------------------------------------------------
+        */
         $salesChildren = [];
 
         if ($this->canAny($user, ['orders.view'])) {
@@ -67,25 +77,11 @@ class SidebarBuilder
                 title: 'Orders',
                 routeName: 'dashboard.orders.index',
                 routePatterns: ['dashboard.orders.*'],
-                icon: 'fas fa-shopping-cart'
-            );
-        }
-
-        if ($this->canAny($user, ['payments.view'])) {
-            $salesChildren[] = $this->childItem(
-                title: 'Payments',
-                routeName: 'dashboard.payments.index',
-                routePatterns: ['dashboard.payments.*'],
-                icon: 'fas fa-credit-card'
-            );
-        }
-
-        if ($this->canAny($user, ['refunds.view'])) {
-            $salesChildren[] = $this->childItem(
-                title: 'Refunds',
-                routeName: 'dashboard.refunds.index',
-                routePatterns: ['dashboard.refunds.*'],
-                icon: 'fas fa-undo'
+                icon: 'fas fa-shopping-cart',
+                badge: $this->normalizeBadge([
+                    'value' => $pendingOrdersCount,
+                    'class' => 'badge badge-warning',
+                ])
             );
         }
 
@@ -109,23 +105,71 @@ class SidebarBuilder
 
         if (! empty(array_filter($salesChildren))) {
             $this->pushItem($items, $this->treeItem(
-                title: 'Sales',
+                title: 'Sales Operations',
                 icon: 'fas fa-shopping-bag',
                 routePatterns: [
                     'dashboard.orders.*',
-                    'dashboard.payments.*',
-                    'dashboard.refunds.*',
                     'dashboard.returns.*',
                     'dashboard.coupons.*',
                 ],
                 children: $salesChildren,
                 badge: $this->normalizeBadge([
-                    'value' => $salesAlertCount,
+                    'value' => $salesOperationsAlertCount,
                     'class' => 'badge badge-warning',
                 ])
             ));
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Finance
+        |--------------------------------------------------------------------------
+        */
+        $financeChildren = [];
+
+        if ($this->canAny($user, ['payments.view'])) {
+            $financeChildren[] = $this->childItem(
+                title: 'Payments',
+                routeName: 'dashboard.payments.index',
+                routePatterns: ['dashboard.payments.*'],
+                icon: 'fas fa-credit-card',
+                badge: $this->normalizeBadge([
+                    'value' => $pendingPaymentsCount,
+                    'class' => 'badge badge-danger',
+                ])
+            );
+        }
+
+        if ($this->canAny($user, ['refunds.view'])) {
+            $financeChildren[] = $this->childItem(
+                title: 'Refunds',
+                routeName: 'dashboard.refunds.index',
+                routePatterns: ['dashboard.refunds.*'],
+                icon: 'fas fa-undo'
+            );
+        }
+
+        if (! empty(array_filter($financeChildren))) {
+            $this->pushItem($items, $this->treeItem(
+                title: 'Finance',
+                icon: 'fas fa-wallet',
+                routePatterns: [
+                    'dashboard.payments.*',
+                    'dashboard.refunds.*',
+                ],
+                children: $financeChildren,
+                badge: $this->normalizeBadge([
+                    'value' => $financeAlertCount,
+                    'class' => 'badge badge-danger',
+                ])
+            ));
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Shipping
+        |--------------------------------------------------------------------------
+        */
         $shippingChildren = [];
 
         if ($this->canAny($user, ['shipping-methods.view'])) {
@@ -190,6 +234,11 @@ class SidebarBuilder
             ));
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Catalog
+        |--------------------------------------------------------------------------
+        */
         $catalogChildren = [];
 
         if ($this->canAny($user, ['categories.view'])) {
@@ -253,109 +302,103 @@ class SidebarBuilder
             ));
         }
 
-// ✅ Customers
-$customersChildren = [];
+        /*
+        |--------------------------------------------------------------------------
+        | Customers
+        |--------------------------------------------------------------------------
+        */
+        $customersChildren = [];
 
-if ($this->canAny($user, ['users.view'])) {
-    $customersChildren[] = $this->childItem(
-        title: 'Users',
-        routeName: 'dashboard.users.index',
-        routePatterns: ['dashboard.users.*'],
-        icon: 'fas fa-users',
-        badge: $this->normalizeBadge([
-            'value' => $usersCount,
-            'class' => 'badge badge-info',
-        ])
-    );
-}
+        if ($this->canAny($user, ['addresses.view'])) {
+            $customersChildren[] = $this->childItem(
+                title: 'Addresses',
+                routeName: 'dashboard.addresses.index',
+                routePatterns: ['dashboard.addresses.*'],
+                icon: 'fas fa-map-marker-alt',
+                badge: $this->normalizeBadge([
+                    'value' => $addressesCount,
+                    'class' => 'badge badge-secondary',
+                ])
+            );
+        }
 
-if ($this->canAny($user, ['addresses.view'])) {
-    $customersChildren[] = $this->childItem(
-        title: 'Addresses',
-        routeName: 'dashboard.addresses.index',
-        routePatterns: ['dashboard.addresses.*'],
-        icon: 'fas fa-map-marker-alt',
-        badge: $this->normalizeBadge([
-            'value' => $addressesCount,
-            'class' => 'badge badge-secondary',
-        ])
-    );
-}
+        if ($this->canAny($user, ['wishlists.view'])) {
+            $customersChildren[] = $this->childItem(
+                title: 'Wishlist Activity',
+                routeName: 'dashboard.wishlists.index',
+                routePatterns: ['dashboard.wishlists.*'],
+                icon: 'fas fa-heart',
+                badge: $this->normalizeBadge([
+                    'value' => $wishlistsCount,
+                    'class' => 'badge badge-danger',
+                ])
+            );
+        }
 
-if ($this->canAny($user, ['wishlists.view'])) {
-    $customersChildren[] = $this->childItem(
-        title: 'Wishlist Activity',
-        routeName: 'dashboard.wishlists.index',
-        routePatterns: ['dashboard.wishlists.*'],
-        icon: 'fas fa-heart',
-        badge: $this->normalizeBadge([
-            'value' => $wishlistsCount,
-            'class' => 'badge badge-danger',
-        ])
-    );
-}
+        if ($this->canAny($user, ['carts.view'])) {
+            $customersChildren[] = $this->childItem(
+                title: 'Carts',
+                routeName: 'dashboard.carts.index',
+                routePatterns: ['dashboard.carts.*'],
+                icon: 'fas fa-shopping-basket',
+                badge: $this->normalizeBadge([
+                    'value' => $cartsCount,
+                    'class' => 'badge badge-warning',
+                ])
+            );
+        }
 
-if ($this->canAny($user, ['carts.view'])) {
-    $customersChildren[] = $this->childItem(
-        title: 'Carts',
-        routeName: 'dashboard.carts.index',
-        routePatterns: ['dashboard.carts.*'],
-        icon: 'fas fa-shopping-basket',
-        badge: $this->normalizeBadge([
-            'value' => $cartsCount,
-            'class' => 'badge badge-warning',
-        ])
-    );
-}
+        if ($this->canAny($user, ['carts.view']) && $this->routeExists('dashboard.carts.abandoned')) {
+            $customersChildren[] = $this->childItem(
+                title: 'Abandoned Carts',
+                routeName: 'dashboard.carts.abandoned',
+                routePatterns: ['dashboard.carts.abandoned'],
+                icon: 'fas fa-cart-arrow-down',
+                badge: $this->normalizeBadge([
+                    'value' => $abandonedCartsCount,
+                    'class' => 'badge badge-dark',
+                ])
+            );
+        }
 
-if ($this->canAny($user, ['carts.view']) && $this->routeExists('dashboard.carts.abandoned')) {
-    $customersChildren[] = $this->childItem(
-        title: 'Abandoned Carts',
-        routeName: 'dashboard.carts.abandoned',
-        routePatterns: ['dashboard.carts.abandoned'],
-        icon: 'fas fa-cart-arrow-down',
-        badge: $this->normalizeBadge([
-            'value' => $abandonedCartsCount,
-            'class' => 'badge badge-dark',
-        ])
-    );
-}
+        if ($this->canAny($user, ['abandoned-cart-recoveries.view']) && $this->routeExists('dashboard.abandoned-cart-recoveries.index')) {
+            $customersChildren[] = $this->childItem(
+                title: 'Cart Recovery',
+                routeName: 'dashboard.abandoned-cart-recoveries.index',
+                routePatterns: ['dashboard.abandoned-cart-recoveries.*'],
+                icon: 'fas fa-envelope-open-text',
+                badge: $this->normalizeBadge([
+                    'value' => $abandonedCartRecoveriesCount,
+                    'class' => 'badge badge-warning',
+                ])
+            );
+        }
 
-if ($this->canAny($user, ['abandoned-cart-recoveries.view']) && $this->routeExists('dashboard.abandoned-cart-recoveries.index')) {
-    $customersChildren[] = $this->childItem(
-        title: 'Cart Recovery',
-        routeName: 'dashboard.abandoned-cart-recoveries.index',
-        routePatterns: ['dashboard.abandoned-cart-recoveries.*'],
-        icon: 'fas fa-envelope-open-text',
-        badge: $this->normalizeBadge([
-            'value' => $abandonedCartRecoveriesCount,
-            'class' => 'badge badge-warning',
-        ])
-    );
-}
+        if (! empty(array_filter($customersChildren))) {
+            $customersBadgeValue = $addressesCount + $wishlistsCount + $cartsCount + $abandonedCartRecoveriesCount;
 
-if (! empty(array_filter($customersChildren))) {
-    $customersBadgeValue = $usersCount + $cartsCount + $abandonedCartRecoveriesCount;
+            $this->pushItem($items, $this->treeItem(
+                title: 'Customers',
+                icon: 'fas fa-user-friends',
+                routePatterns: [
+                    'dashboard.addresses.*',
+                    'dashboard.wishlists.*',
+                    'dashboard.carts.*',
+                    'dashboard.abandoned-cart-recoveries.*',
+                ],
+                children: $customersChildren,
+                badge: $this->normalizeBadge([
+                    'value' => $customersBadgeValue,
+                    'class' => 'badge badge-primary',
+                ])
+            ));
+        }
 
-    $this->pushItem($items, $this->treeItem(
-        title: 'Customers',
-        icon: 'fas fa-user-friends',
-        routePatterns: [
-            'dashboard.users.*',
-            'dashboard.addresses.*',
-            'dashboard.wishlists.*',
-            'dashboard.carts.*',
-            'dashboard.abandoned-cart-recoveries.*',
-        ],
-        children: $customersChildren,
-        badge: $this->normalizeBadge([
-            'value' => $customersBadgeValue,
-            'class' => 'badge badge-primary',
-        ])
-    ));
-}
-
-
+        /*
+        |--------------------------------------------------------------------------
+        | Content
+        |--------------------------------------------------------------------------
+        */
         $contentChildren = [];
 
         if ($this->canAny($user, ['blogs.view'])) {
@@ -426,14 +469,23 @@ if (! empty(array_filter($customersChildren))) {
             ));
         }
 
-                $aclChildren = [];
+        /*
+        |--------------------------------------------------------------------------
+        | Access Control
+        |--------------------------------------------------------------------------
+        */
+        $aclChildren = [];
 
         if ($this->canAny($user, ['users.view'])) {
             $aclChildren[] = $this->childItem(
                 title: 'Users',
                 routeName: 'dashboard.users.index',
                 routePatterns: ['dashboard.users.*'],
-                icon: 'fas fa-users-cog'
+                icon: 'fas fa-users-cog',
+                badge: $this->normalizeBadge([
+                    'value' => $usersCount,
+                    'class' => 'badge badge-info',
+                ])
             );
         }
 
@@ -468,6 +520,11 @@ if (! empty(array_filter($customersChildren))) {
             ));
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | System
+        |--------------------------------------------------------------------------
+        */
         $systemChildren = [];
 
         if ($this->canAny($user, ['audit.view'])) {
@@ -479,7 +536,7 @@ if (! empty(array_filter($customersChildren))) {
             );
         }
 
-        if ($this->routeExists('dashboard.error-logs.index')) {
+        if ($this->routeExists('dashboard.error-logs.index') && $this->canAny($user, ['audit.view'])) {
             $systemChildren[] = $this->childItem(
                 title: 'Error Logs',
                 routeName: 'dashboard.error-logs.index',
@@ -488,7 +545,7 @@ if (! empty(array_filter($customersChildren))) {
             );
         }
 
-        if ($this->routeExists('dashboard.backups.index')) {
+        if ($this->routeExists('dashboard.backups.index') && $this->canAny($user, ['audit.view'])) {
             $systemChildren[] = $this->childItem(
                 title: 'Backup History',
                 routeName: 'dashboard.backups.index',
@@ -497,7 +554,7 @@ if (! empty(array_filter($customersChildren))) {
             );
         }
 
-        if ($this->routeExists('dashboard.settings.index')) {
+        if ($this->routeExists('dashboard.settings.index') && $this->canAny($user, ['audit.view'])) {
             $systemChildren[] = $this->childItem(
                 title: 'Settings',
                 routeName: 'dashboard.settings.index',
@@ -506,7 +563,7 @@ if (! empty(array_filter($customersChildren))) {
             );
         }
 
-        if ($this->routeExists('dashboard.uat.index')) {
+        if ($this->routeExists('dashboard.uat.index') && $this->canAny($user, ['audit.view'])) {
             $systemChildren[] = $this->childItem(
                 title: 'UAT',
                 routeName: 'dashboard.uat.index',
@@ -515,7 +572,7 @@ if (! empty(array_filter($customersChildren))) {
             );
         }
 
-        if ($this->routeExists('dashboard.privacy-requests.index')) {
+        if ($this->routeExists('dashboard.privacy-requests.index') && $this->canAny($user, ['audit.view'])) {
             $systemChildren[] = $this->childItem(
                 title: 'Privacy Requests',
                 routeName: 'dashboard.privacy-requests.index',
@@ -524,7 +581,7 @@ if (! empty(array_filter($customersChildren))) {
             );
         }
 
-        if ($this->routeExists('dashboard.retention-policies.index')) {
+        if ($this->routeExists('dashboard.retention-policies.index') && $this->canAny($user, ['audit.view'])) {
             $systemChildren[] = $this->childItem(
                 title: 'Retention Policies',
                 routeName: 'dashboard.retention-policies.index',
@@ -532,8 +589,6 @@ if (! empty(array_filter($customersChildren))) {
                 icon: 'fas fa-shield-alt'
             );
         }
-
-
 
         if (! empty(array_filter($systemChildren))) {
             $this->pushItem($items, $this->treeItem(
@@ -547,7 +602,6 @@ if (! empty(array_filter($customersChildren))) {
                     'dashboard.uat.*',
                     'dashboard.privacy-requests.*',
                     'dashboard.retention-policies.*',
-                    'dashboard.abandoned-cart-recoveries.*',
                 ],
                 children: $systemChildren
             ));
@@ -655,7 +709,7 @@ if (! empty(array_filter($customersChildren))) {
 
     protected function canAny(User $user, array $permissions = []): bool
     {
-        if ($user->hasRole('owner') || $user->hasRole('admin')) {
+        if ($user->hasRole('owner')) {
             return true;
         }
 

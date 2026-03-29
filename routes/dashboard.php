@@ -31,6 +31,8 @@ use App\Http\Controllers\Dashboard\BlogCategoryController ;
 use App\Http\Controllers\Dashboard\BlogController;
 use App\Http\Controllers\Dashboard\BlogCommentController;
 use App\Http\Controllers\Dashboard\PageController;
+use App\Http\Controllers\Dashboard\RoleController;
+use App\Http\Controllers\Dashboard\PermissionController;
 
 
 
@@ -919,5 +921,52 @@ Route::patch('/contact-messages/{message}/mark-unread', [DashboardContactMessage
 Route::delete('/contact-messages/{message}', [DashboardContactMessageController::class, 'destroy'])
     ->middleware('permission:contact.delete')
     ->name('contact-messages.destroy');
+
+
+    /*
+|--------------------------------------------------------------------------
+| Roles
+|--------------------------------------------------------------------------
+*/
+Route::get('/roles', [RoleController::class, 'index'])
+    ->middleware('permission:roles.view')
+    ->name('roles.index');
+
+Route::get('/roles/create', [RoleController::class, 'create'])
+    ->middleware('permission:roles.create')
+    ->name('roles.create');
+
+Route::post('/roles', [RoleController::class, 'store'])
+    ->middleware('permission:roles.create')
+    ->name('roles.store');
+
+Route::get('/roles/{role}', [RoleController::class, 'show'])
+    ->middleware('permission:roles.view')
+    ->name('roles.show');
+
+Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])
+    ->middleware('permission:roles.edit')
+    ->name('roles.edit');
+
+Route::put('/roles/{role}', [RoleController::class, 'update'])
+    ->middleware('permission:roles.edit')
+    ->name('roles.update');
+
+Route::delete('/roles/{role}', [RoleController::class, 'destroy'])
+    ->middleware('permission:roles.delete')
+    ->name('roles.destroy');
+
+/*
+|--------------------------------------------------------------------------
+| Permissions
+|--------------------------------------------------------------------------
+*/
+Route::get('/permissions', [PermissionController::class, 'index'])
+    ->middleware('permission:permissions.view')
+    ->name('permissions.index');
+
+Route::get('/permissions/{permission}', [PermissionController::class, 'show'])
+    ->middleware('permission:permissions.view')
+    ->name('permissions.show');
 
     });
