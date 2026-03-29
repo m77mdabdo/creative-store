@@ -8,22 +8,33 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckPermission
 {
-    public function handle(Request $request, Closure $next, string $permissionCode): Response
+    public function handle(Request $request, Closure $next, string ...$permissions): Response
     {
-        if (! auth()->check()) {
-            abort(403, 'Unauthorized.');
+        $user = $request->user();
+
+        if (! $user) {
+            abort(401);
         }
 
-        $user = auth()->user();
+        if (! $user->is_active) {
+            abort(403, 'Your account is inactive.');
+        }
 
-        if ($user->hasRole('owner') || $user->hasRole('admin')) {
+        $permissions = collect($permissions)
+            ->flatMap(fn ($item) => explode(',', (string) $item))
+            ->map(fn ($item) => trim($item))
+            ->filter()
+            ->values()
+            ->all();
+
+        if (empty($permissions)) {
             return $next($request);
         }
 
-        if (! $user->hasPermission($permissionCode)) {
-            abort(403, 'You do not have permission to access this page.');
+        if ($user->hasAnyPermission($permissions)) {
+            return $next($request);
         }
 
-        return $next($request);
+        abort(403, 'You do not have permission to perform this action.');
     }
 }

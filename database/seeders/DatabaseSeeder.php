@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             paymentPermissionSeeder::class, // Payment Permissions
              AssignPaymentPermissionsSeeder::class,
              RefundReturnSeeder::class,
+              AclSeeder::class,
 
         ]);
     }

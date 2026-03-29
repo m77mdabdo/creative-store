@@ -28,17 +28,19 @@
 
             {{-- Top Sales Stats --}}
             <div class="row">
-                <div class="col-lg-3 col-md-6 col-12">
-                    <div class="small-box shadow-sm" style="border-radius:18px; background:linear-gradient(135deg,#111827,#1f2937); color:#fff;">
-                        <div class="inner">
-                            <h3>{{ number_format($totalSales, 2) }}</h3>
-                            <p>Total Sales</p>
-                        </div>
-                        <div class="icon">
-                            <i class="fas fa-sack-dollar"></i>
+                @if(auth()->user()->hasPermission('dashboard.sales-totals.view'))
+                    <div class="col-lg-3 col-md-6 col-12">
+                        <div class="small-box shadow-sm" style="border-radius:18px; background:linear-gradient(135deg,#111827,#1f2937); color:#fff;">
+                            <div class="inner">
+                                <h3>{{ number_format($totalSales, 2) }}</h3>
+                                <p>Total Sales</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-sack-dollar"></i>
+                            </div>
                         </div>
                     </div>
-                </div>
+                @endif
 
                 <div class="col-lg-3 col-md-6 col-12">
                     <div class="small-box shadow-sm" style="border-radius:18px; background:linear-gradient(135deg,#2563eb,#1d4ed8); color:#fff;">
@@ -266,23 +268,25 @@
             </div>
 
             {{-- Sales Chart --}}
-            <div class="row">
-                <div class="col-lg-12 col-12">
-                    <div class="card shadow-sm border-0" style="border-radius:20px;">
-                        <div class="card-header bg-white border-0 pt-4 pb-0">
-                            <div class="d-flex justify-content-between align-items-center flex-wrap">
-                                <h3 class="card-title font-weight-bold mb-2" style="font-size:20px;">Sales Chart</h3>
-                                <span class="text-muted" style="font-size:13px;">Last 7 days</span>
+            @if(auth()->user()->hasPermission('dashboard.sales-totals.view'))
+                <div class="row">
+                    <div class="col-lg-12 col-12">
+                        <div class="card shadow-sm border-0" style="border-radius:20px;">
+                            <div class="card-header bg-white border-0 pt-4 pb-0">
+                                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                    <h3 class="card-title font-weight-bold mb-2" style="font-size:20px;">Sales Chart</h3>
+                                    <span class="text-muted" style="font-size:13px;">Last 7 days</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="card-body">
-                            <div style="height: 320px;">
-                                <canvas id="salesChart"></canvas>
+                            <div class="card-body">
+                                <div style="height: 320px;">
+                                    <canvas id="salesChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            @endif
 
             {{-- Latest Orders + Top Products --}}
             <div class="row">
@@ -304,7 +308,9 @@
                                         <th>Customer</th>
                                         <th>Status</th>
                                         <th>Payment</th>
-                                        <th>Total</th>
+                                        @if(auth()->user()->hasPermission('orders.view-totals'))
+                                            <th>Total</th>
+                                        @endif
                                         <th>Date</th>
                                     </tr>
                                 </thead>
@@ -327,12 +333,16 @@
                                                     {{ ucfirst($order->payment_status) }}
                                                 </span>
                                             </td>
-                                            <td class="font-weight-bold">{{ number_format($order->total, 2) }}</td>
+                                            @if(auth()->user()->hasPermission('orders.view-totals'))
+                                                <td class="font-weight-bold">{{ number_format($order->total, 2) }}</td>
+                                            @endif
                                             <td class="text-muted">{{ $order->created_at?->format('d M Y') }}</td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="6" class="text-center text-muted py-4">No orders found.</td>
+                                            <td colspan="{{ auth()->user()->hasPermission('orders.view-totals') ? 6 : 5 }}" class="text-center text-muted py-4">
+                                                No orders found.
+                                            </td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -434,52 +444,58 @@
 @endsection
 
 @push('scripts')
+@if(auth()->user()->hasPermission('dashboard.sales-totals.view'))
 <script>
     const salesChartLabels = @json($salesChartLabels);
     const salesChartData = @json($salesChartData);
 
-    const ctx = document.getElementById('salesChart').getContext('2d');
+    const chartElement = document.getElementById('salesChart');
 
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: salesChartLabels,
-            datasets: [{
-                label: 'Sales',
-                data: salesChartData,
-                borderWidth: 3,
-                fill: true,
-                tension: 0.4,
-                backgroundColor: 'rgba(37, 99, 235, 0.08)',
-                borderColor: '#2563eb',
-                pointBackgroundColor: '#2563eb',
-                pointBorderColor: '#2563eb',
-                pointRadius: 4,
-                pointHoverRadius: 5
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                }
+    if (chartElement) {
+        const ctx = chartElement.getContext('2d');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: salesChartLabels,
+                datasets: [{
+                    label: 'Sales',
+                    data: salesChartData,
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    backgroundColor: 'rgba(37, 99, 235, 0.08)',
+                    borderColor: '#2563eb',
+                    pointBackgroundColor: '#2563eb',
+                    pointBorderColor: '#2563eb',
+                    pointRadius: 4,
+                    pointHoverRadius: 5
+                }]
             },
-            scales: {
-                x: {
-                    grid: {
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
                         display: false
                     }
                 },
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: '#eef2f7'
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#eef2f7'
+                        }
                     }
                 }
             }
-        }
-    });
+        });
+    }
 </script>
+@endif
 @endpush

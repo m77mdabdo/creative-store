@@ -272,3 +272,5 @@ Route::get('/cart/recover/{token}', [CartRecoveryController::class, 'recover'])
 
 Route::get('/pages/{slug}', [FrontPageController::class, 'show'])
     ->name('frontend.pages.show');
+
+    

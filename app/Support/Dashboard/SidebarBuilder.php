@@ -426,6 +426,48 @@ if (! empty(array_filter($customersChildren))) {
             ));
         }
 
+                $aclChildren = [];
+
+        if ($this->canAny($user, ['users.view'])) {
+            $aclChildren[] = $this->childItem(
+                title: 'Users',
+                routeName: 'dashboard.users.index',
+                routePatterns: ['dashboard.users.*'],
+                icon: 'fas fa-users-cog'
+            );
+        }
+
+        if ($this->canAny($user, ['roles.view'])) {
+            $aclChildren[] = $this->childItem(
+                title: 'Roles',
+                routeName: 'dashboard.roles.index',
+                routePatterns: ['dashboard.roles.*'],
+                icon: 'fas fa-user-tag'
+            );
+        }
+
+        if ($this->canAny($user, ['permissions.view'])) {
+            $aclChildren[] = $this->childItem(
+                title: 'Permissions',
+                routeName: 'dashboard.permissions.index',
+                routePatterns: ['dashboard.permissions.*'],
+                icon: 'fas fa-key'
+            );
+        }
+
+        if (! empty(array_filter($aclChildren))) {
+            $this->pushItem($items, $this->treeItem(
+                title: 'Access Control',
+                icon: 'fas fa-shield-alt',
+                routePatterns: [
+                    'dashboard.users.*',
+                    'dashboard.roles.*',
+                    'dashboard.permissions.*',
+                ],
+                children: $aclChildren
+            ));
+        }
+
         $systemChildren = [];
 
         if ($this->canAny($user, ['audit.view'])) {
@@ -491,7 +533,7 @@ if (! empty(array_filter($customersChildren))) {
             );
         }
 
-       
+
 
         if (! empty(array_filter($systemChildren))) {
             $this->pushItem($items, $this->treeItem(

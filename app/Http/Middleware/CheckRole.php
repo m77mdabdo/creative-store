@@ -10,18 +10,31 @@ class CheckRole
 {
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (! auth()->check()) {
-            abort(403, 'Unauthorized.');
+        $user = $request->user();
+
+        if (! $user) {
+            abort(401);
         }
 
-        $user = auth()->user();
-
-        foreach ($roles as $role) {
-            if ($user->hasRole($role)) {
-                return $next($request);
-            }
+        if (! $user->is_active) {
+            abort(403, 'Your account is inactive.');
         }
 
-        abort(403, 'You do not have the required role to access this page.');
+        $roles = collect($roles)
+            ->flatMap(fn ($item) => explode(',', (string) $item))
+            ->map(fn ($item) => trim($item))
+            ->filter()
+            ->values()
+            ->all();
+
+        if (empty($roles)) {
+            return $next($request);
+        }
+
+        if ($user->hasAnyRole($roles)) {
+            return $next($request);
+        }
+
+        abort(403, 'You are not authorized to access this area.');
     }
 }
