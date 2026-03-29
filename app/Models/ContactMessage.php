@@ -55,4 +55,6 @@ class ContactMessage extends Model
             'read_at' => now(),
         ]);
     }
+
+
 }

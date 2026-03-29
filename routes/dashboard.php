@@ -891,5 +891,33 @@ Route::delete('/pages/{page}', [PageController::class, 'destroy'])
     ->middleware('permission:pages.delete')
     ->name('pages.destroy');
 
+    /*
+|--------------------------------------------------------------------------
+| Contact Messages
+|--------------------------------------------------------------------------
+*/
+Route::get('/contact-messages', [DashboardContactMessageController::class, 'index'])
+    ->middleware('permission:contact.view')
+    ->name('contact-messages.index');
+
+Route::post('/contact-messages/bulk-action', [DashboardContactMessageController::class, 'bulkAction'])
+    ->middleware('permission:contact.edit')
+    ->name('contact-messages.bulk-action');
+
+Route::get('/contact-messages/{message}', [DashboardContactMessageController::class, 'show'])
+    ->middleware('permission:contact.view')
+    ->name('contact-messages.show');
+
+Route::patch('/contact-messages/{message}/mark-read', [DashboardContactMessageController::class, 'markAsRead'])
+    ->middleware('permission:contact.edit')
+    ->name('contact-messages.mark-read');
+
+Route::patch('/contact-messages/{message}/mark-unread', [DashboardContactMessageController::class, 'markAsUnread'])
+    ->middleware('permission:contact.edit')
+    ->name('contact-messages.mark-unread');
+
+Route::delete('/contact-messages/{message}', [DashboardContactMessageController::class, 'destroy'])
+    ->middleware('permission:contact.delete')
+    ->name('contact-messages.destroy');
 
     });
