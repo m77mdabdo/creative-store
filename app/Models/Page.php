@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Cache;
 
 class Page extends Model
 {
@@ -29,9 +30,12 @@ class Page extends Model
         $locale ??= app()->getLocale();
         $fallback = config('app.fallback_locale', 'en');
 
-        return $this->translations
-            ->firstWhere('locale', $locale)
-            ?? $this->translations->firstWhere('locale', $fallback);
+        $translations = $this->relationLoaded('translations')
+            ? $this->translations
+            : $this->translations()->get();
+
+        return $translations->firstWhere('locale', $locale)
+            ?? $translations->firstWhere('locale', $fallback);
     }
 
     public function getTitleAttribute(): ?string
@@ -44,6 +48,24 @@ class Page extends Model
         return $this->translation()?->content;
     }
 
+    public function getDecodedContentAttribute(): array
+    {
+        $content = $this->content;
+
+        if (! is_string($content) || trim($content) === '') {
+            return [];
+        }
+
+        $decoded = json_decode($content, true);
+
+        return is_array($decoded) ? $decoded : [];
+    }
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
+    }
+
     public function scopeSearch(Builder $query, ?string $term): Builder
     {
         $term = trim((string) $term);
@@ -52,10 +74,33 @@ class Page extends Model
             return $query;
         }
 
-        return $query->where('slug', 'like', "%{$term}%")
-            ->orWhereHas('translations', function (Builder $q) use ($term) {
-                $q->where('title', 'like', "%{$term}%")
-                  ->orWhere('content', 'like', "%{$term}%");
-            });
+        return $query->where(function (Builder $q) use ($term) {
+            $q->where('slug', 'like', "%{$term}%")
+              ->orWhereHas('translations', function (Builder $t) use ($term) {
+                  $t->where('title', 'like', "%{$term}%")
+                    ->orWhere('content', 'like', "%{$term}%");
+              });
+        });
+    }
+
+    public function cacheKey(?string $locale = null): string
+    {
+        $locale ??= app()->getLocale();
+
+        return "page.{$this->slug}.{$locale}";
+    }
+
+    public static function clearCacheBySlug(string $slug): void
+    {
+        $locales = array_values(array_unique([
+            app()->getLocale(),
+            config('app.fallback_locale', 'en'),
+            'ar',
+            'en',
+        ]));
+
+        foreach ($locales as $locale) {
+            Cache::forget("page.{$slug}.{$locale}");
+        }
     }
 }

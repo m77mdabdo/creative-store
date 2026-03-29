@@ -3,6 +3,15 @@
 @section('title', 'Pages')
 
 @section('content')
+@php
+    $filters = $filters ?? [
+        'q' => '',
+        'status' => '',
+        'sort' => 'newest',
+        'per_page' => 15,
+    ];
+@endphp
+
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap">
@@ -30,31 +39,31 @@
                                     name="q"
                                     class="form-control"
                                     placeholder="Search by slug or title..."
-                                    value="{{ $filters['q'] }}"
+                                    value="{{ $filters['q'] ?? '' }}"
                                 >
                             </div>
 
                             <div class="col-md-2 mb-2">
                                 <select name="status" class="form-control">
                                     <option value="">Status: All</option>
-                                    <option value="1" @selected($filters['status'] === '1')>Active</option>
-                                    <option value="0" @selected($filters['status'] === '0')>Inactive</option>
+                                    <option value="1" @selected(($filters['status'] ?? '') === '1')>Active</option>
+                                    <option value="0" @selected(($filters['status'] ?? '') === '0')>Inactive</option>
                                 </select>
                             </div>
 
                             <div class="col-md-2 mb-2">
                                 <select name="sort" class="form-control">
-                                    <option value="newest" @selected($filters['sort'] === 'newest')>Newest</option>
-                                    <option value="oldest" @selected($filters['sort'] === 'oldest')>Oldest</option>
-                                    <option value="slug_asc" @selected($filters['sort'] === 'slug_asc')>Slug A-Z</option>
-                                    <option value="slug_desc" @selected($filters['sort'] === 'slug_desc')>Slug Z-A</option>
+                                    <option value="newest" @selected(($filters['sort'] ?? 'newest') === 'newest')>Newest</option>
+                                    <option value="oldest" @selected(($filters['sort'] ?? '') === 'oldest')>Oldest</option>
+                                    <option value="slug_asc" @selected(($filters['sort'] ?? '') === 'slug_asc')>Slug A-Z</option>
+                                    <option value="slug_desc" @selected(($filters['sort'] ?? '') === 'slug_desc')>Slug Z-A</option>
                                 </select>
                             </div>
 
                             <div class="col-md-2 mb-2">
                                 <select name="per_page" class="form-control">
                                     @foreach([10,15,25,50,100] as $size)
-                                        <option value="{{ $size }}" @selected((int) $filters['per_page'] === $size)>{{ $size }}</option>
+                                        <option value="{{ $size }}" @selected((int) ($filters['per_page'] ?? 15) === $size)>{{ $size }}</option>
                                     @endforeach
                                 </select>
                             </div>

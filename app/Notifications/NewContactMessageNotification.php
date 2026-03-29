@@ -4,15 +4,17 @@ namespace App\Notifications;
 
 use App\Models\ContactMessage;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NewContactMessageNotification extends Notification
+class NewContactMessageNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
     public function __construct(public ContactMessage $contactMessage)
     {
+        $this->onQueue('notifications');
     }
 
     public function via(object $notifiable): array
@@ -38,15 +40,14 @@ class NewContactMessageNotification extends Notification
     {
         return (new MailMessage)
             ->subject('New Contact Message Received')
-            ->greeting('Hello Admin,')
-            ->line('A new contact message has been received.')
+            ->greeting('Hello,')
+            ->line('A new contact message has been received from your website.')
             ->line('Name: ' . $this->contactMessage->name)
             ->line('Email: ' . $this->contactMessage->email)
             ->line('Phone: ' . ($this->contactMessage->phone ?: 'N/A'))
             ->line('Subject: ' . ($this->contactMessage->subject ?: 'No Subject'))
             ->line('Message:')
             ->line($this->contactMessage->message)
-            ->action('View Message', route('dashboard.contact-messages.show', $this->contactMessage->id))
-            ->line('Thank you.');
+            ->action('View Message', route('dashboard.contact-messages.show', $this->contactMessage->id));
     }
 }

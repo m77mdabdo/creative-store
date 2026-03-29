@@ -1,11 +1,14 @@
 @extends('site.app.layout')
 
 @section('content')
+@php
+    $content = $content ?? [];
+@endphp
 
 <section class="bg-img1 txt-center p-lr-15 p-tb-92"
     style="background-image: url('{{ asset('cozastore/images/bg-01.jpg') }}');">
     <h2 class="ltext-105 cl0 txt-center">
-        Contact
+        {{ $content['hero_title'] ?? $pageTitle ?? 'Contact' }}
     </h2>
 </section>
 
@@ -35,7 +38,7 @@
                     @csrf
 
                     <h4 class="mtext-105 cl2 txt-center p-b-30">
-                        Send Us A Message
+                        {{ $content['form_title'] ?? 'Send Us A Message' }}
                     </h4>
 
                     <div class="bor8 m-b-20">
@@ -97,10 +100,10 @@
                     </span>
 
                     <div class="size-212 p-t-2">
-                        <span class="mtext-110 cl2">Address</span>
+                        <span class="mtext-110 cl2">{{ $content['address_title'] ?? 'Address' }}</span>
 
                         <p class="stext-115 cl6 size-213 p-t-18">
-                            Creative Store Center, Riyadh, Saudi Arabia
+                            {{ $content['address_text'] ?? 'Riyadh, Saudi Arabia' }}
                         </p>
                     </div>
                 </div>
@@ -111,10 +114,10 @@
                     </span>
 
                     <div class="size-212 p-t-2">
-                        <span class="mtext-110 cl2">Let's Talk</span>
+                        <span class="mtext-110 cl2">{{ $content['phone_title'] ?? "Let's Talk" }}</span>
 
                         <p class="stext-115 cl1 size-213 p-t-18">
-                            +966 5X XXX XXXX
+                            {{ $content['phone_text'] ?? '+966 5X XXX XXXX' }}
                         </p>
                     </div>
                 </div>
@@ -125,10 +128,10 @@
                     </span>
 
                     <div class="size-212 p-t-2">
-                        <span class="mtext-110 cl2">Support Email</span>
+                        <span class="mtext-110 cl2">{{ $content['email_title'] ?? 'Support Email' }}</span>
 
                         <p class="stext-115 cl1 size-213 p-t-18">
-                            support@creativestore.com
+                            {{ $content['email_text'] ?? 'support@example.com' }}
                         </p>
                     </div>
                 </div>
@@ -141,13 +144,12 @@
 <div class="map">
     <div class="size-303"
         id="google_map"
-        data-map-x="24.7136"
-        data-map-y="46.6753"
+        data-map-x="{{ $content['map_x'] ?? '24.7136' }}"
+        data-map-y="{{ $content['map_y'] ?? '46.6753' }}"
         data-pin="{{ asset('cozastore/images/icons/pin.png') }}"
         data-scrollwhell="0"
         data-draggable="1"
-        data-zoom="11">
+        data-zoom="{{ $content['map_zoom'] ?? '11' }}">
     </div>
 </div>
-
 @endsection

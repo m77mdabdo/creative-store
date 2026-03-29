@@ -1,147 +1,100 @@
 @extends('site.app.layout')
 
 @section('content')
+@php
+    $image1 = $content['image_1'] ?? 'images/about-01.jpg';
+    $image2 = $content['image_2'] ?? 'images/about-02.jpg';
 
-    <!-- Title page -->
-    <section class="bg-img1 txt-center p-lr-15 p-tb-92"
-        style="background-image: url('{{ asset('cozastore/images/bg-01.jpg') }}');">
-        <h2 class="ltext-105 cl0 txt-center">
-            Contact
-        </h2>
-    </section>
+    $image1Url = str_starts_with($image1, 'images/')
+        ? asset($image1)
+        : asset('storage/' . ltrim($image1, '/'));
 
-    <!-- Content page -->
-    <section class="bg0 p-t-104 p-b-116">
-        <div class="container">
-            <div class="flex-w flex-tr">
+    $image2Url = str_starts_with($image2, 'images/')
+        ? asset($image2)
+        : asset('storage/' . ltrim($image2, '/'));
+@endphp
 
-                <div class="size-210 bor10 p-lr-70 p-t-55 p-b-70 p-lr-15-lg w-full-md">
+<section class="bg-img1 txt-center p-lr-15 p-tb-92" style="background-image: url('{{ asset('images/bg-01.jpg') }}');">
+    <h2 class="ltext-105 cl0 txt-center">
+        {{ $content['hero_title'] ?? $pageTitle ?? 'About' }}
+    </h2>
+</section>
 
-                    @if(session('success'))
-                        <div class="alert alert-success m-b-25">
-                            {{ session('success') }}
-                        </div>
+<section class="bg0 p-t-75 p-b-120">
+    <div class="container">
+        <div class="row p-b-148">
+            <div class="col-md-7 col-lg-8">
+                <div class="p-t-7 p-r-85 p-r-15-lg p-r-0-md">
+                    <h3 class="mtext-111 cl2 p-b-16">
+                        {{ $content['story_title'] ?? 'Our Story' }}
+                    </h3>
+
+                    @if(!empty($content['story_text_1']))
+                        <p class="stext-113 cl6 p-b-26">
+                            {{ $content['story_text_1'] }}
+                        </p>
                     @endif
 
-                    @if($errors->any())
-                        <div class="alert alert-danger m-b-25">
-                            <ul class="m-b-0 p-l-20">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
+                    @if(!empty($content['story_text_2']))
+                        <p class="stext-113 cl6 p-b-26">
+                            {{ $content['story_text_2'] }}
+                        </p>
                     @endif
 
-                    <form action="{{ route('contact.store') }}" method="POST">
-                        @csrf
-
-                        <h4 class="mtext-105 cl2 txt-center p-b-30">
-                            Send Us A Message
-                        </h4>
-
-                        <div class="bor8 m-b-20">
-                            <input class="stext-111 cl2 plh3 size-116 p-lr-28"
-                                type="text"
-                                name="name"
-                                value="{{ old('name') }}"
-                                placeholder="Your Name *">
-                        </div>
-
-                        <div class="bor8 m-b-20 how-pos4-parent">
-                            <input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30"
-                                type="email"
-                                name="email"
-                                value="{{ old('email') }}"
-                                placeholder="Your Email Address *">
-
-                            <img class="how-pos4 pointer-none"
-                                src="{{ asset('cozastore/images/icons/icon-email.png') }}"
-                                alt="ICON">
-                        </div>
-
-                        <div class="bor8 m-b-20">
-                            <input class="stext-111 cl2 plh3 size-116 p-lr-28"
-                                type="text"
-                                name="subject"
-                                value="{{ old('subject') }}"
-                                placeholder="Subject">
-                        </div>
-
-                        <div class="bor8 m-b-30">
-                            <textarea class="stext-111 cl2 plh3 size-120 p-lr-28 p-tb-25"
-                                name="message"
-                                placeholder="How Can We Help? *">{{ old('message') }}</textarea>
-                        </div>
-
-                        <button type="submit"
-                            class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
-                            Submit
-                        </button>
-                    </form>
+                    @if(!empty($content['story_text_3']))
+                        <p class="stext-113 cl6 p-b-26">
+                            {{ $content['story_text_3'] }}
+                        </p>
+                    @endif
                 </div>
+            </div>
 
-                <div class="size-210 bor10 flex-w flex-col-m p-lr-93 p-tb-30 p-lr-15-lg w-full-md">
-
-                    <div class="flex-w w-full p-b-42">
-                        <span class="fs-18 cl5 txt-center size-211">
-                            <span class="lnr lnr-map-marker"></span>
-                        </span>
-
-                        <div class="size-212 p-t-2">
-                            <span class="mtext-110 cl2">Address</span>
-
-                            <p class="stext-115 cl6 size-213 p-t-18">
-                                Creative Store Center, Riyadh, Saudi Arabia
-                            </p>
-                        </div>
+            <div class="col-11 col-md-5 col-lg-4 m-lr-auto">
+                <div class="how-bor1">
+                    <div class="hov-img0">
+                        <img src="{{ $image1Url }}" alt="About Image 1">
                     </div>
-
-                    <div class="flex-w w-full p-b-42">
-                        <span class="fs-18 cl5 txt-center size-211">
-                            <span class="lnr lnr-phone-handset"></span>
-                        </span>
-
-                        <div class="size-212 p-t-2">
-                            <span class="mtext-110 cl2">Let's Talk</span>
-
-                            <p class="stext-115 cl1 size-213 p-t-18">
-                                +966 5X XXX XXXX
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="flex-w w-full">
-                        <span class="fs-18 cl5 txt-center size-211">
-                            <span class="lnr lnr-envelope"></span>
-                        </span>
-
-                        <div class="size-212 p-t-2">
-                            <span class="mtext-110 cl2">Support Email</span>
-
-                            <p class="stext-115 cl1 size-213 p-t-18">
-                                support@creativestore.com
-                            </p>
-                        </div>
-                    </div>
-
                 </div>
-
             </div>
         </div>
-    </section>
 
-    <!-- Map -->
-    <div class="map">
-        <div class="size-303"
-            id="google_map"
-            data-map-x="24.7136"
-            data-map-y="46.6753"
-            data-pin="{{ asset('cozastore/images/icons/pin.png') }}"
-            data-scrollwhell="0"
-            data-draggable="1"
-            data-zoom="11">
+        <div class="row">
+            <div class="order-md-2 col-md-7 col-lg-8 p-b-30">
+                <div class="p-t-7 p-l-85 p-l-15-lg p-l-0-md">
+                    <h3 class="mtext-111 cl2 p-b-16">
+                        {{ $content['mission_title'] ?? 'Our Mission' }}
+                    </h3>
+
+                    @if(!empty($content['mission_text']))
+                        <p class="stext-113 cl6 p-b-26">
+                            {{ $content['mission_text'] }}
+                        </p>
+                    @endif
+
+                    @if(!empty($content['quote_text']))
+                        <div class="bor16 p-l-29 p-b-9 m-t-22">
+                            <p class="stext-114 cl6 p-r-40 p-b-11">
+                                {{ $content['quote_text'] }}
+                            </p>
+
+                            @if(!empty($content['quote_author']))
+                                <span class="stext-111 cl8">
+                                    - {{ $content['quote_author'] }}
+                                </span>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <div class="order-md-1 col-11 col-md-5 col-lg-4 m-lr-auto p-b-30">
+                <div class="how-bor2">
+                    <div class="hov-img0">
+                        <img src="{{ $image2Url }}" alt="About Image 2">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
+</section>
 @endsection

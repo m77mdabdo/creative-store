@@ -36,6 +36,7 @@ use App\Http\Controllers\Dashboard\PageController;
 
 
 
+
 Route::prefix('dashboard')
     ->as('dashboard.')
     ->middleware(['auth', 'role:owner,admin,employee'])

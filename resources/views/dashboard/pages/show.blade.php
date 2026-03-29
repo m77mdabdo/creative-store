@@ -1,23 +1,21 @@
 @extends('dashboard.app.layout')
 
-@section('title', $page->slug)
+@section('title', 'View Page')
 
 @section('content')
 <div class="content-wrapper">
     <section class="content-header">
-        <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap">
-            <h1>Page Details</h1>
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <h1>View Page</h1>
 
-            <div class="d-flex gap-2">
+            <div>
+                <a href="{{ route('dashboard.pages.edit', $page) }}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+
                 <a href="{{ route('dashboard.pages.index') }}" class="btn btn-default">
                     <i class="fas fa-arrow-left"></i> Back
                 </a>
-
-                @if(Route::has('frontend.pages.show'))
-                    <a href="{{ route('frontend.pages.show', $page->slug) }}" target="_blank" class="btn btn-success">
-                        <i class="fas fa-external-link-alt"></i> Open Frontend
-                    </a>
-                @endif
             </div>
         </div>
     </section>
@@ -27,41 +25,174 @@
             @include('dashboard.partials.alerts')
 
             <div class="card card-outline card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">Page Details</h3>
+                </div>
+
                 <div class="card-body">
-                    <div class="mb-3">
-                        <strong>Slug:</strong> <code>{{ $page->slug }}</code>
-                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <strong>ID</strong>
+                            <div>{{ $page->id }}</div>
+                        </div>
 
-                    <div class="mb-3">
-                        <strong>Status:</strong>
-                        <span class="badge {{ $page->is_active ? 'badge-success' : 'badge-danger' }}">
-                            {{ $page->is_active ? 'Active' : 'Inactive' }}
-                        </span>
-                    </div>
+                        <div class="col-md-3">
+                            <strong>Slug</strong>
+                            <div>{{ $page->slug }}</div>
+                        </div>
 
-                    <hr>
+                        <div class="col-md-3">
+                            <strong>Status</strong>
+                            <div>
+                                @if($page->is_active)
+                                    <span class="badge badge-success">Active</span>
+                                @else
+                                    <span class="badge badge-secondary">Inactive</span>
+                                @endif
+                            </div>
+                        </div>
 
-                    <h5>Arabic</h5>
-                    <div class="mb-3">
-                        <strong>Title:</strong> {{ $translationAr?->title ?? '-' }}
-                    </div>
-                    <div class="mb-4">
-                        <strong>Content:</strong>
-                        <div class="mt-2 p-3 bg-light rounded" style="white-space: pre-line;">
-                            {{ $translationAr?->content ?? '-' }}
+                        <div class="col-md-3">
+                            <strong>Updated At</strong>
+                            <div>{{ $page->updated_at?->format('Y-m-d h:i A') }}</div>
                         </div>
                     </div>
 
                     <hr>
 
-                    <h5>English</h5>
-                    <div class="mb-3">
-                        <strong>Title:</strong> {{ $translationEn?->title ?? '-' }}
-                    </div>
-                    <div class="mb-3">
-                        <strong>Content:</strong>
-                        <div class="mt-2 p-3 bg-light rounded" style="white-space: pre-line;">
-                            {{ $translationEn?->content ?? '-' }}
+                    @php
+                        $aboutAr = $aboutAr ?? [];
+                        $aboutEn = $aboutEn ?? [];
+                        $contactAr = $contactAr ?? [];
+                        $contactEn = $contactEn ?? [];
+
+                        $arImage1 = $aboutAr['image_1'] ?? null;
+                        $arImage2 = $aboutAr['image_2'] ?? null;
+                        $enImage1 = $aboutEn['image_1'] ?? null;
+                        $enImage2 = $aboutEn['image_2'] ?? null;
+
+                        $arImage1Url = $arImage1
+                            ? (str_starts_with($arImage1, 'images/')
+                                ? asset($arImage1)
+                                : asset('storage/' . ltrim($arImage1, '/')))
+                            : null;
+
+                        $arImage2Url = $arImage2
+                            ? (str_starts_with($arImage2, 'images/')
+                                ? asset($arImage2)
+                                : asset('storage/' . ltrim($arImage2, '/')))
+                            : null;
+
+                        $enImage1Url = $enImage1
+                            ? (str_starts_with($enImage1, 'images/')
+                                ? asset($enImage1)
+                                : asset('storage/' . ltrim($enImage1, '/')))
+                            : null;
+
+                        $enImage2Url = $enImage2
+                            ? (str_starts_with($enImage2, 'images/')
+                                ? asset($enImage2)
+                                : asset('storage/' . ltrim($enImage2, '/')))
+                            : null;
+                    @endphp
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="mb-3">Arabic</h4>
+
+                            <p><strong>Title:</strong> {{ $translationAr?->title ?? '-' }}</p>
+
+                            @if($page->slug === 'about')
+                                <p><strong>Hero Title:</strong> {{ $aboutAr['hero_title'] ?? '-' }}</p>
+                                <p><strong>Story Title:</strong> {{ $aboutAr['story_title'] ?? '-' }}</p>
+                                <p><strong>Story Text 1:</strong><br>{{ $aboutAr['story_text_1'] ?? '-' }}</p>
+                                <p><strong>Story Text 2:</strong><br>{{ $aboutAr['story_text_2'] ?? '-' }}</p>
+                                <p><strong>Story Text 3:</strong><br>{{ $aboutAr['story_text_3'] ?? '-' }}</p>
+                                <p><strong>Mission Title:</strong> {{ $aboutAr['mission_title'] ?? '-' }}</p>
+                                <p><strong>Mission Text:</strong><br>{{ $aboutAr['mission_text'] ?? '-' }}</p>
+                                <p><strong>Quote Text:</strong><br>{{ $aboutAr['quote_text'] ?? '-' }}</p>
+                                <p><strong>Quote Author:</strong> {{ $aboutAr['quote_author'] ?? '-' }}</p>
+
+                                @if($arImage1Url)
+                                    <div class="mb-3">
+                                        <strong>Image 1:</strong><br>
+                                        <img src="{{ $arImage1Url }}" alt="Arabic Image 1" style="max-width: 180px; border-radius: 8px;">
+                                    </div>
+                                @endif
+
+                                @if($arImage2Url)
+                                    <div class="mb-3">
+                                        <strong>Image 2:</strong><br>
+                                        <img src="{{ $arImage2Url }}" alt="Arabic Image 2" style="max-width: 180px; border-radius: 8px;">
+                                    </div>
+                                @endif
+
+                            @elseif($page->slug === 'contact')
+                                <p><strong>Hero Title:</strong> {{ $contactAr['hero_title'] ?? '-' }}</p>
+                                <p><strong>Form Title:</strong> {{ $contactAr['form_title'] ?? '-' }}</p>
+                                <p><strong>Address Title:</strong> {{ $contactAr['address_title'] ?? '-' }}</p>
+                                <p><strong>Address Text:</strong><br>{{ $contactAr['address_text'] ?? '-' }}</p>
+                                <p><strong>Phone Title:</strong> {{ $contactAr['phone_title'] ?? '-' }}</p>
+                                <p><strong>Phone Text:</strong> {{ $contactAr['phone_text'] ?? '-' }}</p>
+                                <p><strong>Email Title:</strong> {{ $contactAr['email_title'] ?? '-' }}</p>
+                                <p><strong>Email Text:</strong> {{ $contactAr['email_text'] ?? '-' }}</p>
+                                <p><strong>Map X:</strong> {{ $contactAr['map_x'] ?? '-' }}</p>
+                                <p><strong>Map Y:</strong> {{ $contactAr['map_y'] ?? '-' }}</p>
+                                <p><strong>Map Zoom:</strong> {{ $contactAr['map_zoom'] ?? '-' }}</p>
+
+                            @else
+                                <p><strong>Content:</strong></p>
+                                <div>{!! nl2br(e($translationAr?->content ?? '-')) !!}</div>
+                            @endif
+                        </div>
+
+                        <div class="col-md-6">
+                            <h4 class="mb-3">English</h4>
+
+                            <p><strong>Title:</strong> {{ $translationEn?->title ?? '-' }}</p>
+
+                            @if($page->slug === 'about')
+                                <p><strong>Hero Title:</strong> {{ $aboutEn['hero_title'] ?? '-' }}</p>
+                                <p><strong>Story Title:</strong> {{ $aboutEn['story_title'] ?? '-' }}</p>
+                                <p><strong>Story Text 1:</strong><br>{{ $aboutEn['story_text_1'] ?? '-' }}</p>
+                                <p><strong>Story Text 2:</strong><br>{{ $aboutEn['story_text_2'] ?? '-' }}</p>
+                                <p><strong>Story Text 3:</strong><br>{{ $aboutEn['story_text_3'] ?? '-' }}</p>
+                                <p><strong>Mission Title:</strong> {{ $aboutEn['mission_title'] ?? '-' }}</p>
+                                <p><strong>Mission Text:</strong><br>{{ $aboutEn['mission_text'] ?? '-' }}</p>
+                                <p><strong>Quote Text:</strong><br>{{ $aboutEn['quote_text'] ?? '-' }}</p>
+                                <p><strong>Quote Author:</strong> {{ $aboutEn['quote_author'] ?? '-' }}</p>
+
+                                @if($enImage1Url)
+                                    <div class="mb-3">
+                                        <strong>Image 1:</strong><br>
+                                        <img src="{{ $enImage1Url }}" alt="English Image 1" style="max-width: 180px; border-radius: 8px;">
+                                    </div>
+                                @endif
+
+                                @if($enImage2Url)
+                                    <div class="mb-3">
+                                        <strong>Image 2:</strong><br>
+                                        <img src="{{ $enImage2Url }}" alt="English Image 2" style="max-width: 180px; border-radius: 8px;">
+                                    </div>
+                                @endif
+
+                            @elseif($page->slug === 'contact')
+                                <p><strong>Hero Title:</strong> {{ $contactEn['hero_title'] ?? '-' }}</p>
+                                <p><strong>Form Title:</strong> {{ $contactEn['form_title'] ?? '-' }}</p>
+                                <p><strong>Address Title:</strong> {{ $contactEn['address_title'] ?? '-' }}</p>
+                                <p><strong>Address Text:</strong><br>{{ $contactEn['address_text'] ?? '-' }}</p>
+                                <p><strong>Phone Title:</strong> {{ $contactEn['phone_title'] ?? '-' }}</p>
+                                <p><strong>Phone Text:</strong> {{ $contactEn['phone_text'] ?? '-' }}</p>
+                                <p><strong>Email Title:</strong> {{ $contactEn['email_title'] ?? '-' }}</p>
+                                <p><strong>Email Text:</strong> {{ $contactEn['email_text'] ?? '-' }}</p>
+                                <p><strong>Map X:</strong> {{ $contactEn['map_x'] ?? '-' }}</p>
+                                <p><strong>Map Y:</strong> {{ $contactEn['map_y'] ?? '-' }}</p>
+                                <p><strong>Map Zoom:</strong> {{ $contactEn['map_zoom'] ?? '-' }}</p>
+
+                            @else
+                                <p><strong>Content:</strong></p>
+                                <div>{!! nl2br(e($translationEn?->content ?? '-')) !!}</div>
+                            @endif
                         </div>
                     </div>
                 </div>

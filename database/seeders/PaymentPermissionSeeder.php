@@ -39,3 +39,5 @@ class PaymentPermissionSeeder extends Seeder
         }
     }
 }
+
+

@@ -17,10 +17,17 @@
         <div class="container-fluid">
             @include('dashboard.partials.alerts')
 
-            <form action="{{ route('dashboard.pages.store') }}" method="POST">
+            <form action="{{ route('dashboard.pages.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+
                 @include('dashboard.pages._form', [
                     'formTitle' => 'Create New Page',
                     'submitLabel' => 'Create Page',
+                    'page' => null,
+                    'translationAr' => null,
+                    'translationEn' => null,
+                    'aboutAr' => [],
+                    'aboutEn' => [],
                 ])
             </form>
         </div>

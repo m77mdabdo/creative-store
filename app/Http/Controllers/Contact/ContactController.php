@@ -3,48 +3,72 @@
 namespace App\Http\Controllers\Contact;
 
 use App\Http\Controllers\Controller;
-use App\Mail\ContactAutoReplyMail;
+use App\Http\Requests\Contact\StoreContactMessageRequest;
+use App\Jobs\SendContactNotificationsJob;
 use App\Models\ContactMessage;
-use App\Models\User;
-use App\Notifications\NewContactMessageNotification;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
+use App\Models\Page;
+use App\Support\PageContent\ContactPageContent;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class ContactController extends Controller
 {
-    public function index()
+    public function index(): View
     {
-        return view('site.contact.contact');
+        $locale = app()->getLocale();
+        $fallback = config('app.fallback_locale', 'en');
+
+        $payload = Cache::remember("page.contact.{$locale}", now()->addMinutes(30), function () use ($locale, $fallback) {
+            $page = Page::query()
+                ->where('slug', 'contact')
+                ->where('is_active', true)
+                ->with([
+                    'translations' => function ($query) use ($locale, $fallback) {
+                        $query->select('id', 'page_id', 'locale', 'title', 'content')
+                            ->whereIn('locale', array_unique([$locale, $fallback]));
+                    }
+                ])
+                ->first();
+
+            if (! $page) {
+                return [
+                    'title' => 'Contact',
+                    'content' => [],
+                ];
+            }
+
+            $translation = $page->translation($locale);
+
+            return [
+                'title' => $translation?->title ?? 'Contact',
+                'content' => ContactPageContent::decode($translation?->content),
+            ];
+        });
+
+        return view('site.contact.contact', [
+            'pageTitle' => $payload['title'] ?? 'Contact',
+            'content' => $payload['content'] ?? [],
+        ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreContactMessageRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50'],
-            'subject' => ['nullable', 'string', 'max:255'],
-            'message' => ['required', 'string', 'min:10'],
-        ]);
+        $contactMessage = DB::transaction(function () use ($request) {
+            return ContactMessage::query()->create([
+                'name' => $request->validated('name'),
+                'email' => $request->validated('email'),
+                'phone' => $request->validated('phone'),
+                'subject' => $request->validated('subject'),
+                'message' => $request->validated('message'),
+                'is_read' => false,
+                'ip_address' => $request->ip(),
+                'user_agent' => substr((string) $request->userAgent(), 0, 1000),
+            ]);
+        });
 
-        $contactMessage = ContactMessage::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'subject' => $request->subject,
-            'message' => $request->message,
-            'is_read' => false,
-        ]);
-
-        // ابعت notification + mail للأدمن
-        $admins = User::query()->get(); // غيرها لاحقًا حسب نظام الأدمن عندك
-
-        foreach ($admins as $admin) {
-            $admin->notify(new NewContactMessageNotification($contactMessage));
-        }
-
-        // Auto reply للعميل
-        Mail::to($contactMessage->email)->send(new ContactAutoReplyMail($contactMessage));
+        SendContactNotificationsJob::dispatch($contactMessage->id);
 
         return back()->with('success', 'Your message has been sent successfully.');
     }

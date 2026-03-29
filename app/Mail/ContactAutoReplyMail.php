@@ -4,20 +4,37 @@ namespace App\Mail;
 
 use App\Models\ContactMessage;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ContactAutoReplyMail extends Mailable
+class ContactAutoReplyMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
     public function __construct(public ContactMessage $contactMessage)
     {
+        $this->onQueue('emails');
     }
 
-    public function build()
+    public function envelope(): Envelope
     {
-        return $this->subject('We Received Your Message')
-            ->view('emails.contact-auto-reply');
+        return new Envelope(
+            subject: 'We received your message'
+        );
+    }
+
+    public function content(): Content
+    {
+        return new Content(
+            markdown: 'emails.contact.auto-reply'
+        );
+    }
+
+    public function attachments(): array
+    {
+        return [];
     }
 }

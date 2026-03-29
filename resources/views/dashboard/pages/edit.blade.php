@@ -17,13 +17,16 @@
         <div class="container-fluid">
             @include('dashboard.partials.alerts')
 
-            <form action="{{ route('dashboard.pages.update', $page) }}" method="POST">
+            <form action="{{ route('dashboard.pages.update', $page) }}" method="POST" enctype="multipart/form-data">
+                @csrf
                 @method('PUT')
 
                 @include('dashboard.pages._form', [
                     'page' => $page,
                     'translationAr' => $translationAr,
                     'translationEn' => $translationEn,
+                    'aboutAr' => $aboutAr ?? [],
+                    'aboutEn' => $aboutEn ?? [],
                     'formTitle' => 'Update Page',
                     'submitLabel' => 'Update Page',
                 ])
