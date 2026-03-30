@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\Auditable;
 
 class Cart extends Model
 {
 
-      use HasFactory;
+      use HasFactory , Auditable ;
 
     protected $fillable = ['user_id','session_id'];
 

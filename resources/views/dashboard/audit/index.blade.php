@@ -11,6 +11,16 @@
                     <h1 class="mb-1">Audit Logs</h1>
                     <p class="text-muted mb-0">Track system activities, changes, and user actions.</p>
                 </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ route('dashboard.audit.export', request()->query()) }}" class="btn btn-success mr-2">
+                        <i class="fas fa-file-csv mr-1"></i> Export CSV
+                    </a>
+
+                    <a href="{{ route('dashboard.audit.print', request()->query()) }}" target="_blank" class="btn btn-dark">
+                        <i class="fas fa-print mr-1"></i> Print
+                    </a>
+                </div>
             </div>
         </div>
     </section>
@@ -175,6 +185,7 @@
                                         <th>Auditable Type</th>
                                         <th>Auditable ID</th>
                                         <th>IP Address</th>
+                                        <th>Changes</th>
                                         <th>Created At</th>
                                         <th class="text-right">Actions</th>
                                     </tr>
@@ -194,9 +205,7 @@
                                             </td>
 
                                             <td>
-                                                <span class="badge badge-info">
-                                                    {{ $auditLog->action }}
-                                                </span>
+                                                <span class="badge badge-info">{{ $auditLog->action }}</span>
                                             </td>
 
                                             <td>
@@ -208,6 +217,20 @@
                                             <td>{{ $auditLog->auditable_id }}</td>
 
                                             <td>{{ $auditLog->ip_address ?: '—' }}</td>
+
+                                            <td>
+                                                @php
+                                                    $oldCount = is_array($auditLog->old_values) ? count($auditLog->old_values) : 0;
+                                                    $newCount = is_array($auditLog->new_values) ? count($auditLog->new_values) : 0;
+                                                    $changesCount = max($oldCount, $newCount);
+                                                @endphp
+
+                                                @if($changesCount > 0)
+                                                    <span class="badge badge-warning">{{ $changesCount }} field(s)</span>
+                                                @else
+                                                    <span class="text-muted">—</span>
+                                                @endif
+                                            </td>
 
                                             <td>
                                                 <div>{{ optional($auditLog->created_at)->format('Y-m-d') }}</div>

@@ -25,14 +25,15 @@ use App\Http\Controllers\Dashboard\ShipmentTrackingController;
 use App\Http\Controllers\Dashboard\DeliveryMonitoringController;
 use App\Http\Controllers\Dashboard\AddressController;
 use App\Http\Controllers\Dashboard\WishlistController;
-use App\Http\Controllers\Dashboard\AbandonedCartRecoveryController ;
-use App\Http\Controllers\Dashboard\BlogCategoryController ;
+use App\Http\Controllers\Dashboard\AbandonedCartRecoveryController;
+use App\Http\Controllers\Dashboard\BlogCategoryController;
 use App\Http\Controllers\Dashboard\BlogController;
 use App\Http\Controllers\Dashboard\BlogCommentController;
 use App\Http\Controllers\Dashboard\PageController;
 use App\Http\Controllers\Dashboard\RoleController;
 use App\Http\Controllers\Dashboard\PermissionController;
-use App\Http\Controllers\Dashboard\AuditLogController ;
+use App\Http\Controllers\Dashboard\AuditLogController;
+use App\Http\Controllers\Dashboard\ErrorLogController;
 
 
 
@@ -702,283 +703,316 @@ Route::prefix('dashboard')
             ->middleware('permission:addresses.delete')
             ->name('addresses.destroy');
 
-            /*
+        /*
 |--------------------------------------------------------------------------
 | Wishlists
 |--------------------------------------------------------------------------
 */
-Route::get('/wishlists', [WishlistController::class, 'index'])
-    ->middleware('permission:wishlists.view')
-    ->name('wishlists.index');
+        Route::get('/wishlists', [WishlistController::class, 'index'])
+            ->middleware('permission:wishlists.view')
+            ->name('wishlists.index');
 
-Route::get('/wishlists/{wishlist}', [WishlistController::class, 'show'])
-    ->middleware('permission:wishlists.view')
-    ->name('wishlists.show');
+        Route::get('/wishlists/{wishlist}', [WishlistController::class, 'show'])
+            ->middleware('permission:wishlists.view')
+            ->name('wishlists.show');
 
-Route::delete('/wishlists/{wishlist}', [WishlistController::class, 'destroy'])
-    ->middleware('permission:wishlists.delete')
-    ->name('wishlists.destroy');
+        Route::delete('/wishlists/{wishlist}', [WishlistController::class, 'destroy'])
+            ->middleware('permission:wishlists.delete')
+            ->name('wishlists.destroy');
 
-Route::delete('/wishlists/{wishlist}/items/{item}', [WishlistController::class, 'destroyItem'])
-    ->middleware('permission:wishlists.edit')
-    ->name('wishlists.items.destroy');
-    Route::post('/wishlists/{wishlist}/move-all-to-cart', [WishlistController::class, 'moveAllToCart'])
-    ->middleware('permission:wishlists.edit')
-    ->name('wishlists.move-all-to-cart');
+        Route::delete('/wishlists/{wishlist}/items/{item}', [WishlistController::class, 'destroyItem'])
+            ->middleware('permission:wishlists.edit')
+            ->name('wishlists.items.destroy');
+        Route::post('/wishlists/{wishlist}/move-all-to-cart', [WishlistController::class, 'moveAllToCart'])
+            ->middleware('permission:wishlists.edit')
+            ->name('wishlists.move-all-to-cart');
 
-Route::post('/wishlists/{wishlist}/items/{item}/move-to-cart', [WishlistController::class, 'moveItemToCart'])
-    ->middleware('permission:wishlists.edit')
-    ->name('wishlists.items.move-to-cart');
+        Route::post('/wishlists/{wishlist}/items/{item}/move-to-cart', [WishlistController::class, 'moveItemToCart'])
+            ->middleware('permission:wishlists.edit')
+            ->name('wishlists.items.move-to-cart');
 
 
-    /*
+        /*
 |--------------------------------------------------------------------------
 | Carts
 |--------------------------------------------------------------------------
 */
-Route::get('/carts', [\App\Http\Controllers\Dashboard\CartController::class, 'index'])
-    ->middleware('permission:carts.view')
-    ->name('carts.index');
+        Route::get('/carts', [\App\Http\Controllers\Dashboard\CartController::class, 'index'])
+            ->middleware('permission:carts.view')
+            ->name('carts.index');
 
-Route::get('/carts/abandoned', [\App\Http\Controllers\Dashboard\CartController::class, 'abandoned'])
-    ->middleware('permission:carts.view')
-    ->name('carts.abandoned');
+        Route::get('/carts/abandoned', [\App\Http\Controllers\Dashboard\CartController::class, 'abandoned'])
+            ->middleware('permission:carts.view')
+            ->name('carts.abandoned');
 
-Route::get('/carts/{cart}', [\App\Http\Controllers\Dashboard\CartController::class, 'show'])
-    ->middleware('permission:carts.view')
-    ->name('carts.show');
+        Route::get('/carts/{cart}', [\App\Http\Controllers\Dashboard\CartController::class, 'show'])
+            ->middleware('permission:carts.view')
+            ->name('carts.show');
 
-Route::delete('/carts/{cart}', [\App\Http\Controllers\Dashboard\CartController::class, 'destroy'])
-    ->middleware('permission:carts.delete')
-    ->name('carts.destroy');
+        Route::delete('/carts/{cart}', [\App\Http\Controllers\Dashboard\CartController::class, 'destroy'])
+            ->middleware('permission:carts.delete')
+            ->name('carts.destroy');
 
-Route::delete('/carts/{cart}/items/{item}', [\App\Http\Controllers\Dashboard\CartController::class, 'destroyItem'])
-    ->middleware('permission:carts.edit')
-    ->name('carts.items.destroy');
+        Route::delete('/carts/{cart}/items/{item}', [\App\Http\Controllers\Dashboard\CartController::class, 'destroyItem'])
+            ->middleware('permission:carts.edit')
+            ->name('carts.items.destroy');
 
-/*
+        /*
 |--------------------------------------------------------------------------
 | Abandoned Cart Recoveries
 |--------------------------------------------------------------------------
 */
-Route::get('/abandoned-cart-recoveries', [AbandonedCartRecoveryController::class, 'index'])
-    ->middleware('permission:abandoned-cart-recoveries.view')
-    ->name('abandoned-cart-recoveries.index');
+        Route::get('/abandoned-cart-recoveries', [AbandonedCartRecoveryController::class, 'index'])
+            ->middleware('permission:abandoned-cart-recoveries.view')
+            ->name('abandoned-cart-recoveries.index');
 
-Route::get('/abandoned-cart-recoveries/{recovery}', [AbandonedCartRecoveryController::class, 'show'])
-    ->middleware('permission:abandoned-cart-recoveries.view')
-    ->name('abandoned-cart-recoveries.show');
+        Route::get('/abandoned-cart-recoveries/{recovery}', [AbandonedCartRecoveryController::class, 'show'])
+            ->middleware('permission:abandoned-cart-recoveries.view')
+            ->name('abandoned-cart-recoveries.show');
 
-    /*
+        /*
 |--------------------------------------------------------------------------
 | Blog Categories
 |--------------------------------------------------------------------------
 */
-Route::get('/blog-categories', [BlogCategoryController::class, 'index'])
-    ->middleware('permission:blog-categories.view')
-    ->name('blog-categories.index');
+        Route::get('/blog-categories', [BlogCategoryController::class, 'index'])
+            ->middleware('permission:blog-categories.view')
+            ->name('blog-categories.index');
 
-Route::get('/blog-categories/create', [BlogCategoryController::class, 'create'])
-    ->middleware('permission:blog-categories.create')
-    ->name('blog-categories.create');
+        Route::get('/blog-categories/create', [BlogCategoryController::class, 'create'])
+            ->middleware('permission:blog-categories.create')
+            ->name('blog-categories.create');
 
-Route::post('/blog-categories', [BlogCategoryController::class, 'store'])
-    ->middleware('permission:blog-categories.create')
-    ->name('blog-categories.store');
+        Route::post('/blog-categories', [BlogCategoryController::class, 'store'])
+            ->middleware('permission:blog-categories.create')
+            ->name('blog-categories.store');
 
-Route::get('/blog-categories/{blog_category}/edit', [BlogCategoryController::class, 'edit'])
-    ->middleware('permission:blog-categories.edit')
-    ->name('blog-categories.edit');
+        Route::get('/blog-categories/{blog_category}/edit', [BlogCategoryController::class, 'edit'])
+            ->middleware('permission:blog-categories.edit')
+            ->name('blog-categories.edit');
 
-Route::put('/blog-categories/{blog_category}', [BlogCategoryController::class, 'update'])
-    ->middleware('permission:blog-categories.edit')
-    ->name('blog-categories.update');
+        Route::put('/blog-categories/{blog_category}', [BlogCategoryController::class, 'update'])
+            ->middleware('permission:blog-categories.edit')
+            ->name('blog-categories.update');
 
-Route::delete('/blog-categories/{blog_category}', [BlogCategoryController::class, 'destroy'])
-    ->middleware('permission:blog-categories.delete')
-    ->name('blog-categories.destroy');
+        Route::delete('/blog-categories/{blog_category}', [BlogCategoryController::class, 'destroy'])
+            ->middleware('permission:blog-categories.delete')
+            ->name('blog-categories.destroy');
 
-    /*
+        /*
 |--------------------------------------------------------------------------
 | Blogs
 |--------------------------------------------------------------------------
 */
-Route::get('/blogs', [BlogController::class, 'index'])
-    ->middleware('permission:blogs.view')
-    ->name('blogs.index');
+        Route::get('/blogs', [BlogController::class, 'index'])
+            ->middleware('permission:blogs.view')
+            ->name('blogs.index');
 
-Route::get('/blogs/create', [BlogController::class, 'create'])
-    ->middleware('permission:blogs.create')
-    ->name('blogs.create');
+        Route::get('/blogs/create', [BlogController::class, 'create'])
+            ->middleware('permission:blogs.create')
+            ->name('blogs.create');
 
-Route::post('/blogs', [BlogController::class, 'store'])
-    ->middleware('permission:blogs.create')
-    ->name('blogs.store');
+        Route::post('/blogs', [BlogController::class, 'store'])
+            ->middleware('permission:blogs.create')
+            ->name('blogs.store');
 
-Route::get('/blogs/{blog}', [BlogController::class, 'show'])
-    ->middleware('permission:blogs.view')
-    ->name('blogs.show');
+        Route::get('/blogs/{blog}', [BlogController::class, 'show'])
+            ->middleware('permission:blogs.view')
+            ->name('blogs.show');
 
-Route::get('/blogs/{blog}/edit', [BlogController::class, 'edit'])
-    ->middleware('permission:blogs.edit')
-    ->name('blogs.edit');
+        Route::get('/blogs/{blog}/edit', [BlogController::class, 'edit'])
+            ->middleware('permission:blogs.edit')
+            ->name('blogs.edit');
 
-Route::put('/blogs/{blog}', [BlogController::class, 'update'])
-    ->middleware('permission:blogs.edit')
-    ->name('blogs.update');
+        Route::put('/blogs/{blog}', [BlogController::class, 'update'])
+            ->middleware('permission:blogs.edit')
+            ->name('blogs.update');
 
-Route::patch('/blogs/{blog}/toggle-status', [BlogController::class, 'toggleStatus'])
-    ->middleware('permission:blogs.edit')
-    ->name('blogs.toggle-status');
+        Route::patch('/blogs/{blog}/toggle-status', [BlogController::class, 'toggleStatus'])
+            ->middleware('permission:blogs.edit')
+            ->name('blogs.toggle-status');
 
-Route::patch('/blogs/{blog}/toggle-featured', [BlogController::class, 'toggleFeatured'])
-    ->middleware('permission:blogs.edit')
-    ->name('blogs.toggle-featured');
+        Route::patch('/blogs/{blog}/toggle-featured', [BlogController::class, 'toggleFeatured'])
+            ->middleware('permission:blogs.edit')
+            ->name('blogs.toggle-featured');
 
-Route::delete('/blogs/{blog}', [BlogController::class, 'destroy'])
-    ->middleware('permission:blogs.delete')
-    ->name('blogs.destroy');
+        Route::delete('/blogs/{blog}', [BlogController::class, 'destroy'])
+            ->middleware('permission:blogs.delete')
+            ->name('blogs.destroy');
 
-    /*
+        /*
 |--------------------------------------------------------------------------
 | Blog Comments
 |--------------------------------------------------------------------------
 */
-Route::get('/blog-comments', [BlogCommentController::class, 'index'])
-    ->middleware('permission:blog-comments.view')
-    ->name('blog-comments.index');
+        Route::get('/blog-comments', [BlogCommentController::class, 'index'])
+            ->middleware('permission:blog-comments.view')
+            ->name('blog-comments.index');
 
-Route::get('/blog-comments/{blogComment}', [BlogCommentController::class, 'show'])
-    ->middleware('permission:blog-comments.view')
-    ->name('blog-comments.show');
+        Route::get('/blog-comments/{blogComment}', [BlogCommentController::class, 'show'])
+            ->middleware('permission:blog-comments.view')
+            ->name('blog-comments.show');
 
-Route::delete('/blog-comments/{blogComment}', [BlogCommentController::class, 'destroy'])
-    ->middleware('permission:blog-comments.delete')
-    ->name('blog-comments.destroy');
+        Route::delete('/blog-comments/{blogComment}', [BlogCommentController::class, 'destroy'])
+            ->middleware('permission:blog-comments.delete')
+            ->name('blog-comments.destroy');
 
-    /*
+        /*
 |--------------------------------------------------------------------------
 | Pages
 |--------------------------------------------------------------------------
 */
-Route::get('/pages', [PageController::class, 'index'])
-    ->middleware('permission:pages.view')
-    ->name('pages.index');
+        Route::get('/pages', [PageController::class, 'index'])
+            ->middleware('permission:pages.view')
+            ->name('pages.index');
 
-Route::get('/pages/create', [PageController::class, 'create'])
-    ->middleware('permission:pages.create')
-    ->name('pages.create');
+        Route::get('/pages/create', [PageController::class, 'create'])
+            ->middleware('permission:pages.create')
+            ->name('pages.create');
 
-Route::post('/pages', [PageController::class, 'store'])
-    ->middleware('permission:pages.create')
-    ->name('pages.store');
+        Route::post('/pages', [PageController::class, 'store'])
+            ->middleware('permission:pages.create')
+            ->name('pages.store');
 
-Route::get('/pages/{page}', [PageController::class, 'show'])
-    ->middleware('permission:pages.view')
-    ->name('pages.show');
+        Route::get('/pages/{page}', [PageController::class, 'show'])
+            ->middleware('permission:pages.view')
+            ->name('pages.show');
 
-Route::get('/pages/{page}/edit', [PageController::class, 'edit'])
-    ->middleware('permission:pages.edit')
-    ->name('pages.edit');
+        Route::get('/pages/{page}/edit', [PageController::class, 'edit'])
+            ->middleware('permission:pages.edit')
+            ->name('pages.edit');
 
-Route::put('/pages/{page}', [PageController::class, 'update'])
-    ->middleware('permission:pages.edit')
-    ->name('pages.update');
+        Route::put('/pages/{page}', [PageController::class, 'update'])
+            ->middleware('permission:pages.edit')
+            ->name('pages.update');
 
-Route::patch('/pages/{page}/toggle-status', [PageController::class, 'toggleStatus'])
-    ->middleware('permission:pages.edit')
-    ->name('pages.toggle-status');
+        Route::patch('/pages/{page}/toggle-status', [PageController::class, 'toggleStatus'])
+            ->middleware('permission:pages.edit')
+            ->name('pages.toggle-status');
 
-Route::delete('/pages/{page}', [PageController::class, 'destroy'])
-    ->middleware('permission:pages.delete')
-    ->name('pages.destroy');
+        Route::delete('/pages/{page}', [PageController::class, 'destroy'])
+            ->middleware('permission:pages.delete')
+            ->name('pages.destroy');
 
-    /*
+        /*
 |--------------------------------------------------------------------------
 | Contact Messages
 |--------------------------------------------------------------------------
 */
-Route::get('/contact-messages', [DashboardContactMessageController::class, 'index'])
-    ->middleware('permission:contact.view')
-    ->name('contact-messages.index');
+        Route::get('/contact-messages', [DashboardContactMessageController::class, 'index'])
+            ->middleware('permission:contact.view')
+            ->name('contact-messages.index');
 
-Route::post('/contact-messages/bulk-action', [DashboardContactMessageController::class, 'bulkAction'])
-    ->middleware('permission:contact.edit')
-    ->name('contact-messages.bulk-action');
+        Route::post('/contact-messages/bulk-action', [DashboardContactMessageController::class, 'bulkAction'])
+            ->middleware('permission:contact.edit')
+            ->name('contact-messages.bulk-action');
 
-Route::get('/contact-messages/{message}', [DashboardContactMessageController::class, 'show'])
-    ->middleware('permission:contact.view')
-    ->name('contact-messages.show');
+        Route::get('/contact-messages/{message}', [DashboardContactMessageController::class, 'show'])
+            ->middleware('permission:contact.view')
+            ->name('contact-messages.show');
 
-Route::patch('/contact-messages/{message}/mark-read', [DashboardContactMessageController::class, 'markAsRead'])
-    ->middleware('permission:contact.edit')
-    ->name('contact-messages.mark-read');
+        Route::patch('/contact-messages/{message}/mark-read', [DashboardContactMessageController::class, 'markAsRead'])
+            ->middleware('permission:contact.edit')
+            ->name('contact-messages.mark-read');
 
-Route::patch('/contact-messages/{message}/mark-unread', [DashboardContactMessageController::class, 'markAsUnread'])
-    ->middleware('permission:contact.edit')
-    ->name('contact-messages.mark-unread');
+        Route::patch('/contact-messages/{message}/mark-unread', [DashboardContactMessageController::class, 'markAsUnread'])
+            ->middleware('permission:contact.edit')
+            ->name('contact-messages.mark-unread');
 
-Route::delete('/contact-messages/{message}', [DashboardContactMessageController::class, 'destroy'])
-    ->middleware('permission:contact.delete')
-    ->name('contact-messages.destroy');
+        Route::delete('/contact-messages/{message}', [DashboardContactMessageController::class, 'destroy'])
+            ->middleware('permission:contact.delete')
+            ->name('contact-messages.destroy');
 
 
-    /*
+        /*
 |--------------------------------------------------------------------------
 | Roles
 |--------------------------------------------------------------------------
 */
-Route::get('/roles', [RoleController::class, 'index'])
-    ->middleware('permission:roles.view')
-    ->name('roles.index');
+        Route::get('/roles', [RoleController::class, 'index'])
+            ->middleware('permission:roles.view')
+            ->name('roles.index');
 
-Route::get('/roles/create', [RoleController::class, 'create'])
-    ->middleware('permission:roles.create')
-    ->name('roles.create');
+        Route::get('/roles/create', [RoleController::class, 'create'])
+            ->middleware('permission:roles.create')
+            ->name('roles.create');
 
-Route::post('/roles', [RoleController::class, 'store'])
-    ->middleware('permission:roles.create')
-    ->name('roles.store');
+        Route::post('/roles', [RoleController::class, 'store'])
+            ->middleware('permission:roles.create')
+            ->name('roles.store');
 
-Route::get('/roles/{role}', [RoleController::class, 'show'])
-    ->middleware('permission:roles.view')
-    ->name('roles.show');
+        Route::get('/roles/{role}', [RoleController::class, 'show'])
+            ->middleware('permission:roles.view')
+            ->name('roles.show');
 
-Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])
-    ->middleware('permission:roles.edit')
-    ->name('roles.edit');
+        Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])
+            ->middleware('permission:roles.edit')
+            ->name('roles.edit');
 
-Route::put('/roles/{role}', [RoleController::class, 'update'])
-    ->middleware('permission:roles.edit')
-    ->name('roles.update');
+        Route::put('/roles/{role}', [RoleController::class, 'update'])
+            ->middleware('permission:roles.edit')
+            ->name('roles.update');
 
-Route::delete('/roles/{role}', [RoleController::class, 'destroy'])
-    ->middleware('permission:roles.delete')
-    ->name('roles.destroy');
+        Route::delete('/roles/{role}', [RoleController::class, 'destroy'])
+            ->middleware('permission:roles.delete')
+            ->name('roles.destroy');
 
-/*
+        /*
 |--------------------------------------------------------------------------
 | Permissions
 |--------------------------------------------------------------------------
 */
-Route::get('/permissions', [PermissionController::class, 'index'])
-    ->middleware('permission:permissions.view')
-    ->name('permissions.index');
+        Route::get('/permissions', [PermissionController::class, 'index'])
+            ->middleware('permission:permissions.view')
+            ->name('permissions.index');
 
-Route::get('/permissions/{permission}', [PermissionController::class, 'show'])
-    ->middleware('permission:permissions.view')
-    ->name('permissions.show');
+        Route::get('/permissions/{permission}', [PermissionController::class, 'show'])
+            ->middleware('permission:permissions.view')
+            ->name('permissions.show');
 
 
 
-     Route::get('/audit', [AuditLogController::class, 'index'])
+        Route::get('/audit', [AuditLogController::class, 'index'])
             ->middleware('permission:audit.view')
             ->name('audit.index');
 
+        Route::get('/audit/export', [AuditLogController::class, 'export'])
+            ->middleware('permission:audit.view')
+            ->name('audit.export');
+
+        Route::get('/audit/print', [AuditLogController::class, 'print'])
+            ->middleware('permission:audit.view')
+            ->name('audit.print');
+
         Route::get('/audit/{auditLog}', [AuditLogController::class, 'show'])
+            ->whereNumber('auditLog')
             ->middleware('permission:audit.view')
             ->name('audit.show');
 
 
 
+
+        Route::get('/error-logs', [ErrorLogController::class, 'index'])
+            ->middleware('permission:audit.view')
+            ->name('error-logs.index');
+
+        Route::get('/error-logs/{errorLog}', [ErrorLogController::class, 'show'])
+            ->middleware('permission:audit.view')
+            ->name('error-logs.show');
+
+        Route::patch('/error-logs/{errorLog}/resolve', [ErrorLogController::class, 'resolve'])
+            ->middleware('permission:audit.view')
+            ->name('error-logs.resolve');
+
+        Route::delete('/error-logs/clear-resolved', [ErrorLogController::class, 'clearResolved'])
+            ->middleware('permission:audit.view')
+            ->name('error-logs.clear-resolved');
+
+        Route::patch('/error-logs/bulk-resolve', [ErrorLogController::class, 'bulkResolve'])
+            ->middleware('permission:audit.view')
+            ->name('error-logs.bulk-resolve');
+
+        Route::delete('/error-logs/bulk-delete', [ErrorLogController::class, 'bulkDelete'])
+            ->middleware('permission:audit.view')
+            ->name('error-logs.bulk-delete');
     });

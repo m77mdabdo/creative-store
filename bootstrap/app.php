@@ -26,22 +26,48 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->report(function (Throwable $e) {
+        $exceptions->report(function (\Throwable $e) {
             try {
-                ErrorLog::create([
-                    'level' => class_basename($e),
-                    'service' => 'web',
-                    'message' => $e->getMessage(),
-                    'context' => [
-                        'url' => request()->fullUrl(),
-                        'method' => request()->method(),
-                        'ip' => request()->ip(),
-                        'user_id' => auth()->id(),
+                if (app()->runningInConsole()) {
+                    return;
+                }
+
+                $message = trim((string) $e->getMessage());
+
+                if ($message === '') {
+                    $message = class_basename($e);
+                }
+
+                $trace = $e->getTraceAsString();
+
+                $duplicate = \App\Models\ErrorLog::query()
+                    ->where('message', $message)
+                    ->where('service', 'application')
+                    ->where('created_at', '>=', now()->subMinutes(2))
+                    ->first();
+
+                if ($duplicate) {
+                    return;
+                }
+
+                \App\Models\ErrorLog::query()->create([
+                    'level'       => normalize_error_log_level($e),
+                    'service'     => 'application',
+                    'message'     => mb_substr($message, 0, 65535),
+                    'context'     => [
+                        'exception' => get_class($e),
+                        'file'      => $e->getFile(),
+                        'line'      => $e->getLine(),
+                        'url'       => request()?->fullUrl(),
+                        'method'    => request()?->method(),
+                        'user_id'   => auth()->id(),
+                        'ip'        => request()?->ip(),
                     ],
-                    'trace' => $e->getTraceAsString(),
+                    'trace'       => mb_substr($trace, 0, 65535),
+                    'resolved_at' => null,
                 ]);
-            } catch (Throwable $logError) {
-                // منع loop لو حصل خطأ أثناء تسجيل الخطأ
+            } catch (\Throwable $loggingException) {
+                // منع أي loop أو crash أثناء تسجيل الخطأ
             }
         });
     })

@@ -4,11 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\Auditable;
+
 
 class Address extends Model
 {
-      use HasFactory;
-    
+      use HasFactory , Auditable ;
+
+
     protected $fillable = [
         'user_id','label','full_name','phone','country','city','district',
         'street','building_no','apartment_no','postal_code','lat','lng',

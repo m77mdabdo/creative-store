@@ -12,9 +12,15 @@
                     <p class="text-muted mb-0">Detailed audit log information.</p>
                 </div>
 
-                <a href="{{ route('dashboard.audit.index') }}" class="btn btn-default">
-                    <i class="fas fa-arrow-left mr-1"></i> Back
-                </a>
+                <div>
+                    <a href="{{ route('dashboard.audit.index') }}" class="btn btn-default mr-2">
+                        <i class="fas fa-arrow-left mr-1"></i> Back
+                    </a>
+
+                    <a href="{{ route('dashboard.audit.print', ['q' => $auditLog->id]) }}" target="_blank" class="btn btn-dark">
+                        <i class="fas fa-print mr-1"></i> Print
+                    </a>
+                </div>
             </div>
         </div>
     </section>
@@ -23,7 +29,7 @@
         <div class="container-fluid">
 
             <div class="row">
-                <div class="col-lg-6">
+                <div class="col-lg-5">
                     <div class="card card-outline card-primary">
                         <div class="card-header">
                             <h3 class="card-title">Main Information</h3>
@@ -90,15 +96,64 @@
                     </div>
                 </div>
 
-                <div class="col-lg-6">
+                <div class="col-lg-7">
                     <div class="card card-outline card-secondary">
                         <div class="card-header">
-                            <h3 class="card-title">Old Values</h3>
+                            <h3 class="card-title">Changes Overview</h3>
+                        </div>
+
+                        <div class="card-body p-0">
+                            @if(count($oldValuesRows) || count($newValuesRows))
+                                @php
+                                    $allKeys = collect($oldValuesRows)->pluck('key')
+                                        ->merge(collect($newValuesRows)->pluck('key'))
+                                        ->unique()
+                                        ->values();
+
+                                    $oldMap = collect($oldValuesRows)->keyBy('key');
+                                    $newMap = collect($newValuesRows)->keyBy('key');
+                                @endphp
+
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 30%;">Field</th>
+                                                <th style="width: 35%;">Old Value</th>
+                                                <th style="width: 35%;">New Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($allKeys as $key)
+                                                <tr>
+                                                    <td><code>{{ $key }}</code></td>
+                                                    <td class="text-danger">
+                                                        {{ $oldMap[$key]['value'] ?? '—' }}
+                                                    </td>
+                                                    <td class="text-success">
+                                                        {{ $newMap[$key]['value'] ?? '—' }}
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <div class="p-3 text-muted">
+                                    No value changes recorded.
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="card card-outline card-secondary">
+                        <div class="card-header">
+                            <h3 class="card-title">Raw Old Values</h3>
                         </div>
 
                         <div class="card-body">
                             @if(!empty($auditLog->old_values))
-                                <pre class="bg-light p-3 rounded mb-0" style="white-space: pre-wrap;">{{ json_encode($auditLog->old_values, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
+                                <pre class="bg-light p-3 rounded mb-0" style="white-space: pre-wrap; max-height: 300px; overflow:auto;">{{ json_encode($auditLog->old_values, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
                             @else
                                 <p class="text-muted mb-0">No old values recorded.</p>
                             @endif
@@ -107,12 +162,12 @@
 
                     <div class="card card-outline card-success">
                         <div class="card-header">
-                            <h3 class="card-title">New Values</h3>
+                            <h3 class="card-title">Raw New Values</h3>
                         </div>
 
                         <div class="card-body">
                             @if(!empty($auditLog->new_values))
-                                <pre class="bg-light p-3 rounded mb-0" style="white-space: pre-wrap;">{{ json_encode($auditLog->new_values, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
+                                <pre class="bg-light p-3 rounded mb-0" style="white-space: pre-wrap; max-height: 300px; overflow:auto;">{{ json_encode($auditLog->new_values, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
                             @else
                                 <p class="text-muted mb-0">No new values recorded.</p>
                             @endif
@@ -125,5 +180,3 @@
     </section>
 </div>
 @endsection
-
-

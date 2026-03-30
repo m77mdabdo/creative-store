@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\Auditable;
+
 
 class UserPermission extends Pivot
 {
-    use HasFactory;
+    use HasFactory , Auditable ;
 
     protected $table = 'user_permissions';
 

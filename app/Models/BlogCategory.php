@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
+use App\Traits\Auditable;
 
 class BlogCategory extends Model
 {
+
+    use Auditable ;
     protected $fillable = [
         'name',
         'slug',

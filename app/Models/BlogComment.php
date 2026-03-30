@@ -4,9 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Traits\Auditable;
 class BlogComment extends Model
 {
+    use Auditable ;
     protected $fillable = [
         'blog_id',
         'name',

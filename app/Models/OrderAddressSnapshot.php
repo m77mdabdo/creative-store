@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\Auditable;
+
 
 class OrderAddressSnapshot extends Model
 {
 
-      use HasFactory;
+      use HasFactory , Auditable ;
 
     protected $fillable = [
         'order_id','full_name','phone','country','city','district','street',

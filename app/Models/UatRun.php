@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\Auditable;
+
 
 class UatRun extends Model
 {
 
-      use HasFactory;
+      use HasFactory , Auditable ;
 
     protected $fillable = [
         'name','environment','status','started_at','finished_at','executed_by','notes'

@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Cache;
+use App\Traits\Auditable;
+
 
 class Page extends Model
 {
-    use HasFactory;
+    use HasFactory , Auditable ;
 
     protected $fillable = [
         'slug',

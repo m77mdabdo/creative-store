@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\Auditable;
+
 
 class RoleUser extends Pivot
 {
 
-      use HasFactory;
+      use HasFactory , Auditable;
 
     protected $table = 'role_user';
     public $timestamps = false;

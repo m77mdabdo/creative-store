@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Auditable;
+
 
 class ShipmentTrackingLog extends Model
 {
+    use Auditable ;
     protected $fillable = [
         'shipment_id',
         'status',

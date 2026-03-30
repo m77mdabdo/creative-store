@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\Auditable;
 
 class ContactMessage extends Model
 {
-    use HasFactory;
+    use HasFactory , Auditable;
 
     protected $fillable = [
         'name',

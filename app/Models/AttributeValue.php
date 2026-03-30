@@ -4,11 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use App\Traits\Auditable;
 class AttributeValue extends Model
 {
 
-      use HasFactory;
+      use HasFactory , Auditable;
 
     protected $fillable = [
         'attribute_id','value','slug','sort_order','is_active'
