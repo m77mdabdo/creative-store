@@ -10,7 +10,7 @@
 ![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php&logoColor=white)
 ![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-195%20passing-2ea44f)
+![Tests](https://img.shields.io/badge/tests-196%20passing-2ea44f)
 ![composer audit](https://img.shields.io/badge/composer%20audit-0%20advisories-2ea44f)
 ![npm audit](https://img.shields.io/badge/npm%20audit-0%20vulnerabilities-2ea44f)
 ![RTL](https://img.shields.io/badge/Arabic-RTL-0E7C66)

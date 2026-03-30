@@ -4,22 +4,9 @@ import intlTelInput from "intl-tel-input";
 
 window.intlTelInput = intlTelInput;
 
-import Echo from 'laravel-echo';
-
-window.Pusher = require('pusher-js');
-
-window.Echo = new Echo({
-    broadcaster: 'reverb',
-    key: import.meta.env.VITE_REVERB_APP_KEY,
-    wsHost: import.meta.env.VITE_REVERB_HOST ?? window.location.hostname,
-    wsPort: import.meta.env.VITE_REVERB_PORT ?? 8080,
-    wssPort: import.meta.env.VITE_REVERB_PORT ?? 8080,
-    // Use wss:// whenever the site itself is served over HTTPS.
-    forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? window.location.protocol.replace(':', '')) === 'https',
-    enabledTransports: ['ws', 'wss'],
-});
-
-if (window.Laravel?.userId) {
+// window.Echo is set up in echo.js (loaded through bootstrap.js) when a
+// Reverb key is configured.
+if (window.Echo && window.Laravel?.userId) {
     window.Echo.private(`users.${window.Laravel.userId}`)
         .notification((notification) => {
             const countEl = document.getElementById('notif-count');
