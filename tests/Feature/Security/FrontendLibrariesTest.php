@@ -26,4 +26,18 @@ class FrontendLibrariesTest extends TestCase
         $this->assertStringContainsString('Bootstrap v4.6.2', file_get_contents(public_path('cozastore/vendor/bootstrap/js/bootstrap.bundle.min.js')));
         $this->assertStringContainsString('Select2 4.0.13', file_get_contents(public_path('cozastore/vendor/select2/select2.min.js')));
     }
+
+    public function test_live_updates_start_once_and_only_with_a_reverb_key(): void
+    {
+        $echo = file_get_contents(resource_path('js/echo.js'));
+        $app = file_get_contents(resource_path('js/app.js'));
+
+        $this->assertSame(1, substr_count($echo . $app, 'new Echo('));
+        $this->assertStringContainsString('if (reverbKey)', $echo);
+        $this->assertStringNotContainsString('require(', $app);
+
+        foreach (['.env.example', '.env.production.example'] as $file) {
+            $this->assertStringContainsString('VITE_REVERB_APP_KEY="${REVERB_APP_KEY}"', file_get_contents(base_path($file)));
+        }
+    }
 }
