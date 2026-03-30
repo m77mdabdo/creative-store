@@ -9,7 +9,6 @@ use App\Models\ContactMessage;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Product;
-use App\Models\ProductReview;
 use App\Models\Shipment;
 use App\Models\ShippingMethod;
 use App\Models\User;
@@ -19,6 +18,7 @@ use App\Support\Dashboard\SidebarBuilder;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -56,19 +56,16 @@ class AppServiceProvider extends ServiceProvider
             $dashboardProductsCount = 0;
             $dashboardPendingReviewsCount = 0;
 
-            // ✅ Shipping counters
             $dashboardShippingMethodsCount = 0;
             $dashboardActiveShippingMethodsCount = 0;
             $dashboardShipmentsInTransitCount = 0;
 
-            // ✅ Customers counters
             $dashboardUsersCount = 0;
             $dashboardAddressesCount = 0;
             $dashboardWishlistsCount = 0;
             $dashboardCartsCount = 0;
             $dashboardAbandonedCartsCount = 0;
 
-            // ✅ Abandoned Cart Recovery
             $dashboardAbandonedCartRecoveriesCount = 0;
 
             $user = Auth::user();
@@ -85,11 +82,9 @@ class AppServiceProvider extends ServiceProvider
                     ->whereIn('status', ['pending', 'processing'])
                     ->count();
 
-                $dashboardPendingPaymentsCount = class_exists(Payment::class)
-                    ? Payment::query()
-                        ->whereIn('status', ['pending', 'initiated', 'unpaid'])
-                        ->count()
-                    : 0;
+                $dashboardPendingPaymentsCount = Payment::query()
+                    ->whereIn('status', ['pending', 'authorized'])
+                    ->count();
 
                 $dashboardUnreadMessages = ContactMessage::query()
                     ->where('is_read', false)
@@ -103,11 +98,8 @@ class AppServiceProvider extends ServiceProvider
 
                 $dashboardProductsCount = Product::query()->count();
 
-                $dashboardPendingReviewsCount = class_exists(ProductReview::class)
-                    ? ProductReview::query()->where('status', 'pending')->count()
-                    : 0;
+                $dashboardPendingReviewsCount = $this->resolveDashboardPendingReviewsCount();
 
-                // ================= Shipping =================
                 $dashboardShippingMethodsCount = ShippingMethod::query()->count();
 
                 $dashboardActiveShippingMethodsCount = ShippingMethod::query()
@@ -119,40 +111,26 @@ class AppServiceProvider extends ServiceProvider
                         'pending',
                         'processing',
                         'shipped',
+                        'in_transit',
                     ])
                     ->count();
 
-                // ================= Customers =================
-                $dashboardUsersCount = class_exists(User::class)
-                    ? User::query()->count()
-                    : 0;
+                $dashboardUsersCount = User::query()->count();
 
-                $dashboardAddressesCount = class_exists(Address::class)
-                    ? Address::query()->count()
-                    : 0;
+                $dashboardAddressesCount = Address::query()->count();
 
-                $dashboardWishlistsCount = class_exists(Wishlist::class)
-                    ? Wishlist::query()->count()
-                    : 0;
+                $dashboardWishlistsCount = Wishlist::query()->count();
 
-                $dashboardCartsCount = class_exists(Cart::class)
-                    ? Cart::query()->count()
-                    : 0;
+                $dashboardCartsCount = Cart::query()->count();
 
-                // ✅ Abandoned carts: carts فيها عناصر وآخر تحديث مر عليه أكثر من 24 ساعة
-                $dashboardAbandonedCartsCount = class_exists(Cart::class)
-                    ? Cart::query()
-                        ->where('updated_at', '<', now()->subDay())
-                        ->whereHas('items')
-                        ->count()
-                    : 0;
+                $dashboardAbandonedCartsCount = Cart::query()
+                    ->where('updated_at', '<', now()->subDay())
+                    ->whereHas('items')
+                    ->count();
 
-                // ================= Abandoned Cart Recovery =================
-                $dashboardAbandonedCartRecoveriesCount = class_exists(AbandonedCartRecovery::class)
-                    ? AbandonedCartRecovery::query()
-                        ->whereIn('status', ['pending', 'sent', 'failed'])
-                        ->count()
-                    : 0;
+                $dashboardAbandonedCartRecoveriesCount = AbandonedCartRecovery::query()
+                    ->whereIn('status', ['pending', 'sent', 'failed'])
+                    ->count();
             }
 
             $sidebar = app(SidebarBuilder::class)->build($user, [
@@ -162,19 +140,16 @@ class AppServiceProvider extends ServiceProvider
                 'dashboardProductsCount'                   => $dashboardProductsCount,
                 'dashboardPendingReviewsCount'             => $dashboardPendingReviewsCount,
 
-                // ✅ Shipping
                 'dashboardShippingMethodsCount'            => $dashboardShippingMethodsCount,
                 'dashboardActiveShippingMethodsCount'      => $dashboardActiveShippingMethodsCount,
                 'dashboardShipmentsInTransitCount'         => $dashboardShipmentsInTransitCount,
 
-                // ✅ Customers
                 'dashboardUsersCount'                      => $dashboardUsersCount,
                 'dashboardAddressesCount'                  => $dashboardAddressesCount,
                 'dashboardWishlistsCount'                  => $dashboardWishlistsCount,
                 'dashboardCartsCount'                      => $dashboardCartsCount,
                 'dashboardAbandonedCartsCount'             => $dashboardAbandonedCartsCount,
 
-                // ✅ Recovery
                 'dashboardAbandonedCartRecoveriesCount'    => $dashboardAbandonedCartRecoveriesCount,
             ]);
 
@@ -188,23 +163,59 @@ class AppServiceProvider extends ServiceProvider
                 'dashboardPendingReviewsCount'             => $dashboardPendingReviewsCount,
                 'sidebar'                                  => $sidebar,
 
-                // ✅ Shipping
                 'dashboardShippingMethodsCount'            => $dashboardShippingMethodsCount,
                 'dashboardActiveShippingMethodsCount'      => $dashboardActiveShippingMethodsCount,
                 'dashboardShipmentsInTransitCount'         => $dashboardShipmentsInTransitCount,
 
-                // ✅ Customers
                 'dashboardUsersCount'                      => $dashboardUsersCount,
                 'dashboardAddressesCount'                  => $dashboardAddressesCount,
                 'dashboardWishlistsCount'                  => $dashboardWishlistsCount,
                 'dashboardCartsCount'                      => $dashboardCartsCount,
                 'dashboardAbandonedCartsCount'             => $dashboardAbandonedCartsCount,
 
-                // ✅ Recovery
                 'dashboardAbandonedCartRecoveriesCount'    => $dashboardAbandonedCartRecoveriesCount,
             ]);
         });
 
         Paginator::useBootstrapFive();
+    }
+
+    protected function resolveDashboardPendingReviewsCount(): int
+    {
+        if (class_exists(\App\Models\ProductReview::class)) {
+            $model = new \App\Models\ProductReview();
+            $table = $model->getTable();
+
+            if (Schema::hasColumn($table, 'status')) {
+                return $model->newQuery()
+                    ->where('status', 'pending')
+                    ->count();
+            }
+
+            if (Schema::hasColumn($table, 'is_approved')) {
+                return $model->newQuery()
+                    ->where('is_approved', false)
+                    ->count();
+            }
+        }
+
+        if (class_exists(\App\Models\Review::class)) {
+            $model = new \App\Models\Review();
+            $table = $model->getTable();
+
+            if (Schema::hasColumn($table, 'status')) {
+                return $model->newQuery()
+                    ->where('status', 'pending')
+                    ->count();
+            }
+
+            if (Schema::hasColumn($table, 'is_approved')) {
+                return $model->newQuery()
+                    ->where('is_approved', false)
+                    ->count();
+            }
+        }
+
+        return 0;
     }
 }

@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Dashboard\DashboardController;
-use App\Http\Controllers\AuditLog\AuditLogController;
 use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\Dashboard\OrderController as DashboardOrderController;
 use App\Http\Controllers\Dashboard\ProductController;
@@ -33,6 +32,7 @@ use App\Http\Controllers\Dashboard\BlogCommentController;
 use App\Http\Controllers\Dashboard\PageController;
 use App\Http\Controllers\Dashboard\RoleController;
 use App\Http\Controllers\Dashboard\PermissionController;
+use App\Http\Controllers\Dashboard\AuditLogController ;
 
 
 
@@ -968,5 +968,17 @@ Route::get('/permissions', [PermissionController::class, 'index'])
 Route::get('/permissions/{permission}', [PermissionController::class, 'show'])
     ->middleware('permission:permissions.view')
     ->name('permissions.show');
+
+
+
+     Route::get('/audit', [AuditLogController::class, 'index'])
+            ->middleware('permission:audit.view')
+            ->name('audit.index');
+
+        Route::get('/audit/{auditLog}', [AuditLogController::class, 'show'])
+            ->middleware('permission:audit.view')
+            ->name('audit.show');
+
+
 
     });
