@@ -34,6 +34,7 @@ use App\Http\Controllers\Dashboard\RoleController;
 use App\Http\Controllers\Dashboard\PermissionController;
 use App\Http\Controllers\Dashboard\AuditLogController;
 use App\Http\Controllers\Dashboard\ErrorLogController;
+use App\Http\Controllers\Dashboard\BackupController;
 
 
 
@@ -1015,4 +1016,38 @@ Route::prefix('dashboard')
         Route::delete('/error-logs/bulk-delete', [ErrorLogController::class, 'bulkDelete'])
             ->middleware('permission:audit.view')
             ->name('error-logs.bulk-delete');
+
+
+        //backups
+
+        
+
+
+
+        Route::get('/backups', [BackupController::class, 'index'])
+            ->middleware('permission:audit.view')
+            ->name('backups.index');
+
+        Route::post('/backups/create', [BackupController::class, 'create'])
+            ->middleware('permission:audit.view')
+            ->name('backups.create');
+
+        Route::delete('/backups/bulk-delete', [BackupController::class, 'bulkDelete'])
+            ->middleware('permission:audit.view')
+            ->name('backups.bulk-delete');
+
+        Route::get('/backups/{systemBackup}/download', [BackupController::class, 'download'])
+            ->whereNumber('systemBackup')
+            ->middleware('permission:audit.view')
+            ->name('backups.download');
+
+        Route::get('/backups/{systemBackup}', [BackupController::class, 'show'])
+            ->whereNumber('systemBackup')
+            ->middleware('permission:audit.view')
+            ->name('backups.show');
+
+        Route::delete('/backups/{systemBackup}', [BackupController::class, 'destroy'])
+            ->whereNumber('systemBackup')
+            ->middleware('permission:audit.view')
+            ->name('backups.destroy');
     });

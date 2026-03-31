@@ -10,7 +10,7 @@ use Throwable;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        channels: __DIR__.'/../routes/channels.php',
+        channels: __DIR__ . '/../routes/channels.php',
         web: __DIR__ . '/../routes/web.php',
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
@@ -21,12 +21,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'role' => \App\Http\Middleware\CheckRole::class,
+            'role'       => \App\Http\Middleware\CheckRole::class,
             'permission' => \App\Http\Middleware\CheckPermission::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->report(function (\Throwable $e) {
+        $exceptions->report(function (Throwable $e) {
             try {
                 if (app()->runningInConsole()) {
                     return;
@@ -40,7 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
                 $trace = $e->getTraceAsString();
 
-                $duplicate = \App\Models\ErrorLog::query()
+                $duplicate = ErrorLog::query()
                     ->where('message', $message)
                     ->where('service', 'application')
                     ->where('created_at', '>=', now()->subMinutes(2))
@@ -50,7 +50,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     return;
                 }
 
-                \App\Models\ErrorLog::query()->create([
+                ErrorLog::query()->create([
                     'level'       => normalize_error_log_level($e),
                     'service'     => 'application',
                     'message'     => mb_substr($message, 0, 65535),
@@ -66,12 +66,13 @@ return Application::configure(basePath: dirname(__DIR__))
                     'trace'       => mb_substr($trace, 0, 65535),
                     'resolved_at' => null,
                 ]);
-            } catch (\Throwable $loggingException) {
-                // منع أي loop أو crash أثناء تسجيل الخطأ
+            } catch (Throwable $loggingException) {
+                // prevent loop/crash while saving error logs
             }
         });
     })
     ->withSchedule(function (Schedule $schedule): void {
         $schedule->command('carts:process-abandoned')->everyMinute();
+        $schedule->command('backup:run scheduled --cleanup-days=30')->dailyAt('02:00');
     })
     ->create();
