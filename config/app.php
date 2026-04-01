@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\ServiceProvider;
 
 return [
@@ -35,7 +36,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | When your application is in debug mode, detailed error messages with
-    | stack traces will be shown on every error that occurs within your
+    | stack traces will be shown on every error that occurs within the
     | application. If disabled, a simple generic error page is shown.
     |
     */
@@ -49,7 +50,7 @@ return [
     |
     | This URL is used by the console to properly generate URLs when using
     | the Artisan command line tool. You should set this to the root of
-    | the application so that it's available within Artisan commands.
+    | the application so that it is available within Artisan commands.
     |
     */
 
@@ -61,12 +62,11 @@ return [
     |--------------------------------------------------------------------------
     |
     | Here you may specify the default timezone for your application, which
-    | will be used by the PHP date and date-time functions. The timezone
-    | is set to "UTC" by default as it is suitable for most use cases.
+    | will be used by the PHP date and date-time functions.
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Riyadh',
 
     /*
     |--------------------------------------------------------------------------
@@ -74,12 +74,11 @@ return [
     |--------------------------------------------------------------------------
     |
     | The application locale determines the default locale that will be used
-    | by Laravel's translation / localization methods. This option can be
-    | set to any locale for which you plan to have translation strings.
+    | by Laravel's translation / localization methods.
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE', 'ar'),
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
@@ -92,7 +91,7 @@ return [
     |
     | This key is utilized by Laravel's encryption services and should be set
     | to a random, 32 character string to ensure that all encrypted values
-    | are secure. You should do this prior to deploying the application.
+    | are secure.
     |
     */
 
@@ -112,8 +111,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | These configuration options determine the driver used to determine and
-    | manage Laravel's "maintenance mode" status. The "cache" driver will
-    | allow maintenance mode to be controlled across multiple machines.
+    | manage Laravel's "maintenance mode" status.
     |
     | Supported drivers: "file", "cache"
     |
@@ -124,11 +122,14 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-'providers' => ServiceProvider::defaultProviders()->merge([
+    /*
+    |--------------------------------------------------------------------------
+    | Autoloaded Service Providers
+    |--------------------------------------------------------------------------
+    */
+
+    'providers' => ServiceProvider::defaultProviders()->merge([
         App\Providers\AppServiceProvider::class,
-        // حط Providers بتاعتك هنا لو محتاج
     ])->toArray(),
-
-
 
 ];

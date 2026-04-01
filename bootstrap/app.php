@@ -7,6 +7,10 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Support\Facades\Route;
 use Throwable;
+use Mcamara\LaravelLocalization\Middleware\LocaleSessionRedirect;
+use Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter;
+use Mcamara\LaravelLocalization\Middleware\LaravelLocalizationViewPath;
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -23,6 +27,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role'       => \App\Http\Middleware\CheckRole::class,
             'permission' => \App\Http\Middleware\CheckPermission::class,
+            'localeSessionRedirect' => LocaleSessionRedirect::class,
+            'localizationRedirect' => LaravelLocalizationRedirectFilter::class,
+             'localeViewPath' => LaravelLocalizationViewPath::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
