@@ -38,16 +38,28 @@ class SystemBackupService
             $relativePath = 'backups/' . $fileName;
             $absolutePath = storage_path('app/' . $relativePath);
 
-            $this->createZipBackup($absolutePath);
+            $tempSqlPath = $this->createDatabaseDump();
+            $publicFilesSummary = $this->buildPublicFilesSummary();
+
+            $this->createZipBackup($absolutePath, $tempSqlPath, $publicFilesSummary);
+
+            if (File::exists($tempSqlPath)) {
+                File::delete($tempSqlPath);
+            }
 
             $sizeBytes = File::exists($absolutePath) ? File::size($absolutePath) : null;
+
+            $noteParts = [
+                'Backup completed successfully.',
+                $publicFilesSummary['note'] ?? null,
+            ];
 
             $systemBackup->update([
                 'file_path'   => $relativePath,
                 'size_bytes'  => $sizeBytes,
                 'status'      => 'success',
                 'finished_at' => now(),
-                'note'        => 'Backup completed successfully.',
+                'note'        => trim(implode(' ', array_filter($noteParts))),
             ]);
 
             $this->writeAuditLog('create', $systemBackup, [], [
@@ -171,13 +183,19 @@ class SystemBackupService
         if (! File::exists($path)) {
             File::makeDirectory($path, 0755, true);
         }
+
+        $tmpPath = storage_path('app/backups/tmp');
+
+        if (! File::exists($tmpPath)) {
+            File::makeDirectory($tmpPath, 0755, true);
+        }
     }
 
     protected function hasRecentRunningBackup(): bool
     {
         return SystemBackup::query()
             ->whereNull('finished_at')
-            ->where('started_at', '>=', now()->subMinutes(2))
+            ->where('started_at', '>=', now()->subMinutes(10))
             ->exists();
     }
 
@@ -190,7 +208,7 @@ class SystemBackupService
         return "backup_{$type}_{$environment}_{$timestamp}_{$random}.zip";
     }
 
-    protected function createZipBackup(string $absolutePath): void
+    protected function createZipBackup(string $absolutePath, string $tempSqlPath, array $publicFilesSummary): void
     {
         $zip = new ZipArchive();
 
@@ -225,11 +243,28 @@ class SystemBackupService
             $this->addDirectoryToZip($zip, $path, basename($path));
         }
 
+        if (File::exists($tempSqlPath)) {
+            $zip->addFile($tempSqlPath, 'database/database.sql');
+        }
+
+        if (($publicFilesSummary['include'] ?? false) === true && ! empty($publicFilesSummary['files'])) {
+            foreach ($publicFilesSummary['files'] as $file) {
+                $zip->addFile($file['real_path'], $file['zip_path']);
+            }
+        }
+
         $zip->addFromString('metadata.json', json_encode([
-            'created_at'  => now()->toDateTimeString(),
-            'environment' => config('app.env'),
-            'app_name'    => config('app.name'),
-            'php_version' => PHP_VERSION,
+            'created_at'               => now()->toDateTimeString(),
+            'environment'              => config('app.env'),
+            'app_name'                 => config('app.name'),
+            'php_version'              => PHP_VERSION,
+            'db_connection'            => config('database.default'),
+            'db_database'              => config('database.connections.' . config('database.default') . '.database'),
+            'contains_database_dump'   => true,
+            'contains_public_files'    => ($publicFilesSummary['include'] ?? false) === true,
+            'public_files_total_size'  => $publicFilesSummary['total_size'] ?? 0,
+            'public_files_total_count' => $publicFilesSummary['total_count'] ?? 0,
+            'public_files_note'        => $publicFilesSummary['note'] ?? null,
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 
         $zip->close();
@@ -279,6 +314,160 @@ class SystemBackupService
         }
 
         return false;
+    }
+
+protected function createDatabaseDump(): string
+{
+    $defaultConnection = config('database.default');
+
+    if ($defaultConnection !== 'mysql') {
+        throw new \RuntimeException('Database backup currently supports mysql connection only.');
+    }
+
+    $connection = config('database.connections.mysql');
+
+    $host = (string) ($connection['host'] ?? '127.0.0.1');
+    $port = (string) ($connection['port'] ?? '3306');
+    $database = (string) ($connection['database'] ?? '');
+    $username = (string) ($connection['username'] ?? '');
+    $password = (string) ($connection['password'] ?? '');
+
+    if ($database === '' || $username === '') {
+        throw new \RuntimeException('Database credentials are incomplete for mysql dump.');
+    }
+
+    $mysqldumpPath = (string) env('MYSQLDUMP_PATH', 'mysqldump');
+    $tempSqlPath = storage_path('app/backups/tmp/database-' . now()->format('Ymd-His-u') . '.sql');
+
+    if (! \Illuminate\Support\Facades\File::exists(dirname($tempSqlPath))) {
+        \Illuminate\Support\Facades\File::makeDirectory(dirname($tempSqlPath), 0755, true);
+    }
+
+    $command = escapeshellarg($mysqldumpPath)
+        . ' -h ' . escapeshellarg($host)
+        . ' -P ' . escapeshellarg($port)
+        . ' -u ' . escapeshellarg($username);
+
+    if ($password !== '') {
+        $command .= ' -p' . escapeshellarg($password);
+    }
+
+    $command .= ' --single-transaction --quick --routines --triggers --skip-lock-tables '
+        . escapeshellarg($database)
+        . ' > ' . escapeshellarg($tempSqlPath) . ' 2> ' . escapeshellarg($tempSqlPath . '.error');
+
+    exec($command, $output, $resultCode);
+
+    $errorOutput = '';
+
+    if (\Illuminate\Support\Facades\File::exists($tempSqlPath . '.error')) {
+        $errorOutput = trim((string) \Illuminate\Support\Facades\File::get($tempSqlPath . '.error'));
+        \Illuminate\Support\Facades\File::delete($tempSqlPath . '.error');
+    }
+
+    if (
+        $resultCode !== 0
+        || ! \Illuminate\Support\Facades\File::exists($tempSqlPath)
+        || \Illuminate\Support\Facades\File::size($tempSqlPath) === 0
+    ) {
+        if (\Illuminate\Support\Facades\File::exists($tempSqlPath)) {
+            \Illuminate\Support\Facades\File::delete($tempSqlPath);
+        }
+
+        throw new \RuntimeException(
+            'Database dump failed' . ($errorOutput !== '' ? ': ' . $errorOutput : '.')
+        );
+    }
+
+    return $tempSqlPath;
+}
+
+    protected function buildPublicFilesSummary(): array
+    {
+        $includePublicFiles = filter_var(env('BACKUP_INCLUDE_PUBLIC_FILES', false), FILTER_VALIDATE_BOOL);
+
+        if (! $includePublicFiles) {
+            return [
+                'include'     => false,
+                'files'       => [],
+                'total_size'  => 0,
+                'total_count' => 0,
+                'note'        => 'Public files backup disabled.',
+            ];
+        }
+
+        $publicPath = storage_path('app/public');
+
+        if (! File::exists($publicPath)) {
+            return [
+                'include'     => false,
+                'files'       => [],
+                'total_size'  => 0,
+                'total_count' => 0,
+                'note'        => 'Public files directory not found.',
+            ];
+        }
+
+        $maxSizeMb = (float) env('BACKUP_PUBLIC_FILES_MAX_SIZE_MB', 300);
+        $maxSizeBytes = (int) round($maxSizeMb * 1024 * 1024);
+
+        $excludedExtensions = array_filter(array_map(
+            fn ($ext) => strtolower(trim($ext)),
+            explode(',', (string) env('BACKUP_EXCLUDED_EXTENSIONS', 'mp4,mov,avi,mkv,zip,rar,7z,iso'))
+        ));
+
+        $files = [];
+        $totalSize = 0;
+        $totalCount = 0;
+
+        foreach (File::allFiles($publicPath) as $file) {
+            $realPath = $file->getRealPath();
+
+            if (! $realPath) {
+                continue;
+            }
+
+            $extension = strtolower($file->getExtension());
+
+            if ($extension !== '' && in_array($extension, $excludedExtensions, true)) {
+                continue;
+            }
+
+            $size = (int) $file->getSize();
+
+            if (($totalSize + $size) > $maxSizeBytes) {
+                return [
+                    'include'     => false,
+                    'files'       => [],
+                    'total_size'  => $totalSize,
+                    'total_count' => $totalCount,
+                    'note'        => 'Public files skipped because size exceeded limit of ' . $maxSizeMb . ' MB.',
+                ];
+            }
+
+            $relativePath = str_replace(
+                '\\',
+                '/',
+                ltrim(str_replace($publicPath, '', $realPath), DIRECTORY_SEPARATOR)
+            );
+
+            $files[] = [
+                'real_path' => $realPath,
+                'zip_path'  => 'storage/app/public/' . $relativePath,
+                'size'      => $size,
+            ];
+
+            $totalSize += $size;
+            $totalCount++;
+        }
+
+        return [
+            'include'     => true,
+            'files'       => $files,
+            'total_size'  => $totalSize,
+            'total_count' => $totalCount,
+            'note'        => 'Public files included successfully.',
+        ];
     }
 
     protected function writeAuditLog(string $action, SystemBackup $systemBackup, array $oldValues = [], array $newValues = []): void

@@ -210,12 +210,15 @@
                         </div>
 
                         <div class="card-body">
-                            @if(auth()->user()?->hasPermission('backup.create'))
-                                <a href="{{ route('dashboard.backups.create') }}" class="btn btn-primary btn-block mb-2">
-                                    <i class="fas fa-plus mr-1"></i>
-                                    Create New Manual Backup
-                                </a>
-                            @endif
+                          @if(auth()->check())
+    <form action="{{ route('dashboard.backups.create') }}" method="POST" class="mb-2">
+        @csrf
+        <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-plus mr-1"></i>
+            Create New Manual Backup
+        </button>
+    </form>
+@endif
 
                             @if(auth()->user()?->hasPermission('backup.download') && $systemBackup->status === 'success' && $fileExists)
                                 <a href="{{ route('dashboard.backups.download', $systemBackup) }}" class="btn btn-success btn-block mb-2">

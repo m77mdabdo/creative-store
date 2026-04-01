@@ -8,7 +8,7 @@ class IndexBackupRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('backup.view');
+        return auth()->check() && auth()->user()->hasPermission('audit.view');
     }
 
     public function rules(): array

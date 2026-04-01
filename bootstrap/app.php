@@ -73,6 +73,10 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withSchedule(function (Schedule $schedule): void {
         $schedule->command('carts:process-abandoned')->everyMinute();
-        $schedule->command('backup:run scheduled --cleanup-days=30')->dailyAt('02:00');
+
+        $schedule->command('backup:run scheduled --cleanup-days=' . (int) env('BACKUP_RETENTION_DAYS', 30))
+            ->cron('0 */12 * * *')
+            ->withoutOverlapping(120)
+            ->runInBackground();
     })
     ->create();

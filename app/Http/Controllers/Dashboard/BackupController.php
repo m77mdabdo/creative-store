@@ -176,7 +176,7 @@ class BackupController extends Controller
                 'ip_address'     => app()->runningInConsole() ? null : request()?->ip(),
             ]);
         } catch (Throwable $e) {
-            // no-op
+                // no-op
         }
     }
 }
