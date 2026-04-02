@@ -1,45 +1,27 @@
-@include('site.app.head')
-@auth
-<script>
-    window.Laravel = {
-        userId: {{ auth()->id() }}
-    };
-</script>
-@endauth
-<body class="animsition">
+<!DOCTYPE html>
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
+<head>
+    @include('site.app.head')
+</head>
+<body class="animsition site-body {{ app()->getLocale() === 'ar' ? 'rtl-site' : 'ltr-site' }}">
 
-	<!-- Header -->
-
+    @auth
+        <script>
+            window.Laravel = {
+                userId: {{ auth()->id() }}
+            };
+        </script>
+    @endauth
 
     @include('site.app.header')
-	<!-- Cart -->
 
-
-    @yield('content')
-
-
-    {{-- @include('site.app.cart') --}}
-
-
-	<!-- Slider -->
-
-    {{-- @include('site.app.slider') --}}
-
-
-	<!-- Banner -->
-
-
-    {{-- @include('site.app.banner') --}}
-
-	<!-- Product -->
-
-
-    {{-- @include('site.app.product') --}}
-
-	<!-- Footer -->
+    <main class="main-content">
+        @yield('content')
+    </main>
 
     @include('site.app.footer')
+    @include('site.app.script')
 
-<!--===============================================================================================-->
-
-@include('site.app.script')
+    @stack('scripts')
+</body>
+</html>

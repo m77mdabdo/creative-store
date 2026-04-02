@@ -1,54 +1,550 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Home</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>@yield('title', config('app.name', 'Creative Store'))</title>
 
-    <!--===============================================================================================-->
-    <link rel="icon" type="image/png"
-          href="{{ asset('cozastore/images/icons/favicon.png') }}"/>
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css"
-          href="{{ asset('cozastore/vendor/bootstrap/css/bootstrap.min.css') }}">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css"
-          href="{{ asset('cozastore/fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css"
-          href="{{ asset('cozastore/fonts/iconic/css/material-design-iconic-font.min.css') }}">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css"
-          href="{{ asset('cozastore/fonts/linearicons-v1.0.0/icon-font.min.css') }}">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css"
-          href="{{ asset('cozastore/vendor/animate/animate.css') }}">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css"
-          href="{{ asset('cozastore/vendor/css-hamburgers/hamburgers.min.css') }}">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css"
-          href="{{ asset('cozastore/vendor/animsition/css/animsition.min.css') }}">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css"
-          href="{{ asset('cozastore/vendor/select2/select2.min.css') }}">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css"
-          href="{{ asset('cozastore/vendor/daterangepicker/daterangepicker.css') }}">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css"
-          href="{{ asset('cozastore/vendor/slick/slick.css') }}">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css"
-          href="{{ asset('cozastore/vendor/MagnificPopup/magnific-popup.css') }}">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css"
-          href="{{ asset('cozastore/vendor/perfect-scrollbar/perfect-scrollbar.css') }}">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css"
-          href="{{ asset('cozastore/css/util.css') }}">
-    <!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css"
-          href="{{ asset('cozastore/css/main.css') }}">
-    <!--===============================================================================================-->
-</head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+<link rel="icon" type="image/png" href="{{ asset('cozastore/images/icons/favicon.png') }}"/>
+
+<link rel="stylesheet" href="{{ asset('cozastore/vendor/bootstrap/css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ asset('cozastore/fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
+<link rel="stylesheet" href="{{ asset('cozastore/fonts/iconic/css/material-design-iconic-font.min.css') }}">
+<link rel="stylesheet" href="{{ asset('cozastore/fonts/linearicons-v1.0.0/icon-font.min.css') }}">
+<link rel="stylesheet" href="{{ asset('cozastore/vendor/animate/animate.css') }}">
+<link rel="stylesheet" href="{{ asset('cozastore/vendor/css-hamburgers/hamburgers.min.css') }}">
+<link rel="stylesheet" href="{{ asset('cozastore/vendor/animsition/css/animsition.min.css') }}">
+<link rel="stylesheet" href="{{ asset('cozastore/vendor/select2/select2.min.css') }}">
+<link rel="stylesheet" href="{{ asset('cozastore/vendor/daterangepicker/daterangepicker.css') }}">
+<link rel="stylesheet" href="{{ asset('cozastore/vendor/slick/slick.css') }}">
+<link rel="stylesheet" href="{{ asset('cozastore/vendor/MagnificPopup/magnific-popup.css') }}">
+<link rel="stylesheet" href="{{ asset('cozastore/vendor/perfect-scrollbar/perfect-scrollbar.css') }}">
+<link rel="stylesheet" href="{{ asset('cozastore/css/util.css') }}">
+<link rel="stylesheet" href="{{ asset('cozastore/css/main.css') }}">
+
+<style>
+    :root {
+        --site-primary: #717fe0;
+        --site-primary-soft: rgba(113, 127, 224, 0.10);
+        --site-primary-border: rgba(113, 127, 224, 0.18);
+        --site-text: #222222;
+        --site-muted: #666666;
+        --site-border: #ececec;
+        --site-soft: #f8f8f8;
+        --site-bg: rgba(255,255,255,0.96);
+        --site-dark: #08162f;
+        --site-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+        --site-radius: 14px;
+        --site-transition: all .25s ease;
+    }
+
+    html,
+    body {
+        overflow-x: hidden;
+    }
+
+    body.site-body {
+        min-height: 100vh;
+        color: var(--site-text);
+        background: #fff;
+    }
+
+    .main-content {
+        min-height: 40vh;
+    }
+
+    html[dir="rtl"] body {
+        direction: rtl;
+        text-align: right;
+    }
+
+    html[dir="ltr"] body {
+        direction: ltr;
+        text-align: left;
+    }
+
+    html[dir="rtl"] input,
+    html[dir="rtl"] textarea,
+    html[dir="rtl"] select {
+        text-align: right;
+    }
+
+    html[dir="ltr"] input,
+    html[dir="ltr"] textarea,
+    html[dir="ltr"] select {
+        text-align: left;
+    }
+
+    html[lang="ar"] body {
+        font-family: "Cairo", "Tajawal", sans-serif;
+    }
+
+    /* =========================
+       HEADER WRAPPER
+    ========================= */
+    .site-header {
+        width: 100%;
+        position: relative;
+        z-index: 1100;
+    }
+
+    /* =========================
+       TOP BAR
+    ========================= */
+    .custom-topbar {
+        background: var(--site-dark);
+        color: #fff;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .custom-topbar .content-topbar {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+
+    .custom-topbar .left-top-bar {
+        font-size: 13px;
+        color: rgba(255,255,255,0.88);
+        white-space: nowrap;
+    }
+
+    .custom-topbar .right-top-bar {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        flex-wrap: wrap;
+    }
+
+    .custom-topbar .topbar-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0 12px;
+        font-size: 13px;
+        color: rgba(255,255,255,0.82);
+        text-decoration: none;
+        transition: var(--site-transition);
+    }
+
+    .custom-topbar .topbar-link:hover,
+    .custom-topbar .topbar-link.is-active {
+        color: #fff;
+        font-weight: 700;
+    }
+
+    .custom-topbar .topbar-divider {
+        width: 1px;
+        height: 16px;
+        background: rgba(255,255,255,0.14);
+        margin: 0 4px;
+    }
+
+    /* =========================
+       DESKTOP NAVBAR
+    ========================= */
+    .container-menu-desktop {
+        display: block;
+    }
+
+    .custom-navbar {
+        background: var(--site-bg);
+        border-bottom: 1px solid var(--site-border);
+        box-shadow: var(--site-shadow);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        position: sticky;
+        top: 0;
+        z-index: 1090;
+        width: 100%;
+    }
+
+    .custom-navbar .navbar-inner {
+        min-height: 88px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+    }
+
+    .custom-navbar .site-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        flex-shrink: 0;
+    }
+
+    .custom-navbar .site-brand img {
+        width: 56px;
+        height: 56px;
+        object-fit: contain;
+        display: block;
+    }
+
+    .custom-navbar .brand-text {
+        font-size: 16px;
+        font-weight: 700;
+        color: #111;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+
+    .custom-navbar .menu-desktop {
+        flex: 1 1 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+    }
+
+    .custom-navbar .main-menu {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .custom-navbar .main-menu > li {
+        margin: 0;
+        padding: 0;
+        position: relative;
+    }
+
+    .custom-navbar .main-menu > li > a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 18px;
+        border-radius: var(--site-radius);
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--site-text);
+        text-decoration: none;
+        white-space: nowrap;
+        transition: var(--site-transition);
+    }
+
+    .custom-navbar .main-menu > li > a:hover {
+        background: #f3f4f6;
+        color: var(--site-primary);
+    }
+
+    .custom-navbar .main-menu > li.active-menu > a {
+        background: var(--site-primary-soft);
+        color: var(--site-primary);
+    }
+
+    .custom-navbar .site-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-shrink: 0;
+    }
+
+    .custom-navbar .icon-btn {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        background: var(--site-soft);
+        color: var(--site-text);
+        border: 1px solid transparent;
+        position: relative;
+        transition: var(--site-transition);
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .custom-navbar button.icon-btn {
+        outline: none;
+        box-shadow: none;
+    }
+
+    .custom-navbar .icon-btn:hover {
+        color: var(--site-primary);
+        background: var(--site-primary-soft);
+        border-color: var(--site-primary-border);
+    }
+
+    .custom-navbar .icon-header-noti::after,
+    .custom-mobile-header .icon-header-noti::after {
+        font-family: inherit;
+        font-size: 10px;
+        line-height: 18px;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 20px;
+        background-color: var(--site-primary);
+        color: #fff;
+        text-align: center;
+        display: block;
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        padding: 0 4px;
+        content: attr(data-notify);
+        box-shadow: 0 4px 10px rgba(108, 122, 224, 0.3);
+    }
+
+    .custom-navbar .user-link {
+        font-size: 14px;
+        font-weight: 600;
+        color: #444;
+        text-decoration: none;
+        white-space: nowrap;
+        max-width: 170px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        transition: var(--site-transition);
+    }
+
+    .custom-navbar .user-link:hover {
+        color: var(--site-primary);
+    }
+
+    /* =========================
+       MOBILE HEADER
+    ========================= */
+    .wrap-header-mobile {
+        display: none;
+    }
+
+    .custom-mobile-header {
+        min-height: 74px;
+        padding: 10px 15px;
+        background: #fff;
+        border-bottom: 1px solid var(--site-border);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .mobile-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+    }
+
+    .mobile-brand img {
+        width: 42px;
+        height: 42px;
+        object-fit: contain;
+        display: block;
+    }
+
+    .mobile-brand-text {
+        font-size: 15px;
+        font-weight: 700;
+        color: #111;
+        line-height: 1.2;
+    }
+
+    .mobile-icons {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .custom-mobile-header .icon-header-item {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--site-soft);
+        color: var(--site-text);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        text-decoration: none;
+        border: 1px solid transparent;
+        transition: var(--site-transition);
+    }
+
+    .custom-mobile-header .icon-header-item:hover {
+        color: var(--site-primary);
+        background: var(--site-primary-soft);
+        border-color: var(--site-primary-border);
+    }
+
+    /* =========================
+       SEARCH MODAL
+    ========================= */
+    html[dir="rtl"] .wrap-search-header {
+        flex-direction: row-reverse;
+    }
+
+    html[dir="rtl"] .wrap-search-header input {
+        text-align: right;
+    }
+
+    /* =========================
+       LTR / RTL
+    ========================= */
+    html[dir="ltr"] .custom-navbar .navbar-inner {
+        flex-direction: row;
+    }
+
+    html[dir="ltr"] .custom-navbar .site-brand,
+    html[dir="ltr"] .custom-navbar .main-menu,
+    html[dir="ltr"] .custom-navbar .site-actions,
+    html[dir="ltr"] .custom-topbar .content-topbar,
+    html[dir="ltr"] .custom-topbar .right-top-bar,
+    html[dir="ltr"] .custom-mobile-header,
+    html[dir="ltr"] .mobile-brand,
+    html[dir="ltr"] .mobile-icons {
+        flex-direction: row;
+    }
+
+    html[dir="ltr"] .custom-navbar .icon-header-noti::after,
+    html[dir="ltr"] .custom-mobile-header .icon-header-noti::after {
+        right: -4px;
+        left: auto;
+    }
+
+    html[dir="rtl"] .custom-topbar .content-topbar {
+        flex-direction: row-reverse;
+    }
+
+    html[dir="rtl"] .custom-topbar .left-top-bar {
+        text-align: right;
+    }
+
+    html[dir="rtl"] .custom-topbar .right-top-bar {
+        flex-direction: row-reverse;
+        justify-content: flex-start;
+    }
+
+    html[dir="rtl"] .custom-navbar .navbar-inner {
+        flex-direction: row-reverse;
+    }
+
+    html[dir="rtl"] .custom-navbar .site-brand {
+        flex-direction: row-reverse;
+    }
+
+    html[dir="rtl"] .custom-navbar .menu-desktop {
+        justify-content: center;
+    }
+
+    html[dir="rtl"] .custom-navbar .main-menu {
+        flex-direction: row-reverse;
+    }
+
+    html[dir="rtl"] .custom-navbar .site-actions {
+        flex-direction: row-reverse;
+    }
+
+    html[dir="rtl"] .custom-navbar .user-link {
+        text-align: right;
+    }
+
+    html[dir="rtl"] .custom-navbar .icon-header-noti::after,
+    html[dir="rtl"] .custom-mobile-header .icon-header-noti::after {
+        left: -4px;
+        right: auto;
+    }
+
+    html[dir="rtl"] .custom-mobile-header {
+        flex-direction: row-reverse;
+    }
+
+    html[dir="rtl"] .mobile-brand {
+        flex-direction: row-reverse;
+    }
+
+    html[dir="rtl"] .mobile-icons {
+        flex-direction: row-reverse;
+    }
+
+    /* =========================
+       KILL OLD THEME CONFLICTS
+    ========================= */
+    .custom-navbar .main-menu li::before,
+    .custom-navbar .main-menu li::after,
+    .custom-navbar .main-menu > li > a::before,
+    .custom-navbar .main-menu > li > a::after {
+        display: none !important;
+    }
+
+    .custom-navbar .menu-desktop,
+    .custom-navbar .main-menu,
+    .custom-navbar .site-actions,
+    .custom-navbar .site-brand {
+        position: relative !important;
+    }
+
+    .custom-navbar .main-menu {
+        left: auto !important;
+        right: auto !important;
+        top: auto !important;
+        bottom: auto !important;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+    @media (max-width: 1199px) {
+        .custom-navbar .navbar-inner {
+            min-height: 80px;
+            gap: 16px;
+        }
+
+        .custom-navbar .main-menu {
+            gap: 6px;
+        }
+
+        .custom-navbar .main-menu > li > a {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        .custom-navbar .site-brand img {
+            width: 50px;
+            height: 50px;
+        }
+    }
+
+    @media (max-width: 991px) {
+        .container-menu-desktop {
+            display: none !important;
+        }
+
+        .wrap-header-mobile {
+            display: flex !important;
+        }
+
+        .custom-navbar .brand-text,
+        .mobile-brand-text,
+        .custom-topbar .left-top-bar {
+            display: none;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .custom-topbar .right-top-bar {
+            justify-content: center;
+            gap: 0;
+        }
+
+        .custom-topbar .topbar-link {
+            min-height: 40px;
+            padding: 0 10px;
+            font-size: 12px;
+        }
+
+        .custom-topbar .topbar-divider {
+            display: none;
+        }
+    }
+</style>

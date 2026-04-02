@@ -47,8 +47,8 @@
                             @forelse($categories as $category)
                                 <tr>
                                     <td>{{ $category->id }}</td>
-                                    <td>{{ optional($category->translations->firstWhere('locale', 'ar'))->name ?? '-' }}</td>
-                                    <td>{{ optional($category->translations->firstWhere('locale', 'en'))->name ?? '-' }}</td>
+                                    <td>{{ $category->translate('ar')?->name ?? '-' }}</td>
+                                    <td>{{ $category->translate('en')?->name ?? '-' }}</td>
                                     <td>{{ $category->slug }}</td>
                                     <td>{{ $category->deleted_at?->format('Y-m-d h:i A') }}</td>
                                     <td>

@@ -18,7 +18,7 @@ class UpdateCategoryRequest extends FormRequest
 
     public function rules(): array
     {
-        $categoryId = $this->route('category')->id;
+        $categoryId = $this->route('category')->id ?? null;
 
         return [
             'parent_id' => [
@@ -28,7 +28,7 @@ class UpdateCategoryRequest extends FormRequest
                 Rule::notIn([$categoryId]),
             ],
             'slug' => [
-                'required',
+                'nullable',
                 'string',
                 'max:255',
                 'alpha_dash',
@@ -39,11 +39,13 @@ class UpdateCategoryRequest extends FormRequest
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:1000'],
 
-            'translations' => ['required', 'array'],
-            'translations.ar.name' => ['required', 'string', 'max:255'],
-            'translations.ar.description' => ['nullable', 'string'],
-            'translations.en.name' => ['nullable', 'string', 'max:255'],
-            'translations.en.description' => ['nullable', 'string'],
+            'ar' => ['required', 'array'],
+            'ar.name' => ['required', 'string', 'max:255'],
+            'ar.description' => ['nullable', 'string'],
+
+            'en' => ['required', 'array'],
+            'en.name' => ['required', 'string', 'max:255'],
+            'en.description' => ['nullable', 'string'],
         ];
     }
 
@@ -51,7 +53,16 @@ class UpdateCategoryRequest extends FormRequest
     {
         $this->merge([
             'is_active' => $this->boolean('is_active'),
-            'sort_order' => $this->sort_order ?? 0,
+            'sort_order' => (int) ($this->input('sort_order', 0)),
         ]);
+    }
+
+    public function messages(): array
+    {
+        return [
+            'slug.unique' => 'This slug is already taken.',
+            'ar.name.required' => 'Arabic category name is required.',
+            'en.name.required' => 'English category name is required.',
+        ];
     }
 }

@@ -2,16 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\Cache;
 use App\Traits\Auditable;
-
+use Astrotomic\Translatable\Translatable;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Page extends Model
 {
-    use HasFactory , Auditable ;
+    use HasFactory, Auditable, Translatable;
+
+    public array $translatedAttributes = [
+        'title',
+        'content',
+    ];
 
     protected $fillable = [
         'slug',
@@ -21,34 +26,6 @@ class Page extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
-
-    public function translations()
-    {
-        return $this->hasMany(PageTranslation::class);
-    }
-
-    public function translation(?string $locale = null): ?PageTranslation
-    {
-        $locale ??= app()->getLocale();
-        $fallback = config('app.fallback_locale', 'en');
-
-        $translations = $this->relationLoaded('translations')
-            ? $this->translations
-            : $this->translations()->get();
-
-        return $translations->firstWhere('locale', $locale)
-            ?? $translations->firstWhere('locale', $fallback);
-    }
-
-    public function getTitleAttribute(): ?string
-    {
-        return $this->translation()?->title;
-    }
-
-    public function getContentAttribute(): ?string
-    {
-        return $this->translation()?->content;
-    }
 
     public function getDecodedContentAttribute(): array
     {
@@ -94,14 +71,7 @@ class Page extends Model
 
     public static function clearCacheBySlug(string $slug): void
     {
-        $locales = array_values(array_unique([
-            app()->getLocale(),
-            config('app.fallback_locale', 'en'),
-            'ar',
-            'en',
-        ]));
-
-        foreach ($locales as $locale) {
+        foreach (['ar', 'en'] as $locale) {
             Cache::forget("page.{$slug}.{$locale}");
         }
     }

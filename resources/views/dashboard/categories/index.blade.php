@@ -148,8 +148,8 @@
                                                 >
                                             </td>
                                             <td>{{ $category->id }}</td>
-                                            <td>{{ optional($category->translations->firstWhere('locale', 'ar'))->name ?? '-' }}</td>
-                                            <td>{{ optional($category->translations->firstWhere('locale', 'en'))->name ?? '-' }}</td>
+                                            <td>{{ $category->translate('ar')?->name ?? '-' }}</td>
+                                            <td>{{ $category->translate('en')?->name ?? '-' }}</td>
                                             <td>{{ $category->slug }}</td>
                                             <td>{{ $category->parent?->name ?? 'Root' }}</td>
                                             <td>{{ $category->children_count }}</td>
@@ -236,8 +236,8 @@
                                 @forelse($categories as $category)
                                     <tr>
                                         <td>{{ $category->id }}</td>
-                                        <td>{{ optional($category->translations->firstWhere('locale', 'ar'))->name ?? '-' }}</td>
-                                        <td>{{ optional($category->translations->firstWhere('locale', 'en'))->name ?? '-' }}</td>
+                                        <td>{{ $category->translate('ar')?->name ?? '-' }}</td>
+                                        <td>{{ $category->translate('en')?->name ?? '-' }}</td>
                                         <td>{{ $category->slug }}</td>
                                         <td>{{ $category->parent?->name ?? 'Root' }}</td>
                                         <td>{{ $category->children_count }}</td>

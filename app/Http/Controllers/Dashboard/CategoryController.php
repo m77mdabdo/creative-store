@@ -29,15 +29,7 @@ class CategoryController extends Controller
             ]);
 
         if ($filters['search'] !== '') {
-            $search = $filters['search'];
-
-            $query->where(function ($q) use ($search) {
-                $q->where('slug', 'like', "%{$search}%")
-                    ->orWhereHas('translations', function ($t) use ($search) {
-                        $t->where('name', 'like', "%{$search}%")
-                            ->orWhere('description', 'like', "%{$search}%");
-                    });
-            });
+            $query->search($filters['search']);
         }
 
         if ($filters['status'] === 'active') {
@@ -53,8 +45,7 @@ class CategoryController extends Controller
         }
 
         $categories = $query
-            ->orderBy('sort_order')
-            ->orderByDesc('id')
+            ->ordered()
             ->paginate(15)
             ->withQueryString();
 
@@ -101,7 +92,7 @@ class CategoryController extends Controller
         if (
             $payload['is_active']
             && $payload['parent_id']
-            && !$this->parentAllowsActiveChild($payload['parent_id'])
+            && ! $this->parentAllowsActiveChild($payload['parent_id'])
         ) {
             return back()
                 ->withInput()
@@ -120,20 +111,17 @@ class CategoryController extends Controller
                 'meta_description' => $payload['meta_description'],
             ]);
 
-            foreach ($payload['translations'] as $locale => $data) {
-                if (($data['name'] ?? '') !== '' || ($data['description'] ?? '') !== '') {
-                    $category->translations()->create([
-                        'locale' => $locale,
-                        'name' => $data['name'] ?: null,
-                        'description' => $data['description'] ?: null,
-                    ]);
-                }
+            foreach (['ar', 'en'] as $locale) {
+                $category->translateOrNew($locale)->name = $payload[$locale]['name'] ?: null;
+                $category->translateOrNew($locale)->description = $payload[$locale]['description'] ?: null;
             }
+
+            $category->save();
         });
 
         return redirect()
             ->route('dashboard.categories.index')
-            ->with('success', 'Category created successfully.');
+            ->with('success', __('messages.created_successfully'));
     }
 
     public function show(Category $category): View
@@ -178,7 +166,7 @@ class CategoryController extends Controller
         if (
             $payload['is_active']
             && $payload['parent_id']
-            && !$this->parentAllowsActiveChild($payload['parent_id'])
+            && ! $this->parentAllowsActiveChild($payload['parent_id'])
         ) {
             return back()
                 ->withInput()
@@ -197,24 +185,21 @@ class CategoryController extends Controller
                 'meta_description' => $payload['meta_description'],
             ]);
 
-            foreach ($payload['translations'] as $locale => $data) {
-                $category->translations()->updateOrCreate(
-                    ['locale' => $locale],
-                    [
-                        'name' => $data['name'] ?: null,
-                        'description' => $data['description'] ?: null,
-                    ]
-                );
+            foreach (['ar', 'en'] as $locale) {
+                $category->translateOrNew($locale)->name = $payload[$locale]['name'] ?: null;
+                $category->translateOrNew($locale)->description = $payload[$locale]['description'] ?: null;
             }
 
-            if (!$category->is_active) {
+            $category->save();
+
+            if (! $category->is_active) {
                 $category->children()->update(['is_active' => false]);
             }
         });
 
         return redirect()
             ->route('dashboard.categories.index')
-            ->with('success', 'Category updated successfully.');
+            ->with('success', __('messages.updated_successfully'));
     }
 
     public function destroy(Category $category): RedirectResponse
@@ -238,7 +223,7 @@ class CategoryController extends Controller
     {
         $category = Category::onlyTrashed()->findOrFail($id);
 
-        if ($category->parent_id && !$this->parentExistsAndActive($category->parent_id)) {
+        if ($category->parent_id && ! $this->parentExistsAndActive($category->parent_id)) {
             return back()->with('error', 'Cannot restore category because its parent is missing or inactive.');
         }
 
@@ -251,7 +236,9 @@ class CategoryController extends Controller
 
     public function forceDelete(int $id): RedirectResponse
     {
-        $category = Category::onlyTrashed()->withCount(['children', 'products'])->findOrFail($id);
+        $category = Category::onlyTrashed()
+            ->withCount(['children', 'products'])
+            ->findOrFail($id);
 
         if ($category->children_count > 0) {
             return back()->with('error', 'Cannot permanently delete category because it still has child categories.');
@@ -271,9 +258,9 @@ class CategoryController extends Controller
 
     public function toggleStatus(Category $category): RedirectResponse
     {
-        $newStatus = !$category->is_active;
+        $newStatus = ! $category->is_active;
 
-        if ($newStatus && $category->parent_id && !$this->parentAllowsActiveChild($category->parent_id)) {
+        if ($newStatus && $category->parent_id && ! $this->parentAllowsActiveChild($category->parent_id)) {
             return back()->with('error', 'Cannot activate this category while parent category is inactive.');
         }
 
@@ -282,7 +269,7 @@ class CategoryController extends Controller
                 'is_active' => $newStatus,
             ]);
 
-            if (!$newStatus) {
+            if (! $newStatus) {
                 $category->children()->update(['is_active' => false]);
             }
         });
@@ -311,7 +298,7 @@ class CategoryController extends Controller
 
         if ($request->action === 'activate') {
             foreach ($categories as $category) {
-                if (!$category->parent_id || $this->parentAllowsActiveChild($category->parent_id)) {
+                if (! $category->parent_id || $this->parentAllowsActiveChild($category->parent_id)) {
                     $category->update(['is_active' => true]);
                 }
             }
@@ -330,7 +317,7 @@ class CategoryController extends Controller
 
         if ($request->action === 'delete') {
             foreach ($categories as $category) {
-                if (!$category->children()->exists() && !$category->products()->exists()) {
+                if (! $category->children()->exists() && ! $category->products()->exists()) {
                     $category->delete();
                 }
             }
@@ -355,26 +342,20 @@ class CategoryController extends Controller
         return Category::query()
             ->with('translations')
             ->when($exceptId, fn ($q) => $q->where('id', '!=', $exceptId))
-            ->orderBy('sort_order')
-            ->orderByDesc('id')
+            ->ordered()
             ->get();
     }
 
     private function formData(?Category $category = null): array
     {
-        $ar = $category?->translations->firstWhere('locale', 'ar');
-        $en = $category?->translations->firstWhere('locale', 'en');
-
         return [
-            'translations' => [
-                'ar' => [
-                    'name' => old('translations.ar.name', $ar?->name ?? ''),
-                    'description' => old('translations.ar.description', $ar?->description ?? ''),
-                ],
-                'en' => [
-                    'name' => old('translations.en.name', $en?->name ?? ''),
-                    'description' => old('translations.en.description', $en?->description ?? ''),
-                ],
+            'ar' => [
+                'name' => old('ar.name', $category?->translate('ar')?->name ?? ''),
+                'description' => old('ar.description', $category?->translate('ar')?->description ?? ''),
+            ],
+            'en' => [
+                'name' => old('en.name', $category?->translate('en')?->name ?? ''),
+                'description' => old('en.description', $category?->translate('en')?->description ?? ''),
             ],
             'slug' => old('slug', $category->slug ?? ''),
             'parent_id' => old('parent_id', $category->parent_id ?? ''),
@@ -387,8 +368,8 @@ class CategoryController extends Controller
 
     private function normalizedPayload(Request $request): array
     {
-        $arName = trim((string) data_get($request->input('translations'), 'ar.name', ''));
-        $enName = trim((string) data_get($request->input('translations'), 'en.name', ''));
+        $arName = trim((string) data_get($request->all(), 'ar.name', ''));
+        $enName = trim((string) data_get($request->all(), 'en.name', ''));
 
         $slug = trim((string) $request->input('slug', ''));
         $generatedFrom = $enName !== '' ? $enName : $arName;
@@ -402,15 +383,13 @@ class CategoryController extends Controller
             'sort_order' => (int) $request->input('sort_order', 0),
             'meta_title' => trim((string) $request->input('meta_title', '')),
             'meta_description' => trim((string) $request->input('meta_description', '')),
-            'translations' => [
-                'ar' => [
-                    'name' => $arName,
-                    'description' => trim((string) data_get($request->input('translations'), 'ar.description', '')),
-                ],
-                'en' => [
-                    'name' => $enName,
-                    'description' => trim((string) data_get($request->input('translations'), 'en.description', '')),
-                ],
+            'ar' => [
+                'name' => $arName,
+                'description' => trim((string) data_get($request->all(), 'ar.description', '')),
+            ],
+            'en' => [
+                'name' => $enName,
+                'description' => trim((string) data_get($request->all(), 'en.description', '')),
             ],
         ];
     }
@@ -434,7 +413,7 @@ class CategoryController extends Controller
 
     private function wouldCreateCircularReference(Category $category, $parentId): bool
     {
-        if (!$parentId) {
+        if (! $parentId) {
             return false;
         }
 
@@ -476,7 +455,7 @@ class CategoryController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user) {
+        if (! $user) {
             return false;
         }
 

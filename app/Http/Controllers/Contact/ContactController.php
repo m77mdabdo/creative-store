@@ -18,18 +18,12 @@ class ContactController extends Controller
     public function index(): View
     {
         $locale = app()->getLocale();
-        $fallback = config('app.fallback_locale', 'en');
 
-        $payload = Cache::remember("page.contact.{$locale}", now()->addMinutes(30), function () use ($locale, $fallback) {
+        $payload = Cache::remember("page.contact.{$locale}", now()->addMinutes(30), function () use ($locale) {
             $page = Page::query()
                 ->where('slug', 'contact')
                 ->where('is_active', true)
-                ->with([
-                    'translations' => function ($query) use ($locale, $fallback) {
-                        $query->select('id', 'page_id', 'locale', 'title', 'content')
-                            ->whereIn('locale', array_unique([$locale, $fallback]));
-                    }
-                ])
+                ->with('translations')
                 ->first();
 
             if (! $page) {
@@ -39,11 +33,11 @@ class ContactController extends Controller
                 ];
             }
 
-            $translation = $page->translation($locale);
+            $translation = $page->translate($locale, true);
 
             return [
                 'title' => $translation?->title ?? 'Contact',
-                'content' => ContactPageContent::decode($translation?->content),
+                'content' => ContactPageContent::decode($translation?->content ?? null),
             ];
         });
 

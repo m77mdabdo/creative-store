@@ -2,61 +2,82 @@
     <div class="col-md-8">
         <div class="card card-outline card-primary">
             <div class="card-header">
-                <h3 class="card-title">Basic Information</h3>
+                <h3 class="card-title">{{ __('dashboard.categories') }} - {{ __('dashboard.name') }} & {{ __('dashboard.description') }}</h3>
             </div>
 
             <div class="card-body">
-                <div class="form-group">
-                    <label>Arabic Name <span class="text-danger">*</span></label>
-                    <input
-                        type="text"
-                        name="translations[ar][name]"
-                        class="form-control"
-                        value="{{ $form['translations']['ar']['name'] }}"
-                        required
-                    >
-                    @error('translations.ar.name')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card card-outline card-success">
+                            <div class="card-header">
+                                <h3 class="card-title">العربية</h3>
+                            </div>
 
-                <div class="form-group">
-                    <label>Arabic Description</label>
-                    <textarea
-                        name="translations[ar][description]"
-                        rows="4"
-                        class="form-control"
-                    >{{ $form['translations']['ar']['description'] }}</textarea>
-                    @error('translations.ar.description')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>الاسم العربي <span class="text-danger">*</span></label>
+                                    <input
+                                        type="text"
+                                        name="ar[name]"
+                                        class="form-control @error('ar.name') is-invalid @enderror"
+                                        value="{{ $form['ar']['name'] }}"
+                                        required
+                                    >
+                                    @error('ar.name')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
 
-                <hr>
+                                <div class="form-group mb-0">
+                                    <label>الوصف العربي</label>
+                                    <textarea
+                                        name="ar[description]"
+                                        rows="5"
+                                        class="form-control @error('ar.description') is-invalid @enderror"
+                                    >{{ $form['ar']['description'] }}</textarea>
+                                    @error('ar.description')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="form-group">
-                    <label>English Name</label>
-                    <input
-                        type="text"
-                        name="translations[en][name]"
-                        class="form-control"
-                        value="{{ $form['translations']['en']['name'] }}"
-                    >
-                    @error('translations.en.name')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
+                    <div class="col-md-6">
+                        <div class="card card-outline card-info">
+                            <div class="card-header">
+                                <h3 class="card-title">English</h3>
+                            </div>
 
-                <div class="form-group">
-                    <label>English Description</label>
-                    <textarea
-                        name="translations[en][description]"
-                        rows="4"
-                        class="form-control"
-                    >{{ $form['translations']['en']['description'] }}</textarea>
-                    @error('translations.en.description')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>English Name <span class="text-danger">*</span></label>
+                                    <input
+                                        type="text"
+                                        name="en[name]"
+                                        class="form-control @error('en.name') is-invalid @enderror"
+                                        value="{{ $form['en']['name'] }}"
+                                        required
+                                    >
+                                    @error('en.name')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group mb-0">
+                                    <label>English Description</label>
+                                    <textarea
+                                        name="en[description]"
+                                        rows="5"
+                                        class="form-control @error('en.description') is-invalid @enderror"
+                                    >{{ $form['en']['description'] }}</textarea>
+                                    @error('en.description')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -72,7 +93,7 @@
                     <input
                         type="text"
                         name="meta_title"
-                        class="form-control"
+                        class="form-control @error('meta_title') is-invalid @enderror"
                         value="{{ $form['meta_title'] }}"
                     >
                     @error('meta_title')
@@ -80,12 +101,12 @@
                     @enderror
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mb-0">
                     <label>Meta Description</label>
                     <textarea
                         name="meta_description"
                         rows="3"
-                        class="form-control"
+                        class="form-control @error('meta_description') is-invalid @enderror"
                     >{{ $form['meta_description'] }}</textarea>
                     @error('meta_description')
                         <small class="text-danger">{{ $message }}</small>
@@ -96,7 +117,7 @@
     </div>
 
     <div class="col-md-4">
-        <div class="card card-outline card-info">
+        <div class="card card-outline card-warning">
             <div class="card-header">
                 <h3 class="card-title">Category Settings</h3>
             </div>
@@ -107,7 +128,7 @@
                     <input
                         type="text"
                         name="slug"
-                        class="form-control"
+                        class="form-control @error('slug') is-invalid @enderror"
                         value="{{ $form['slug'] }}"
                         placeholder="Leave empty to auto-generate"
                     >
@@ -118,7 +139,7 @@
 
                 <div class="form-group">
                     <label>Parent Category</label>
-                    <select name="parent_id" class="form-control">
+                    <select name="parent_id" class="form-control @error('parent_id') is-invalid @enderror">
                         <option value="">Root Category</option>
                         @foreach($parents as $parent)
                             <option value="{{ $parent->id }}" {{ (string) $form['parent_id'] === (string) $parent->id ? 'selected' : '' }}>
@@ -137,7 +158,7 @@
                         type="number"
                         min="0"
                         name="sort_order"
-                        class="form-control"
+                        class="form-control @error('sort_order') is-invalid @enderror"
                         value="{{ $form['sort_order'] }}"
                     >
                     @error('sort_order')
@@ -145,7 +166,7 @@
                     @enderror
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mb-0">
                     <div class="custom-control custom-switch">
                         <input
                             type="checkbox"
@@ -165,7 +186,7 @@
 
             <div class="card-footer">
                 <button type="submit" class="btn btn-success btn-block">
-                    <i class="fas fa-save mr-1"></i> Save
+                    <i class="fas fa-save mr-1"></i> {{ __('dashboard.save') }}
                 </button>
             </div>
         </div>

@@ -1,42 +1,34 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\About\AboutController;
 use App\Http\Controllers\Account\MyAccountController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerifyAccountController;
-use App\Http\Controllers\Auth\GoogleAuthController;
-use App\Http\Controllers\User\UserController;
-use App\Http\Controllers\AuditLog\AuditLogController;
-use App\Http\Controllers\Blog\BlogController;
-use App\Http\Controllers\About\AboutController;
-use App\Http\Controllers\Contact\ContactController;
-use App\Http\Controllers\Home\HomeController;
-use App\Http\Controllers\Product\ProductController;
-use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Blog\BlogCommentController;
-use App\Http\Controllers\Wishlist\WishlistController;
-use App\Http\Controllers\Product\ReviewController;
-use App\Http\Controllers\Shipping\ShippingController;
-use App\Http\Controllers\Shipping\AddressController;
-use App\Http\Controllers\Shipping\OrderController;
-use App\Http\Controllers\Checkout\CheckoutController;
-use App\Http\Controllers\MoyasarPayment\MoyasarPaymentController;
-use App\Http\Controllers\Tracking\CustomerTrackingController;
+use App\Http\Controllers\Blog\BlogController;
+use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Cart\CartRecoveryController;
+use App\Http\Controllers\Checkout\CheckoutController;
+use App\Http\Controllers\Contact\ContactController;
 use App\Http\Controllers\Frontend\BlogController as FrontBlogController;
 use App\Http\Controllers\Frontend\PageController as FrontPageController;
-
-/*
-|--------------------------------------------------------------------------
-| Localized Web Routes
-|--------------------------------------------------------------------------
-*/
+use App\Http\Controllers\Home\HomeController;
+use App\Http\Controllers\MoyasarPayment\MoyasarPaymentController;
+use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\Product\ReviewController;
+use App\Http\Controllers\Shipping\AddressController;
+use App\Http\Controllers\Shipping\OrderController;
+use App\Http\Controllers\Shipping\ShippingController;
+use App\Http\Controllers\Tracking\CustomerTrackingController;
+use App\Http\Controllers\Wishlist\WishlistController;
 
 Route::group([
     'prefix' => LaravelLocalization::setLocale(),
@@ -48,19 +40,17 @@ Route::group([
     ],
 ], function () {
 
+    /*
+    |--------------------------------------------------------------------------
+    | Home
+    |--------------------------------------------------------------------------
+    */
+
     Route::get('/', [HomeController::class, 'index'])->name('home');
-
-    // Route::get('/dashboard', function () {
-    //     return view('dashboard.home');
-    // })->name('dashboard');
-
-    // Route::get('checkout', function () {
-    //     return view('site.app.cart');
-    // })->name('checkout.index');
 
     /*
     |--------------------------------------------------------------------------
-    | Auth
+    | Authentication
     |--------------------------------------------------------------------------
     */
 
@@ -72,19 +62,20 @@ Route::group([
         return view('auth.register');
     })->name('register');
 
-    Route::post('/logout', function () {
-        Auth::logout();
-        return redirect()->route('home');
-    })->name('logout');
-
     Route::post('/register', RegisterController::class)->name('register.submit');
 
     Route::post('/login', [LoginController::class, 'login'])
         ->name('login.submit');
 
+    Route::post('/logout', function () {
+        Auth::logout();
+
+        return redirect()->route('home');
+    })->name('logout');
+
     /*
     |--------------------------------------------------------------------------
-    | Forgot Password / Reset Password
+    | Password Reset
     |--------------------------------------------------------------------------
     */
 
@@ -104,12 +95,14 @@ Route::group([
 
     /*
     |--------------------------------------------------------------------------
-    | Email Verification OTP
+    | Email Verification
     |--------------------------------------------------------------------------
     */
 
     Route::view('/verify-email/{email}', 'auth.verify-email')->name('email.verify');
-    Route::post('/verify-email', VerifyAccountController::class)->name('email.verify.submit');
+
+    Route::post('/verify-email', VerifyAccountController::class)
+        ->name('email.verify.submit');
 
     /*
     |--------------------------------------------------------------------------
@@ -117,8 +110,11 @@ Route::group([
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirectToGoogle'])->name('google.redirect');
-    Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])->name('google.callback');
+    Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirectToGoogle'])
+        ->name('google.redirect');
+
+    Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])
+        ->name('google.callback');
 
     /*
     |--------------------------------------------------------------------------
@@ -128,8 +124,12 @@ Route::group([
 
     Route::middleware('auth')->group(function () {
         Route::get('/myaccount', [MyAccountController::class, 'index'])->name('myaccount');
-        Route::post('/myaccount/profile', [MyAccountController::class, 'updateProfile'])->name('myaccount.profile');
-        Route::post('/myaccount/password', [MyAccountController::class, 'updatePassword'])->name('myaccount.password');
+
+        Route::post('/myaccount/profile', [MyAccountController::class, 'updateProfile'])
+            ->name('myaccount.profile');
+
+        Route::post('/myaccount/password', [MyAccountController::class, 'updatePassword'])
+            ->name('myaccount.password');
     });
 
     /*
@@ -154,9 +154,12 @@ Route::group([
         ->middleware('auth')
         ->name('blog.comment.store');
 
+    // Route::get('/blog/{slug}', [FrontBlogController::class, 'show'])
+    //     ->name('blog.show');
+
     /*
     |--------------------------------------------------------------------------
-    | About / Contact
+    | Static Pages
     |--------------------------------------------------------------------------
     */
 
@@ -165,6 +168,9 @@ Route::group([
     Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
     Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
+    Route::get('/pages/{slug}', [FrontPageController::class, 'show'])
+        ->name('frontend.pages.show');
+
     /*
     |--------------------------------------------------------------------------
     | Cart
@@ -172,7 +178,6 @@ Route::group([
     */
 
     Route::prefix('cart')->name('cart.')->group(function () {
-
         Route::get('/', [CartController::class, 'index'])->name('index');
 
         Route::middleware('auth')->group(function () {
@@ -186,12 +191,19 @@ Route::group([
             Route::post('/clear', [CartController::class, 'clear'])->name('clear');
 
             Route::post('/coupon', [CartController::class, 'applyCoupon'])->name('coupon');
-            Route::delete('/coupon/remove', [CartController::class, 'removeCoupon'])->name('coupon.remove');
-            Route::post('/coupon/preview', [CartController::class, 'previewCoupon'])->name('coupon.preview');
+
+            Route::delete('/coupon/remove', [CartController::class, 'removeCoupon'])
+                ->name('coupon.remove');
+
+            Route::post('/coupon/preview', [CartController::class, 'previewCoupon'])
+                ->name('coupon.preview');
         });
     });
 
-    Route::get('/cart/view', fn () => view('site.cart.cart-panel'));
+    Route::get('/cart/view', fn () => view('site.cart.cart-panel'))->name('cart.view');
+
+    Route::get('/cart/recover/{token}', [CartRecoveryController::class, 'recover'])
+        ->name('cart.recover');
 
     /*
     |--------------------------------------------------------------------------
@@ -203,7 +215,7 @@ Route::group([
 
     /*
     |--------------------------------------------------------------------------
-    | Product Reviews
+    | Reviews
     |--------------------------------------------------------------------------
     */
 
@@ -216,8 +228,7 @@ Route::group([
     |--------------------------------------------------------------------------
     */
 
-    Route::middleware(['auth'])->prefix('shipping')->name('shipping.')->group(function () {
-
+    Route::middleware('auth')->prefix('shipping')->name('shipping.')->group(function () {
         Route::get('/', [ShippingController::class, 'index'])->name('index');
         Route::post('/options', [ShippingController::class, 'shippingOptions'])->name('options');
         Route::post('/select-address', [ShippingController::class, 'selectAddress'])->name('select-address');
@@ -248,18 +259,23 @@ Route::group([
     */
 
     Route::middleware('auth')->group(function () {
-        Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
-        Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
-        Route::delete('/wishlist/{id}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
+        Route::get('/wishlist', [WishlistController::class, 'index'])
+            ->name('wishlist.index');
+
+        Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])
+            ->name('wishlist.toggle');
+
+        Route::delete('/wishlist/{id}', [WishlistController::class, 'destroy'])
+            ->name('wishlist.destroy');
     });
 
     /*
     |--------------------------------------------------------------------------
-    | Payments
+    | Payment
     |--------------------------------------------------------------------------
     */
 
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware('auth')->group(function () {
         Route::post('/shipping/place-order', [CheckoutController::class, 'placeOrder'])
             ->name('shipping.place-order');
 
@@ -286,27 +302,6 @@ Route::group([
 
     Route::post('/track-order', [CustomerTrackingController::class, 'track'])
         ->name('tracking.track');
-
-    /*
-    |--------------------------------------------------------------------------
-    | Cart Recovery
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/cart/recover/{token}', [CartRecoveryController::class, 'recover'])
-        ->name('cart.recover');
-
-    /*
-    |--------------------------------------------------------------------------
-    | Front Blog / Pages
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get('/blog/{slug}', [FrontBlogController::class, 'show'])
-        ->name('frontend.blog.show');
-
-    Route::get('/pages/{slug}', [FrontPageController::class, 'show'])
-        ->name('frontend.pages.show');
 });
 
 /*
@@ -314,8 +309,7 @@ Route::group([
 | Non-localized Routes
 |--------------------------------------------------------------------------
 |
-| Webhooks and external callbacks are better kept outside localization
-| so third-party services keep hitting a stable URL.
+| Keep webhooks and third-party callbacks outside localization prefixes.
 |
 */
 

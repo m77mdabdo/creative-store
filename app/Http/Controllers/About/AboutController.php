@@ -17,26 +17,26 @@ class AboutController extends Controller
 
         $cacheKey = "page.about.{$locale}";
 
-        $payload = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($locale, $fallback) {
-            $page = Page::query()
-                ->active()
-                ->where('slug', 'about')
-                ->with([
-                    'translations' => function ($query) use ($locale, $fallback) {
-                        $query->select('id', 'page_id', 'locale', 'title', 'content')
-                              ->whereIn('locale', array_unique([$locale, $fallback]));
-                    }
-                ])
-                ->firstOrFail();
+       $payload = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($locale, $fallback) {
 
-            $translation = $page->translation($locale);
-            $content = AboutPageContent::decode($translation?->content);
+    $page = Page::query()
+        ->active()
+        ->where('slug', 'about')
+        ->with([
+            'translations' => function ($query) use ($locale, $fallback) {
+                $query->select('id', 'page_id', 'locale', 'title', 'content')
+                      ->whereIn('locale', array_unique([$locale, $fallback]));
+            }
+        ])
+        ->firstOrFail();
 
-            return [
-                'title' => $translation?->title,
-                'content' => $content,
-            ];
-        });
+    $translation = $page->translate($locale) ?? $page->translate($fallback);
+
+    return [
+        'title' => $translation?->title ?? 'About',
+        'content' => AboutPageContent::decode($translation?->content),
+    ];
+});
 
         return view('site.about.about', [
             'pageTitle' => $payload['title'] ?? 'About',

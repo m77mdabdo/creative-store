@@ -35,18 +35,27 @@ use App\Http\Controllers\Dashboard\PermissionController;
 use App\Http\Controllers\Dashboard\AuditLogController;
 use App\Http\Controllers\Dashboard\ErrorLogController;
 use App\Http\Controllers\Dashboard\BackupController;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 
 
 
 
 
-Route::prefix('dashboard')
-    ->as('dashboard.')
-    ->middleware(['auth', 'role:owner,admin,employee'])
-    ->group(function () {
+Route::group([
+    'prefix' => LaravelLocalization::setLocale() . '/dashboard',
+    'as' => 'dashboard.',
+    'middleware' => [
+        'web',
+        'localeSessionRedirect',
+        'localizationRedirect',
+        'localeViewPath',
+        'auth',
+        'role:owner,admin,employee'
+    ],
+], function () {
 
-        Route::get('/', [DashboardController::class, 'index'])->name('home');
+    Route::get('/', [DashboardController::class, 'index'])->name('home');
 
         /*
         |--------------------------------------------------------------------------

@@ -1,123 +1,233 @@
 @extends('site.app.layout')
 
 @section('content')
-<section class="bg0 p-t-75 p-b-85">
+
+<style>
+    .address-page {
+        padding-top: 70px;
+        padding-bottom: 90px;
+    }
+
+    .address-card {
+        border: 1px solid #eee;
+        border-radius: 24px;
+        padding: 35px;
+        background: #fff;
+        box-shadow: 0 12px 30px rgba(0,0,0,.05);
+    }
+
+    .address-title {
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 25px;
+    }
+
+    .address-input {
+        border-radius: 14px !important;
+        min-height: 48px;
+    }
+
+    .address-textarea {
+        border-radius: 14px !important;
+    }
+
+    .map-box {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid #eee;
+    }
+
+    .location-actions button {
+        border-radius: 999px;
+    }
+
+    .submit-btn {
+        min-height: 48px;
+        border-radius: 999px;
+        padding: 0 28px;
+    }
+
+    html[dir="rtl"] .address-card {
+        text-align: right;
+    }
+
+    html[dir="rtl"] .row {
+        direction: rtl;
+    }
+
+    html[dir="rtl"] .form-control,
+    html[dir="rtl"] textarea {
+        text-align: right;
+    }
+</style>
+
+<section class="address-page">
     <div class="container">
-        <h3 class="mtext-111 cl2 m-b-30">Add Address</h3>
 
-        @if ($errors->any())
-            <div class="alert alert-danger m-b-20">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        <div class="address-card">
 
-        <form action="{{ route('shipping.addresses.store') }}" method="POST">
-            @csrf
+            <h3 class="address-title">
+                {{ __('site.add_address') }}
+            </h3>
 
-            <div class="row">
-                <div class="col-md-6 m-b-20">
-                    <input type="text" name="label" class="form-control" placeholder="Label" value="{{ old('label') }}">
+            @if ($errors->any())
+                <div class="alert alert-danger m-b-20">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
+            @endif
 
-                <div class="col-md-6 m-b-20">
-                    <input type="text" name="full_name" class="form-control" placeholder="Full Name" value="{{ old('full_name') }}" required>
-                </div>
+            <form action="{{ route('shipping.addresses.store') }}" method="POST">
+                @csrf
 
-                <div class="col-md-6 m-b-20">
-                    <input type="text" name="phone" class="form-control" placeholder="Phone" value="{{ old('phone') }}" required>
-                </div>
+                <div class="row">
 
-                <div class="col-md-6 m-b-20">
-                    <input type="text" name="country" id="country" class="form-control" placeholder="Country" value="{{ old('country', 'Saudi Arabia') }}" required>
-                </div>
-
-                <div class="col-md-6 m-b-20">
-                    <input type="text" name="city" id="city" class="form-control" placeholder="City" value="{{ old('city') }}" required>
-                </div>
-
-                <div class="col-md-6 m-b-20">
-                    <input type="text" name="district" id="district" class="form-control" placeholder="District" value="{{ old('district') }}">
-                </div>
-
-                <div class="col-md-6 m-b-20">
-                    <input type="text" name="street" id="street" class="form-control" placeholder="Street" value="{{ old('street') }}">
-                </div>
-
-                <div class="col-md-3 m-b-20">
-                    <input type="text" name="building_no" class="form-control" placeholder="Building No" value="{{ old('building_no') }}">
-                </div>
-
-                <div class="col-md-3 m-b-20">
-                    <input type="text" name="apartment_no" class="form-control" placeholder="Apartment No" value="{{ old('apartment_no') }}">
-                </div>
-
-                <div class="col-md-6 m-b-20">
-                    <input type="text" name="postal_code" id="postal_code" class="form-control" placeholder="Postal Code" value="{{ old('postal_code') }}">
-                </div>
-
-                <div class="col-md-12 m-b-25">
-                    <div class="border rounded p-3">
-                        <div class="d-flex flex-wrap justify-content-between align-items-center m-b-15">
-                            <strong class="d-block m-b-10">Location</strong>
-                            <div class="d-flex gap-2 flex-wrap">
-                                <button type="button" id="use-current-location" class="btn btn-dark btn-sm">
-                                    Use My Current Location
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="m-b-15">
-                            <input type="text" id="location-search" class="form-control" placeholder="Search location, area, or street">
-                        </div>
-
-                        <div id="location-status" class="small text-muted m-b-15">
-                            Search for a place, or use your current location, then adjust the pin on the map.
-                        </div>
-
-                        <div id="map" style="height: 420px; border-radius: 12px; overflow: hidden;"></div>
-
-                        <div class="row m-t-15">
-                            <div class="col-md-6 m-b-15">
-                                <label class="form-label">Latitude</label>
-                                <input type="text" id="lat_display" class="form-control" readonly>
-                            </div>
-                            <div class="col-md-6 m-b-15">
-                                <label class="form-label">Longitude</label>
-                                <input type="text" id="lng_display" class="form-control" readonly>
-                            </div>
-                        </div>
-
-                        <input type="hidden" name="lat" id="lat" value="{{ old('lat') }}">
-                        <input type="hidden" name="lng" id="lng" value="{{ old('lng') }}">
+                    <div class="col-md-6 m-b-20">
+                        <input type="text" name="label" class="form-control address-input"
+                               placeholder="{{ __('site.label') }}"
+                               value="{{ old('label') }}">
                     </div>
-                </div>
 
-                <div class="col-md-12 m-b-20">
-                    <textarea name="notes" class="form-control" rows="4" placeholder="Notes">{{ old('notes') }}</textarea>
-                </div>
+                    <div class="col-md-6 m-b-20">
+                        <input type="text" name="full_name" class="form-control address-input"
+                               placeholder="{{ __('site.full_name') }}"
+                               value="{{ old('full_name') }}" required>
+                    </div>
 
-                <div class="col-md-12 m-b-20">
-                    <label>
-                        <input type="checkbox" name="is_default" value="1" {{ old('is_default') ? 'checked' : '' }}>
-                        Set as default address
-                    </label>
-                </div>
+                    <div class="col-md-6 m-b-20">
+                        <input type="text" name="phone" class="form-control address-input"
+                               placeholder="{{ __('site.phone') }}"
+                               value="{{ old('phone') }}" required>
+                    </div>
 
-                <div class="col-md-12">
-                    <button type="submit" class="btn btn-dark">Save Address</button>
+                    <div class="col-md-6 m-b-20">
+                        <input type="text" name="country" id="country"
+                               class="form-control address-input"
+                               placeholder="{{ __('site.country') }}"
+                               value="{{ old('country', __('site.default_country')) }}" required>
+                    </div>
+
+                    <div class="col-md-6 m-b-20">
+                        <input type="text" name="city" id="city"
+                               class="form-control address-input"
+                               placeholder="{{ __('site.city') }}"
+                               value="{{ old('city') }}" required>
+                    </div>
+
+                    <div class="col-md-6 m-b-20">
+                        <input type="text" name="district" id="district"
+                               class="form-control address-input"
+                               placeholder="{{ __('site.district') }}"
+                               value="{{ old('district') }}">
+                    </div>
+
+                    <div class="col-md-6 m-b-20">
+                        <input type="text" name="street" id="street"
+                               class="form-control address-input"
+                               placeholder="{{ __('site.street') }}"
+                               value="{{ old('street') }}">
+                    </div>
+
+                    <div class="col-md-3 m-b-20">
+                        <input type="text" name="building_no"
+                               class="form-control address-input"
+                               placeholder="{{ __('site.building_no') }}"
+                               value="{{ old('building_no') }}">
+                    </div>
+
+                    <div class="col-md-3 m-b-20">
+                        <input type="text" name="apartment_no"
+                               class="form-control address-input"
+                               placeholder="{{ __('site.apartment_no') }}"
+                               value="{{ old('apartment_no') }}">
+                    </div>
+
+                    <div class="col-md-6 m-b-20">
+                        <input type="text" name="postal_code" id="postal_code"
+                               class="form-control address-input"
+                               placeholder="{{ __('site.postal_code') }}"
+                               value="{{ old('postal_code') }}">
+                    </div>
+
+                    <div class="col-md-12 m-b-25">
+                        <div class="border rounded p-3 map-box">
+
+                            <div class="d-flex flex-wrap justify-content-between align-items-center m-b-15">
+                                <strong>{{ __('site.location') }}</strong>
+
+                                <div class="location-actions d-flex gap-2 flex-wrap">
+                                    <button type="button" id="use-current-location"
+                                            class="btn btn-dark btn-sm">
+                                        {{ __('site.use_my_location') }}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="m-b-15">
+                                <input type="text" id="location-search"
+                                       class="form-control address-input"
+                                       placeholder="{{ __('site.search_location') }}">
+                            </div>
+
+                            <div id="location-status" class="small text-muted m-b-15">
+                                {{ __('site.location_help') }}
+                            </div>
+
+                            <div id="map" style="height: 420px;"></div>
+
+                            <div class="row m-t-15">
+                                <div class="col-md-6 m-b-15">
+                                    <label>{{ __('site.latitude') }}</label>
+                                    <input type="text" id="lat_display" class="form-control" readonly>
+                                </div>
+
+                                <div class="col-md-6 m-b-15">
+                                    <label>{{ __('site.longitude') }}</label>
+                                    <input type="text" id="lng_display" class="form-control" readonly>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="lat" id="lat" value="{{ old('lat') }}">
+                            <input type="hidden" name="lng" id="lng" value="{{ old('lng') }}">
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 m-b-20">
+                        <textarea name="notes"
+                                  class="form-control address-textarea"
+                                  rows="4"
+                                  placeholder="{{ __('site.notes') }}">{{ old('notes') }}</textarea>
+                    </div>
+
+                    <div class="col-md-12 m-b-25">
+                        <label>
+                            <input type="checkbox" name="is_default" value="1"
+                                   {{ old('is_default') ? 'checked' : '' }}>
+                            {{ __('site.set_default_address') }}
+                        </label>
+                    </div>
+
+                    <div class="col-md-12 text-center">
+                        <button type="submit"
+                                class="submit-btn flex-c-m stext-101 cl0 bg3 bor14 hov-btn3 trans-04">
+                            {{ __('site.save_address') }}
+                        </button>
+                    </div>
+
                 </div>
-            </div>
-        </form>
+            </form>
+
+        </div>
+
     </div>
 </section>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const latInput = document.getElementById('lat');
@@ -155,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function reverseGeocode(lat, lng) {
-        statusBox.innerHTML = 'Fetching address details...';
+        statusBox.innerHTML = @json(__('site.fetching_address_details'));
 
         try {
             const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`);
@@ -164,25 +274,25 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data && data.address) {
                 const address = data.address;
 
-                countryInput.value = address.country || countryInput.value || 'Saudi Arabia';
+                countryInput.value = address.country || countryInput.value || @json(__('site.default_country'));
                 cityInput.value = address.city || address.town || address.state_district || address.state || cityInput.value;
                 districtInput.value = address.suburb || address.neighbourhood || address.city_district || districtInput.value;
                 streetInput.value = address.road || streetInput.value;
                 postalCodeInput.value = address.postcode || postalCodeInput.value;
 
-                statusBox.innerHTML = '<span class="text-success">Location selected successfully.</span>';
+                statusBox.innerHTML = '<span class="text-success">' + @json(__('site.location_selected_success')) + '</span>';
             } else {
-                statusBox.innerHTML = '<span class="text-warning">Location selected, but no address details were found.</span>';
+                statusBox.innerHTML = '<span class="text-warning">' + @json(__('site.location_selected_no_address')) + '</span>';
             }
         } catch (error) {
-            statusBox.innerHTML = '<span class="text-danger">Could not load address details from the map.</span>';
+            statusBox.innerHTML = '<span class="text-danger">' + @json(__('site.location_load_failed')) + '</span>';
         }
     }
 
     async function searchLocation(query) {
         if (!query) return;
 
-        statusBox.innerHTML = 'Searching for location...';
+        statusBox.innerHTML = @json(__('site.searching_for_location'));
 
         try {
             const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(query)}`);
@@ -198,14 +308,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 updateLatLng(lat, lng);
                 await reverseGeocode(lat, lng);
             } else {
-                statusBox.innerHTML = '<span class="text-danger">No matching location found.</span>';
+                statusBox.innerHTML = '<span class="text-danger">' + @json(__('site.no_matching_location')) + '</span>';
             }
         } catch (error) {
-            statusBox.innerHTML = '<span class="text-danger">Search failed. Please try again.</span>';
+            statusBox.innerHTML = '<span class="text-danger">' + @json(__('site.location_search_failed')) + '</span>';
         }
     }
 
-    marker.on('dragend', async function (e) {
+    marker.on('dragend', async function () {
         const position = marker.getLatLng();
         updateLatLng(position.lat, position.lng);
         await reverseGeocode(position.lat, position.lng);
@@ -222,11 +332,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('use-current-location').addEventListener('click', function () {
         if (!navigator.geolocation) {
-            statusBox.innerHTML = '<span class="text-danger">Geolocation is not supported by your browser.</span>';
+            statusBox.innerHTML = '<span class="text-danger">' + @json(__('site.geolocation_not_supported')) + '</span>';
             return;
         }
 
-        statusBox.innerHTML = 'Detecting your current location...';
+        statusBox.innerHTML = @json(__('site.detecting_current_location'));
 
         navigator.geolocation.getCurrentPosition(
             async function (position) {
@@ -239,14 +349,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 await reverseGeocode(lat, lng);
             },
             function (error) {
-                let message = 'Unable to get your current location.';
+                let message = @json(__('site.unable_get_current_location'));
 
                 if (error.code === error.PERMISSION_DENIED) {
-                    message = 'Location permission was denied.';
+                    message = @json(__('site.location_permission_denied'));
                 } else if (error.code === error.POSITION_UNAVAILABLE) {
-                    message = 'Location information is unavailable.';
+                    message = @json(__('site.location_information_unavailable'));
                 } else if (error.code === error.TIMEOUT) {
-                    message = 'Location request timed out.';
+                    message = @json(__('site.location_request_timeout'));
                 }
 
                 statusBox.innerHTML = `<span class="text-danger">${message}</span>`;
@@ -274,4 +384,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 300);
 });
 </script>
+
 @endsection

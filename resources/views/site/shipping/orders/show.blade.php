@@ -4,27 +4,27 @@
     $currency = $order->currency ?? 'SAR';
 
     $orderStatusMap = [
-        'pending' => ['label' => 'Pending', 'class' => 'warning', 'row_class' => ''],
-        'processing' => ['label' => 'Processing', 'class' => 'info', 'row_class' => ''],
-        'completed' => ['label' => 'Completed', 'class' => 'success', 'row_class' => ''],
-        'cancelled' => ['label' => 'Cancelled', 'class' => 'danger', 'row_class' => 'danger-row'],
+        'pending' => ['label' => __('site.status_pending'), 'class' => 'warning', 'row_class' => ''],
+        'processing' => ['label' => __('site.status_processing'), 'class' => 'info', 'row_class' => ''],
+        'completed' => ['label' => __('site.status_completed'), 'class' => 'success', 'row_class' => ''],
+        'cancelled' => ['label' => __('site.status_cancelled'), 'class' => 'danger', 'row_class' => 'danger-row'],
     ];
 
     $paymentStatusMap = [
-        'pending' => ['label' => 'Pending', 'class' => 'secondary', 'row_class' => ''],
-        'paid' => ['label' => 'Paid', 'class' => 'success', 'row_class' => ''],
-        'failed' => ['label' => 'Failed', 'class' => 'danger', 'row_class' => 'danger-row'],
-        'refund_pending' => ['label' => 'Refund Pending', 'class' => 'danger', 'row_class' => 'danger-row'],
-        'partially_refunded' => ['label' => 'Partially Refunded', 'class' => 'warning', 'row_class' => ''],
-        'refunded' => ['label' => 'Refunded', 'class' => 'dark', 'row_class' => ''],
+        'pending' => ['label' => __('site.status_pending'), 'class' => 'secondary', 'row_class' => ''],
+        'paid' => ['label' => __('site.status_paid'), 'class' => 'success', 'row_class' => ''],
+        'failed' => ['label' => __('site.status_failed'), 'class' => 'danger', 'row_class' => 'danger-row'],
+        'refund_pending' => ['label' => __('site.status_refund_pending'), 'class' => 'danger', 'row_class' => 'danger-row'],
+        'partially_refunded' => ['label' => __('site.status_partially_refunded'), 'class' => 'warning', 'row_class' => ''],
+        'refunded' => ['label' => __('site.status_refunded'), 'class' => 'dark', 'row_class' => ''],
     ];
 
     $shippingStatusMap = [
-        'pending' => ['label' => 'Pending', 'class' => 'secondary', 'row_class' => ''],
-        'processing' => ['label' => 'Processing', 'class' => 'info', 'row_class' => ''],
-        'shipped' => ['label' => 'Shipped', 'class' => 'primary', 'row_class' => ''],
-        'delivered' => ['label' => 'Delivered', 'class' => 'success', 'row_class' => ''],
-        'cancelled' => ['label' => 'Cancelled', 'class' => 'danger', 'row_class' => 'danger-row'],
+        'pending' => ['label' => __('site.status_pending'), 'class' => 'secondary', 'row_class' => ''],
+        'processing' => ['label' => __('site.status_processing'), 'class' => 'info', 'row_class' => ''],
+        'shipped' => ['label' => __('site.status_shipped'), 'class' => 'primary', 'row_class' => ''],
+        'delivered' => ['label' => __('site.status_delivered'), 'class' => 'success', 'row_class' => ''],
+        'cancelled' => ['label' => __('site.status_cancelled'), 'class' => 'danger', 'row_class' => 'danger-row'],
     ];
 
     $orderStatus = $orderStatusMap[$order->status] ?? ['label' => ucfirst($order->status), 'class' => 'secondary', 'row_class' => ''];
@@ -64,17 +64,17 @@
         <div class="page-header-box m-b-25">
             <div class="row align-items-center">
                 <div class="col-lg-8 m-b-15">
-                    <div class="page-mini-title">Order Details</div>
-                    <h2 class="page-main-title">Order #{{ $order->order_number }}</h2>
+                    <div class="page-mini-title">{{ __('site.order_details') }}</div>
+                    <h2 class="page-main-title">{{ __('site.order_number') }} #{{ $order->order_number }}</h2>
                     <div class="page-sub-title">
-                        Placed on {{ $placedAt ?? '-' }}
+                        {{ __('site.placed_on') }} {{ $placedAt ?? '-' }}
                     </div>
                 </div>
 
                 <div class="col-lg-4 text-lg-right">
                     <a href="{{ route('shipping.orders.invoice', $order->id) }}" class="main-action-btn dark-btn">
                         <i class="fas fa-file-invoice m-r-8"></i>
-                        Download Invoice
+                        {{ __('site.download_invoice') }}
                     </a>
                 </div>
             </div>
@@ -85,27 +85,27 @@
 
                 <div class="table-box m-b-24">
                     <div class="table-box-head">
-                        <h4>Order Summary</h4>
+                        <h4>{{ __('site.order_summary') }}</h4>
                     </div>
                     <div class="table-responsive">
                         <table class="table details-grid-table mb-0">
                             <tbody>
                                 <tr>
-                                    <th>Order Number</th>
+                                    <th>{{ __('site.order_number') }}</th>
                                     <td>{{ $order->order_number }}</td>
-                                    <th>Placed At</th>
+                                    <th>{{ __('site.placed_at') }}</th>
                                     <td>{{ $placedAt ?? '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Payment Method</th>
+                                    <th>{{ __('site.payment_method') }}</th>
                                     <td>{{ strtoupper($order->payment_method ?? '-') }}</td>
-                                    <th>Shipping Method</th>
+                                    <th>{{ __('site.shipping_method') }}</th>
                                     <td>{{ optional($order->shippingMethod)->name ?? '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Currency</th>
+                                    <th>{{ __('site.currency') }}</th>
                                     <td>{{ $currency }}</td>
-                                    <th>Total</th>
+                                    <th>{{ __('site.total') }}</th>
                                     <td>{{ number_format((float) $order->total, 2) }} {{ $currency }}</td>
                                 </tr>
                             </tbody>
@@ -115,13 +115,13 @@
 
                 <div class="table-box m-b-24">
                     <div class="table-box-head">
-                        <h4>Status Details</h4>
+                        <h4>{{ __('site.status_details') }}</h4>
                     </div>
                     <div class="table-responsive">
                         <table class="table details-grid-table mb-0">
                             <tbody>
                                 <tr class="{{ $orderStatus['row_class'] }}">
-                                    <th>Order Status</th>
+                                    <th>{{ __('site.order_status') }}</th>
                                     <td colspan="3">
                                         <span class="badge badge-{{ $orderStatus['class'] }} custom-badge">
                                             {{ $orderStatus['label'] }}
@@ -130,7 +130,7 @@
                                 </tr>
 
                                 <tr class="{{ $paymentStatus['row_class'] }}">
-                                    <th>Payment Status</th>
+                                    <th>{{ __('site.payment_status') }}</th>
                                     <td colspan="3">
                                         <span class="badge badge-{{ $paymentStatus['class'] }} custom-badge">
                                             {{ $paymentStatus['label'] }}
@@ -139,7 +139,7 @@
                                 </tr>
 
                                 <tr class="{{ $shippingStatus['row_class'] }}">
-                                    <th>Shipping Status</th>
+                                    <th>{{ __('site.shipping_status') }}</th>
                                     <td colspan="3">
                                         <span class="badge badge-{{ $shippingStatus['class'] }} custom-badge">
                                             {{ $shippingStatus['label'] }}
@@ -149,8 +149,8 @@
 
                                 @if($order->status === 'cancelled')
                                     <tr class="danger-row">
-                                        <th>Cancellation Reason</th>
-                                        <td colspan="3">{{ $order->cancellation_reason ?: 'Order was cancelled.' }}</td>
+                                        <th>{{ __('site.cancellation_reason') }}</th>
+                                        <td colspan="3">{{ $order->cancellation_reason ?: __('site.order_was_cancelled') }}</td>
                                     </tr>
                                 @endif
                             </tbody>
@@ -160,17 +160,17 @@
 
                 <div class="table-box m-b-24">
                     <div class="table-box-head">
-                        <h4>Order Items</h4>
+                        <h4>{{ __('site.order_items') }}</h4>
                     </div>
                     <div class="table-responsive">
                         <table class="table items-main-table mb-0">
                             <thead>
                                 <tr>
-                                    <th style="width: 28%;">Product</th>
-                                    <th>Details</th>
-                                    <th class="text-center" style="width: 10%;">Qty</th>
-                                    <th class="text-right" style="width: 16%;">Unit Price</th>
-                                    <th class="text-right" style="width: 18%;">Line Total</th>
+                                    <th style="width: 28%;">{{ __('site.product') }}</th>
+                                    <th>{{ __('site.details') }}</th>
+                                    <th class="text-center" style="width: 10%;">{{ __('site.quantity') }}</th>
+                                    <th class="text-right" style="width: 16%;">{{ __('site.unit_price') }}</th>
+                                    <th class="text-right" style="width: 18%;">{{ __('site.line_total') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -207,21 +207,21 @@
 
                                         <td class="product-detail-cell">
                                             @if($item->sku_snapshot)
-                                                <div><span>SKU:</span> {{ $item->sku_snapshot }}</div>
+                                                <div><span>{{ __('site.sku') }}:</span> {{ $item->sku_snapshot }}</div>
                                             @endif
 
                                             @if($item->color)
-                                                <div><span>Color:</span> {{ $item->color }}</div>
+                                                <div><span>{{ __('site.color') }}:</span> {{ $item->color }}</div>
                                             @endif
 
                                             @if($item->size)
-                                                <div><span>Size:</span> {{ $item->size }}</div>
+                                                <div><span>{{ __('site.modal_size') }}:</span> {{ $item->size }}</div>
                                             @endif
 
                                             @if($displayOptions->count())
                                                 @foreach($displayOptions as $option)
                                                     <div>
-                                                        <span>{{ $option['name'] ?? 'Option' }}:</span>
+                                                        <span>{{ $option['name'] ?? __('site.option') }}:</span>
                                                         {{ $option['value'] ?? '-' }}
                                                     </div>
                                                 @endforeach
@@ -234,7 +234,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="empty-row text-center">No items found for this order.</td>
+                                        <td colspan="5" class="empty-row text-center">{{ __('site.no_items_in_order') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -244,7 +244,7 @@
 
                 <div class="table-box m-b-24">
                     <div class="table-box-head">
-                        <h4>Shipment Details</h4>
+                        <h4>{{ __('site.shipment_details') }}</h4>
                     </div>
 
                     @if($order->shipment)
@@ -252,7 +252,7 @@
                             <table class="table details-grid-table mb-0">
                                 <tbody>
                                     <tr class="{{ $shipmentStatus['row_class'] }}">
-                                        <th>Shipment Status</th>
+                                        <th>{{ __('site.shipment_status') }}</th>
                                         <td colspan="3">
                                             <span class="badge badge-{{ $shipmentStatus['class'] }} custom-badge">
                                                 {{ $shipmentStatus['label'] }}
@@ -260,19 +260,19 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>Carrier</th>
+                                        <th>{{ __('site.carrier') }}</th>
                                         <td colspan="3">{{ $order->shipment->carrier ?: '-' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Tracking Number</th>
-                                        <td colspan="3">{{ $order->shipment->tracking_number ?? 'Not available yet' }}</td>
+                                        <th>{{ __('site.tracking_number') }}</th>
+                                        <td colspan="3">{{ $order->shipment->tracking_number ?? __('site.not_available_yet') }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Current Location</th>
+                                        <th>{{ __('site.current_location') }}</th>
                                         <td colspan="3">{{ $order->shipment->current_location ?? '-' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Carrier Status</th>
+                                        <th>{{ __('site.carrier_status') }}</th>
                                         <td colspan="3">{{ $order->shipment->carrier_status ?? '-' }}</td>
                                     </tr>
                                 </tbody>
@@ -284,12 +284,12 @@
                                 <a href="{{ route('tracking.search-form', ['tracking_number' => $order->shipment->tracking_number]) }}"
                                    class="main-action-btn light-btn">
                                     <i class="fas fa-map-marker-alt m-r-8"></i>
-                                    Track Shipment
+                                    {{ __('site.track_shipment') }}
                                 </a>
                             </div>
                         @endif
                     @else
-                        <div class="empty-box-text">Shipment not created yet.</div>
+                        <div class="empty-box-text">{{ __('site.no_shipment') }}</div>
                     @endif
                 </div>
             </div>
@@ -299,7 +299,7 @@
 
                     <div class="table-box m-b-24">
                         <div class="table-box-head">
-                            <h4>Shipping Address</h4>
+                            <h4>{{ __('site.shipping_address') }}</h4>
                         </div>
 
                         @if($order->addressSnapshot)
@@ -307,15 +307,15 @@
                                 <table class="table details-grid-table mb-0">
                                     <tbody>
                                         <tr>
-                                            <th>Full Name</th>
+                                            <th>{{ __('site.full_name') }}</th>
                                             <td>{{ $order->addressSnapshot->full_name }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Phone</th>
+                                            <th>{{ __('site.phone') }}</th>
                                             <td>{{ $order->addressSnapshot->phone }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Country / City</th>
+                                            <th>{{ __('site.country_city') }}</th>
                                             <td>
                                                 {{ $order->addressSnapshot->country }}
                                                 -
@@ -326,34 +326,34 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th>Street</th>
+                                            <th>{{ __('site.street') }}</th>
                                             <td>{{ $order->addressSnapshot->street }}</td>
                                         </tr>
 
                                         @if($order->addressSnapshot->building_no)
                                             <tr>
-                                                <th>Building No</th>
+                                                <th>{{ __('site.building_no') }}</th>
                                                 <td>{{ $order->addressSnapshot->building_no }}</td>
                                             </tr>
                                         @endif
 
                                         @if($order->addressSnapshot->apartment_no)
                                             <tr>
-                                                <th>Apartment No</th>
+                                                <th>{{ __('site.apartment_no') }}</th>
                                                 <td>{{ $order->addressSnapshot->apartment_no }}</td>
                                             </tr>
                                         @endif
 
                                         @if($order->addressSnapshot->postal_code)
                                             <tr>
-                                                <th>Postal Code</th>
+                                                <th>{{ __('site.postal_code') }}</th>
                                                 <td>{{ $order->addressSnapshot->postal_code }}</td>
                                             </tr>
                                         @endif
 
                                         @if($order->addressSnapshot->notes)
                                             <tr>
-                                                <th>Notes</th>
+                                                <th>{{ __('site.notes') }}</th>
                                                 <td>{{ $order->addressSnapshot->notes }}</td>
                                             </tr>
                                         @endif
@@ -361,41 +361,41 @@
                                 </table>
                             </div>
                         @else
-                            <div class="empty-box-text">No shipping address found.</div>
+                            <div class="empty-box-text">{{ __('site.no_address_found') }}</div>
                         @endif
                     </div>
 
                     <div class="table-box m-b-24">
                         <div class="table-box-head">
-                            <h4>Order Totals</h4>
+                            <h4>{{ __('site.order_totals') }}</h4>
                         </div>
                         <div class="table-responsive">
                             <table class="table details-grid-table totals-table mb-0">
                                 <tbody>
                                     <tr>
-                                        <th>Subtotal</th>
+                                        <th>{{ __('site.subtotal') }}</th>
                                         <td class="text-right">{{ number_format((float) $order->subtotal, 2) }} {{ $currency }}</td>
                                     </tr>
 
                                     @if((float) $order->discount > 0)
                                         <tr class="danger-row-soft">
-                                            <th>Discount</th>
+                                            <th>{{ __('site.discount') }}</th>
                                             <td class="text-right">- {{ number_format((float) $order->discount, 2) }} {{ $currency }}</td>
                                         </tr>
                                     @endif
 
                                     <tr>
-                                        <th>Shipping Fee</th>
+                                        <th>{{ __('site.shipping_fee') }}</th>
                                         <td class="text-right">{{ number_format((float) $order->shipping_fee, 2) }} {{ $currency }}</td>
                                     </tr>
 
                                     <tr>
-                                        <th>VAT</th>
+                                        <th>{{ __('site.vat') }}</th>
                                         <td class="text-right">{{ number_format((float) $order->tax_total, 2) }} {{ $currency }}</td>
                                     </tr>
 
                                     <tr class="grand-total-row">
-                                        <th>Total</th>
+                                        <th>{{ __('site.total') }}</th>
                                         <td class="text-right">{{ number_format((float) $order->total, 2) }} {{ $currency }}</td>
                                     </tr>
                                 </tbody>
@@ -405,12 +405,12 @@
 
                     <div class="table-box">
                         <div class="table-box-head">
-                            <h4>Actions</h4>
+                            <h4>{{ __('site.actions') }}</h4>
                         </div>
                         <div class="actions-panel">
                             <a href="{{ route('shipping.orders.invoice', $order->id) }}" class="main-action-btn dark-btn w-100">
                                 <i class="fas fa-file-invoice m-r-8"></i>
-                                Download Invoice
+                                {{ __('site.download_invoice') }}
                             </a>
 
                             @if($canCancel)
@@ -418,22 +418,22 @@
                                     @csrf
                                     <button type="submit"
                                             class="main-action-btn danger-btn w-100"
-                                            onclick="return confirm('Are you sure you want to cancel this order?')">
+                                            onclick="return confirm('{{ __('site.cancel_order_confirm') }}')">
                                         <i class="fas fa-times m-r-8"></i>
-                                        Cancel Order
+                                        {{ __('site.cancel_order') }}
                                     </button>
                                 </form>
                             @endif
 
                             @if($cancelExpired)
                                 <div class="cancel-note-box">
-                                    Order can no longer be cancelled after 3 hours.
+                                    {{ __('site.cancel_expired') }}
                                 </div>
                             @endif
 
                             @if($order->status === 'cancelled')
                                 <div class="cancel-note-box strong-red">
-                                    This order has been cancelled.
+                                    {{ __('site.order_cancelled') }}
                                 </div>
                             @endif
                         </div>

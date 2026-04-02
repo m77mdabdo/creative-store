@@ -1,76 +1,80 @@
-<div class="wrap-menu-desktop">
-    <nav class="limiter-menu-desktop container">
+@php
+    use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
-        <!-- Logo desktop -->
-        <a href="{{ url('/') }}" class="logo">
-            <img src="{{ asset('cozastore/images/icons/logo-01.png') }}" alt="IMG-LOGO">
+    $cartCount = collect(session('cart', []))->sum('quantity');
+
+    $wishlistCount = 0;
+    if (auth()->check()) {
+        $wishlistCount = \App\Models\WishlistItem::whereHas('wishlist', function ($q) {
+            $q->where('user_id', auth()->id());
+        })->count();
+    }
+
+    $homeUrl = LaravelLocalization::localizeUrl(route('home', [], false));
+    $productsUrl = LaravelLocalization::localizeUrl(route('products.index', [], false));
+    $blogUrl = LaravelLocalization::getLocalizedURL(app()->getLocale(), '/blog');
+    $aboutUrl = LaravelLocalization::getLocalizedURL(app()->getLocale(), '/about');
+    $contactUrl = LaravelLocalization::getLocalizedURL(app()->getLocale(), '/contact');
+@endphp
+
+<div class="wrap-menu-desktop custom-navbar">
+    <nav class="container navbar-inner">
+
+        <a href="{{ $homeUrl }}" class="site-brand">
+            <img src="{{ asset('cozastore/images/icons/logo-01.png') }}" alt="Creative Store Logo">
+            <span class="brand-text">{{ config('app.name', 'Creative Store') }}</span>
         </a>
 
-        <!-- Menu desktop -->
         <div class="menu-desktop">
             <ul class="main-menu">
-                <li class="{{ request()->is('/') ? 'active-menu' : '' }}">
-                    <a href="{{ url('/') }}">Home</a>
+                <li class="{{ request()->is(app()->getLocale()) || request()->is(app()->getLocale() . '/') ? 'active-menu' : '' }}">
+                    <a href="{{ $homeUrl }}">{{ __('site.home') }}</a>
                 </li>
 
-                <li class="{{ request()->is('products*') ? 'active-menu' : '' }}">
-                    <a href="{{ url('/products') }}">Shop</a>
+                <li class="{{ request()->is(app()->getLocale() . '/products*') ? 'active-menu' : '' }}">
+                    <a href="{{ $productsUrl }}">{{ __('site.shop') }}</a>
                 </li>
 
-                <li class="{{ request()->is('blog*') ? 'active-menu' : '' }}">
-                    <a href="{{ url('/blog') }}">Blog</a>
+                <li class="{{ request()->is(app()->getLocale() . '/blog*') ? 'active-menu' : '' }}">
+                    <a href="{{ $blogUrl }}">{{ __('site.blog') }}</a>
                 </li>
 
-                <li class="{{ request()->is('about') ? 'active-menu' : '' }}">
-                    <a href="{{ url('/about') }}">About</a>
+                <li class="{{ request()->is(app()->getLocale() . '/about') ? 'active-menu' : '' }}">
+                    <a href="{{ $aboutUrl }}">{{ __('site.about') }}</a>
                 </li>
 
-                <li class="{{ request()->is('contact') ? 'active-menu' : '' }}">
-                    <a href="{{ url('/contact') }}">Contact</a>
+                <li class="{{ request()->is(app()->getLocale() . '/contact') ? 'active-menu' : '' }}">
+                    <a href="{{ $contactUrl }}">{{ __('site.contact') }}</a>
                 </li>
             </ul>
         </div>
 
-        {{-- ================= ICONS (نسخة واحدة فقط) ================= --}}
-        @php
-            $cart = session()->get('cart', []);
-            $cartCount = collect($cart)->sum('quantity');
-        @endphp
-
-        <div class="wrap-icon-header flex-w flex-r-m">
-
-            {{-- Search --}}
-            <div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 js-show-modal-search">
+        <div class="site-actions">
+            <button type="button"
+                    class="icon-btn js-show-modal-search"
+                    aria-label="{{ __('site.search') }}">
                 <i class="zmdi zmdi-search"></i>
-            </div>
+            </button>
 
-            {{-- Cart --}}
-            <a href="{{ route('cart.index') }}">
-                @php
-                    $cartCount = collect(session('cart', []))->sum('quantity');
-                @endphp
-
-                <div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti js-show-cart"
-                    data-notify="{{ $cartCount }}">
-                    <i class="zmdi zmdi-shopping-cart"></i>
-                </div>
+            <a href="{{ route('cart.index') }}"
+               class="icon-btn icon-header-noti"
+               data-notify="{{ $cartCount }}"
+               aria-label="{{ __('site.your_cart') }}">
+                <i class="zmdi zmdi-shopping-cart"></i>
             </a>
-
-            @php
-                $wishlistCount = 0;
-
-                if (auth()->check()) {
-                    $wishlistCount = \App\Models\WishlistItem::whereHas('wishlist', function ($query) {
-                        $query->where('user_id', auth()->id());
-                    })->count();
-                }
-            @endphp
 
             <a href="{{ route('wishlist.index') }}"
-                class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti"
-                data-notify="{{ $wishlistCount }}">
+               class="icon-btn icon-header-noti"
+               data-notify="{{ $wishlistCount }}"
+               aria-label="Wishlist">
                 <i class="zmdi zmdi-favorite-outline"></i>
             </a>
+
+            @auth
+                <a href="{{ route('myaccount') }}" class="user-link">
+                    {{ auth()->user()->name }}
+                </a>
+            @endauth
         </div>
 
     </nav>

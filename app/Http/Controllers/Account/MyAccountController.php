@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Account;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Account\UpdateProfileRequest;
 use App\Http\Requests\Account\UpdatePasswordRequest;
+use App\Http\Requests\Account\UpdateProfileRequest;
 use App\Models\Order;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class MyAccountController extends Controller
 {
@@ -32,22 +32,22 @@ class MyAccountController extends Controller
         $user->name = $request->name;
         $user->save();
 
-        return back()->with('success_profile', 'Name updated successfully.');
+        return back()->with('success_profile', __('account.name_updated_successfully'));
     }
 
     public function updatePassword(UpdatePasswordRequest $request)
     {
         $user = $request->user();
 
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return back()->withErrors([
-                'current_password' => 'Current password is incorrect.',
+                'current_password' => __('account.current_password_incorrect'),
             ]);
         }
 
         $user->password = Hash::make($request->password);
         $user->save();
 
-        return back()->with('success_password', 'Password updated successfully.');
+        return back()->with('success_password', __('account.password_updated_successfully'));
     }
 }

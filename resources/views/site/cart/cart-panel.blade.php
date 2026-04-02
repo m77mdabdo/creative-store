@@ -9,11 +9,12 @@
         font-size: 22px;
         color: #e74c3c;
         cursor: pointer;
-        transition: 0.3s;
+        transition: all .25s ease;
     }
 
     .remove-cart-btn:hover {
         color: #111;
+        transform: scale(1.05);
     }
 
     .column-6 {
@@ -31,15 +32,16 @@
 
     .cart-summary-card {
         border-radius: 16px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
         background: #fff;
     }
 
     .cart-product-name {
-        font-weight: 500;
+        font-weight: 600;
         color: #222;
         text-decoration: none;
-        transition: 0.3s;
+        transition: all .25s ease;
+        display: inline-block;
     }
 
     .cart-product-name:hover {
@@ -49,12 +51,18 @@
     .cart-meta {
         font-size: 13px;
         color: #888;
-        margin-top: 4px;
-        line-height: 1.8;
+        margin-top: 6px;
+        line-height: 1.9;
+    }
+
+    .cart-option-row {
+        display: block;
+        margin-top: 2px;
     }
 
     .coupon-box {
         border-radius: 14px;
+        background: #fff;
     }
 
     .empty-cart-box {
@@ -68,7 +76,7 @@
         height: 45px;
         border: none;
         background: #f5f5f5;
-        transition: 0.3s;
+        transition: all .25s ease;
     }
 
     .qty-btn:hover {
@@ -103,14 +111,73 @@
         margin-bottom: 8px;
     }
 
-    .cart-option-row {
-        display: block;
-        margin-top: 2px;
+    .wrap-table-shopping-cart {
+        border-radius: 16px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    }
+
+    .table-shopping-cart {
+        background: #fff;
+    }
+
+    .table-shopping-cart .table_head th {
+        background: #fafafa;
+        font-weight: 700;
+    }
+
+    .table-shopping-cart .table_row td {
+        vertical-align: middle;
+    }
+
+    .how-itemcart1 {
+        border-radius: 12px;
+        overflow: hidden;
+        background: #f8f8f8;
+    }
+
+    .how-itemcart1 img {
+        object-fit: cover;
+    }
+
+    html[dir="rtl"] .table-shopping-cart th,
+    html[dir="rtl"] .table-shopping-cart td {
+        text-align: right;
+    }
+
+    html[dir="rtl"] .cart-product-name,
+    html[dir="rtl"] .cart-meta,
+    html[dir="rtl"] .cart-card-head,
+    html[dir="rtl"] .cart-summary-card,
+    html[dir="rtl"] .empty-cart-box {
+        text-align: right;
+    }
+
+    html[dir="rtl"] .column-1,
+    html[dir="rtl"] .column-4,
+    html[dir="rtl"] .column-5,
+    html[dir="rtl"] .column-6 {
+        text-align: center;
+    }
+
+    html[dir="rtl"] .coupon-active-badge {
+        margin-right: 0;
+        margin-left: 8px;
+    }
+
+    html[dir="rtl"] .wrap-num-product {
+        margin-left: 10px !important;
+        margin-right: auto !important;
     }
 
     @media (max-width: 991px) {
         .cart-page-title {
             align-items: flex-start;
+        }
+
+        .wrap-table-shopping-cart {
+            overflow-x: auto;
         }
     }
 </style>
@@ -149,17 +216,18 @@
 
         <div class="cart-page-title p-b-30">
             <div>
-                <h3 class="ltext-103 cl5 m-b-5">Shopping Cart</h3>
+                <h3 class="ltext-103 cl5 m-b-5">{{ __('site.your_cart') }}</h3>
                 <p class="stext-115 cl6">
-                    Review your selected products and continue to checkout.
+                    {{ __('site.review_cart_message') }}
                 </p>
             </div>
 
             @if($items->count())
-                <form action="{{ route('cart.clear') }}" method="POST" onsubmit="return confirm('Clear all cart items?')">
+                <form action="{{ route('cart.clear') }}" method="POST"
+                      onsubmit="return confirm('{{ __('site.clear_cart_confirm') }}')">
                     @csrf
                     <button type="submit" class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04">
-                        Clear Cart
+                        {{ __('site.clear_cart') }}
                     </button>
                 </form>
             @endif
@@ -173,17 +241,17 @@
                         <div class="wrap-table-shopping-cart bor10">
                             <table class="table-shopping-cart">
                                 <tr class="table_head">
-                                    <th class="column-1">Product</th>
-                                    <th class="column-2">Details</th>
-                                    <th class="column-3">Price</th>
-                                    <th class="column-4">Quantity</th>
-                                    <th class="column-5">Total</th>
-                                    <th class="column-6">Remove</th>
+                                    <th class="column-1">{{ __('site.product') }}</th>
+                                    <th class="column-2">{{ __('site.details') }}</th>
+                                    <th class="column-3">{{ __('site.price') }}</th>
+                                    <th class="column-4">{{ __('site.quantity') }}</th>
+                                    <th class="column-5">{{ __('site.total') }}</th>
+                                    <th class="column-6">{{ __('site.remove') }}</th>
                                 </tr>
 
                                 @foreach($items as $key => $item)
                                     @php
-                                        $name = $item['name'] ?? 'Product';
+                                        $name = $item['name'] ?? __('site.product');
                                         $qty = (int) ($item['quantity'] ?? 1);
                                         $price = (float) ($item['price'] ?? 0);
                                         $image = $item['image'] ?? null;
@@ -244,26 +312,26 @@
                                             <div class="cart-meta">
                                                 @if($sku)
                                                     <span class="cart-option-row">
-                                                        SKU: {{ $sku }}
+                                                        {{ __('site.sku') }}: {{ $sku }}
                                                     </span>
                                                 @endif
 
                                                 @if(!empty($item['color']))
                                                     <span class="cart-option-row">
-                                                        Color: {{ $item['color'] }}
+                                                        {{ __('site.color') }}: {{ $item['color'] }}
                                                     </span>
                                                 @endif
 
                                                 @if(!empty($item['size']))
                                                     <span class="cart-option-row">
-                                                        Size: {{ $item['size'] }}
+                                                        {{ __('site.modal_size') }}: {{ $item['size'] }}
                                                     </span>
                                                 @endif
 
                                                 @if($displayOptions->count())
                                                     @foreach($displayOptions as $option)
                                                         <span class="cart-option-row">
-                                                            {{ $option['name'] ?? 'Option' }}:
+                                                            {{ $option['name'] ?? __('site.option') }}:
                                                             {{ $option['value'] ?? '-' }}
                                                         </span>
                                                     @endforeach
@@ -305,7 +373,7 @@
                                                 <button type="submit"
                                                     class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer"
                                                     style="height: 45px;">
-                                                    Update
+                                                    {{ __('site.update') }}
                                                 </button>
                                             </form>
                                         </td>
@@ -316,11 +384,11 @@
 
                                         <td class="column-6">
                                             <form action="{{ route('cart.remove', ['key' => $key]) }}" method="POST"
-                                                onsubmit="return confirm('Remove this item?')">
+                                                onsubmit="return confirm('{{ __('site.remove_item_confirm') }}')">
                                                 @csrf
                                                 @method('DELETE')
 
-                                                <button type="submit" class="remove-cart-btn" title="Remove item">
+                                                <button type="submit" class="remove-cart-btn" title="{{ __('site.remove') }}">
                                                     <i class="zmdi zmdi-delete"></i>
                                                 </button>
                                             </form>
@@ -332,7 +400,7 @@
 
                         <div class="bor15 coupon-box p-t-20 p-b-20 p-lr-30 p-lr-15-sm m-t-25">
                             <div class="cart-card-head">
-                                <h4 class="mtext-109 cl2">Coupon & Actions</h4>
+                                <h4 class="mtext-109 cl2">{{ __('site.coupon_actions') }}</h4>
                             </div>
 
                             <div class="flex-w flex-sb-m cart-actions-row">
@@ -344,11 +412,11 @@
                                             type="text"
                                             name="coupon"
                                             value="{{ $cartCouponData['code'] ?? '' }}"
-                                            placeholder="Cart Coupon Code">
+                                            placeholder="{{ __('site.cart_coupon_code') }}">
 
                                         <button type="submit"
                                             class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5">
-                                            Apply Cart Coupon
+                                            {{ __('site.apply_cart_coupon') }}
                                         </button>
                                     </form>
 
@@ -359,7 +427,7 @@
 
                                             <button type="submit"
                                                 class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer">
-                                                Remove Cart Coupon
+                                                {{ __('site.remove_cart_coupon') }}
                                             </button>
                                         </form>
                                     @endif
@@ -368,7 +436,7 @@
                                 <div class="m-tb-10">
                                     <a href="{{ route('cart.index') }}"
                                         class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer">
-                                        Refresh Cart
+                                        {{ __('site.refresh_cart') }}
                                     </a>
                                 </div>
                             </div>
@@ -377,14 +445,14 @@
                                 <div class="p-t-15">
                                     @if($cartCouponData)
                                         <span class="coupon-active-badge">
-                                            Cart Coupon: {{ $cartCouponData['code'] }}
+                                            {{ __('site.cart_coupon') }}: {{ $cartCouponData['code'] }}
                                         </span>
                                     @endif
 
                                     @if(!empty($productCouponsData))
                                         @foreach($productCouponsData as $coupon)
                                             <span class="coupon-active-badge">
-                                                Product Coupon: {{ $coupon['code'] }}
+                                                {{ __('site.product_coupon') }}: {{ $coupon['code'] }}
                                             </span>
                                         @endforeach
                                     @endif
@@ -395,7 +463,7 @@
                         <div class="flex-w p-t-30">
                             <a href="{{ url('/products') }}"
                                 class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04">
-                                Continue Shopping
+                                {{ __('site.continue_shopping') }}
                             </a>
                         </div>
                     </div>
@@ -404,12 +472,12 @@
                 <div class="col-sm-10 col-lg-4 col-xl-4 m-lr-auto m-b-50">
                     <div class="cart-summary-card bor10 p-lr-40 p-t-30 p-b-40 m-l-25 m-lr-0-xl">
                         <div class="cart-card-head">
-                            <h4 class="mtext-109 cl2">Cart Totals</h4>
+                            <h4 class="mtext-109 cl2">{{ __('site.cart_totals') }}</h4>
                         </div>
 
                         <div class="flex-w flex-t p-b-16">
                             <div class="size-208">
-                                <span class="stext-110 cl2">Subtotal</span>
+                                <span class="stext-110 cl2">{{ __('site.subtotal') }}</span>
                             </div>
                             <div class="size-209">
                                 <span class="mtext-110 cl2">{{ number_format($subtotal, 2) }} {{ $currency }}</span>
@@ -420,7 +488,7 @@
                             @foreach($productCouponsData as $coupon)
                                 <div class="flex-w flex-t p-b-16">
                                     <div class="size-208">
-                                        <span class="stext-110 cl2">Product Coupon</span>
+                                        <span class="stext-110 cl2">{{ __('site.product_coupon') }}</span>
                                     </div>
                                     <div class="size-209">
                                         <span class="mtext-110 cl2">{{ $coupon['code'] }}</span>
@@ -430,7 +498,7 @@
 
                             <div class="flex-w flex-t p-b-16">
                                 <div class="size-208">
-                                    <span class="stext-110 cl2">Product Discount</span>
+                                    <span class="stext-110 cl2">{{ __('site.product_discount') }}</span>
                                 </div>
                                 <div class="size-209">
                                     <span class="mtext-110 cl2">
@@ -443,7 +511,7 @@
                         @if($cartCouponData)
                             <div class="flex-w flex-t p-b-16">
                                 <div class="size-208">
-                                    <span class="stext-110 cl2">Cart Coupon</span>
+                                    <span class="stext-110 cl2">{{ __('site.cart_coupon') }}</span>
                                 </div>
                                 <div class="size-209">
                                     <span class="mtext-110 cl2">{{ $cartCouponData['code'] }}</span>
@@ -452,7 +520,7 @@
 
                             <div class="flex-w flex-t p-b-16">
                                 <div class="size-208">
-                                    <span class="stext-110 cl2">Cart Discount</span>
+                                    <span class="stext-110 cl2">{{ __('site.cart_discount') }}</span>
                                 </div>
                                 <div class="size-209">
                                     <span class="mtext-110 cl2">- {{ number_format($cartDiscount, 2) }} {{ $currency }}</span>
@@ -463,7 +531,7 @@
                         @if($discount > 0)
                             <div class="flex-w flex-t p-b-16">
                                 <div class="size-208">
-                                    <span class="stext-110 cl2">Total Discount</span>
+                                    <span class="stext-110 cl2">{{ __('site.total_discount') }}</span>
                                 </div>
                                 <div class="size-209">
                                     <span class="mtext-110 cl2">- {{ number_format($discount, 2) }} {{ $currency }}</span>
@@ -473,7 +541,7 @@
 
                         <div class="flex-w flex-t p-b-16">
                             <div class="size-208">
-                                <span class="stext-110 cl2">Net Total</span>
+                                <span class="stext-110 cl2">{{ __('site.net_total') }}</span>
                             </div>
                             <div class="size-209">
                                 <span class="mtext-110 cl2">{{ number_format($netTotal, 2) }} {{ $currency }}</span>
@@ -482,7 +550,7 @@
 
                         <div class="flex-w flex-t p-b-16">
                             <div class="size-208">
-                                <span class="stext-110 cl2">VAT (15%)</span>
+                                <span class="stext-110 cl2">{{ __('site.vat') }} (15%)</span>
                             </div>
                             <div class="size-209">
                                 <span class="mtext-110 cl2">{{ number_format($vatValue, 2) }} {{ $currency }}</span>
@@ -493,7 +561,7 @@
 
                         <div class="flex-w flex-t p-b-25">
                             <div class="size-208">
-                                <span class="stext-110 cl2">Total</span>
+                                <span class="stext-110 cl2">{{ __('site.total') }}</span>
                             </div>
                             <div class="size-209">
                                 <span class="mtext-110 cl2">{{ number_format($grandTotal, 2) }} {{ $currency }}</span>
@@ -502,22 +570,22 @@
 
                         <a href="{{ route('shipping.index') }}"
                            class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer m-t-10">
-                            Continue to Shipping
+                            {{ __('site.continue_to_shipping') }}
                         </a>
                     </div>
                 </div>
             </div>
         @else
             <div class="empty-cart-box text-center p-t-100 p-b-100 p-lr-30">
-                <h4 class="mtext-109 cl2 p-b-15">Your cart is empty</h4>
+                <h4 class="mtext-109 cl2 p-b-15">{{ __('site.empty_cart_title') }}</h4>
                 <p class="stext-115 cl6 p-b-25">
-                    Looks like you haven’t added anything to your cart yet.
+                    {{ __('site.empty_cart_desc') }}
                 </p>
 
                 <a href="{{ url('/products') }}"
                     class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer m-lr-auto"
                     style="display: inline-flex; width: auto;">
-                    Continue Shopping
+                    {{ __('site.continue_shopping') }}
                 </a>
             </div>
         @endif

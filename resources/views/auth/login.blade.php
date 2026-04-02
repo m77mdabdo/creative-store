@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login | Creative Store</title>
+  <title>{{ __('site.login') }} | Creative Store</title>
 
   <!-- Google Font -->
   <link rel="stylesheet"
@@ -144,10 +144,48 @@
     }
 
     .invalid-feedback{
-        font-size:13px;
-        color:#dc3545;
+      font-size:13px;
+      color:#dc3545;
     }
 
+    html[dir="rtl"] body {
+      text-align: right;
+    }
+
+    html[dir="rtl"] .auth-split-card {
+      flex-direction: row-reverse;
+    }
+
+    html[dir="rtl"] .auth-split-left {
+      border-right: 0;
+      border-left: 1px solid rgba(0,0,0,0.08);
+      text-align: right;
+      align-items: flex-start;
+    }
+
+    html[dir="rtl"] .auth-right-inner,
+    html[dir="rtl"] .login-box-msg,
+    html[dir="rtl"] .alert,
+    html[dir="rtl"] .d-block {
+      text-align: right;
+    }
+
+    html[dir="rtl"] .input-group {
+      direction: ltr;
+    }
+
+    html[dir="rtl"] .input-group input {
+      text-align: right;
+      direction: rtl;
+    }
+
+    html[dir="rtl"] .icheck-primary {
+      text-align: right;
+    }
+
+    html[dir="rtl"] .row.mb-3 {
+      direction: rtl;
+    }
   </style>
 </head>
 
@@ -170,7 +208,7 @@
 
         <div class="card-header logo-header">
           <a href="{{ url('/') }}">
-            <img src="{{ asset('cozastore/images/icons/creative-store-logo.png') }}">
+            <img src="{{ asset('cozastore/images/icons/creative-store-logo.png') }}" alt="Creative Store Logo">
           </a>
         </div>
 
@@ -178,22 +216,21 @@
           <div class="auth-split-card">
 
             <div class="auth-split-left">
-              <h2>Hello Again</h2>
-              <p>Login to continue and manage your account.</p>
+              <h2>{{ __('site.hello_again') }}</h2>
+              <p>{{ __('site.login_side_text') }}</p>
               <a href="{{ route('register') }}" class="btn btn-primary" style="width:160px;">
-                Create Account
+                {{ __('site.create_account') }}
               </a>
             </div>
 
             <div class="auth-split-right">
               <div class="auth-right-inner">
 
-                <p class="login-box-msg mb-4">Sign in to start your session</p>
+                <p class="login-box-msg mb-4">{{ __('site.sign_in_start_session') }}</p>
 
-                {{-- رسالة عامة --}}
                 @if ($errors->any())
                     <div class="alert alert-danger">
-                        Invalid email or password.
+                        {{ __('site.invalid_email_or_password') }}
                     </div>
                 @endif
 
@@ -206,7 +243,7 @@
                            type="email"
                            value="{{ old('email') }}"
                            class="form-control @error('email') is-invalid @enderror"
-                           placeholder="Email"
+                           placeholder="{{ __('site.email') }}"
                            required>
 
                     <div class="input-group-append">
@@ -222,13 +259,12 @@
                       </div>
                   @enderror
 
-
                   <!-- PASSWORD -->
                   <div class="input-group mb-3">
                     <input name="password"
                            type="password"
                            class="form-control @error('password') is-invalid @enderror"
-                           placeholder="Password"
+                           placeholder="{{ __('site.password') }}"
                            required>
 
                     <div class="input-group-append">
@@ -244,17 +280,16 @@
                       </div>
                   @enderror
 
-
                   <div class="row mb-3">
                     <div class="col-8">
                       <div class="icheck-primary">
                         <input type="checkbox" id="remember" name="remember">
-                        <label for="remember">Remember me</label>
+                        <label for="remember">{{ __('site.remember_me') }}</label>
                       </div>
                     </div>
                     <div class="col-4">
                       <button type="submit" class="btn btn-primary btn-block">
-                        Sign In
+                        {{ __('site.sign_in') }}
                       </button>
                     </div>
                   </div>
@@ -263,12 +298,12 @@
                   <div class="social-auth-links text-center mt-3">
                     <a href="#" class="btn btn-block btn-facebook">
                       <i class="fab fa-facebook mr-2"></i>
-                      Sign in using Facebook
+                      {{ __('site.sign_in_using_facebook') }}
                     </a>
 
                     <a href="{{ route('google.redirect') }}" class="btn btn-block btn-google">
                       <i class="fab fa-google-plus mr-2"></i>
-                      Sign in using Google
+                      {{ __('site.sign_in_using_google') }}
                     </a>
                   </div>
 
@@ -276,7 +311,7 @@
 
                 <div class="mt-3">
                   <a href="{{ route('forgot-password') }}" class="d-block">
-                    I forgot my password
+                    {{ __('site.forgot_password_question') }}
                   </a>
                 </div>
 

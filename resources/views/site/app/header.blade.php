@@ -1,94 +1,91 @@
-<header>
+@php
+    use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+@endphp
 
-    <!-- ================= DESKTOP HEADER ================= -->
+<header class="site-header">
     <div class="container-menu-desktop">
-
-        <!-- Topbar -->
-        <div class="top-bar">
-            <div class="content-topbar flex-sb-m h-full container">
+        <div class="top-bar custom-topbar">
+            <div class="content-topbar container">
                 <div class="left-top-bar">
-                    Free shipping for standard order over $100
+                    {{ __('site.free_shipping_over_100') }}
                 </div>
 
-                <div class="right-top-bar flex-w h-full">
-
-                    <a href="#" class="flex-c-m trans-04 p-lr-25">
-                        Help & FAQs
+                <div class="right-top-bar">
+                    <a href="#" class="topbar-link">
+                        {{ __('site.help_faqs') }}
                     </a>
 
                     @auth
-                        <a href="{{ route('myaccount') }}" class="flex-c-m p-lr-10 trans-04">
-                            My Account
+                        <a href="{{ route('myaccount') }}" class="topbar-link">
+                            {{ __('site.my_account') }}
                         </a>
                     @endauth
 
                     @guest
-                        <a href="{{ route('login') }}" class="flex-c-m p-lr-10 trans-04">
-                            Sign In
+                        <a href="{{ route('login') }}" class="topbar-link">
+                            {{ __('site.sign_in') }}
                         </a>
 
-                        <a href="{{ route('register') }}" class="flex-c-m p-lr-10 trans-04">
-                            Sign Up
+                        <a href="{{ route('register') }}" class="topbar-link">
+                            {{ __('site.sign_up') }}
                         </a>
                     @endguest
 
-                    <a href="#" class="flex-c-m trans-04 p-lr-25">EN</a>
-                    <a href="#" class="flex-c-m trans-04 p-lr-25">USD</a>
+                    <div class="topbar-divider"></div>
 
+                    <a href="{{ LaravelLocalization::getLocalizedURL('ar', null, [], true) }}"
+                       class="topbar-link language-link {{ app()->getLocale() === 'ar' ? 'is-active' : '' }}">
+                        العربية
+                    </a>
+
+                    <a href="{{ LaravelLocalization::getLocalizedURL('en', null, [], true) }}"
+                       class="topbar-link language-link {{ app()->getLocale() === 'en' ? 'is-active' : '' }}">
+                        English
+                    </a>
+
+                    <div class="topbar-divider"></div>
+
+                    <a href="#" class="topbar-link currency-link">
+                        USD
+                    </a>
                 </div>
             </div>
         </div>
 
         @include('site.app.nav')
-
-        {{-- ================= DESKTOP ICONS ================= --}}
-        @php
-            $cart = session()->get('cart', []);
-            $cartCount = collect($cart)->sum('quantity');
-        @endphp
-
-
     </div>
 
-    <!-- ================= MOBILE HEADER ================= -->
-    <div class="wrap-header-mobile">
-
+    <div class="wrap-header-mobile custom-mobile-header">
         <div class="logo-mobile">
-            <a href="{{ url('/') }}">
-                <img style="height:90px;width:auto;"
-                     src="{{ asset('cozastore/images/icons/logo-01.png') }}"
-                     alt="IMG-LOGO">
+            <a href="{{ LaravelLocalization::localizeUrl(route('home', [], false)) }}" class="mobile-brand">
+                <img src="{{ asset('cozastore/images/icons/logo-01.png') }}" alt="Creative Store Logo">
+                <span class="mobile-brand-text">{{ config('app.name', 'Creative Store') }}</span>
             </a>
         </div>
 
+        <div class="wrap-icon-header mobile-icons">
+            <a href="{{ route('cart.index') }}"
+               class="icon-header-item icon-header-noti"
+               data-notify="{{ collect(session('cart', []))->sum('quantity') }}">
+                <i class="zmdi zmdi-shopping-cart"></i>
+            </a>
+        </div>
 
-
-        <div class="btn-show-menu-mobile hamburger hamburger--squeeze">
+        <div class="btn-show-menu-mobile hamburger hamburger--squeeze" aria-label="Open menu" tabindex="0">
             <span class="hamburger-box">
                 <span class="hamburger-inner"></span>
             </span>
         </div>
-
     </div>
 
-
-    <!-- ================= CART PANEL (نسخة واحدة فقط) ================= -->
-    {{-- @include('site.Cart.cart-panel') --}}
-
-
-    <!-- ================= SEARCH MODAL ================= -->
     <div class="modal-search-header flex-c-m trans-04 js-hide-modal-search">
         <div class="container-search-header">
-
             <button class="flex-c-m btn-hide-modal-search trans-04 js-hide-modal-search" type="button">
-                <img src="{{ asset('cozastore/images/icons/icon-close2.png') }}" alt="CLOSE">
+                <img src="{{ asset('cozastore/images/icons/icon-close2.png') }}" alt="Close">
             </button>
 
-            <form class="wrap-search-header flex-w p-l-15"
-                  method="GET"
-                  action="{{ url()->current() }}">
-
-                @foreach(request()->except(['q','page']) as $k => $v)
+            <form class="wrap-search-header flex-w p-l-15" method="GET" action="{{ url()->current() }}">
+                @foreach(request()->except(['q', 'page']) as $k => $v)
                     <input type="hidden" name="{{ $k }}" value="{{ $v }}">
                 @endforeach
 
@@ -100,10 +97,8 @@
                        type="text"
                        name="q"
                        value="{{ request('q') }}"
-                       placeholder="Search products...">
-
+                       placeholder="{{ __('site.search_products') }}">
             </form>
         </div>
     </div>
-
 </header>

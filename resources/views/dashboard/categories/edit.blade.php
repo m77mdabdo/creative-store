@@ -5,12 +5,18 @@
 @section('content')
 <div class="content-wrapper">
     <section class="content-header">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
+        <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap">
             <h1>Edit Category</h1>
 
-            <a href="{{ route('dashboard.categories.show', $category) }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left mr-1"></i> Back to Details
-            </a>
+            <div>
+                <a href="{{ route('dashboard.categories.show', $category) }}" class="btn btn-info">
+                    <i class="fas fa-eye mr-1"></i> View Details
+                </a>
+
+                <a href="{{ route('dashboard.categories.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left mr-1"></i> Back
+                </a>
+            </div>
         </div>
     </section>
 

@@ -18,6 +18,7 @@
                 @endif
             </div>
 
+            
             <div class="mt-2">
                 <a href="{{ route('dashboard.categories.index') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left mr-1"></i> Back
@@ -44,8 +45,8 @@
 
                         <div class="card-body">
                             <p><strong>ID:</strong> {{ $category->id }}</p>
-                            <p><strong>Arabic Name:</strong> {{ optional($category->translations->firstWhere('locale', 'ar'))->name ?? '-' }}</p>
-                            <p><strong>English Name:</strong> {{ optional($category->translations->firstWhere('locale', 'en'))->name ?? '-' }}</p>
+                            <p><strong>Arabic Name:</strong> {{ $category->translate('ar')?->name ?? '-' }}</p>
+                            <p><strong>English Name:</strong> {{ $category->translate('en')?->name ?? '-' }}</p>
                             <p><strong>Slug:</strong> {{ $category->slug }}</p>
                             <p><strong>Parent:</strong> {{ $category->parent?->name ?? 'Root' }}</p>
                             <p><strong>Sort Order:</strong> {{ $category->sort_order }}</p>
@@ -71,12 +72,12 @@
 
                         <div class="card-body">
                             <h5>Arabic Description</h5>
-                            <p>{{ optional($category->translations->firstWhere('locale', 'ar'))->description ?? '-' }}</p>
+                            <p>{{ $category->translate('ar')?->description ?? '-' }}</p>
 
                             <hr>
 
                             <h5>English Description</h5>
-                            <p>{{ optional($category->translations->firstWhere('locale', 'en'))->description ?? '-' }}</p>
+                            <p>{{ $category->translate('en')?->description ?? '-' }}</p>
                         </div>
                     </div>
                 </div>

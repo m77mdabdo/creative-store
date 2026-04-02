@@ -2,14 +2,20 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
+use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Traits\Auditable;
 
 class Category extends Model
 {
-    use HasFactory, SoftDeletes , Auditable ;
+    use HasFactory, SoftDeletes, Auditable, Translatable;
+
+    public array $translatedAttributes = [
+        'name',
+        'description',
+    ];
 
     protected $fillable = [
         'parent_id',
@@ -40,12 +46,7 @@ class Category extends Model
 
     public function childrenRecursive()
     {
-        return $this->children()->with('childrenRecursive', 'translations');
-    }
-
-    public function translations()
-    {
-        return $this->hasMany(CategoryTranslation::class);
+        return $this->children()->with(['childrenRecursive', 'translations']);
     }
 
     public function products()
@@ -71,26 +72,21 @@ class Category extends Model
         return $query->orderBy('sort_order')->orderByDesc('id');
     }
 
-    /* =========================
-     * Translation helpers
-     * ========================= */
-    public function translation($locale = null)
+    public function scopeSearch($query, ?string $term)
     {
-        $locale = $locale ?? app()->getLocale();
+        $term = trim((string) $term);
 
-        return $this->translations->firstWhere('locale', $locale)
-            ?? $this->translations->firstWhere('locale', config('app.fallback_locale'))
-            ?? $this->translations->first();
-    }
+        if ($term === '') {
+            return $query;
+        }
 
-    public function getNameAttribute()
-    {
-        return optional($this->translation())->name;
-    }
-
-    public function getDescriptionAttribute()
-    {
-        return optional($this->translation())->description;
+        return $query->where(function ($q) use ($term) {
+            $q->where('slug', 'like', "%{$term}%")
+                ->orWhereHas('translations', function ($t) use ($term) {
+                    $t->where('name', 'like', "%{$term}%")
+                      ->orWhere('description', 'like', "%{$term}%");
+                });
+        });
     }
 
     /* =========================
