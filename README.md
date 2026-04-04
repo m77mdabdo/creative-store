@@ -230,6 +230,11 @@ The goal is that request time depends on the page size, not on how big the table
 - **SQL injection:** only Eloquent and parameter bindings; `LIKE` wildcards are escaped in the home page search.
 - **Uploads:** images only (`jpg`, `jpeg`, `png`, `webp`) with size limits.
 - **Secrets:** never committed; password hashes, tokens, OTPs and gateway payloads are redacted from audit logs; errors shown to customers never include exception details.
+- **Google sign-in:** the OAuth state is checked, accounts are matched by Google's account id, an existing account is linked only when Google reports the email as verified, and disabled or closed accounts are refused.
+- **Staff permissions:** staff can only hand out roles and permissions they hold themselves, cannot change their own access, and only an owner can manage another owner. Backups and error logs have their own permissions.
+- **Sessions:** changing or resetting a password, or disabling an account, signs out the account's other sessions. A new email address is saved only after the link sent to it is opened.
+- **Host header:** links in emails and the sitemap are built from `APP_URL`, and only that host is accepted, so `APP_URL` must be set exactly in production.
+- **Checkout:** discounts, VAT and the delivery fee are worked out on the server when the order is placed, not taken from earlier pages.
 
 ---
 
@@ -357,6 +362,8 @@ php artisan view:cache
 php artisan event:cache
 ```
 
+- Set `APP_URL` to the public address (scheme and host) before going live.
+- Seed with `SEED_OWNER_EMAIL` set; demo accounts are not created in production.
 - Serve over HTTPS only.
 - Run `queue:work` under Supervisor and the scheduler from cron.
 - Point the Moyasar webhook at the production URL.
