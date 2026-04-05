@@ -31,12 +31,7 @@ use App\Http\Controllers\Tracking\CustomerTrackingController;
 use App\Http\Controllers\Wishlist\WishlistController;
 
 
-Route::get('/test-google', function () {
-    return [
-        'client_id' => config('services.google.client_id'),
-        'redirect'  => config('services.google.redirect'),
-    ];
-});
+
 
 
 Route::group([
