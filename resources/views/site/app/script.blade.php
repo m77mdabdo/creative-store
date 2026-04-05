@@ -1,3 +1,14 @@
+{{-- RTL flag for JS --}}
+<script>
+    window.isRTL = {{ app()->getLocale() === 'ar' ? 'true' : 'false' }};
+</script>
+
+<script src="{{ asset('cozastore/vendor/jquery/jquery-3.2.1.min.js') }}"></script>
+{{-- ... باقي الـ scripts زي ما هي --}}
+
+
+
+
 <script src="{{ asset('cozastore/vendor/jquery/jquery-3.2.1.min.js') }}"></script>
 <script src="{{ asset('cozastore/vendor/animsition/js/animsition.min.js') }}"></script>
 <script src="{{ asset('cozastore/vendor/bootstrap/js/popper.js') }}"></script>

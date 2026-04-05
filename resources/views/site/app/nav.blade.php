@@ -15,19 +15,56 @@
     $blogUrl = LaravelLocalization::getLocalizedURL(app()->getLocale(), '/blog');
     $aboutUrl = LaravelLocalization::getLocalizedURL(app()->getLocale(), '/about');
     $contactUrl = LaravelLocalization::getLocalizedURL(app()->getLocale(), '/contact');
+
+
 @endphp
+
+<style>
+    /* ===============================
+       RTL NAVBAR — الحل النهائي
+    =============================== */
+
+    /* عكس ترتيب العناصر الرئيسية */
+    html[dir="rtl"] .custom-navbar .navbar-inner {
+        flex-direction: row-reverse !important;
+    }
+
+    /* المنيو يبدأ من اليمين بدون عكس الأيتمز */
+    html[dir="rtl"] .custom-navbar .main-menu {
+        flex-direction: row !important;
+        direction: rtl !important;
+    }
+
+    /* الأيقونات تتعكس */
+    html[dir="rtl"] .custom-navbar .site-actions {
+        flex-direction: row-reverse !important;
+    }
+
+    /* اللوجو يتعكس */
+    html[dir="rtl"] .custom-navbar .site-brand {
+        flex-direction: row-reverse !important;
+    }
+
+    /* الـ badge على الشمال في RTL */
+    html[dir="rtl"] .custom-navbar .icon-header-noti::after,
+    html[dir="rtl"] .custom-mobile-header .icon-header-noti::after {
+        left: -4px !important;
+        right: auto !important;
+    }
+</style>
 
 <div class="wrap-menu-desktop custom-navbar">
     <nav class="container navbar-inner">
 
         <a href="{{ $homeUrl }}" class="site-brand">
-            <img src="{{ asset('cozastore/images/icons/logo-01.png') }}" alt="Creative Store Logo">
-            <span class="brand-text">{{ config('app.name', 'Creative Store') }}</span>
+            <img src="{{ asset('cozastore/images/icons/logo-01.png') }}" alt="Creative Store Logo"
+                style="width: 110px; height: 110px;">
         </a>
 
         <div class="menu-desktop">
             <ul class="main-menu">
-                <li class="{{ request()->is(app()->getLocale()) || request()->is(app()->getLocale() . '/') ? 'active-menu' : '' }}">
+                <li
+                    class="{{ request()->is(app()->getLocale()) || request()->is(app()->getLocale() . '/') ? 'active-menu' : '' }}">
                     <a href="{{ $homeUrl }}">{{ __('site.home') }}</a>
                 </li>
 
@@ -50,23 +87,17 @@
         </div>
 
         <div class="site-actions">
-            <button type="button"
-                    class="icon-btn js-show-modal-search"
-                    aria-label="{{ __('site.search') }}">
+            <button type="button" class="icon-btn js-show-modal-search" aria-label="{{ __('site.search') }}">
                 <i class="zmdi zmdi-search"></i>
             </button>
 
-            <a href="{{ route('cart.index') }}"
-               class="icon-btn icon-header-noti"
-               data-notify="{{ $cartCount }}"
-               aria-label="{{ __('site.your_cart') }}">
+            <a href="{{ route('cart.index') }}" class="icon-btn icon-header-noti" data-notify="{{ $cartCount }}"
+                aria-label="{{ __('site.your_cart') }}">
                 <i class="zmdi zmdi-shopping-cart"></i>
             </a>
 
-            <a href="{{ route('wishlist.index') }}"
-               class="icon-btn icon-header-noti"
-               data-notify="{{ $wishlistCount }}"
-               aria-label="Wishlist">
+            <a href="{{ route('wishlist.index') }}" class="icon-btn icon-header-noti" data-notify="{{ $wishlistCount }}"
+                aria-label="Wishlist">
                 <i class="zmdi zmdi-favorite-outline"></i>
             </a>
 

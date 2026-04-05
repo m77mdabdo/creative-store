@@ -47,7 +47,7 @@
 
             <div class="card-body">
                 <p class="login-box-msg">
-                    You forgot your password? Here you can easily retrieve a new password.
+                    {{ __('site.forgot_password_message') }}
                 </p>
 
                 @if(session('success'))
@@ -58,10 +58,17 @@
                     @csrf
 
                     <div class="input-group mb-3">
-                        <input type="email" name="email" class="form-control" placeholder="Email"
-                               value="{{ old('email') }}" required>
+                        <input type="email"
+                               name="email"
+                               class="form-control"
+                               placeholder="{{ __('site.email') }}"
+                               value="{{ old('email') }}"
+                               required>
+
                         <div class="input-group-append">
-                            <div class="input-group-text"><span class="fas fa-envelope"></span></div>
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
                         </div>
                     </div>
 
@@ -70,12 +77,14 @@
                     @enderror
 
                     <button type="submit" class="btn btn-primary btn-block">
-                        Request new password
+                        {{ __('site.request_new_password') }}
                     </button>
                 </form>
 
                 <p class="mt-3 mb-1 text-center">
-                    <a href="{{ route('login') }}">Login</a>
+                    <a href="{{ route('login') }}">
+                        {{ __('site.back_to_login') }}
+                    </a>
                 </p>
             </div>
 

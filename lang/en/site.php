@@ -345,5 +345,29 @@ return [
 'sign_in_using_google' => 'Sign in using Google',
 'forgot_password_question' => 'I forgot my password',
 
+'register' => 'Register',
+'welcome_to_creative_store' => 'Welcome to Creative Store',
+'register_side_text' => 'Join us today and experience the best shopping experience with exclusive offers and a wide range of products.',
+'i_already_have_account' => 'I already have an account',
+'register_new_membership' => 'Register a new membership',
+
+'retype_password' => 'Retype Password',
+'i_agree_to' => 'I agree to the',
+'terms' => 'terms',
+'sign_up_using_facebook' => 'Sign up using Facebook',
+'sign_up_using_google' => 'Sign up using Google+',
+
+'forgot_password_message' => 'You forgot your password? Here you can easily retrieve a new password.',
+'request_new_password' => 'Request new password',
+'back_to_login' => 'Back to Login',
+
+'reset_password_message' => 'You are only one step away from your new password. Recover your password now.',
+'new_password' => 'New Password',
+'confirm_password' => 'Confirm Password',
+'change_password' => 'Change Password',
+
+'browse_our_latest_products' => 'Browse Our Latest Products',
+
+'view_all' => 'View All',
 ];
 

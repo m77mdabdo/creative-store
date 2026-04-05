@@ -333,4 +333,29 @@ return [
 'sign_in_using_google' => 'تسجيل الدخول عبر جوجل',
 'forgot_password_question' => 'نسيت كلمة المرور؟',
 
+'register' => 'إنشاء حساب',
+'welcome_to_creative_store' => 'مرحبًا بك في Creative Store',
+'register_side_text' => 'انضم إلينا اليوم واستمتع بأفضل تجربة تسوق مع عروض حصرية ومجموعة واسعة من المنتجات.',
+'i_already_have_account' => 'لدي حساب بالفعل',
+'register_new_membership' => 'تسجيل عضوية جديدة',
+
+'retype_password' => 'أعد كتابة كلمة المرور',
+'i_agree_to' => 'أوافق على',
+'terms' => 'الشروط',
+'sign_up_using_facebook' => 'التسجيل باستخدام فيسبوك',
+'sign_up_using_google' => 'التسجيل باستخدام جوجل',
+
+'forgot_password_message' => 'هل نسيت كلمة المرور؟ يمكنك استرجاعها بسهولة من هنا.',
+'request_new_password' => 'طلب كلمة مرور جديدة',
+'back_to_login' => 'العودة لتسجيل الدخول',
+
+'reset_password_message' => 'أنت على بعد خطوة واحدة فقط من كلمة المرور الجديدة. قم بإعادة تعيين كلمة المرور الآن.',
+'new_password' => 'كلمة المرور الجديدة',
+'confirm_password' => 'تأكيد كلمة المرور',
+'change_password' => 'تغيير كلمة المرور',
+
+'browse_our_latest_products' => 'اكتشف أحدث منتجاتنا',
+
+'view_all' => 'عرض الكل',
+
 ];

@@ -47,7 +47,7 @@
 
             <div class="card-body">
                 <p class="login-box-msg">
-                    You are only one step away from your new password. Recover your password now.
+                    {{ __('site.reset_password_message') }}
                 </p>
 
                 @if(session('error'))
@@ -60,17 +60,34 @@
                     <input type="hidden" name="token" value="{{ $token }}">
                     <input type="hidden" name="email" value="{{ request()->query('email') }}">
 
-                    <!--email -->
+                    <!-- email -->
                     <div class="input-group mb-3">
-                        <input type="email" name="email" class="form-control" placeholder="Email" value="{{ request()->query('email') }}" readonly>
+                        <input type="email"
+                               name="email"
+                               class="form-control"
+                               placeholder="{{ __('site.email') }}"
+                               value="{{ request()->query('email') }}"
+                               readonly>
+
                         <div class="input-group-append">
-                            <div class="input-group-text"><span class="fas fa-envelope"></span></div>
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- new password -->
                     <div class="input-group mb-3">
-                        <input type="password" name="password" class="form-control" placeholder="New Password" required>
+                        <input type="password"
+                               name="password"
+                               class="form-control"
+                               placeholder="{{ __('site.new_password') }}"
+                               required>
+
                         <div class="input-group-append">
-                            <div class="input-group-text"><span class="fas fa-lock"></span></div>
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
                         </div>
                     </div>
 
@@ -78,20 +95,30 @@
                         <div class="text-danger mb-2">{{ $message }}</div>
                     @enderror
 
+                    <!-- confirm password -->
                     <div class="input-group mb-3">
-                        <input type="password" name="password_confirmation" class="form-control" placeholder="Confirm Password" required>
+                        <input type="password"
+                               name="password_confirmation"
+                               class="form-control"
+                               placeholder="{{ __('site.confirm_password') }}"
+                               required>
+
                         <div class="input-group-append">
-                            <div class="input-group-text"><span class="fas fa-lock"></span></div>
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
                         </div>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-block">
-                        Change Password
+                        {{ __('site.change_password') }}
                     </button>
                 </form>
 
                 <p class="mt-3 text-center">
-                    <a href="{{ route('login') }}">Login</a>
+                    <a href="{{ route('login') }}">
+                        {{ __('site.back_to_login') }}
+                    </a>
                 </p>
 
             </div>

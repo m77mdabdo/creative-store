@@ -547,4 +547,64 @@
             display: none;
         }
     }
+
+    /* ===================================
+   RTL NAVBAR FIX — الحل النهائي
+=================================== */
+
+/* الـ navbar الرئيسي */
+html[dir="rtl"] .custom-navbar .navbar-inner {
+    flex-direction: row-reverse !important;
+}
+
+/* اللوجو — يروح اليمين */
+html[dir="rtl"] .custom-navbar .site-brand {
+    flex-direction: row-reverse !important;
+    order: 3 !important;
+}
+
+/* المنيو — يفضل في المنتصف */
+html[dir="rtl"] .custom-navbar .menu-desktop {
+    order: 2 !important;
+}
+
+html[dir="rtl"] .custom-navbar .main-menu {
+    flex-direction: row-reverse !important;
+}
+
+/* الأيقونات — تروح الشمال */
+html[dir="rtl"] .custom-navbar .site-actions {
+    flex-direction: row-reverse !important;
+    order: 1 !important;
+}
+
+/* الـ topbar */
+html[dir="rtl"] .custom-topbar .content-topbar {
+    flex-direction: row-reverse !important;
+}
+
+html[dir="rtl"] .custom-topbar .right-top-bar {
+    flex-direction: row-reverse !important;
+}
+
+/* الـ badge — يجي على الشمال في RTL */
+html[dir="rtl"] .icon-header-noti::after {
+    left: -4px !important;
+    right: auto !important;
+}
+
+html[dir="rtl"] .custom-navbar .menu-desktop {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    order: 2 !important;
+}
+
+html[dir="rtl"] .custom-navbar .navbar-inner {
+    justify-content: space-between !important;
+}
+
+.custom-navbar .navbar-inner {
+    min-height: 55px;
+}
 </style>

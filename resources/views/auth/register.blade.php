@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Register | Creative Store</title>
+    <title>{{ __('site.register') }} | Creative Store</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -199,7 +199,6 @@
             }
         }
 
-        /* Validation UI */
         .is-invalid {
             border-color: #dc3545;
         }
@@ -208,7 +207,6 @@
             display: block;
         }
 
-        /* ✅ intl-tel-input FIX with AdminLTE input-group */
         .input-group>.iti {
             flex: 1 1 auto;
             width: 1%;
@@ -223,22 +221,61 @@
         .iti input.phone-control {
             width: 100% !important;
             height: 38px !important;
-            /* نفس ارتفاع AdminLTE */
             line-height: 38px !important;
             padding-left: 90px !important;
-            /* مساحة للعلم + كود الدولة */
         }
 
-        /* خلي العلم والكود في نفس الارتفاع */
         .iti__flag-container,
         .iti__selected-flag {
             height: 38px !important;
         }
 
-        /* خلي الحقل يندمج مع input-group-append (زي الإيميل) */
         .input-group>.iti>input.phone-control {
             border-top-right-radius: 0 !important;
             border-bottom-right-radius: 0 !important;
+        }
+
+        html[dir="rtl"] body {
+            text-align: right;
+        }
+
+        html[dir="rtl"] .auth-split-card {
+            flex-direction: row-reverse;
+        }
+
+        html[dir="rtl"] .auth-split-left {
+            border-right: 0;
+            border-left: 1px solid rgba(0, 0, 0, 0.08);
+            text-align: right;
+            align-items: flex-start;
+        }
+
+        html[dir="rtl"] .auth-right-inner,
+        html[dir="rtl"] .login-box-msg,
+        html[dir="rtl"] .alert,
+        html[dir="rtl"] .d-block {
+            text-align: right;
+        }
+
+        html[dir="rtl"] .input-group {
+            direction: ltr;
+        }
+
+        html[dir="rtl"] .input-group input {
+            text-align: right;
+            direction: rtl;
+        }
+
+        html[dir="rtl"] .icheck-primary {
+            text-align: right;
+        }
+
+        html[dir="rtl"] .row.mb-2 {
+            direction: rtl;
+        }
+
+        html[dir="rtl"] .auth-split-left p {
+            max-width: 100%;
         }
     </style>
 </head>
@@ -247,7 +284,6 @@
 
     <div class="register-wrapper">
 
-        <!-- LEFT SIDE - VIDEO -->
         <div class="register-video">
             <video autoplay muted loop playsinline>
                 <source src="{{ asset('cozastore/videos/register2.mp4') }}" type="video/mp4">
@@ -255,7 +291,6 @@
             <div class="video-overlay"></div>
         </div>
 
-        <!-- RIGHT SIDE - REGISTER CARD -->
         <div class="register-form-side">
             <div class="register-box">
                 <div class="card card-outline card-primary">
@@ -270,22 +305,19 @@
                     <div class="card-body p-0">
                         <div class="auth-split-card">
 
-                            <!-- LEFT PANEL -->
                             <div class="auth-split-left">
-                                <h2>Welcome to Creative Store</h2>
-                                <p>Join us today and experience the best shopping experience with exclusive offers and a
-                                    wide range of products.</p>
-                                <a href="{{ route('login') }}" class="btn btn-outline-dark mt-3">I already have an
-                                    account</a>
+                                <h2>{{ __('site.welcome_to_creative_store') }}</h2>
+                                <p>{{ __('site.register_side_text') }}</p>
+                                <a href="{{ route('login') }}" class="btn btn-outline-dark mt-3">
+                                    {{ __('site.i_already_have_account') }}
+                                </a>
                             </div>
 
-                            <!-- RIGHT PANEL -->
                             <div class="auth-split-right">
                                 <div class="auth-right-inner">
 
-                                    <p class="login-box-msg mb-3">Register a new membership</p>
+                                    <p class="login-box-msg mb-3">{{ __('site.register_new_membership') }}</p>
 
-                                    {{-- Error summary (optional) --}}
                                     @if ($errors->any())
                                         <div class="alert alert-danger py-2">
                                             <ul class="mb-0 pl-3">
@@ -302,31 +334,34 @@
                                         <div class="input-group mb-3">
                                             <input name="name" type="text"
                                                 class="form-control @error('name') is-invalid @enderror"
-                                                placeholder="Full name" value="{{ old('name') }}" required>
+                                                placeholder="{{ __('site.full_name') }}"
+                                                value="{{ old('name') }}" required>
                                             <div class="input-group-append">
                                                 <div class="input-group-text"><span class="fas fa-user"></span></div>
                                             </div>
                                         </div>
-                                        @error('name') <div class="invalid-feedback mb-2">{{ $message }}</div> @enderror
+                                        @error('name')
+                                            <div class="invalid-feedback mb-2">{{ $message }}</div>
+                                        @enderror
 
                                         <div class="input-group mb-3">
                                             <input name="email" type="email"
                                                 class="form-control @error('email') is-invalid @enderror"
-                                                placeholder="Email" value="{{ old('email') }}" required>
+                                                placeholder="{{ __('site.email') }}"
+                                                value="{{ old('email') }}" required>
                                             <div class="input-group-append">
                                                 <div class="input-group-text"><span class="fas fa-envelope"></span>
                                                 </div>
                                             </div>
                                         </div>
-                                        @error('email') <div class="invalid-feedback mb-2">{{ $message }}</div>
+                                        @error('email')
+                                            <div class="invalid-feedback mb-2">{{ $message }}</div>
                                         @enderror
-
-                                        <!-- ✅ Phone input with intl-tel-input -->
 
                                         <div class="input-group mb-3">
                                             <input id="phone_input" type="tel" dir="ltr"
                                                 class="form-control phone-control @error('phone') is-invalid @enderror"
-                                                placeholder="رقم الهاتف" autocomplete="tel">
+                                                placeholder="{{ __('site.phone') }}" autocomplete="tel">
 
                                             <input type="hidden" name="phone" id="phone_e164"
                                                 value="{{ old('phone') }}">
@@ -335,26 +370,25 @@
                                                 <div class="input-group-text"><span class="fas fa-phone"></span></div>
                                             </div>
                                         </div>
-                                        @error('phone') <div class="invalid-feedback mb-2">{{ $message }}</div>
+                                        @error('phone')
+                                            <div class="invalid-feedback mb-2">{{ $message }}</div>
                                         @enderror
-
-
-
 
                                         <div class="input-group mb-3">
                                             <input name="password" type="password"
                                                 class="form-control @error('password') is-invalid @enderror"
-                                                placeholder="Password" required>
+                                                placeholder="{{ __('site.password') }}" required>
                                             <div class="input-group-append">
                                                 <div class="input-group-text"><span class="fas fa-lock"></span></div>
                                             </div>
                                         </div>
-                                        @error('password') <div class="invalid-feedback mb-2">{{ $message }}</div>
+                                        @error('password')
+                                            <div class="invalid-feedback mb-2">{{ $message }}</div>
                                         @enderror
 
                                         <div class="input-group mb-3">
                                             <input name="password_confirmation" type="password" class="form-control"
-                                                placeholder="Retype password" required>
+                                                placeholder="{{ __('site.retype_password') }}" required>
                                             <div class="input-group-append">
                                                 <div class="input-group-text"><span class="fas fa-lock"></span></div>
                                             </div>
@@ -365,34 +399,49 @@
                                                 <div class="icheck-primary">
                                                     <input type="checkbox" id="agreeTerms" name="terms" value="agree"
                                                         required>
-                                                    <label for="agreeTerms">I agree to the <a href="#">terms</a></label>
+                                                    <label for="agreeTerms">
+                                                        {{ __('site.i_agree_to') }}
+                                                        <a href="#">{{ __('site.terms') }}</a>
+                                                    </label>
                                                 </div>
                                             </div>
                                             <div class="col-4">
                                                 <button type="submit"
-                                                    class="btn btn-primary btn-block">Register</button>
+                                                    class="btn btn-primary btn-block">{{ __('site.register') }}</button>
                                             </div>
                                         </div>
 
-                                        <!-- ✅ Social links (برا الـ row) -->
                                         <div class="social-auth-links text-center mt-3">
-                                            <a href="#" class="btn btn-block btn-facebook">
+                                            {{-- <a href="#" class="btn btn-block btn-facebook">
                                                 <i class="fab fa-facebook mr-2"></i>
-                                                Sign up using Facebook
-                                            </a>
+                                                {{ __('site.sign_up_using_facebook') }}
+                                            </a> --}}
 
                                             <a href="{{ route('google.redirect') }}" class="btn btn-block btn-danger">
                                                 <i class="fab fa-google-plus mr-2"></i>
-                                                Sign up using Google+
+                                                {{ __('site.sign_up_using_google') }}
                                             </a>
                                         </div>
                                     </form>
+
+                                      <!-- 🌍 LANGUAGE SWITCHER (ADD ONLY) -->
+                                    <div style="margin-top:15px; text-align:center;">
+                                        <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('ar', null, [], true) }}"
+                                            style="padding:6px 14px; border-radius:20px; background:#eee; margin:3px; display:inline-block; text-decoration:none;">
+                                            🇸🇦 عربي
+                                        </a>
+
+                                        <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('en', null, [], true) }}"
+                                            style="padding:6px 14px; border-radius:20px; background:#eee; margin:3px; display:inline-block; text-decoration:none;">
+                                            🇺🇸 EN
+                                        </a>
+                                    </div>
 
                                 </div>
                             </div>
 
                         </div>
-                    </div><!-- /card-body -->
+                    </div>
 
                 </div>
             </div>
@@ -401,8 +450,6 @@
     </div>
 
     @include('auth.app.script')
-
-
 
 </body>
 

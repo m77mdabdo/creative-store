@@ -13,6 +13,385 @@
         });
     @endphp
 
+<style>
+/* ===== BLOG SECTION ===== */
+.home-blog-section {
+    padding: 90px 0;
+    background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+    overflow: hidden;
+}
+
+.home-blog-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.home-blog-kicker {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+.home-blog-heading {
+    margin: 0;
+    font-size: 40px;
+    line-height: 1.15;
+    font-weight: 800;
+    color: #222;
+}
+.home-blog-view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 0 20px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #717fe0 0%, #8ea0ff 100%);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all .25s ease;
+    white-space: nowrap;
+    box-shadow: 0 10px 25px rgba(113,127,224,.22);
+}
+
+.home-blog-view-all:hover {
+    background: linear-gradient(135deg, #5f6fd6 0%, #8094ff 100%);
+    color: #fff;
+    transform: translateY(-2px);
+}
+/* ===== SLICK BLOG WRAPPER ===== */
+.wrap-slick-blog {
+    position: relative;
+}
+
+.slick-blog {
+    margin: 0 -12px;
+}
+
+.slick-blog .slick-list {
+    overflow: hidden;
+    padding: 10px 0 20px;
+}
+
+.slick-blog .slick-track {
+    display: flex !important;
+}
+
+.slick-blog .slick-slide {
+    height: auto !important;
+    float: left !important;
+}
+
+html[dir="rtl"] .slick-blog .slick-slide {
+    float: right !important;
+}
+
+.slick-blog .slick-slide > div {
+    height: 100%;
+}
+
+.item-slick-blog {
+    padding: 0 12px;
+    height: 100%;
+}
+
+/* ===== BLOG CARD ===== */
+.blog-card {
+    background: #fff;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,.06);
+    box-shadow: 0 10px 30px rgba(0,0,0,.05);
+    transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    min-width: unset;
+}
+
+.blog-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 18px 40px rgba(0,0,0,.09);
+    border-color: rgba(113,127,224,.25);
+}
+
+.blog-card-image-link {
+    position: relative;
+    display: block;
+    overflow: hidden;
+}
+
+.blog-card-image {
+    width: 100%;
+    height: 235px;
+    object-fit: cover;
+    display: block;
+    transition: transform .45s ease;
+}
+
+.blog-card:hover .blog-card-image {
+    transform: scale(1.06);
+}
+
+.blog-date-badge {
+    position: absolute;
+    left: 18px;
+    bottom: 18px;
+    top: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 78px;
+    height: 38px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.94);
+    color: #222;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 6px 20px rgba(0,0,0,.08);
+    backdrop-filter: blur(8px);
+}
+
+.blog-content {
+    padding: 22px 22px 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    text-align: left;
+}
+
+.blog-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 12px;
+}
+
+.blog-title {
+    margin: 0 0 12px;
+    font-size: 22px;
+    line-height: 1.45;
+    font-weight: 700;
+}
+
+.blog-title a {
+    color: #222;
+    text-decoration: none;
+    transition: color .25s ease;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 64px;
+}
+
+.blog-title a:hover {
+    color: #717fe0;
+}
+
+.blog-excerpt {
+    margin: 0 0 18px;
+    font-size: 14px;
+    line-height: 1.9;
+    color: #666;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 80px;
+    flex: 1 1 auto;
+}
+
+.blog-read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #222;
+    text-decoration: none;
+    font-weight: 700;
+    transition: .25s ease;
+    margin-top: auto;
+}
+
+.blog-read-more:hover {
+    color: #717fe0;
+}
+
+/* ===== DOTS ===== */
+.wrap-slick-blog-dots {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.slick-blog-dots {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.slick-blog-dots li {
+    display: inline-block;
+    margin: 0 4px;
+}
+
+.slick-blog-dots li button {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 0;
+    background: #d1d1d1;
+    font-size: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.slick-blog-dots li.slick-active button {
+    background: #717fe0;
+}
+
+/* ===== ARROWS ===== */
+.arrow-slick-blog {
+    position: static; /* بدل absolute */
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid #e9e9e9;
+    background: #fff;
+    color: #444;
+    transition: all .25s ease;
+    z-index: 20;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.next-slick-blog { right: unset; }
+.prev-slick-blog { right: unset; }
+
+/* حط الأسهم جنب زر عرض الكل */
+.wrap-slick-blog .slick-arrow-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.arrow-slick-blog:hover {
+    color: #717fe0;
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 20px rgba(246, 242, 242, 0.06);
+}
+
+.next-slick-blog { right: 0; }
+.prev-slick-blog { right: 54px; }
+
+/* ===== EMPTY ===== */
+.home-blog-empty {
+    padding: 18px 22px;
+    border-radius: 18px;
+    background: #f8f1df;
+    border: 1px solid #eadfbe;
+    color: #8a6d3b;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* ===== RTL ===== */
+html[dir="rtl"] .home-blog-heading {
+    text-align: right;
+}
+
+html[dir="rtl"] .blog-content {
+    text-align: right;
+}
+
+html[dir="rtl"] .blog-meta {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+html[dir="rtl"] .home-blog-header {
+    flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .home-blog-view-all {
+    flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .blog-read-more {
+    flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .blog-date-badge {
+    left: auto;
+    right: 18px;
+}
+
+html[dir="rtl"] .next-slick-blog {
+    right: auto;
+    left: 54px;
+}
+
+html[dir="rtl"] .prev-slick-blog {
+    right: auto;
+    left: 0;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 991px) {
+    .home-blog-section { padding: 70px 0; }
+    .home-blog-heading { font-size: 32px; }
+    .blog-card-image { height: 210px; }
+    .arrow-slick-blog { top: -72px; }
+}
+
+@media (max-width: 767px) {
+    .home-blog-header {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 24px;
+    }
+
+    html[dir="rtl"] .home-blog-header {
+        align-items: flex-end;
+    }
+
+    .home-blog-heading { font-size: 26px; }
+    .blog-card { border-radius: 20px; }
+    .blog-card-image { height: 190px; }
+    .blog-content { padding: 18px 18px 20px; }
+    .blog-title { font-size: 19px; }
+
+    .arrow-slick-blog {
+        display: none !important;
+    }
+}
+
+
+</style>
+
+
+
+
+
+
+
+
+
+
     <div class="wrap-header-cart js-panel-cart">
         <div class="s-full js-hide-cart"></div>
 
@@ -47,8 +426,7 @@
 
                         <li class="header-cart-item flex-w flex-t m-b-12">
                             <div class="header-cart-item-img">
-                                <form action="{{ route('cart.remove', $key) }}" method="POST"
-                                      onsubmit="return confirm('{{ __('site.remove_item_confirm') }}')">
+                                <form action="{{ route('cart.remove', $key) }}" method="POST" onsubmit="return confirm('{{ __('site.remove_item_confirm') }}')">
                                     @csrf
                                     @method('DELETE')
 
@@ -170,7 +548,7 @@
             <div class="row">
                 <div class="col-md-6 col-xl-4 p-b-30 m-lr-auto">
                     <div class="block1 wrap-pic-w">
-                        <img src="{{ asset('cozastore/images/banner-01.jpg') }}" alt="IMG-BANNER">
+                        <img src="{{ asset('cozastore/images/banner-01.jpg') }}" alt="{{ __('site.women') }}">
 
                         <a href="{{ route('products.index') }}"
                            class="block1-txt ab-t-l s-full flex-col-l-sb p-lr-38 p-tb-34 trans-03 respon3">
@@ -195,7 +573,7 @@
 
                 <div class="col-md-6 col-xl-4 p-b-30 m-lr-auto">
                     <div class="block1 wrap-pic-w">
-                        <img src="{{ asset('cozastore/images/banner-02.jpg') }}" alt="IMG-BANNER">
+                        <img src="{{ asset('cozastore/images/banner-02.jpg') }}" alt="{{ __('site.men') }}">
 
                         <a href="{{ route('products.index') }}"
                            class="block1-txt ab-t-l s-full flex-col-l-sb p-lr-38 p-tb-34 trans-03 respon3">
@@ -220,7 +598,7 @@
 
                 <div class="col-md-6 col-xl-4 p-b-30 m-lr-auto">
                     <div class="block1 wrap-pic-w">
-                        <img src="{{ asset('cozastore/images/banner-03.jpg') }}" alt="IMG-BANNER">
+                        <img src="{{ asset('cozastore/images/banner-03.jpg') }}" alt="{{ __('site.accessories') }}">
 
                         <a href="{{ route('products.index') }}"
                            class="block1-txt ab-t-l s-full flex-col-l-sb p-lr-38 p-tb-34 trans-03 respon3">
@@ -246,241 +624,1668 @@
         </div>
     </div>
 
-    <section class="bg0 p-t-23 p-b-140">
-        <div class="container">
-            <div class="p-b-10">
-                <h3 class="ltext-103 cl5">{{ __('site.product_overview') }}</h3>
-            </div>
 
-            <div class="flex-w flex-sb-m p-b-52">
-                <div class="flex-w flex-l-m filter-tope-group m-tb-10">
-                    <a class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 {{ request('category') ? '' : 'how-active1' }}"
+
+<style>
+    .products-page {
+        padding-top: 55px;
+        padding-bottom: 110px;
+        background: #fff;
+    }
+
+    .products-toolbar {
+        margin-bottom: 35px;
+    }
+
+    .products-heading {
+        margin-bottom: 28px;
+    }
+
+    .products-heading .ltext-103 {
+        font-size: 46px;
+        line-height: 1.2;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 10px;
+    }
+
+    .products-subtitle {
+        font-size: 15px;
+        color: #777;
+        margin: 0;
+    }
+
+    .products-toolbar-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
+
+    .products-categories {
+        display: flex;
+        align-items: center;
+        gap: 10px 16px;
+        flex-wrap: wrap;
+    }
+
+    .products-categories a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        text-decoration: none;
+        color: #666;
+        background: transparent;
+        border: 1px solid transparent;
+        transition: all .25s ease;
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    .products-categories a:hover {
+        color: #717fe0;
+        background: rgba(113,127,224,.08);
+        border-color: rgba(113,127,224,.12);
+    }
+
+    .products-categories a.how-active1 {
+        color: #717fe0 !important;
+        background: rgba(113,127,224,.12);
+        border-color: rgba(113,127,224,.14);
+        font-weight: 700;
+    }
+
+    .products-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .products-action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 18px;
+        border-radius: 12px;
+        background: #fff;
+        border: 1px solid #e9e9e9;
+        color: #444;
+        cursor: pointer;
+        transition: all .25s ease;
+        box-shadow: 0 4px 14px rgba(0,0,0,.03);
+    }
+
+    .products-action-btn:hover {
+        color: #717fe0;
+        border-color: rgba(113,127,224,.2);
+        background: rgba(113,127,224,.05);
+    }
+
+    .products-search-panel,
+    .products-filter-panel {
+        width: 100%;
+        border-radius: 20px;
+        background: #fff;
+        border: 1px solid #efefef;
+        box-shadow: 0 12px 30px rgba(0,0,0,.05);
+    }
+
+    .products-search-panel {
+        padding: 16px;
+        margin-top: 12px;
+    }
+
+    .products-search-form {
+        display: flex;
+        align-items: center;
+        min-height: 56px;
+        border: 1px solid #ececec;
+        border-radius: 14px;
+        overflow: hidden;
+        background: #fafafa;
+    }
+
+    .products-search-form button {
+        width: 58px;
+        height: 56px;
+        border: 0;
+        background: transparent;
+        color: #333;
+    }
+
+    .products-search-form input {
+        flex: 1;
+        height: 56px;
+        border: 0;
+        background: transparent;
+        color: #222;
+        font-size: 15px;
+        padding: 0 16px;
+        outline: none;
+    }
+
+    .products-filter-panel {
+        padding: 24px 26px 8px;
+        margin-top: 14px;
+    }
+
+    .products-filter-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    .filter-box-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 16px;
+    }
+
+    .filter-link-list,
+    .filter-link-list li {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .filter-link-list li + li {
+        margin-top: 10px;
+    }
+
+    .filter-link {
+        color: #666;
+        text-decoration: none;
+        transition: all .25s ease;
+        font-size: 14px;
+    }
+
+    .filter-link:hover {
+        color: #717fe0;
+    }
+
+    .filter-link.filter-link-active {
+        color: #717fe0;
+        font-weight: 700;
+    }
+
+    .products-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .products-tags .tag {
+        margin: 0;
+        min-height: 36px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: #f7f7f7;
+        color: #555;
+        text-decoration: none;
+        transition: all .25s ease;
+        border: 1px solid transparent;
+    }
+
+    .products-tags .tag:hover {
+        color: #717fe0;
+        background: rgba(113,127,224,.08);
+        border-color: rgba(113,127,224,.12);
+    }
+
+    .products-tags .tag.filter-link-active {
+        color: #717fe0;
+        background: rgba(113,127,224,.12);
+        border-color: rgba(113,127,224,.14);
+        font-weight: 700;
+    }
+
+    .products-reset-link {
+        display: inline-block;
+        margin-top: 14px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #717fe0;
+        text-decoration: none;
+    }
+
+    .products-grid {
+        margin-top: 26px;
+    }
+
+    .product-card {
+        border-radius: 20px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #efefef;
+        box-shadow: 0 10px 28px rgba(0,0,0,.04);
+        transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 18px 35px rgba(0,0,0,.08);
+        border-color: rgba(113,127,224,.14);
+    }
+
+    .product-card-media {
+        position: relative;
+        overflow: hidden;
+        background: #f7f7f7;
+        aspect-ratio: 4 / 5;
+    }
+
+    .product-card-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform .35s ease;
+    }
+
+    .product-card:hover .product-card-media img {
+        transform: scale(1.04);
+    }
+
+    .product-card-btn {
+        position: absolute;
+        left: 50%;
+        bottom: 18px;
+        transform: translateX(-50%) translateY(10px);
+        min-width: 150px;
+        min-height: 42px;
+        border-radius: 999px;
+        background: #222;
+        color: #fff;
+        text-decoration: none;
+        opacity: 0;
+        visibility: hidden;
+        transition: all .25s ease;
+        box-shadow: 0 10px 25px rgba(0,0,0,.18);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 16px;
+    }
+
+    .product-card:hover .product-card-btn {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    .product-card-body {
+        padding: 18px 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        flex: 1 1 auto;
+    }
+
+    .product-card-content {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .product-card-side {
+        flex: 0 0 auto;
+        padding-top: 3px;
+    }
+
+    .product-card-title {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-size: 15px;
+        font-weight: 600;
+        color: #222;
+        text-decoration: none;
+        line-height: 1.7;
+        min-height: 52px;
+        transition: all .25s ease;
+        margin-bottom: 8px;
+    }
+
+    .product-card-title:hover {
+        color: #717fe0;
+    }
+
+    .product-card-price {
+        display: inline-block;
+        font-size: 16px;
+        font-weight: 700;
+        color: #444;
+    }
+
+    .products-empty {
+        border-radius: 18px;
+        border: 1px solid #eee;
+        background: #fff8e8;
+        color: #8a6d3b;
+        padding: 18px 22px;
+        text-align: center;
+    }
+
+    .products-pagination {
+        margin-top: 18px;
+    }
+
+    .products-pagination nav {
+        display: flex;
+        justify-content: center;
+    }
+
+    .products-pagination svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    html[dir="rtl"] .products-heading,
+    html[dir="rtl"] .products-subtitle,
+    html[dir="rtl"] .products-filter-panel,
+    html[dir="rtl"] .filter-box-title,
+    html[dir="rtl"] .product-card-body {
+        text-align: right;
+    }
+
+    html[dir="rtl"] .products-toolbar-row {
+        flex-direction: row-reverse;
+    }
+
+    html[dir="rtl"] .products-categories {
+        justify-content: flex-start;
+    }
+
+    html[dir="rtl"] .products-actions {
+        flex-direction: row-reverse;
+    }
+
+    html[dir="rtl"] .products-search-form {
+        flex-direction: row-reverse;
+    }
+
+    html[dir="rtl"] .products-search-form input {
+        text-align: right;
+    }
+
+    html[dir="rtl"] .products-filter-grid {
+        direction: rtl;
+    }
+
+    html[dir="rtl"] .filter-link-list,
+    html[dir="rtl"] .products-tags {
+        text-align: right;
+    }
+
+    html[dir="rtl"] .product-card-body {
+        flex-direction: row-reverse;
+    }
+
+    @media (max-width: 1199px) {
+        .products-filter-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 991px) {
+        .products-heading .ltext-103 {
+            font-size: 36px;
+        }
+
+        .products-toolbar-row {
+            align-items: stretch;
+        }
+
+        .products-actions {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .products-page {
+            padding-top: 30px;
+            padding-bottom: 80px;
+        }
+
+        .products-heading .ltext-103 {
+            font-size: 30px;
+        }
+
+        .products-filter-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .products-categories,
+        .products-actions {
+            width: 100%;
+        }
+
+        .products-action-btn {
+            width: 100%;
+        }
+
+        .product-card-btn {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+
+
+    .home-blog-section {
+        padding-top: 20px;
+        padding-bottom: 90px;
+        background: #fff;
+    }
+
+    .home-blog-heading {
+        margin-bottom: 34px;
+    }
+
+    .home-blog-title {
+        font-size: 42px;
+        line-height: 1.2;
+        font-weight: 800;
+        color: #222;
+        margin: 0 0 10px;
+    }
+
+    .home-blog-subtitle {
+        font-size: 15px;
+        color: #777;
+        margin: 0;
+    }
+
+
+
+
+
+
+    .home-blog-image-frame {
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        overflow: hidden;
+        background: #f5f5f5;
+    }
+
+    .home-blog-image-frame img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform .4s ease;
+    }
+
+    .home-blog-card:hover .home-blog-image-frame img {
+        transform: scale(1.05);
+    }
+
+    .home-blog-date-badge {
+        position: absolute;
+        left: 18px;
+        bottom: 18px;
+        width: 74px;
+        min-height: 78px;
+        border-radius: 18px;
+        background: rgba(255,255,255,.94);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 10px 24px rgba(0,0,0,.08);
+    }
+
+
+
+    .home-blog-post-title {
+        margin: 0 0 12px;
+    }
+
+    .home-blog-post-title a {
+        font-size: 22px;
+        line-height: 1.45;
+        font-weight: 700;
+        color: #222;
+        text-decoration: none;
+        transition: all .25s ease;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 64px;
+    }
+
+    .home-blog-post-title a:hover {
+        color: #717fe0;
+    }
+
+    .home-blog-excerpt {
+        font-size: 15px;
+        line-height: 1.9;
+        color: #666;
+        margin-bottom: 18px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 86px;
+    }
+
+    .home-blog-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .home-blog-meta-left {
+        display: flex;
+        align-items: center;
+        gap: 8px 10px;
+        flex-wrap: wrap;
+        color: #666;
+        font-size: 14px;
+    }
+
+    .home-blog-meta-sep {
+        color: #c8c8c8;
+    }
+
+    .home-blog-read-more {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 42px;
+        padding: 0 16px;
+        border-radius: 999px;
+        border: 1px solid #ececec;
+        background: #fff;
+        color: #222;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all .25s ease;
+    }
+
+    .home-blog-read-more:hover {
+        color: #717fe0;
+        border-color: rgba(113,127,224,.25);
+        background: rgba(113,127,224,.05);
+    }
+
+    .home-blog-footer {
+        margin-top: 26px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .home-blog-view-all {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 0 22px;
+        border-radius: 999px;
+        background: #222;
+        color: #fff;
+        text-decoration: none;
+        transition: all .25s ease;
+    }
+
+    .home-blog-view-all:hover {
+        background: #717fe0;
+        color: #fff;
+    }
+
+    .home-blog-empty {
+        border-radius: 18px;
+        border: 1px solid #eee;
+        background: #fff8e8;
+        color: #8a6d3b;
+        padding: 18px 22px;
+        text-align: center;
+    }
+
+    html[dir="rtl"] .home-blog-heading,
+    html[dir="rtl"] .home-blog-body {
+        text-align: right;
+    }
+
+    html[dir="rtl"] .home-blog-date-badge {
+        left: auto;
+        right: 18px;
+    }
+
+    html[dir="rtl"] .home-blog-meta,
+    html[dir="rtl"] .home-blog-meta-left {
+        flex-direction: row-reverse;
+    }
+
+    @media (max-width: 991px) {
+        .home-blog-title {
+            font-size: 34px;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .home-blog-section {
+            padding-top: 10px;
+            padding-bottom: 70px;
+        }
+
+        .home-blog-title {
+            font-size: 28px;
+        }
+
+        .home-blog-post-title a {
+            font-size: 20px;
+        }
+
+        .home-blog-date-badge {
+            width: 66px;
+            min-height: 70px;
+            border-radius: 15px;
+        }
+    }
+
+.home-blog-section{
+    padding: 90px 0;
+    background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+    overflow: hidden;
+}
+
+.home-blog-header{
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.home-blog-kicker{
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+.home-blog-heading{
+    margin: 0;
+    font-size: 40px;
+    line-height: 1.15;
+    font-weight: 800;
+    color: #222;
+}
+
+.home-blog-view-all{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 0 18px;
+    border-radius: 999px;
+    background: #efeaea;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: .25s ease;
+    white-space: nowrap;
+}
+
+.home-blog-view-all:hover{
+    background: #717fe0;
+    color: #fff;
+}
+
+
+
+
+
+.blog-track{
+    display: flex;
+    align-items: stretch;
+    gap: 22px;
+    width: max-content;
+    animation: blogTicker 40s linear infinite;
+    will-change: transform;
+}
+
+
+
+.blog-card{
+    width: 340px;
+    flex: 0 0 340px;
+    background: #fff;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,.06);
+    box-shadow: 0 10px 30px rgba(0,0,0,.05);
+    transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+
+.blog-card:hover{
+    transform: translateY(-8px);
+    box-shadow: 0 18px 40px rgba(0,0,0,.09);
+    border-color: rgba(113,127,224,.25);
+}
+
+.blog-card-image-link{
+    position: relative;
+    display: block;
+    overflow: hidden;
+}
+
+.blog-card-image{
+    width: 100%;
+    height: 235px;
+    object-fit: cover;
+    display: block;
+    transition: transform .45s ease;
+}
+
+.blog-card:hover .blog-card-image{
+    transform: scale(1.06);
+}
+
+.blog-date-badge{
+    position: absolute;
+    left: 18px;
+    bottom: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 78px;
+    height: 38px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.94);
+    color: #222;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 6px 20px rgba(0,0,0,.08);
+    backdrop-filter: blur(8px);
+}
+
+.blog-content{
+    padding: 22px 22px 24px;
+}
+
+.blog-meta{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 12px;
+}
+
+.blog-title{
+    margin: 0 0 12px;
+    font-size: 22px;
+    line-height: 1.45;
+    font-weight: 700;
+}
+
+.blog-title a{
+    color: #222;
+    text-decoration: none;
+    transition: color .25s ease;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 64px;
+}
+
+.blog-title a:hover{
+    color: #717fe0;
+}
+
+.blog-excerpt{
+    margin: 0 0 18px;
+    font-size: 14px;
+    line-height: 1.9;
+    color: #666;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 80px;
+}
+
+.blog-read-more{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #222;
+    text-decoration: none;
+    font-weight: 700;
+    transition: .25s ease;
+}
+
+.blog-read-more:hover{
+    color: #717fe0;
+}
+
+.home-blog-empty{
+    padding: 18px 22px;
+    border-radius: 18px;
+    background: #f8f1df;
+    border: 1px solid #eadfbe;
+    color: #8a6d3b;
+    text-align: center;
+    font-weight: 600;
+}
+
+
+
+html[dir="rtl"] .home-blog-header{
+    flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .blog-meta{
+    flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .blog-date-badge{
+    left: auto;
+    right: 18px;
+}
+
+html[dir="rtl"] .home-blog-view-all,
+html[dir="rtl"] .blog-read-more{
+    flex-direction: row-reverse;
+}
+
+@media (max-width: 991px){
+    .home-blog-section{
+        padding: 70px 0;
+    }
+
+    .home-blog-heading{
+        font-size: 32px;
+    }
+
+    .blog-card{
+        width: 300px;
+        flex-basis: 300px;
+    }
+
+    .blog-card-image{
+        height: 210px;
+    }
+}
+
+@media (max-width: 767px){
+    .home-blog-header{
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 24px;
+    }
+
+    html[dir="rtl"] .home-blog-header{
+        align-items: flex-end;
+    }
+
+    .home-blog-heading{
+        font-size: 26px;
+    }
+
+    .blog-card{
+        width: 270px;
+        flex-basis: 270px;
+        border-radius: 20px;
+    }
+
+    .blog-card-image{
+        height: 190px;
+    }
+
+    .blog-content{
+        padding: 18px 18px 20px;
+    }
+
+    .blog-title{
+        font-size: 19px;
+    }
+
+    .blog-track{
+        gap: 16px;
+        animation-duration: 32s;
+    }
+}
+
+.products-slider-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.products-slider-viewport {
+    overflow: hidden;
+    width: 100%;
+}
+
+.products-slider-track {
+    display: flex;
+    transition: transform .5s ease;
+}
+
+.products-slide {
+    flex: 0 0 25%;
+    padding: 10px;
+}
+
+.products-slider-arrow {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #fff;
+    border: none;
+    box-shadow: 0 6px 20px rgba(0,0,0,.1);
+    cursor: pointer;
+}
+
+.products-slider-dots {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.products-slider-dots button {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: none;
+    margin: 0 4px;
+    background: #ccc;
+}
+
+.products-slider-dots button.active {
+    background: #000;
+}
+
+@media(max-width:991px){
+    .products-slide { flex:0 0 50%; }
+}
+
+@media(max-width:576px){
+    .products-slide { flex:0 0 100%; }
+}
+
+.products-pro-slider {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.products-pro-viewport {
+    width: 100%;
+    overflow: hidden;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y;
+}
+
+.products-pro-viewport.is-dragging {
+    cursor: grabbing;
+}
+
+.products-pro-track {
+    display: flex;
+    will-change: transform;
+}
+
+.products-pro-slide {
+    flex: 0 0 25%;
+    max-width: 25%;
+    box-sizing: border-box;
+    padding: 0 10px;
+}
+
+.products-pro-arrow {
+    width: 46px;
+    height: 46px;
+    border: 0;
+    border-radius: 50%;
+    background: #fff;
+    color: #222;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: .25s ease;
+    z-index: 5;
+    flex-shrink: 0;
+}
+
+.products-pro-arrow:hover {
+    background: #717fe0;
+    color: #fff;
+}
+
+.products-pro-arrow:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.products-pro-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.products-pro-dots button {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: #d0d0d0;
+    cursor: pointer;
+    transition: .25s ease;
+}
+
+.products-pro-dots button.active {
+    background: #222;
+    transform: scale(1.2);
+}
+
+.products-pro-slide .product-card {
+    height: 100%;
+}
+
+.products-pro-slide .product-card-media img {
+    width: 100%;
+    display: block;
+}
+
+html[dir="rtl"] .products-pro-arrow.products-pro-prev i::before {
+    content: "\f2fb";
+}
+
+html[dir="rtl"] .products-pro-arrow.products-pro-next i::before {
+    content: "\f2fa";
+}
+
+@media (max-width: 1199px) {
+    .products-pro-slide {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+    }
+}
+
+@media (max-width: 991px) {
+    .products-pro-slide {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (max-width: 767px) {
+    .products-pro-slider {
+        gap: 8px;
+    }
+
+    .products-pro-slide {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding: 0 6px;
+    }
+
+    .products-pro-arrow {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+
+
+/*   */
+
+.wrap-slick2 {
+    position: relative;
+}
+
+.wrap-slick2-dots {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.slick2-dots {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.slick2-dots li {
+    display: inline-block;
+    margin: 0 4px;
+}
+
+.slick2-dots li button {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 0;
+    background: #ccc;
+    font-size: 0;
+    padding: 0;
+}
+
+.slick2-dots li.slick-active button {
+    background: #222;
+}
+
+.home-blog-section {
+    padding: 80px 0;
+    overflow: hidden;
+}
+
+
+
+
+
+.blog-track {
+    display: flex;
+    gap: 24px;
+    width: max-content;
+    animation: blogMarquee 35s linear infinite;
+}
+
+
+
+.blog-card {
+    width: 360px;
+    min-width: 360px;
+    background: #fff;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .06);
+    border: 1px solid rgba(0,0,0,.06);
+}
+
+.blog-card-image-link {
+    display: block;
+    position: relative;
+}
+
+.blog-card-image {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    display: block;
+}
+
+.blog-date-badge {
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    background: #fff;
+    color: #222;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.blog-content {
+    padding: 22px;
+}
+
+.blog-meta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    color: #777;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.blog-title {
+    font-size: 22px;
+    line-height: 1.4;
+    margin: 0 0 12px;
+}
+
+.blog-title a {
+    color: #222;
+    text-decoration: none;
+}
+
+.blog-excerpt {
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 16px;
+}
+
+.blog-read-more,
+.home-blog-view-all {
+    color: #222;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+
+
+@media (max-width: 991px) {
+    .blog-card {
+        width: 300px;
+        min-width: 300px;
+    }
+}
+
+@media (max-width: 767px) {
+    .blog-card {
+        width: 260px;
+        min-width: 260px;
+    }
+}
+
+
+.products-pagination {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.products-pagination nav {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.products-pagination nav > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.products-pagination nav p {
+    display: none;
+}
+
+.products-pagination nav span,
+.products-pagination nav a {
+    min-width: 42px;
+    height: 42px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    border: 1px solid #e5e5e5;
+    background: #fff;
+    color: #222;
+    text-decoration: none;
+    font-weight: 600;
+    transition: .25s ease;
+}
+
+.products-pagination nav a:hover {
+    background: #717fe0;
+    border-color: #717fe0;
+    color: #fff;
+}
+
+.products-pagination nav span[aria-current="page"] {
+    background: #222;
+    color: #fff;
+    border-color: #222;
+}
+
+.products-pagination svg {
+    width: 16px;
+    height: 16px;
+}
+
+</style>
+
+<section class="products-page">
+    <div class="container">
+
+        <div class="products-heading">
+            <h3 class="ltext-103">
+                {{ __('site.product_overview') }}
+            </h3>
+
+            <p class="products-subtitle">
+                {{ __('site.browse_our_latest_products') }}
+            </p>
+        </div>
+
+        <div class="products-toolbar">
+            <div class="products-toolbar-row">
+
+                <div class="products-categories">
+                    <a class="{{ request('category') ? '' : 'how-active1' }}"
                        href="{{ url()->current() }}">
                         {{ __('site.all_products') }}
                     </a>
 
-                    @foreach($categories as $cat)
-                        <a class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 {{ request('category') === $cat->slug ? 'how-active1' : '' }}"
+                    @foreach ($categories as $cat)
+                        <a class="{{ request('category') === $cat->slug ? 'how-active1' : '' }}"
                            href="{{ request()->fullUrlWithQuery(['category' => $cat->slug, 'page' => 1]) }}">
                             {{ $cat->name ?? $cat->slug }}
                         </a>
                     @endforeach
                 </div>
 
-                <div class="flex-w flex-c-m m-tb-10">
-                    <div class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4 js-show-filter">
-                        <i class="icon-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-filter-list"></i>
-                        <i class="icon-close-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
-                        {{ __('site.filter') }}
+                <div class="products-actions">
+                    <button type="button" class="products-action-btn js-show-filter">
+                        <i class="zmdi zmdi-filter-list"></i>
+                        <span>{{ __('site.filter') }}</span>
+                    </button>
+
+                    <button type="button" class="products-action-btn js-show-search">
+                        <i class="zmdi zmdi-search"></i>
+                        <span>{{ __('site.search') }}</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="dis-none panel-search products-search-panel">
+                <form class="products-search-form" method="GET" action="{{ url()->current() }}">
+                    @foreach (request()->except(['q', 'page']) as $k => $v)
+                        <input type="hidden" name="{{ $k }}" value="{{ $v }}">
+                    @endforeach
+
+
+                    <button type="submit">
+                        <i class="zmdi zmdi-search"></i>
+                    </button>
+
+                    <input type="text"
+                           name="q"
+                           value="{{ request('q') }}"
+                           placeholder="{{ __('site.search_products') }}">
+                </form>
+            </div>
+
+            <div class="dis-none panel-filter products-filter-panel">
+                <div class="products-filter-grid">
+
+                    <div class="filter-col1">
+                        <div class="filter-box-title">{{ __('site.sort_by') }}</div>
+                        <ul class="filter-link-list">
+                            <li>
+                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'new', 'page' => 1]) }}"
+                                   class="filter-link {{ request('sort', 'new') === 'new' ? 'filter-link-active' : '' }}">
+                                    {{ __('site.newness') }}
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'price_asc', 'page' => 1]) }}"
+                                   class="filter-link {{ request('sort') === 'price_asc' ? 'filter-link-active' : '' }}">
+                                    {{ __('site.price_low_high') }}
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'price_desc', 'page' => 1]) }}"
+                                   class="filter-link {{ request('sort') === 'price_desc' ? 'filter-link-active' : '' }}">
+                                    {{ __('site.price_high_low') }}
+                                </a>
+                            </li>
+                        </ul>
                     </div>
 
-                    <div class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
-                        <i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
-                        <i class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
-                        {{ __('site.search') }}
+                    <div class="filter-col2">
+                        <div class="filter-box-title">{{ __('site.price') }}</div>
+                        <ul class="filter-link-list">
+                            @foreach ($priceRanges as $range)
+                                @php
+                                    $isActive =
+                                        ($range['min'] === null && $range['max'] === null && !request()->hasAny(['min', 'max']))
+                                        || ((string) request('min') === (string) $range['min']
+                                        && (string) request('max') === (string) $range['max']);
+                                @endphp
+
+                                <li>
+                                    <a href="{{ request()->fullUrlWithQuery([
+                                        'min'  => $range['min'],
+                                        'max'  => $range['max'],
+                                        'page' => 1
+                                    ]) }}"
+                                       class="filter-link {{ $isActive ? 'filter-link-active' : '' }}">
+                                        {{ $range['label'] }}
+                                    </a>
+                                </li>
+                            @endforeach
+
+                            <li>
+                                <a href="{{ request()->fullUrlWithQuery(['min' => null, 'max' => null, 'page' => 1]) }}"
+                                   class="filter-link">
+                                    {{ __('site.reset_price') }}
+                                </a>
+                            </li>
+                        </ul>
                     </div>
-                </div>
 
-                <div class="dis-none panel-search w-full p-t-10 p-b-15">
-                    <form class="bor8 dis-flex p-l-15" method="GET" action="{{ url()->current() }}">
-                        @foreach(request()->except(['q', 'page']) as $k => $v)
-                            <input type="hidden" name="{{ $k }}" value="{{ $v }}">
-                        @endforeach
-
-                        <button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04" type="submit">
-                            <i class="zmdi zmdi-search"></i>
-                        </button>
-
-                        <input class="mtext-107 cl2 size-114 plh2 p-r-15"
-                               type="text"
-                               name="q"
-                               value="{{ request('q') }}"
-                               placeholder="{{ __('site.search_products') }}">
-                    </form>
-                </div>
-
-                <div class="dis-none panel-filter w-full p-t-10">
-                    <div class="wrap-filter flex-w bg6 w-full p-lr-40 p-t-27 p-lr-15-sm">
-                        <div class="filter-col1 p-r-15 p-b-27">
-                            <div class="mtext-102 cl2 p-b-15">{{ __('site.sort_by') }}</div>
-                            <ul>
-                                <li class="p-b-6">
-                                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'new', 'page' => 1]) }}"
-                                       class="filter-link stext-106 trans-04 {{ request('sort', 'new') === 'new' ? 'filter-link-active' : '' }}">
-                                        {{ __('site.newness') }}
-                                    </a>
-                                </li>
-
-                                <li class="p-b-6">
-                                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'price_asc', 'page' => 1]) }}"
-                                       class="filter-link stext-106 trans-04 {{ request('sort') === 'price_asc' ? 'filter-link-active' : '' }}">
-                                        {{ __('site.price_low_high') }}
-                                    </a>
-                                </li>
-
-                                <li class="p-b-6">
-                                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'price_desc', 'page' => 1]) }}"
-                                       class="filter-link stext-106 trans-04 {{ request('sort') === 'price_desc' ? 'filter-link-active' : '' }}">
-                                        {{ __('site.price_high_low') }}
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="filter-col2 p-r-15 p-b-27">
-                            <div class="mtext-102 cl2 p-b-15">{{ __('site.price') }}</div>
-                            <ul>
-                                @foreach($priceRanges as $range)
-                                    @php
-                                        $isActive =
-                                            ($range['min'] === null && $range['max'] === null && !request()->hasAny(['min', 'max']))
-                                            || ((string) request('min') === (string) $range['min'] && (string) request('max') === (string) $range['max']);
-                                    @endphp
-
-                                    <li class="p-b-6">
-                                        <a href="{{ request()->fullUrlWithQuery([
-                                            'min' => $range['min'],
-                                            'max' => $range['max'],
-                                            'page' => 1
-                                        ]) }}"
-                                           class="filter-link stext-106 trans-04 {{ $isActive ? 'filter-link-active' : '' }}">
-                                            {{ $range['label'] }}
-                                        </a>
-                                    </li>
-                                @endforeach
-
-                                <li class="p-b-6">
-                                    <a href="{{ request()->fullUrlWithQuery(['min' => null, 'max' => null, 'page' => 1]) }}"
-                                       class="filter-link stext-106 trans-04">
-                                        {{ __('site.reset_price') }}
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="filter-col3 p-r-15 p-b-27">
-                            <div class="mtext-102 cl2 p-b-15">{{ __('site.color') }}</div>
-                            <ul>
-                                <li class="p-b-6">
-                                    <a href="{{ request()->fullUrlWithQuery(['color' => null, 'page' => 1]) }}"
-                                       class="filter-link stext-106 trans-04 {{ request('color') ? '' : 'filter-link-active' }}">
-                                        {{ __('site.all') }}
-                                    </a>
-                                </li>
-
-                                @foreach($colorValues as $val)
-                                    <li class="p-b-6">
-                                        <a href="{{ request()->fullUrlWithQuery(['color' => $val->id, 'page' => 1]) }}"
-                                           class="filter-link stext-106 trans-04 {{ (string) request('color') === (string) $val->id ? 'filter-link-active' : '' }}">
-                                            {{ $val->value }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-
-                        <div class="filter-col4 p-b-27">
-                            <div class="mtext-102 cl2 p-b-15">{{ __('site.tags') }}</div>
-
-                            <div class="flex-w p-t-4 m-r--5">
-                                <a href="{{ request()->fullUrlWithQuery(['tag' => null, 'page' => 1]) }}"
-                                   class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5 {{ request('tag') ? '' : 'filter-link-active' }}">
+                    <div class="filter-col3">
+                        <div class="filter-box-title">{{ __('site.color') }}</div>
+                        <ul class="filter-link-list">
+                            <li>
+                                <a href="{{ request()->fullUrlWithQuery(['color' => null, 'page' => 1]) }}"
+                                   class="filter-link {{ request('color') ? '' : 'filter-link-active' }}">
                                     {{ __('site.all') }}
                                 </a>
+                            </li>
 
-                                @foreach($tagValues as $val)
-                                    <a href="{{ request()->fullUrlWithQuery(['tag' => $val->id, 'page' => 1]) }}"
-                                       class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5 {{ (string) request('tag') === (string) $val->id ? 'filter-link-active' : '' }}">
+                            @foreach ($colorValues as $val)
+                                <li>
+                                    <a href="{{ request()->fullUrlWithQuery(['color' => $val->id, 'page' => 1]) }}"
+                                       class="filter-link {{ (string) request('color') === (string) $val->id ? 'filter-link-active' : '' }}">
                                         {{ $val->value }}
                                     </a>
-                                @endforeach
-                            </div>
-
-                            <div class="p-t-20">
-                                <a href="{{ url()->current() }}" class="stext-106 cl6 hov1 trans-04">
-                                    {{ __('site.reset_all_filters') }}
-                                </a>
-                            </div>
-                        </div>
+                                </li>
+                            @endforeach
+                        </ul>
                     </div>
+
+                    <div class="filter-col4">
+                        <div class="filter-box-title">{{ __('site.tags') }}</div>
+
+                        <div class="products-tags">
+                            <a href="{{ request()->fullUrlWithQuery(['tag' => null, 'page' => 1]) }}"
+                               class="tag {{ request('tag') ? '' : 'filter-link-active' }}">
+                                {{ __('site.all') }}
+                            </a>
+
+                            @foreach ($tagValues as $val)
+                                <a href="{{ request()->fullUrlWithQuery(['tag' => $val->id, 'page' => 1]) }}"
+                                   class="tag {{ (string) request('tag') === (string) $val->id ? 'filter-link-active' : '' }}">
+                                    {{ $val->value }}
+                                </a>
+                            @endforeach
+                        </div>
+
+                        <a href="{{ url()->current() }}" class="products-reset-link">
+                            {{ __('site.reset_all_filters') }}
+                        </a>
+                    </div>
+
                 </div>
             </div>
+        </div>
 
-            <div class="row isotope-grid">
-                @forelse($products as $product)
-                    @php
-                        $img = $product->primaryImage?->path
-                            ? Storage::url($product->primaryImage->path)
-                            : asset('cozastore/images/product-01.jpg');
+        @if ($products->count())
+            <div class="wrap-slick2">
+                <div class="slick2">
+                    @foreach ($products as $product)
+                        @php
+                            $img = $product->primaryImage?->path
+                                ? Storage::url($product->primaryImage->path)
+                                : asset('cozastore/images/product-01.jpg');
 
-                        $wishlistExists = false;
+                            $wishlistExists = false;
 
-                        if (auth()->check() && auth()->user()->wishlist) {
-                            $wishlistExists = auth()->user()->wishlist->items()
-                                ->where('product_id', $product->id)
-                                ->whereNull('variant_id')
-                                ->exists();
-                        }
-                    @endphp
+                            if (auth()->check() && auth()->user()->wishlist) {
+                                $wishlistExists = auth()->user()->wishlist->items()
+                                    ->where('product_id', $product->id)
+                                    ->whereNull('variant_id')
+                                    ->exists();
+                            }
+                        @endphp
 
-                    <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item">
-                        <div class="block2">
-                            <div class="block2-pic hov-img0">
-                                <img src="{{ $img }}" alt="{{ $product->name ?? $product->slug }}">
+                        <div class="item-slick2 p-l-15 p-r-15 p-b-30">
+                            <div class="product-card">
+                                <div class="product-card-media">
+                                    <img src="{{ $img }}" alt="{{ $product->name ?? $product->slug }}">
 
-                                <a href="{{ route('products.show', $product->slug) }}"
-                                   class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
-                                    {{ __('site.view') }}
-                                </a>
-                            </div>
-
-                            <div class="block2-txt flex-w flex-t p-t-14">
-                                <div class="block2-txt-child1 flex-col-l">
                                     <a href="{{ route('products.show', $product->slug) }}"
-                                       class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                        {{ $product->name ?? $product->slug }}
+                                       class="product-card-btn">
+                                        {{ __('site.view') }}
                                     </a>
-
-                                    <span class="stext-105 cl3">
-                                        {{ number_format((float) $product->base_price, 2) }} {{ $product->currency }}
-                                    </span>
                                 </div>
 
-                                <div class="block2-txt-child2 flex-r p-t-3">
-                                    @auth
-                                        <form action="{{ route('wishlist.toggle') }}" method="POST" style="margin:0">
-                                            @csrf
-                                            <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                            <input type="hidden" name="variant_id" value="">
-
-                                            <button type="submit" style="background:none;border:none;padding:0;cursor:pointer">
-                                                @if($wishlistExists)
-                                                    <img src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}" class="trans-04" style="width:20px" alt="wishlist">
-                                                @else
-                                                    <img src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" class="trans-04" style="width:20px" alt="wishlist">
-                                                @endif
-                                            </button>
-                                        </form>
-                                    @else
-                                        <a href="{{ route('login') }}">
-                                            <img src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" style="width:20px" alt="wishlist">
+                                <div class="product-card-body">
+                                    <div class="product-card-content">
+                                        <a href="{{ route('products.show', $product->slug) }}"
+                                           class="product-card-title">
+                                            {{ $product->name ?? $product->slug }}
                                         </a>
-                                    @endauth
+
+                                        <span class="product-card-price">
+                                            {{ number_format((float) $product->base_price, 2) }} {{ $product->currency }}
+                                        </span>
+                                    </div>
+
+                                    <div class="product-card-side">
+                                        @auth
+                                            <form action="{{ route('wishlist.toggle') }}" method="POST" style="margin:0">
+                                                @csrf
+                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                                <input type="hidden" name="variant_id" value="">
+
+                                                <button type="submit" style="background:none;border:none;padding:0;cursor:pointer">
+                                                    @if ($wishlistExists)
+                                                        <img src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}" style="width:20px" alt="wishlist">
+                                                    @else
+                                                        <img src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" style="width:20px" alt="wishlist">
+                                                    @endif
+                                                </button>
+                                            </form>
+                                        @else
+                                            <a href="{{ route('login') }}">
+                                                <img src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" style="width:20px" alt="wishlist">
+                                            </a>
+                                        @endauth
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @empty
-                    <div class="col-12 p-t-30">
-                        <p>{{ __('site.no_products_found') }}</p>
-                    </div>
-                @endforelse
-            </div>
+                    @endforeach
+                </div>
 
-            <div class="flex-c-m flex-w w-full p-t-45">
+                <div class="wrap-slick2-dots"></div>
+            </div>
+        @else
+            <div class="products-empty">
+                {{ __('site.no_products_found') }}
+            </div>
+        @endif
+
+        {{-- @if (method_exists($products, 'links'))
+            <div class="products-pagination text-center">
                 {{ $products->links() }}
             </div>
+        @endif --}}
+
+    </div>
+</section>
+
+
+
+<section class="home-blog-section">
+    <div class="container">
+        <div class="home-blog-header">
+            <div>
+                <span class="home-blog-kicker">{{ __('site.blog') }}</span>
+                <h2 class="home-blog-heading">{{ __('site.continue_reading') }}</h2>
+            </div>
+
+            <a href="{{ route('blog.index') }}" class="home-blog-view-all">
+                {{ __('site.view_all') }}
+                <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+            </a>
         </div>
-    </section>
+
+        @if(isset($blogs) && $blogs->count())
+            <div class="wrap-slick-blog">
+                <div class="slick-blog">
+                    @foreach($blogs as $blog)
+                        <div class="item-slick-blog">
+                            <article class="blog-card">
+                                <a href="{{ route('blog.show', $blog->slug) }}" class="blog-card-image-link">
+                                    <img
+                                        src="{{ !empty($blog->image) ? asset('storage/' . $blog->image) : asset('images/default-blog.jpg') }}"
+                                        alt="{{ $blog->title }}"
+                                        class="blog-card-image"
+                                    >
+
+                                    <span class="blog-date-badge">
+                                        {{ optional($blog->published_at ?? $blog->created_at)->format('d M') }}
+                                    </span>
+                                </a>
+
+                                <div class="blog-content">
+                                    <div class="blog-meta">
+                                        @if(!empty($blog->category?->name))
+                                            <span>{{ $blog->category->name }}</span>
+                                        @endif
+
+                                        <span>{{ optional($blog->published_at ?? $blog->created_at)->format('Y') }}</span>
+                                    </div>
+
+                                    <h4 class="blog-title">
+                                        <a href="{{ route('blog.show', $blog->slug) }}">
+                                            {{ $blog->title }}
+                                        </a>
+                                    </h4>
+
+                                    <p class="blog-excerpt">
+                                        {{ \Illuminate\Support\Str::limit(strip_tags($blog->excerpt ?? $blog->content ?? ''), 110) }}
+                                    </p>
+
+                                    <a href="{{ route('blog.show', $blog->slug) }}" class="blog-read-more">
+                                        {{ __('site.continue_reading') }}
+                                        <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                            </article>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="wrap-slick-blog-dots"></div>
+            </div>
+        @else
+            <div class="home-blog-empty">
+                {{ __('site.no_blog_posts') }}
+            </div>
+        @endif
+
+    </div>
+</section>
 
 @endsection

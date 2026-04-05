@@ -90,5 +90,7 @@ return [
 'shipping_status' => 'حالة الشحن',
 'view_order' => 'عرض الطلب',
 'no_orders_found' => 'لا توجد طلبات',
+
+
 ];
 
