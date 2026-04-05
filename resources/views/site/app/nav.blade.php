@@ -102,9 +102,9 @@
             </a>
 
             @auth
-                <a href="{{ route('myaccount') }}" class="user-link">
+                {{-- <a href="{{ route('myaccount') }}" class="user-link">
                     {{ auth()->user()->name }}
-                </a>
+                </a> --}}
             @endauth
         </div>
 
