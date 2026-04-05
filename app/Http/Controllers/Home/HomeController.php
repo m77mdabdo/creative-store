@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
 use App\Models\Blog;
-use App\Models\page;
+use App\Models\Page;
 use App\Models\PageTranslation;
 use App\Models\Category;
 use App\Models\Product;
