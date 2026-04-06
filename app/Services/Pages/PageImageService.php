@@ -13,10 +13,15 @@ class PageImageService
             return $oldPath;
         }
 
-        $newPath = $file->store($directory, 'public');
+        $newPath = $file->store($directory);
 
-        if ($oldPath && Storage::disk('public')->exists($oldPath)) {
-            Storage::disk('public')->delete($oldPath);
+        if (
+            $oldPath &&
+            ! $this->isExternalUrl($oldPath) &&
+            ! $this->isAssetPath($oldPath) &&
+            Storage::exists($oldPath)
+        ) {
+            Storage::delete($oldPath);
         }
 
         return $newPath;
@@ -24,8 +29,13 @@ class PageImageService
 
     public function deleteIfExists(?string $path): void
     {
-        if ($path && Storage::disk('public')->exists($path)) {
-            Storage::disk('public')->delete($path);
+        if (
+            $path &&
+            ! $this->isExternalUrl($path) &&
+            ! $this->isAssetPath($path) &&
+            Storage::exists($path)
+        ) {
+            Storage::delete($path);
         }
     }
 
@@ -35,17 +45,24 @@ class PageImageService
             return asset('images/about-01.jpg');
         }
 
-        if (
-            str_starts_with($path, 'http://') ||
-            str_starts_with($path, 'https://')
-        ) {
+        if ($this->isExternalUrl($path)) {
             return $path;
         }
 
-        if (str_starts_with($path, 'images/')) {
+        if ($this->isAssetPath($path)) {
             return asset($path);
         }
 
-        return asset('storage/' . ltrim($path, '/'));
+        return Storage::url($path);
+    }
+
+    private function isExternalUrl(string $path): bool
+    {
+        return str_starts_with($path, 'http://') || str_starts_with($path, 'https://');
+    }
+
+    private function isAssetPath(string $path): bool
+    {
+        return str_starts_with($path, 'images/');
     }
 }

@@ -91,7 +91,7 @@ class BlogController extends Controller
         $data['views'] = 0;
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('blogs', 'public');
+            $data['image'] = $request->file('image')->store('blogs');
         }
 
         $blog = Blog::create($data);
@@ -130,11 +130,11 @@ class BlogController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
-            if ($blog->image && Storage::disk('public')->exists($blog->image)) {
-                Storage::disk('public')->delete($blog->image);
+            if ($blog->image && Storage::exists($blog->image)) {
+                Storage::delete($blog->image);
             }
 
-            $data['image'] = $request->file('image')->store('blogs', 'public');
+            $data['image'] = $request->file('image')->store('blogs');
         }
 
         $blog->update($data);
@@ -174,8 +174,8 @@ class BlogController extends Controller
                 ->with('error', 'Cannot delete this blog because it has comments.');
         }
 
-        if ($blog->image && Storage::disk('public')->exists($blog->image)) {
-            Storage::disk('public')->delete($blog->image);
+        if ($blog->image && Storage::exists($blog->image)) {
+            Storage::delete($blog->image);
         }
 
         $title = $blog->title;
