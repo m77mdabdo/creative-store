@@ -22,7 +22,7 @@ class VariantImageController extends Controller
             $sortOrder = (int) $variant->images()->max('sort_order');
 
             foreach ($request->file('images', []) as $index => $file) {
-                $path = $file->store('products/variants', 'public');
+                $path = $file->store('products/variants');
 
                 $product->images()->create([
                     'variant_id' => $variant->id,
@@ -63,8 +63,8 @@ class VariantImageController extends Controller
             404
         );
 
-        if ($image->path && Storage::disk('public')->exists($image->path)) {
-            Storage::disk('public')->delete($image->path);
+        if ($image->path && Storage::exists($image->path)) {
+            Storage::delete($image->path);
         }
 
         $image->delete();
