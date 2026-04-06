@@ -37,7 +37,7 @@ class ProductImageController extends Controller
             $sortOrder = (int) $product->images()->whereNull('variant_id')->max('sort_order');
 
             foreach ($request->file('images', []) as $index => $file) {
-                $path = $file->store('products/general', 'public');
+                $path = $file->store('products/general');
 
                 $product->images()->create([
                     'variant_id' => null,
@@ -83,8 +83,8 @@ class ProductImageController extends Controller
     {
         abort_unless($image->product_id === $product->id, 404);
 
-        if ($image->path && Storage::disk('public')->exists($image->path)) {
-            Storage::disk('public')->delete($image->path);
+        if ($image->path && Storage::exists($image->path)) {
+            Storage::delete($image->path);
         }
 
         $image->delete();
