@@ -2,16 +2,18 @@
 
 @section('content')
 @php
+    use Illuminate\Support\Facades\Storage;
+
     $image1 = $content['image_1'] ?? 'images/about-01.jpg';
     $image2 = $content['image_2'] ?? 'images/about-02.jpg';
 
     $image1Url = str_starts_with($image1, 'images/')
         ? asset($image1)
-        : asset('storage/' . ltrim($image1, '/'));
+        : Storage::url($image1);
 
     $image2Url = str_starts_with($image2, 'images/')
         ? asset($image2)
-        : asset('storage/' . ltrim($image2, '/'));
+        : Storage::url($image2);
 @endphp
 
 <section class="bg-img1 txt-center p-lr-15 p-tb-92" style="background-image: url('{{ asset('images/bg-01.jpg') }}');">
@@ -98,4 +100,3 @@
     </div>
 </section>
 @endsection
-
