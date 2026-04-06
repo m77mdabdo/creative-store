@@ -6,28 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ __('site.login') }} | Creative Store</title>
 
-    <!-- Google Font -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ asset('AdminLTE/plugins/fontawesome-free/css/all.min.css') }}">
-
-    <!-- icheck bootstrap -->
     <link rel="stylesheet" href="{{ asset('AdminLTE/plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
-
-    <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('AdminLTE/dist/css/adminlte.min.css') }}">
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            min-height: 100%;
+        }
+
         body {
             margin: 0;
+            background: #fff;
         }
 
         .register-wrapper {
             display: flex;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
             background: #fff;
         }
 
@@ -42,7 +44,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: none;
+            display: block;
             transform: scale(1.02);
         }
 
@@ -63,22 +65,9 @@
         }
 
         .register-form-side .register-box {
-            width: 860px;
+            width: 100%;
+            max-width: 860px;
             margin: 0;
-        }
-
-        @media(max-width:992px) {
-            .register-video {
-                display: none;
-            }
-
-            .register-form-side {
-                width: 100%;
-            }
-
-            .register-form-side .register-box {
-                width: 420px;
-            }
         }
 
         .card {
@@ -86,6 +75,7 @@
             border-top: 3px solid #000;
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
             overflow: hidden;
+            margin-bottom: 0;
         }
 
         .logo-header {
@@ -98,6 +88,7 @@
         .logo-header img {
             max-height: 110px;
             width: auto;
+            max-width: 100%;
             display: block;
             margin: 0 auto;
         }
@@ -140,6 +131,18 @@
             border-right: 1px solid rgba(0, 0, 0, 0.08);
         }
 
+        .auth-split-left h2 {
+            margin: 0;
+            font-size: 32px;
+            line-height: 1.25;
+        }
+
+        .auth-split-left p {
+            margin: 0;
+            color: #666;
+            line-height: 1.8;
+        }
+
         .auth-split-right {
             width: 58%;
             display: flex;
@@ -154,9 +157,28 @@
             padding: 28px 28px 22px;
         }
 
+        .login-box-msg {
+            font-size: 15px;
+        }
+
         .invalid-feedback {
             font-size: 13px;
             color: #dc3545;
+        }
+
+        .lang-switcher {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .lang-switcher a {
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: #eee;
+            margin: 3px;
+            display: inline-block;
+            text-decoration: none;
+            color: #222;
         }
 
         html[dir="rtl"] body {
@@ -197,6 +219,158 @@
         html[dir="rtl"] .row.mb-3 {
             direction: rtl;
         }
+
+        @media (max-width: 1200px) {
+            .auth-split-left {
+                padding: 40px 28px;
+            }
+
+            .auth-right-inner {
+                padding: 24px 22px 20px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .register-video {
+                display: none;
+            }
+
+            .register-form-side {
+                width: 100%;
+                min-height: 100vh;
+                padding: 24px 16px;
+            }
+
+            .register-form-side .register-box {
+                max-width: 720px;
+            }
+
+            .auth-split-card {
+                min-height: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .register-form-side {
+                align-items: flex-start;
+                padding: 18px 12px;
+            }
+
+            .register-form-side .register-box {
+                max-width: 100%;
+            }
+
+            .logo-header {
+                padding: 14px 16px 8px;
+            }
+
+            .logo-header img {
+                max-height: 90px;
+            }
+
+            .auth-split-card {
+                flex-direction: column !important;
+            }
+
+            .auth-split-left,
+            .auth-split-right {
+                width: 100%;
+            }
+
+            .auth-split-left {
+                border-right: 0 !important;
+                border-left: 0 !important;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+                padding: 24px 18px;
+                gap: 10px;
+                text-align: center !important;
+                align-items: center !important;
+            }
+
+            .auth-split-left h2 {
+                font-size: 24px;
+            }
+
+            .auth-split-left p {
+                font-size: 14px;
+                line-height: 1.7;
+            }
+
+            .auth-split-left .btn {
+                width: 100% !important;
+                max-width: 240px;
+            }
+
+            .auth-right-inner {
+                max-width: 100%;
+                padding: 20px 16px 18px;
+            }
+
+            .row.mb-3 {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                margin-bottom: 16px !important;
+            }
+
+            .row.mb-3>.col-8,
+            .row.mb-3>.col-4 {
+                max-width: 100%;
+                flex: 0 0 100%;
+            }
+
+            .row.mb-3 .btn {
+                width: 100%;
+            }
+
+            .social-auth-links .btn {
+                font-size: 14px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .register-form-side {
+                padding: 10px;
+            }
+
+            .card {
+                border-radius: 12px;
+            }
+
+            .auth-split-left {
+                padding: 20px 14px;
+            }
+
+            .auth-right-inner {
+                padding: 18px 14px 16px;
+            }
+
+            .login-box-msg {
+                font-size: 14px;
+                margin-bottom: 18px !important;
+            }
+
+            .input-group .form-control {
+                height: 44px;
+                font-size: 14px;
+            }
+
+            .input-group-text {
+                min-width: 44px;
+                justify-content: center;
+            }
+
+            .btn {
+                font-size: 14px;
+            }
+
+            .lang-switcher a {
+                width: calc(50% - 10px);
+                min-width: 120px;
+            }
+        }
     </style>
 </head>
 
@@ -204,7 +378,6 @@
 
     <div class="register-wrapper">
 
-        <!-- LEFT VIDEO -->
         <div class="register-video">
             <video autoplay muted loop playsinline>
                 <source src="{{ asset('cozastore/videos/register-bg.mp4') }}" type="video/mp4">
@@ -212,7 +385,6 @@
             <div class="video-overlay"></div>
         </div>
 
-        <!-- LOGIN SIDE -->
         <div class="register-form-side">
             <div class="register-box">
                 <div class="card">
@@ -249,7 +421,6 @@
                                     <form action="{{ route('login.submit') }}" method="post">
                                         @csrf
 
-                                        <!-- EMAIL -->
                                         <div class="input-group mb-3">
                                             <input name="email" type="email" value="{{ old('email') }}"
                                                 class="form-control @error('email') is-invalid @enderror"
@@ -268,7 +439,6 @@
                                             </div>
                                         @enderror
 
-                                        <!-- PASSWORD -->
                                         <div class="input-group mb-3">
                                             <input name="password" type="password"
                                                 class="form-control @error('password') is-invalid @enderror"
@@ -301,13 +471,7 @@
                                             </div>
                                         </div>
 
-                                        <!-- SOCIAL LOGIN -->
                                         <div class="social-auth-links text-center mt-3">
-                                            {{-- <a href="#" class="btn btn-block btn-facebook">
-                                                <i class="fab fa-facebook mr-2"></i>
-                                                {{ __('site.sign_in_using_facebook') }}
-                                            </a> --}}
-
                                             <a href="{{ route('google.redirect') }}" class="btn btn-block btn-google">
                                                 <i class="fab fa-google-plus mr-2"></i>
                                                 {{ __('site.sign_in_using_google') }}
@@ -316,15 +480,12 @@
 
                                     </form>
 
-                                    <!-- 🌍 LANGUAGE SWITCHER (ADD ONLY) -->
-                                    <div style="margin-top:15px; text-align:center;">
-                                        <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('ar', null, [], true) }}"
-                                            style="padding:6px 14px; border-radius:20px; background:#eee; margin:3px; display:inline-block; text-decoration:none;">
+                                    <div class="lang-switcher">
+                                        <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('ar', null, [], true) }}">
                                             🇸🇦 عربي
                                         </a>
 
-                                        <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('en', null, [], true) }}"
-                                            style="padding:6px 14px; border-radius:20px; background:#eee; margin:3px; display:inline-block; text-decoration:none;">
+                                        <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('en', null, [], true) }}">
                                             🇺🇸 EN
                                         </a>
                                     </div>

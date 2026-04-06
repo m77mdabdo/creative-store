@@ -277,6 +277,59 @@
         html[dir="rtl"] .auth-split-left p {
             max-width: 100%;
         }
+
+        /* 🔥 ADD ONLY - FIX MOBILE */
+        @media (max-width: 768px) {
+
+            .register-wrapper {
+                height: auto !important;
+                overflow: visible !important;
+            }
+
+            .register-form-side .register-box {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .auth-split-card {
+                flex-direction: column !important;
+            }
+
+            .auth-split-left,
+            .auth-split-right {
+                width: 100% !important;
+            }
+
+            .auth-split-left {
+                padding: 20px !important;
+                text-align: center;
+                align-items: center;
+            }
+
+            .auth-right-inner {
+                padding: 15px !important;
+            }
+
+            .row.mb-2 {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .row.mb-2 .col-8,
+            .row.mb-2 .col-4 {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .row.mb-2 .btn {
+                width: 100%;
+            }
+
+            .logo-header img {
+                max-height: 80px;
+            }
+        }
     </style>
 </head>
 
