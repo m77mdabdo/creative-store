@@ -3,33 +3,17 @@
 @section('content')
 @php
     use Illuminate\Support\Facades\Storage;
-    use Illuminate\Support\Str;
 
     $image1 = $content['image_1'] ?? 'images/about-01.jpg';
     $image2 = $content['image_2'] ?? 'images/about-02.jpg';
 
-    $resolveImageUrl = function ($path, $default = 'images/about-01.jpg') {
-        if (empty($path)) {
-            return asset($default);
-        }
+    $image1Url = str_starts_with($image1, 'images/')
+        ? asset($image1)
+        : Storage::url($image1);
 
-        if (Str::startsWith($path, ['http://', 'https://'])) {
-            return $path;
-        }
-
-        if (Str::startsWith($path, 'images/')) {
-            return asset($path);
-        }
-
-        if (Str::startsWith($path, ['/storage/', 'storage/'])) {
-            return asset(ltrim($path, '/'));
-        }
-
-        return Storage::url($path);
-    };
-
-    $image1Url = $resolveImageUrl($image1, 'images/about-01.jpg');
-    $image2Url = $resolveImageUrl($image2, 'images/about-02.jpg');
+    $image2Url = str_starts_with($image2, 'images/')
+        ? asset($image2)
+        : Storage::url($image2);
 @endphp
 
 <section class="bg-img1 txt-center p-lr-15 p-tb-92" style="background-image: url('{{ asset('images/bg-01.jpg') }}');">
@@ -70,7 +54,7 @@
             <div class="col-11 col-md-5 col-lg-4 m-lr-auto">
                 <div class="how-bor1">
                     <div class="hov-img0">
-                        <img src="{{ $image1Url }}" alt="About Image 1" class="db-about-image">
+                        <img src="{{ $image1Url }}" alt="About Image 1">
                     </div>
                 </div>
             </div>
@@ -108,51 +92,11 @@
             <div class="order-md-1 col-11 col-md-5 col-lg-4 m-lr-auto p-b-30">
                 <div class="how-bor2">
                     <div class="hov-img0">
-                        <img src="{{ $image2Url }}" alt="About Image 2" class="db-about-image">
+                        <img src="{{ $image2Url }}" alt="About Image 2">
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-
-<style>
-    .db-about-image {
-        width: 100%;
-        height: 100%;
-        max-height: 420px;
-        object-fit: cover;
-        object-position: center;
-        display: block;
-    }
-
-    .how-bor1,
-    .how-bor2 {
-        overflow: hidden;
-    }
-
-    .hov-img0 {
-        overflow: hidden;
-    }
-
-    .hov-img0 img.db-about-image {
-        width: 100%;
-        height: 420px;
-        object-fit: cover;
-        object-position: center;
-        display: block;
-    }
-
-    @media (max-width: 991px) {
-        .hov-img0 img.db-about-image {
-            height: 360px;
-        }
-    }
-
-    @media (max-width: 767px) {
-        .hov-img0 img.db-about-image {
-            height: 280px;
-        }
-    }
-</style>
 @endsection
