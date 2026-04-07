@@ -1,7 +1,40 @@
 @php
     use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 @endphp
+{{-- MOBILE MENU DRAWER --}}
+<div class="mobile-menu-overlay js-mobile-overlay"></div>
 
+<div class="mobile-menu-drawer js-mobile-drawer">
+    <div class="mobile-drawer-header">
+        <img src="{{ asset('cozastore/images/icons/logo-01.png') }}" alt="Logo" style="width:80px;">
+        <button class="mobile-drawer-close js-close-mobile-menu" type="button">
+            <i class="zmdi zmdi-close"></i>
+        </button>
+    </div>
+
+    <nav class="mobile-drawer-nav">
+        <a href="{{ LaravelLocalization::localizeUrl(route('home', [], false)) }}">{{ __('site.home') }}</a>
+        <a href="{{ LaravelLocalization::localizeUrl(route('products.index', [], false)) }}">{{ __('site.shop') }}</a>
+        <a href="{{ LaravelLocalization::getLocalizedURL(app()->getLocale(), '/blog') }}">{{ __('site.blog') }}</a>
+        <a href="{{ LaravelLocalization::getLocalizedURL(app()->getLocale(), '/about') }}">{{ __('site.about') }}</a>
+        <a href="{{ LaravelLocalization::getLocalizedURL(app()->getLocale(), '/contact') }}">{{ __('site.contact') }}</a>
+    </nav>
+
+    <div class="mobile-drawer-lang">
+        <a href="{{ LaravelLocalization::getLocalizedURL('ar', null, [], true) }}"
+           class="{{ app()->getLocale() === 'ar' ? 'is-active' : '' }}">العربية</a>
+        <span>|</span>
+        <a href="{{ LaravelLocalization::getLocalizedURL('en', null, [], true) }}"
+           class="{{ app()->getLocale() === 'en' ? 'is-active' : '' }}">English</a>
+    </div>
+
+    @guest
+    <div class="mobile-drawer-auth">
+        <a href="{{ route('login') }}" class="mobile-auth-btn">{{ __('site.sign_in') }}</a>
+        <a href="{{ route('register') }}" class="mobile-auth-btn outline">{{ __('site.sign_up') }}</a>
+    </div>
+    @endguest
+</div>
 <header class="site-header">
     <div class="container-menu-desktop">
         <div class="top-bar custom-topbar">

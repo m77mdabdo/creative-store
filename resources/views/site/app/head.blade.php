@@ -20,7 +20,170 @@
 <link rel="stylesheet" href="{{ asset('cozastore/vendor/perfect-scrollbar/perfect-scrollbar.css') }}">
 <link rel="stylesheet" href="{{ asset('cozastore/css/util.css') }}">
 <link rel="stylesheet" href="{{ asset('cozastore/css/main.css') }}">
+<style>
+/* ===== MOBILE DRAWER ===== */
+.mobile-menu-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 9998;
+}
 
+.mobile-menu-overlay.is-open {
+    display: block;
+}
+
+.mobile-menu-drawer {
+    position: fixed;
+    top: 0;
+    right: -320px; /* RTL: يطلع من اليمين */
+    width: 300px;
+    height: 100%;
+    background: #fff;
+    z-index: 9999;
+    transition: right .35s ease;
+    overflow-y: auto;
+    padding: 0 0 40px;
+    box-shadow: -8px 0 30px rgba(0,0,0,.12);
+}
+
+html[dir="ltr"] .mobile-menu-drawer {
+    right: auto;
+    left: -320px;
+    transition: left .35s ease;
+    box-shadow: 8px 0 30px rgba(0,0,0,.12);
+}
+
+.mobile-menu-drawer.is-open {
+    right: 0;
+}
+
+html[dir="ltr"] .mobile-menu-drawer.is-open {
+    left: 0;
+}
+
+.mobile-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.mobile-drawer-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+    padding: 4px;
+}
+
+.mobile-drawer-nav {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+}
+
+.mobile-drawer-nav a {
+    padding: 14px 22px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #222;
+    text-decoration: none;
+    border-bottom: 1px solid #f5f5f5;
+    transition: all .2s ease;
+}
+
+.mobile-drawer-nav a:hover,
+.mobile-drawer-nav a.active-menu {
+    color: #717fe0;
+    background: rgba(113,127,224,.06);
+    padding-right: 28px; /* RTL indent */
+}
+
+html[dir="ltr"] .mobile-drawer-nav a:hover {
+    padding-right: 22px;
+    padding-left: 28px;
+}
+
+.mobile-drawer-lang {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 22px;
+    border-top: 1px solid #f0f0f0;
+    margin-top: 8px;
+}
+
+.mobile-drawer-lang a {
+    font-size: 15px;
+    color: #666;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.mobile-drawer-lang a.is-active {
+    color: #717fe0;
+}
+
+.mobile-drawer-auth {
+    padding: 16px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mobile-auth-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    border-radius: 999px;
+    background: #222;
+    color: #fff !important;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.mobile-auth-btn.outline {
+    background: transparent;
+    border: 1.5px solid #ddd;
+    color: #222 !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const hamburger = document.querySelector('.btn-show-menu-mobile');
+    const drawer    = document.querySelector('.js-mobile-drawer');
+    const overlay   = document.querySelector('.js-mobile-overlay');
+    const closeBtn  = document.querySelector('.js-close-mobile-menu');
+
+    function openMenu() {
+        drawer?.classList.add('is-open');
+        overlay?.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+        hamburger?.classList.add('is-active');
+    }
+
+    function closeMenu() {
+        drawer?.classList.remove('is-open');
+        overlay?.classList.remove('is-open');
+        document.body.style.overflow = '';
+        hamburger?.classList.remove('is-active');
+    }
+
+    hamburger?.addEventListener('click', function () {
+        drawer?.classList.contains('is-open') ? closeMenu() : openMenu();
+    });
+
+    overlay?.addEventListener('click', closeMenu);
+    closeBtn?.addEventListener('click', closeMenu);
+});
+</script>
 <style>
     :root {
         --site-primary: #717fe0;
