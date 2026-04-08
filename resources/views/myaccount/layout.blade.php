@@ -12,21 +12,25 @@
 <style>
     body {
         background: #f5f6f8;
+        overflow-x: hidden;
     }
 
     .account-shell {
         min-height: 100vh;
         display: flex;
         background: #f5f6f8;
+        overflow-x: hidden;
     }
 
     .account-sidebar {
         width: 300px;
+        min-width: 300px;
         background: #0f1115;
         color: #fff;
         padding: 24px 18px;
         border-left: 1px solid rgba(255,255,255,.06);
         flex-shrink: 0;
+        min-height: 100vh;
     }
 
     .account-sidebar a {
@@ -53,6 +57,7 @@
 
     .account-content {
         flex: 1;
+        min-width: 0;
         padding: 30px;
     }
 
@@ -105,6 +110,7 @@
     .table th,
     .table td {
         vertical-align: middle;
+        white-space: nowrap;
     }
 
     .badge {
@@ -125,7 +131,7 @@
         font-weight: 600;
     }
 
-    /* RTL مضبوط */
+    /* RTL */
     html[dir="rtl"] body {
         direction: rtl;
         text-align: right;
@@ -218,7 +224,6 @@
     .account-orders-table th {
         font-weight: 700;
         background: #fafafa;
-        white-space: nowrap;
     }
 
     .account-orders-table td a {
@@ -229,41 +234,26 @@
         min-width: 620px;
     }
 
-    @media (max-width: 991.98px) {
-        .account-shell {
-            flex-direction: column !important;
-        }
-
+    /* Desktop صغير / Tablet */
+    @media (max-width: 1199.98px) {
         .account-sidebar {
-            width: 100%;
-            border-right: 0 !important;
-            border-left: 0 !important;
-            padding: 16px 14px;
+            width: 240px;
+            min-width: 240px;
+            padding: 18px 12px;
         }
 
         .account-content {
-            padding: 16px;
+            padding: 20px;
         }
 
-        .brand-mini {
-            margin-bottom: 16px;
-            padding: 0;
+        .account-sidebar a {
+            font-size: 14px;
+            padding: 11px 12px;
+            gap: 10px;
         }
 
         .brand-mini img {
             height: 36px;
-        }
-
-        .sidebar-section-title {
-            margin: 14px 0 10px;
-            font-size: 11px;
-        }
-
-        .account-sidebar a {
-            padding: 11px 12px;
-            font-size: 14px;
-            margin-bottom: 6px;
-            border-radius: 10px;
         }
 
         .card-header {
@@ -274,19 +264,68 @@
         .card-body {
             padding: 16px;
         }
-
-        .form-control {
-            height: 44px;
-            font-size: 14px;
-        }
-
-        .btn {
-            min-height: 42px;
-            font-size: 14px;
-        }
     }
 
+    /* فون - نفس روح اللاب */
     @media (max-width: 767.98px) {
+        .account-shell {
+            flex-direction: row !important;
+            align-items: stretch;
+        }
+
+        html[dir="rtl"] .account-shell {
+            flex-direction: row-reverse !important;
+        }
+
+        .account-sidebar {
+            width: 86px;
+            min-width: 86px;
+            padding: 14px 8px;
+        }
+
+        .brand-mini {
+            justify-content: center;
+            margin-bottom: 14px;
+            padding: 0;
+        }
+
+        .brand-mini img {
+            height: 28px;
+        }
+
+        .brand-mini > div {
+            display: none;
+        }
+
+        .sidebar-section-title {
+            display: none;
+        }
+
+        .account-sidebar a {
+            justify-content: center;
+            padding: 12px 8px;
+            font-size: 0;
+            gap: 0;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .account-sidebar a i {
+            font-size: 18px;
+            margin: 0 !important;
+        }
+
+        .logout-btn {
+            height: 42px;
+            font-size: 0;
+            padding: 0;
+        }
+
+        .logout-btn i {
+            font-size: 18px;
+            margin: 0 !important;
+        }
+
         .account-content {
             padding: 12px;
         }
@@ -296,63 +335,12 @@
         }
 
         .card-header {
-            padding: 12px 14px;
-            font-size: 15px;
-        }
-
-        .card-body {
-            padding: 14px;
-        }
-
-        .logout-btn {
-            height: 42px;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-    }
-
-    @media (max-width: 575.98px) {
-        .account-sidebar {
-            padding: 14px 12px;
-        }
-
-        .brand-mini {
-            gap: 10px;
-        }
-
-        .brand-mini img {
-            height: 32px;
-        }
-
-        .brand-mini div div:first-child {
-            font-size: 15px;
-        }
-
-        .account-sidebar a {
-            font-size: 13px;
-            padding: 10px 11px;
-            gap: 10px;
-        }
-
-        .account-content {
-            padding: 10px;
-        }
-
-        .card-header {
             font-size: 14px;
-            padding: 11px 12px;
+            padding: 12px;
         }
 
         .card-body {
             padding: 12px;
-        }
-
-        .form-group label {
-            font-size: 13px;
-            margin-bottom: 6px;
         }
 
         .form-control {
@@ -361,13 +349,51 @@
         }
 
         .btn {
-            width: 100%;
+            min-height: 40px;
             font-size: 13px;
         }
 
-        .badge {
-            font-size: 11px;
-            padding: 6px 8px;
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+
+    /* فون صغير */
+    @media (max-width: 480px) {
+        .account-sidebar {
+            width: 72px;
+            min-width: 72px;
+            padding: 12px 6px;
+        }
+
+        .account-sidebar a i,
+        .logout-btn i {
+            font-size: 16px;
+        }
+
+        .account-content {
+            padding: 10px;
+        }
+
+        .card-header {
+            font-size: 13px;
+            padding: 10px;
+        }
+
+        .card-body {
+            padding: 10px;
+        }
+
+        .form-group label,
+        .card-body p,
+        .alert {
+            font-size: 12px;
+        }
+
+        .form-control,
+        .btn {
+            font-size: 12px;
         }
     }
 </style>
