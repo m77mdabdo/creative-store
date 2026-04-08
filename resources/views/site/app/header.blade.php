@@ -18,6 +18,12 @@
         <a href="{{ LaravelLocalization::getLocalizedURL(app()->getLocale(), '/blog') }}">{{ __('site.blog') }}</a>
         <a href="{{ LaravelLocalization::getLocalizedURL(app()->getLocale(), '/about') }}">{{ __('site.about') }}</a>
         <a href="{{ LaravelLocalization::getLocalizedURL(app()->getLocale(), '/contact') }}">{{ __('site.contact') }}</a>
+        <a href="{{ route('cart.index') }}">{{ __('site.cart') }}</a>
+        <a href="{{ route('wishlist.index') }}">{{ __('site.wishlist') }}</a>
+        @auth
+            <a href="{{ route('myaccount') }}">{{ __('site.my_account') }}</a>
+        @endauth
+        
     </nav>
 
     <div class="mobile-drawer-lang">
