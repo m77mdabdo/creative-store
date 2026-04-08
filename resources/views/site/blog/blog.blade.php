@@ -430,8 +430,7 @@
 
                             <a href="{{ route('blog.show', $blog->slug) }}" class="blog-post-link hov-img0 how-pos5-parent">
                                 <div class="blog-post-image-frame">
-                                    <img src="{{ $blog->image ? asset('storage/' . $blog->image) : asset('cozastore/images/blog-04.jpg') }}"
-                                         alt="{{ $blog->title }}">
+                                    <img src="{{ $blog->image_url }}" alt="{{ $blog->title }}">
                                 </div>
 
                                 <div class="blog-post-date-badge flex-col-c-m">
@@ -546,7 +545,5 @@
         </div>
     </div>
 </section>
-
-
 
 @endsection
