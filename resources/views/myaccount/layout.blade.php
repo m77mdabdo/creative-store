@@ -5,459 +5,393 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', __('account.my_account')) | Creative Store</title>
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700&display=fallback">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('AdminLTE/plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('AdminLTE/dist/css/adminlte.min.css') }}">
 
 <style>
-    body {
-        background: #f5f6f8;
-        overflow-x: hidden;
+:root {
+    --bg-page:       #0b0c0f;
+    --bg-sidebar:    #0f1014;
+    --bg-card:       #16181d;
+    --bg-card-hover: #1c1e25;
+    --bg-input:      #1e2028;
+    --accent:        #6c63ff;
+    --accent-soft:   rgba(108,99,255,.12);
+    --accent-glow:   rgba(108,99,255,.35);
+    --text-primary:  #f0f1f5;
+    --text-secondary:#8a8fa8;
+    --text-muted:    #4e5268;
+    --border:        rgba(255,255,255,.06);
+    --border-hover:  rgba(108,99,255,.4);
+    --radius-sm:     8px;
+    --radius-md:     14px;
+    --radius-lg:     20px;
+    --sidebar-w:     260px;
+    --font-main:     'Sora', sans-serif;
+    --font-ar:       'Cairo', sans-serif;
+    --transition:    .22s cubic-bezier(.4,0,.2,1);
+}
+
+html[lang="ar"] { --font-main: 'Cairo', sans-serif; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: var(--font-main);
+    background: var(--bg-page);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* ─── Sidebar ─── */
+.cs-sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--sidebar-w);
+    height: 100vh;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    z-index: 100;
+    transition: transform var(--transition);
+}
+
+html[dir="rtl"] .cs-sidebar {
+    left: auto; right: 0;
+    border-right: none;
+    border-left: 1px solid var(--border);
+}
+
+.cs-sidebar-top {
+    padding: 28px 20px 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.cs-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    margin-bottom: 20px;
+}
+
+.cs-brand-logo {
+    width: 38px; height: 38px;
+    border-radius: var(--radius-sm);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-glow);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.cs-brand-logo img { width: 26px; height: 26px; object-fit: contain; }
+
+.cs-brand-text { line-height: 1.2; }
+.cs-brand-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+.cs-brand-sub  { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+/* User Card */
+.cs-user-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cs-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #a78bfa);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    letter-spacing: -.5px;
+}
+
+.cs-user-info { min-width: 0; flex: 1; }
+.cs-user-name  { font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cs-user-email { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Nav */
+.cs-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 12px;
+    scrollbar-width: none;
+}
+.cs-nav::-webkit-scrollbar { display: none; }
+
+.cs-nav-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0 8px;
+    margin: 16px 0 6px;
+}
+.cs-nav-label:first-child { margin-top: 0; }
+
+.cs-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: var(--transition);
+    position: relative;
+    margin-bottom: 2px;
+}
+
+html[dir="rtl"] .cs-nav-link { flex-direction: row-reverse; }
+
+.cs-nav-link:hover {
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+
+.cs-nav-link.active {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid rgba(108,99,255,.2);
+}
+
+.cs-nav-link .cs-nav-icon {
+    width: 32px; height: 32px;
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    background: rgba(255,255,255,.04);
+    flex-shrink: 0;
+    transition: var(--transition);
+}
+
+.cs-nav-link:hover .cs-nav-icon { background: rgba(255,255,255,.08); }
+.cs-nav-link.active .cs-nav-icon { background: var(--accent-soft); color: var(--accent); }
+
+/* Sidebar Bottom */
+.cs-sidebar-bottom {
+    padding: 16px 12px;
+    border-top: 1px solid var(--border);
+}
+
+.cs-logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 11px;
+    border-radius: var(--radius-sm);
+    background: rgba(239,68,68,.08);
+    border: 1px solid rgba(239,68,68,.15);
+    color: #f87171;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font-main);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.cs-logout-btn:hover {
+    background: rgba(239,68,68,.15);
+    border-color: rgba(239,68,68,.35);
+    color: #fca5a5;
+}
+
+/* ─── Main Content ─── */
+.cs-main {
+    margin-left: var(--sidebar-w);
+    min-height: 100vh;
+    padding: 32px 36px;
+    background: var(--bg-page);
+}
+
+html[dir="rtl"] .cs-main {
+    margin-left: 0;
+    margin-right: var(--sidebar-w);
+}
+
+/* ─── Mobile Toggle ─── */
+.cs-mobile-toggle {
+    display: none;
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 200;
+    width: 42px; height: 42px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 18px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+html[dir="rtl"] .cs-mobile-toggle { left: auto; right: 14px; }
+.cs-mobile-toggle:hover { border-color: var(--border-hover); }
+
+.cs-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.6);
+    backdrop-filter: blur(2px);
+    z-index: 99;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 991px) {
+    .cs-mobile-toggle { display: flex; }
+
+    .cs-sidebar {
+        transform: translateX(-100%);
+        box-shadow: 4px 0 40px rgba(0,0,0,.5);
     }
 
-    .account-shell {
-        min-height: 100vh;
-        display: flex;
-        background: #f5f6f8;
-        overflow-x: hidden;
+    html[dir="rtl"] .cs-sidebar { transform: translateX(100%); }
+
+    .cs-sidebar.open {
+        transform: translateX(0);
     }
 
-    .account-sidebar {
-        width: 300px;
-        min-width: 300px;
-        background: #0f1115;
-        color: #fff;
-        padding: 24px 18px;
-        border-left: 1px solid rgba(255,255,255,.06);
-        flex-shrink: 0;
-        min-height: 100vh;
-    }
+    .cs-overlay.open { display: block; }
 
-    .account-sidebar a {
-        color: #fff;
-        opacity: .95;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 13px 14px;
-        border-radius: 12px;
-        margin-bottom: 8px;
-        transition: .2s ease;
-        font-size: 15px;
-        font-weight: 500;
-    }
-
-    .account-sidebar a:hover,
-    .account-sidebar a.active,
-    .account-sidebar .nav-link.active {
-        background: rgba(255,255,255,.08);
-        opacity: 1;
-    }
-
-    .account-content {
-        flex: 1;
-        min-width: 0;
-        padding: 30px;
-    }
-
-    .brand-mini {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 26px;
-        padding: 6px 8px;
-    }
-
-    .brand-mini img {
-        height: 42px;
-        width: auto;
-        object-fit: contain;
-    }
-
-    .card {
-        border-radius: 16px;
-        border: 0;
-        box-shadow: 0 6px 20px rgba(0,0,0,.04);
-        overflow: hidden;
-    }
-
-    .card-header {
-        font-size: 18px;
-        font-weight: 700;
-        padding: 16px 20px;
-    }
-
-    .card-body {
-        padding: 22px 20px;
-    }
-
-    .sidebar-section-title {
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: .08em;
-        opacity: .55;
-        margin: 20px 0 12px;
-        padding-left: 8px;
-    }
-
-    .logout-btn {
-        border-radius: 12px;
-        height: 46px;
-        font-weight: 600;
-    }
-
-    .table th,
-    .table td {
-        vertical-align: middle;
-        white-space: nowrap;
-    }
-
-    .badge {
-        padding: 8px 10px;
-        border-radius: 8px;
-        font-size: 12px;
-        font-weight: 600;
-    }
-
-    .form-control {
-        height: 48px;
-        border-radius: 10px;
-    }
-
-    .btn {
-        border-radius: 10px;
-        min-height: 44px;
-        font-weight: 600;
-    }
-
-    /* RTL */
-    html[dir="rtl"] body {
-        direction: rtl;
-        text-align: right;
-    }
-
-    html[dir="rtl"] .account-shell {
-        flex-direction: row-reverse;
-    }
-
-    html[dir="rtl"] .account-sidebar {
-        border-left: 0;
-        border-right: 1px solid rgba(255,255,255,.06);
-        text-align: right;
-    }
-
-    html[dir="rtl"] .brand-mini,
-    html[dir="rtl"] .account-sidebar a,
-    html[dir="rtl"] .btn,
-    html[dir="rtl"] .card-header {
-        flex-direction: row-reverse;
-    }
-
-    html[dir="rtl"] .sidebar-section-title {
-        padding-left: 0;
-        padding-right: 8px;
-        text-align: right;
-    }
-
-    html[dir="rtl"] .account-content,
-    html[dir="rtl"] .card,
-    html[dir="rtl"] .card-body,
-    html[dir="rtl"] .card-header,
-    html[dir="rtl"] .form-group,
-    html[dir="rtl"] label,
-    html[dir="rtl"] p,
-    html[dir="rtl"] h1,
-    html[dir="rtl"] h2,
-    html[dir="rtl"] h3,
-    html[dir="rtl"] h4,
-    html[dir="rtl"] h5,
-    html[dir="rtl"] h6 {
-        text-align: right;
-    }
-
-    html[dir="rtl"] .form-control {
-        text-align: right;
-    }
-
-    html[dir="rtl"] .table {
-        direction: rtl;
-    }
-
-    html[dir="rtl"] .table th,
-    html[dir="rtl"] .table td {
-        text-align: right;
-    }
-
-    html[dir="rtl"] .table-responsive {
-        direction: rtl;
-    }
-
-    html[dir="rtl"] .mr-1 {
-        margin-right: 0 !important;
-        margin-left: .25rem !important;
-    }
-
-    html[dir="rtl"] .mr-2 {
-        margin-right: 0 !important;
-        margin-left: .5rem !important;
-    }
-
-    html[dir="rtl"] .ml-1,
-    html[dir="rtl"] .ml-2,
-    html[dir="rtl"] .ml-3 {
+    .cs-main {
         margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 70px 16px 24px;
     }
+}
 
-    html[dir="rtl"] .text-left {
-        text-align: right !important;
-    }
-
-    html[dir="rtl"] .text-right {
-        text-align: left !important;
-    }
-
-    html[dir="rtl"] .d-flex.align-items-center.justify-content-between {
-        flex-direction: row-reverse;
-    }
-
-    .account-orders-table th {
-        font-weight: 700;
-        background: #fafafa;
-    }
-
-    .account-orders-table td a {
-        font-weight: 600;
-    }
-
-    .account-orders-table {
-        min-width: 620px;
-    }
-
-    /* Desktop صغير / Tablet */
-    @media (max-width: 1199.98px) {
-        .account-sidebar {
-            width: 240px;
-            min-width: 240px;
-            padding: 18px 12px;
-        }
-
-        .account-content {
-            padding: 20px;
-        }
-
-        .account-sidebar a {
-            font-size: 14px;
-            padding: 11px 12px;
-            gap: 10px;
-        }
-
-        .brand-mini img {
-            height: 36px;
-        }
-
-        .card-header {
-            font-size: 16px;
-            padding: 14px 16px;
-        }
-
-        .card-body {
-            padding: 16px;
-        }
-    }
-
-    /* فون - نفس روح اللاب */
-    @media (max-width: 767.98px) {
-        .account-shell {
-            flex-direction: row !important;
-            align-items: stretch;
-        }
-
-        html[dir="rtl"] .account-shell {
-            flex-direction: row-reverse !important;
-        }
-
-        .account-sidebar {
-            width: 86px;
-            min-width: 86px;
-            padding: 14px 8px;
-        }
-
-        .brand-mini {
-            justify-content: center;
-            margin-bottom: 14px;
-            padding: 0;
-        }
-
-        .brand-mini img {
-            height: 28px;
-        }
-
-        .brand-mini > div {
-            display: none;
-        }
-
-        .sidebar-section-title {
-            display: none;
-        }
-
-        .account-sidebar a {
-            justify-content: center;
-            padding: 12px 8px;
-            font-size: 0;
-            gap: 0;
-            border-radius: 10px;
-            margin-bottom: 8px;
-        }
-
-        .account-sidebar a i {
-            font-size: 18px;
-            margin: 0 !important;
-        }
-
-        .logout-btn {
-            height: 42px;
-            font-size: 0;
-            padding: 0;
-        }
-
-        .logout-btn i {
-            font-size: 18px;
-            margin: 0 !important;
-        }
-
-        .account-content {
-            padding: 12px;
-        }
-
-        .card {
-            border-radius: 14px;
-        }
-
-        .card-header {
-            font-size: 14px;
-            padding: 12px;
-        }
-
-        .card-body {
-            padding: 12px;
-        }
-
-        .form-control {
-            height: 42px;
-            font-size: 13px;
-        }
-
-        .btn {
-            min-height: 40px;
-            font-size: 13px;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-    }
-
-    /* فون صغير */
-    @media (max-width: 480px) {
-        .account-sidebar {
-            width: 72px;
-            min-width: 72px;
-            padding: 12px 6px;
-        }
-
-        .account-sidebar a i,
-        .logout-btn i {
-            font-size: 16px;
-        }
-
-        .account-content {
-            padding: 10px;
-        }
-
-        .card-header {
-            font-size: 13px;
-            padding: 10px;
-        }
-
-        .card-body {
-            padding: 10px;
-        }
-
-        .form-group label,
-        .card-body p,
-        .alert {
-            font-size: 12px;
-        }
-
-        .form-control,
-        .btn {
-            font-size: 12px;
-        }
-    }
+@media (max-width: 480px) {
+    .cs-main { padding: 66px 12px 20px; }
+}
 </style>
 </head>
 <body>
-<div class="account-shell">
 
-    <aside class="account-sidebar">
-        <div class="brand-mini">
-            <img src="{{ asset('cozastore/images/icons/creative-store-logo.png') }}" alt="Creative Store">
-            <div>
-                <div style="font-weight:700; line-height:1;">Creative Store</div>
-                <div style="opacity:.75; font-size:12px;">{{ __('account.my_account') }}</div>
+<!-- Mobile Toggle -->
+<button class="cs-mobile-toggle" id="sidebarToggle">
+    <i class="fas fa-bars"></i>
+</button>
+
+<!-- Overlay -->
+<div class="cs-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar -->
+<aside class="cs-sidebar" id="sidebar">
+
+    <div class="cs-sidebar-top">
+        <a href="{{ route('home') }}" class="cs-brand">
+            <div class="cs-brand-logo">
+                <img src="{{ asset('cozastore/images/icons/creative-store-logo.png') }}" alt="Logo">
+            </div>
+            <div class="cs-brand-text">
+                <div class="cs-brand-name">Creative Store</div>
+                <div class="cs-brand-sub">{{ __('account.my_account') }}</div>
+            </div>
+        </a>
+
+        @auth
+        <div class="cs-user-card">
+            <div class="cs-avatar">
+                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+            </div>
+            <div class="cs-user-info">
+                <div class="cs-user-name">{{ auth()->user()->name }}</div>
+                <div class="cs-user-email">{{ auth()->user()->email }}</div>
             </div>
         </div>
+        @endauth
+    </div>
 
-        <div class="sidebar-section-title">{{ __('account.navigation') }}</div>
+    <nav class="cs-nav">
+        <div class="cs-nav-label">{{ __('account.navigation') }}</div>
 
-        <a href="{{ route('home') }}" class="nav-link">
-            <i class="fas fa-home"></i> {{ __('account.back_to_site') }}
+        <a href="{{ route('home') }}" class="cs-nav-link">
+            <span class="cs-nav-icon"><i class="fas fa-home"></i></span>
+            {{ __('account.back_to_site') }}
         </a>
 
-        <a href="{{ route('myaccount') }}" class="nav-link">
-            <i class="fas fa-user"></i> {{ __('account.profile') }}
+        <a href="{{ route('myaccount') }}" class="cs-nav-link {{ request()->routeIs('myaccount') ? 'active' : '' }}">
+            <span class="cs-nav-icon"><i class="fas fa-user"></i></span>
+            {{ __('account.profile') }}
         </a>
 
-        <a href="{{ route('shipping.orders.index') }}" class="nav-link">
-            <i class="fas fa-box"></i> {{ __('account.my_orders') }}
+        <a href="{{ route('shipping.orders.index') }}" class="cs-nav-link {{ request()->routeIs('shipping.orders.*') ? 'active' : '' }}">
+            <span class="cs-nav-icon"><i class="fas fa-box"></i></span>
+            {{ __('account.my_orders') }}
         </a>
 
-        <a href="{{ route('shipping.addresses.index') }}" class="nav-link">
-            <i class="fas fa-map-marker-alt"></i> {{ __('account.my_addresses') }}
+        <a href="{{ route('shipping.addresses.index') }}" class="cs-nav-link {{ request()->routeIs('shipping.addresses.*') ? 'active' : '' }}">
+            <span class="cs-nav-icon"><i class="fas fa-map-marker-alt"></i></span>
+            {{ __('account.my_addresses') }}
         </a>
 
-        <a href="{{ route('wishlist.index') }}" class="nav-link">
-            <i class="fas fa-heart"></i> {{ __('account.wishlist') }}
+        <a href="{{ route('wishlist.index') }}" class="cs-nav-link {{ request()->routeIs('wishlist.*') ? 'active' : '' }}">
+            <span class="cs-nav-icon"><i class="fas fa-heart"></i></span>
+            {{ __('account.wishlist') }}
         </a>
 
         @auth
             @if(auth()->user()->isDashboardUser())
-                <div class="sidebar-section-title">{{ __('account.management') }}</div>
-
-                <a href="{{ route('dashboard.home') }}" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i> {{ __('account.dashboard') }}
+                <div class="cs-nav-label">{{ __('account.management') }}</div>
+                <a href="{{ route('dashboard.home') }}" class="cs-nav-link">
+                    <span class="cs-nav-icon"><i class="fas fa-tachometer-alt"></i></span>
+                    {{ __('account.dashboard') }}
                 </a>
             @endif
         @endauth
+    </nav>
 
-        <form action="{{ route('logout') }}" method="POST" class="mt-4">
+    <div class="cs-sidebar-bottom">
+        <form action="{{ route('logout') }}" method="POST">
             @csrf
-            <button type="submit" class="btn btn-outline-light btn-block logout-btn">
-                <i class="fas fa-sign-out-alt mr-2"></i> {{ __('account.logout') }}
+            <button type="submit" class="cs-logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                {{ __('account.logout') }}
             </button>
         </form>
-    </aside>
+    </div>
 
-    <main class="account-content">
-        @yield('content')
-    </main>
+</aside>
 
-</div>
+<!-- Main Content -->
+<main class="cs-main">
+    @yield('content')
+</main>
 
 <script src="{{ asset('AdminLTE/plugins/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('AdminLTE/dist/js/adminlte.min.js') }}"></script>
+<script>
+const sidebar  = document.getElementById('sidebar');
+const toggle   = document.getElementById('sidebarToggle');
+const overlay  = document.getElementById('sidebarOverlay');
+
+function openSidebar()  { sidebar.classList.add('open');  overlay.classList.add('open');  toggle.innerHTML = '<i class="fas fa-times"></i>'; }
+function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('open'); toggle.innerHTML = '<i class="fas fa-bars"></i>'; }
+
+toggle.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+overlay.addEventListener('click', closeSidebar);
+</script>
 </body>
 </html>

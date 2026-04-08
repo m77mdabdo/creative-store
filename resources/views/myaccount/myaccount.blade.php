@@ -3,215 +3,598 @@
 @section('title', __('account.my_account'))
 
 @section('content')
-<div class="container-fluid p-0">
-    <div class="d-flex align-items-center justify-content-between mb-3 account-page-head">
-        <h3 class="mb-0">{{ __('account.my_account') }}</h3>
+
+<style>
+/* ─── Page Variables ─── */
+:root {
+    --bg-page:       #0b0c0f;
+    --bg-card:       #16181d;
+    --bg-card-hover: #1c1e25;
+    --bg-input:      #1e2028;
+    --accent:        #6c63ff;
+    --accent-soft:   rgba(108,99,255,.12);
+    --accent-glow:   rgba(108,99,255,.3);
+    --text-primary:  #f0f1f5;
+    --text-secondary:#8a8fa8;
+    --text-muted:    #4e5268;
+    --border:        rgba(255,255,255,.06);
+    --border-focus:  rgba(108,99,255,.5);
+    --success:       #10b981;
+    --success-soft:  rgba(16,185,129,.1);
+    --danger:        #ef4444;
+    --radius-sm:     8px;
+    --radius-md:     14px;
+    --radius-lg:     20px;
+    --transition:    .22s cubic-bezier(.4,0,.2,1);
+}
+
+/* ─── Page Header ─── */
+.page-header {
+    margin-bottom: 32px;
+}
+
+.page-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -.5px;
+    line-height: 1.2;
+}
+
+.page-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* ─── Grid ─── */
+.acc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 20px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .acc-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── Cards ─── */
+.acc-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: border-color var(--transition);
+    margin-bottom: 20px;
+}
+
+.acc-card:hover { border-color: rgba(255,255,255,.1); }
+
+.acc-card-head {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+html[dir="rtl"] .acc-card-head { flex-direction: row-reverse; }
+
+.acc-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+html[dir="rtl"] .acc-card-title { flex-direction: row-reverse; }
+
+.acc-card-title-icon {
+    width: 28px; height: 28px;
+    border-radius: var(--radius-sm);
+    background: var(--accent-soft);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    color: var(--accent);
+}
+
+.acc-card-body { padding: 22px; }
+
+/* ─── Info Rows ─── */
+.info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+.info-row:last-child { border-bottom: none; padding-bottom: 0; }
+.info-row:first-child { padding-top: 0; }
+
+html[dir="rtl"] .info-row { flex-direction: row-reverse; }
+
+.info-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-weight: 600;
+}
+
+.info-value {
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 500;
+    text-align: right;
+    word-break: break-all;
+}
+
+html[dir="rtl"] .info-value { text-align: left; }
+
+.info-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--success-soft);
+    color: var(--success);
+    border: 1px solid rgba(16,185,129,.2);
+}
+
+/* ─── Orders Table ─── */
+.orders-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    background: var(--accent-soft);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(108,99,255,.2);
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+html[dir="rtl"] .orders-link-btn { flex-direction: row-reverse; }
+
+.orders-link-btn:hover {
+    background: rgba(108,99,255,.2);
+    color: #a5b4fc;
+    text-decoration: none;
+}
+
+.orders-empty {
+    text-align: center;
+    padding: 36px 20px;
+    color: var(--text-muted);
+}
+
+.orders-empty i {
+    font-size: 36px;
+    margin-bottom: 10px;
+    display: block;
+    opacity: .4;
+}
+
+.orders-empty p { font-size: 14px; }
+
+/* Table */
+.orders-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -22px;
+    padding: 0 22px;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 460px;
+}
+
+.orders-table th {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text-muted);
+    padding: 0 12px 12px;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border);
+}
+
+html[dir="rtl"] .orders-table th { text-align: right; }
+
+.orders-table td {
+    padding: 13px 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.orders-table tbody tr:last-child td { border-bottom: none; }
+
+.orders-table tbody tr {
+    transition: background var(--transition);
+}
+
+.orders-table tbody tr:hover { background: rgba(255,255,255,.02); }
+
+.orders-table .order-num-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.orders-table .order-num-link:hover { color: #a5b4fc; }
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.status-badge::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+
+.status-pending   { background: rgba(251,191,36,.1);  color: #fbbf24; border: 1px solid rgba(251,191,36,.2); }
+.status-processing{ background: rgba(59,130,246,.1);  color: #60a5fa; border: 1px solid rgba(59,130,246,.2); }
+.status-completed { background: var(--success-soft);  color: var(--success); border: 1px solid rgba(16,185,129,.2); }
+.status-cancelled { background: rgba(239,68,68,.1);   color: #f87171; border: 1px solid rgba(239,68,68,.2); }
+.status-default   { background: rgba(255,255,255,.06); color: var(--text-secondary); border: 1px solid var(--border); }
+
+/* ─── Forms ─── */
+.cs-form-group {
+    margin-bottom: 18px;
+}
+
+.cs-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 8px;
+}
+
+.cs-input {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: inherit;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    -webkit-appearance: none;
+}
+
+.cs-input:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.cs-input.is-invalid { border-color: rgba(239,68,68,.5); }
+
+.cs-invalid-msg {
+    font-size: 12px;
+    color: var(--danger);
+    margin-top: 5px;
+}
+
+.cs-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+html[dir="rtl"] .cs-btn { flex-direction: row-reverse; }
+
+.cs-btn-primary {
+    background: var(--accent);
+    color: #fff;
+}
+
+.cs-btn-primary:hover {
+    background: #5b52e5;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px var(--accent-glow);
+}
+
+.cs-btn-primary:active { transform: translateY(0); }
+
+.cs-btn-block { width: 100%; }
+
+/* Alert */
+.cs-alert {
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+html[dir="rtl"] .cs-alert { flex-direction: row-reverse; }
+
+.cs-alert-success {
+    background: var(--success-soft);
+    border: 1px solid rgba(16,185,129,.2);
+    color: var(--success);
+}
+
+/* Forgot link */
+.cs-forgot-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-top: 12px;
+    transition: color var(--transition);
+}
+
+.cs-forgot-link:hover { color: var(--accent); text-decoration: none; }
+
+html[dir="rtl"] .cs-forgot-link { flex-direction: row-reverse; }
+
+/* Section divider */
+.section-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 0 20px;
+}
+</style>
+
+<!-- Page Header -->
+<div class="page-header">
+    <h1 class="page-title">{{ __('account.my_account') }}</h1>
+    <p class="page-subtitle">{{ __('account.manage_your_account') ?? 'Manage your profile and orders' }}</p>
+</div>
+
+<div class="acc-grid">
+
+    <!-- ── Left Column ── -->
+    <div>
+
+        {{-- Account Details Card --}}
+        <div class="acc-card">
+            <div class="acc-card-head">
+                <span class="acc-card-title">
+                    <span class="acc-card-title-icon"><i class="fas fa-user"></i></span>
+                    {{ __('account.account_details') }}
+                </span>
+            </div>
+            <div class="acc-card-body">
+                <div class="info-row">
+                    <span class="info-label">{{ __('account.full_name') }}</span>
+                    <span class="info-value">{{ $user->name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">{{ __('account.email') }}</span>
+                    <span class="info-value" style="font-size:13px;">{{ $user->email }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">{{ __('account.member_since') }}</span>
+                    <span class="info-value">
+                        <span class="info-badge">
+                            <i class="fas fa-check-circle" style="font-size:10px;"></i>
+                            {{ $user->created_at?->format('d M Y') }}
+                        </span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        {{-- Recent Orders Card --}}
+        <div class="acc-card">
+            <div class="acc-card-head">
+                <span class="acc-card-title">
+                    <span class="acc-card-title-icon"><i class="fas fa-box"></i></span>
+                    {{ __('account.recent_orders') }}
+                </span>
+                <a href="{{ route('shipping.orders.index') }}" class="orders-link-btn">
+                    {{ __('account.view_all') }}
+                    <i class="fas fa-arrow-right" style="font-size:10px;"></i>
+                </a>
+            </div>
+            <div class="acc-card-body" style="padding: 0 22px 22px;">
+                @if($orders->count())
+                    <div class="orders-table-wrap">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>{{ __('account.order') }}</th>
+                                    <th>{{ __('account.total') }}</th>
+                                    <th>{{ __('account.status') }}</th>
+                                    <th>{{ __('account.date') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($orders as $order)
+                                    @php
+                                        $statusClass = match(strtolower($order->status)) {
+                                            'pending'    => 'status-pending',
+                                            'processing' => 'status-processing',
+                                            'completed'  => 'status-completed',
+                                            'cancelled'  => 'status-cancelled',
+                                            default      => 'status-default',
+                                        };
+                                    @endphp
+                                    <tr>
+                                        <td>
+                                            <a href="{{ route('shipping.orders.show', $order->id) }}" class="order-num-link">
+                                                #{{ $order->order_number }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {{ $order->total ? number_format($order->total, 2) . ' ' . $order->currency : '—' }}
+                                        </td>
+                                        <td>
+                                            <span class="status-badge {{ $statusClass }}">
+                                                {{ ucfirst($order->status) }}
+                                            </span>
+                                        </td>
+                                        <td>{{ $order->created_at?->format('d M Y') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="orders-empty">
+                        <i class="fas fa-box-open"></i>
+                        <p>{{ __('account.no_orders_yet') }}</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+
     </div>
 
-    <div class="row">
-        <div class="col-12 col-lg-5">
+    <!-- ── Right Column ── -->
+    <div>
 
-            <div class="card mb-3">
-                <div class="card-header bg-white">
-                    <strong>{{ __('account.account_details') }}</strong>
-                </div>
-                <div class="card-body">
-                    <p class="mb-2"><strong>{{ __('account.full_name') }}:</strong> {{ $user->name }}</p>
-                    <p class="mb-2"><strong>{{ __('account.email') }}:</strong> {{ $user->email }}</p>
-                    <p class="mb-0"><strong>{{ __('account.member_since') }}:</strong> {{ $user->created_at?->format('d M Y') }}</p>
-                </div>
+        {{-- Update Name Card --}}
+        <div class="acc-card">
+            <div class="acc-card-head">
+                <span class="acc-card-title">
+                    <span class="acc-card-title-icon"><i class="fas fa-pen"></i></span>
+                    {{ __('account.update_name') }}
+                </span>
             </div>
+            <div class="acc-card-body">
 
-            <div class="card mb-3">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center recent-orders-head">
-                    <strong>{{ __('account.recent_orders') }}</strong>
-                    <a href="{{ route('shipping.orders.index') }}" class="btn btn-sm btn-outline-dark recent-orders-btn">
-                        {{ __('account.view_all') }}
-                    </a>
-                </div>
-
-                <div class="card-body p-0">
-                    @if($orders->count())
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0 account-orders-table">
-                                <thead>
-                                    <tr>
-                                        <th>{{ __('account.order') }}</th>
-                                        <th>{{ __('account.total') }}</th>
-                                        <th>{{ __('account.status') }}</th>
-                                        <th>{{ __('account.date') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($orders as $order)
-                                        <tr>
-                                            <td>
-                                                <a href="{{ route('shipping.orders.show', $order->id) }}">
-                                                    #{{ $order->order_number }}
-                                                </a>
-                                            </td>
-                                            <td>{{ number_format($order->total, 2) }} {{ $order->currency }}</td>
-                                            <td>
-                                                <span class="badge badge-info">
-                                                    {{ ucfirst($order->status) }}
-                                                </span>
-                                            </td>
-                                            <td>{{ $order->created_at?->format('d M Y') }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @else
-                        <div class="p-4 text-center text-muted">
-                            {{ __('account.no_orders_yet') }}
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-        </div>
-
-        <div class="col-12 col-lg-7">
-
-            <div class="card mb-3">
-                <div class="card-header bg-white">
-                    <strong>{{ __('account.update_name') }}</strong>
-                </div>
-                <div class="card-body">
-
-                    @if(session('success_profile'))
-                        <div class="alert alert-success">{{ session('success_profile') }}</div>
-                    @endif
-
-                    <form action="{{ route('myaccount.profile') }}" method="POST">
-                        @csrf
-
-                        <div class="form-group">
-                            <label>{{ __('account.full_name') }}</label>
-                            <input type="text"
-                                   name="name"
-                                   value="{{ old('name', $user->name) }}"
-                                   class="form-control @error('name') is-invalid @enderror">
-
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <button class="btn btn-dark">
-                            <i class="fas fa-save mr-1"></i> {{ __('account.save') }}
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header bg-white">
-                    <strong>{{ __('account.change_password') }}</strong>
-                </div>
-                <div class="card-body">
-
-                    @if(session('success_password'))
-                        <div class="alert alert-success">{{ session('success_password') }}</div>
-                    @endif
-
-                    <form action="{{ route('myaccount.password') }}" method="POST">
-                        @csrf
-
-                        <div class="form-group">
-                            <label>{{ __('account.current_password') }}</label>
-                            <input type="password"
-                                   name="current_password"
-                                   class="form-control @error('current_password') is-invalid @enderror">
-
-                            @error('current_password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label>{{ __('account.new_password') }}</label>
-                            <input type="password"
-                                   name="password"
-                                   class="form-control @error('password') is-invalid @enderror">
-
-                            @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label>{{ __('account.confirm_new_password') }}</label>
-                            <input type="password" name="password_confirmation" class="form-control">
-                        </div>
-
-                        <button class="btn btn-dark">
-                            <i class="fas fa-key mr-1"></i> {{ __('account.update_password') }}
-                        </button>
-                    </form>
-
-                    <div class="mt-3">
-                        <a href="{{ route('forgot-password') }}" class="d-block">
-                            {{ __('account.forgot_password') }}
-                        </a>
+                @if(session('success_profile'))
+                    <div class="cs-alert cs-alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        {{ session('success_profile') }}
                     </div>
-                </div>
-            </div>
+                @endif
 
+                <form action="{{ route('myaccount.profile') }}" method="POST">
+                    @csrf
+                    <div class="cs-form-group">
+                        <label class="cs-label">{{ __('account.full_name') }}</label>
+                        <input type="text"
+                               name="name"
+                               value="{{ old('name', $user->name) }}"
+                               class="cs-input @error('name') is-invalid @enderror"
+                               placeholder="{{ __('account.full_name') }}">
+                        @error('name')
+                            <div class="cs-invalid-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
+                        @enderror
+                    </div>
+                    <button type="submit" class="cs-btn cs-btn-primary">
+                        <i class="fas fa-save"></i> {{ __('account.save') }}
+                    </button>
+                </form>
+
+            </div>
         </div>
+
+        {{-- Change Password Card --}}
+        <div class="acc-card">
+            <div class="acc-card-head">
+                <span class="acc-card-title">
+                    <span class="acc-card-title-icon"><i class="fas fa-lock"></i></span>
+                    {{ __('account.change_password') }}
+                </span>
+            </div>
+            <div class="acc-card-body">
+
+                @if(session('success_password'))
+                    <div class="cs-alert cs-alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        {{ session('success_password') }}
+                    </div>
+                @endif
+
+                <form action="{{ route('myaccount.password') }}" method="POST">
+                    @csrf
+
+                    <div class="cs-form-group">
+                        <label class="cs-label">{{ __('account.current_password') }}</label>
+                        <input type="password"
+                               name="current_password"
+                               class="cs-input @error('current_password') is-invalid @enderror"
+                               placeholder="••••••••">
+                        @error('current_password')
+                            <div class="cs-invalid-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="cs-form-group">
+                        <label class="cs-label">{{ __('account.new_password') }}</label>
+                        <input type="password"
+                               name="password"
+                               class="cs-input @error('password') is-invalid @enderror"
+                               placeholder="••••••••">
+                        @error('password')
+                            <div class="cs-invalid-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="cs-form-group">
+                        <label class="cs-label">{{ __('account.confirm_new_password') }}</label>
+                        <input type="password"
+                               name="password_confirmation"
+                               class="cs-input"
+                               placeholder="••••••••">
+                    </div>
+
+                    <button type="submit" class="cs-btn cs-btn-primary cs-btn-block">
+                        <i class="fas fa-key"></i> {{ __('account.update_password') }}
+                    </button>
+                </form>
+
+                <a href="{{ route('forgot-password') }}" class="cs-forgot-link">
+                    <i class="fas fa-question-circle" style="font-size:12px;"></i>
+                    {{ __('account.forgot_password') }}
+                </a>
+
+            </div>
+        </div>
+
     </div>
 </div>
 
-<style>
-    @media (max-width: 767.98px) {
-        .account-page-head {
-            margin-bottom: 12px !important;
-        }
-
-        .account-page-head h3 {
-            font-size: 20px;
-        }
-
-        .recent-orders-head {
-            gap: 10px;
-        }
-
-        .recent-orders-btn {
-            min-height: 36px;
-            padding: 6px 12px;
-            font-size: 12px;
-        }
-    }
-
-    @media (max-width: 575.98px) {
-        .account-page-head h3 {
-            font-size: 18px;
-        }
-
-        .recent-orders-head {
-            flex-direction: column;
-            align-items: stretch !important;
-        }
-
-        .recent-orders-btn {
-            width: 100%;
-            margin-top: 8px;
-        }
-
-        .card-body p {
-            font-size: 13px;
-            line-height: 1.7;
-        }
-
-        .alert {
-            font-size: 13px;
-            padding: 10px 12px;
-        }
-
-        .btn.btn-dark {
-            width: 100%;
-        }
-    }
-</style>
 @endsection
