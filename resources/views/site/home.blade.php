@@ -2853,7 +2853,31 @@ html[dir="rtl"] .products-pagination nav > div {
     </div>
 </section>
 
+<style>
+    .blog-card-image-link {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 16px;
+}
 
+.blog-card-image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.blog-card-image-link:hover .blog-card-image {
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .blog-card-image {
+        height: 180px;
+    }
+}
+</style>
 
 <section class="home-blog-section">
     <div class="container">
