@@ -215,17 +215,20 @@
         flex-direction: row-reverse;
     }
 
-    /* تحسين عرض الطلبات */
     .account-orders-table th {
         font-weight: 700;
         background: #fafafa;
+        white-space: nowrap;
     }
 
     .account-orders-table td a {
         font-weight: 600;
     }
 
-    /* responsive */
+    .account-orders-table {
+        min-width: 620px;
+    }
+
     @media (max-width: 991.98px) {
         .account-shell {
             flex-direction: column !important;
@@ -235,10 +238,136 @@
             width: 100%;
             border-right: 0 !important;
             border-left: 0 !important;
+            padding: 16px 14px;
         }
 
         .account-content {
-            padding: 18px;
+            padding: 16px;
+        }
+
+        .brand-mini {
+            margin-bottom: 16px;
+            padding: 0;
+        }
+
+        .brand-mini img {
+            height: 36px;
+        }
+
+        .sidebar-section-title {
+            margin: 14px 0 10px;
+            font-size: 11px;
+        }
+
+        .account-sidebar a {
+            padding: 11px 12px;
+            font-size: 14px;
+            margin-bottom: 6px;
+            border-radius: 10px;
+        }
+
+        .card-header {
+            font-size: 16px;
+            padding: 14px 16px;
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .form-control {
+            height: 44px;
+            font-size: 14px;
+        }
+
+        .btn {
+            min-height: 42px;
+            font-size: 14px;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .account-content {
+            padding: 12px;
+        }
+
+        .card {
+            border-radius: 14px;
+        }
+
+        .card-header {
+            padding: 12px 14px;
+            font-size: 15px;
+        }
+
+        .card-body {
+            padding: 14px;
+        }
+
+        .logout-btn {
+            height: 42px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .account-sidebar {
+            padding: 14px 12px;
+        }
+
+        .brand-mini {
+            gap: 10px;
+        }
+
+        .brand-mini img {
+            height: 32px;
+        }
+
+        .brand-mini div div:first-child {
+            font-size: 15px;
+        }
+
+        .account-sidebar a {
+            font-size: 13px;
+            padding: 10px 11px;
+            gap: 10px;
+        }
+
+        .account-content {
+            padding: 10px;
+        }
+
+        .card-header {
+            font-size: 14px;
+            padding: 11px 12px;
+        }
+
+        .card-body {
+            padding: 12px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            height: 42px;
+            font-size: 13px;
+        }
+
+        .btn {
+            width: 100%;
+            font-size: 13px;
+        }
+
+        .badge {
+            font-size: 11px;
+            padding: 6px 8px;
         }
     }
 </style>

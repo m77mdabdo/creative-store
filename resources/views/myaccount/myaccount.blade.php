@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container-fluid p-0">
-    <div class="d-flex align-items-center justify-content-between mb-3">
+    <div class="d-flex align-items-center justify-content-between mb-3 account-page-head">
         <h3 class="mb-0">{{ __('account.my_account') }}</h3>
     </div>
 
@@ -22,10 +22,10 @@
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <div class="card mb-3">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center recent-orders-head">
                     <strong>{{ __('account.recent_orders') }}</strong>
-                    <a href="{{ route('shipping.orders.index') }}" class="btn btn-sm btn-outline-dark">
+                    <a href="{{ route('shipping.orders.index') }}" class="btn btn-sm btn-outline-dark recent-orders-btn">
                         {{ __('account.view_all') }}
                     </a>
                 </div>
@@ -33,7 +33,7 @@
                 <div class="card-body p-0">
                     @if($orders->count())
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0">
+                            <table class="table table-hover mb-0 account-orders-table">
                                 <thead>
                                     <tr>
                                         <th>{{ __('account.order') }}</th>
@@ -162,4 +162,52 @@
         </div>
     </div>
 </div>
+
+<style>
+    @media (max-width: 767.98px) {
+        .account-page-head {
+            margin-bottom: 12px !important;
+        }
+
+        .account-page-head h3 {
+            font-size: 20px;
+        }
+
+        .recent-orders-head {
+            gap: 10px;
+        }
+
+        .recent-orders-btn {
+            min-height: 36px;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .account-page-head h3 {
+            font-size: 18px;
+        }
+
+        .recent-orders-head {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+
+        .recent-orders-btn {
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .card-body p {
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .alert {
+            font-size: 13px;
+            padding: 10px 12px;
+        }
+    }
+</style>
 @endsection
