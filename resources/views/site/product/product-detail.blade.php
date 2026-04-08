@@ -719,6 +719,9 @@
 
         <div class="row product-main-row">
 
+            {{-- ============================================================ --}}
+            {{-- Gallery                                                       --}}
+            {{-- ============================================================ --}}
             <div class="col-md-6 col-lg-7 p-b-30">
                 <div class="product-gallery-wrap">
                     <div class="product-gallery-shell">
@@ -745,6 +748,9 @@
                 </div>
             </div>
 
+            {{-- ============================================================ --}}
+            {{-- Details                                                       --}}
+            {{-- ============================================================ --}}
             <div class="col-md-6 col-lg-5 p-b-30">
                 <div class="product-details-box">
 
@@ -795,6 +801,7 @@
                         @endif
                     </div>
 
+                    {{-- Coupons --}}
                     @if(count($productCoupons))
                         <div class="product-offers-box">
                             <h5 class="mtext-104 cl2 p-b-10">
@@ -826,6 +833,9 @@
                         </div>
                     @endif
 
+                    {{-- ======================================================= --}}
+                    {{-- Product Form                                             --}}
+                    {{-- ======================================================= --}}
                     <div class="product-form-box">
                         <form action="{{ route('cart.add') }}" method="POST" id="addToCartForm">
                             @csrf
@@ -833,68 +843,51 @@
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                             <input type="hidden" name="variant_id" id="variantInput" value="">
 
-                            @if(count($sizes))
+                            {{-- Dynamic Option Attributes --}}
+                            @foreach($optionAttributes as $attribute)
                                 <div class="option-row">
                                     <div class="option-label">
-                                        {{ __('site.modal_size') }}
+                                        {{ $attribute['name'] }}
                                     </div>
 
                                     <div class="option-field">
-                                        <div class="rs1-select2 bor8 bg0">
-                                            <select class="js-select2" name="size" id="sizeSelect">
-                                                <option value="">{{ __('site.choose_option') }}</option>
-                                                @foreach($sizes as $size)
-                                                    <option value="{{ $size['id'] }}">{{ $size['value'] }}</option>
-                                                @endforeach
-                                            </select>
-                                            <div class="dropDownSelect2"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-
-                            @if(count($colors))
-                                <div class="option-row">
-                                    <div class="option-label">
-                                        {{ __('site.modal_color') }}
-                                    </div>
-
-                                    <div class="option-field">
-                                        @if(isset($colorButtons) && $colorButtons->count())
-                                            <div class="d-flex flex-wrap m-b-10" id="colorVariantButtons">
-                                                @foreach($colorButtons as $colorVariant)
+                                        @if(in_array($attribute['slug'], ['color', 'colors', 'colour', 'colours']))
+                                            {{-- Color: show as clickable buttons --}}
+                                            <div class="d-flex flex-wrap m-b-10 variant-option-buttons"
+                                                 data-attribute-slug="{{ $attribute['slug'] }}">
+                                                @foreach($attribute['values'] as $value)
                                                     <button
                                                         type="button"
-                                                        class="btn btn-outline-dark mr-2 mb-2 color-variant-btn"
-                                                        data-variant-id="{{ $colorVariant['variant_id'] }}"
-                                                        data-color-id="{{ $colorVariant['color_id'] ?? '' }}"
-                                                        data-color-name="{{ $colorVariant['color_name'] }}"
-                                                        data-color-slug="{{ $colorVariant['color_slug'] }}"
-                                                        data-image="{{ $colorVariant['image'] }}"
-                                                        data-gallery='@json($colorVariant['gallery'])'
-                                                        data-price="{{ $colorVariant['price'] }}"
-                                                        data-stock="{{ $colorVariant['stock'] }}"
-                                                        data-sku="{{ $colorVariant['sku'] }}"
+                                                        class="btn btn-outline-dark mr-2 mb-2 variant-option-btn color-variant-btn"
+                                                        data-attribute-slug="{{ $attribute['slug'] }}"
+                                                        data-value-id="{{ $value['id'] }}"
                                                     >
-                                                        {{ $colorVariant['color_name'] }}
+                                                        {{ $value['value'] }}
                                                     </button>
                                                 @endforeach
                                             </div>
-                                        @endif
+                                        @else
+                                            {{-- Other attributes: show as select dropdown --}}
+                                            <div class="rs1-select2 bor8 bg0">
+                                                <select class="js-select2 variant-option-select"
+                                                        name="options[{{ $attribute['slug'] }}]"
+                                                        data-attribute-slug="{{ $attribute['slug'] }}">
+                                                    <option value="">{{ __('site.choose_option') }}</option>
 
-                                        <div class="rs1-select2 bor8 bg0">
-                                            <select class="js-select2" name="color" id="colorSelect">
-                                                <option value="">{{ __('site.choose_option') }}</option>
-                                                @foreach($colors as $color)
-                                                    <option value="{{ $color['id'] }}">{{ $color['value'] }}</option>
-                                                @endforeach
-                                            </select>
-                                            <div class="dropDownSelect2"></div>
-                                        </div>
+                                                    @foreach($attribute['values'] as $value)
+                                                        <option value="{{ $value['id'] }}">
+                                                            {{ $value['value'] }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <div class="dropDownSelect2"></div>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
-                            @endif
+                            @endforeach
 
+                            {{-- Quantity + Add to Cart --}}
                             <div class="option-row">
                                 <div class="option-label"></div>
 
@@ -926,6 +919,7 @@
                                 </div>
                             </div>
 
+                            {{-- Coupon Preview --}}
                             <div class="coupon-preview-box">
                                 <div class="coupon-preview-row">
                                     <input type="text"
@@ -974,6 +968,7 @@
                         </form>
                     </div>
 
+                    {{-- Wishlist + Share --}}
                     <div class="product-actions-extra">
                         <div class="product-share-group">
                             @auth
@@ -1013,6 +1008,9 @@
 
         </div>
 
+        {{-- ================================================================== --}}
+        {{-- Tabs                                                                --}}
+        {{-- ================================================================== --}}
         <div class="product-tabs-box">
             <div class="tab01">
                 <ul class="nav nav-tabs" role="tablist">
@@ -1034,6 +1032,8 @@
                 </ul>
 
                 <div class="tab-content">
+
+                    {{-- Description --}}
                     <div class="tab-pane fade show active" id="tab_description" role="tabpanel">
                         <div class="how-pos2 p-lr-15-md">
                             <p class="stext-102 cl6">
@@ -1042,6 +1042,7 @@
                         </div>
                     </div>
 
+                    {{-- Additional Information --}}
                     <div class="tab-pane fade" id="tab_information" role="tabpanel">
                         <div class="row">
                             <div class="col-sm-10 col-md-8 col-lg-7 m-lr-auto">
@@ -1058,11 +1059,20 @@
                                         <span class="product-info-label">{{ __('site.sku') }}</span>
                                         <span class="product-info-value" id="skuInfo">{{ $productSku }}</span>
                                     </li>
+
+                                    {{-- Dynamic specifications from variant attributes --}}
+                                    @foreach($specifications as $spec)
+                                        <li>
+                                            <span class="product-info-label">{{ $spec['label'] }}</span>
+                                            <span class="product-info-value">{{ $spec['value'] }}</span>
+                                        </li>
+                                    @endforeach
                                 </ul>
                             </div>
                         </div>
                     </div>
 
+                    {{-- Reviews --}}
                     <div class="tab-pane fade" id="tab_reviews" role="tabpanel">
                         <div class="row">
                             <div class="col-sm-10 col-md-8 col-lg-7 m-lr-auto">
@@ -1186,6 +1196,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -1204,6 +1215,7 @@
     </div>
 </section>
 
+{{-- Related Products --}}
 <section class="related-products-section sec-relate-product bg0">
     <div class="container">
         <div class="p-b-35">
@@ -1274,62 +1286,52 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        const couponInput = document.getElementById('couponCodeInput');
-        const applyBtn = document.getElementById('applyCouponBtn');
-        const priceDiscounted = document.getElementById('priceDiscounted');
-        const discountRow = document.getElementById('discountRow');
-        const couponMsg = document.getElementById('couponMsg');
 
-        const sizeSelect = document.getElementById('sizeSelect');
-        const colorSelect = document.getElementById('colorSelect');
-        const variantInput = document.getElementById('variantInput');
-        const variantError = document.getElementById('variantError');
-        const productPrice = document.getElementById('productPrice');
-        const dynamicSku = document.getElementById('dynamicSku');
-        const dynamicStock = document.getElementById('dynamicStock');
-        const skuInfo = document.getElementById('skuInfo');
-        const footerSku = document.getElementById('footerSku');
+        // ----------------------------------------------------------------
+        // DOM refs
+        // ----------------------------------------------------------------
+        const couponInput     = document.getElementById('couponCodeInput');
+        const applyBtn        = document.getElementById('applyCouponBtn');
+        const priceDiscounted = document.getElementById('priceDiscounted');
+        const discountRow     = document.getElementById('discountRow');
+        const couponMsg       = document.getElementById('couponMsg');
+
+        const variantInput  = document.getElementById('variantInput');
+        const variantError  = document.getElementById('variantError');
+        const productPrice  = document.getElementById('productPrice');
+        const dynamicSku    = document.getElementById('dynamicSku');
+        const dynamicStock  = document.getElementById('dynamicStock');
+        const skuInfo       = document.getElementById('skuInfo');
+        const footerSku     = document.getElementById('footerSku');
         const priceOriginal = document.getElementById('priceOriginal');
 
-        const colorButtons = document.querySelectorAll('.color-variant-btn');
+        const optionSelects = document.querySelectorAll('.variant-option-select');
+        const optionButtons = document.querySelectorAll('.variant-option-btn');
 
-        const productId = {{ (int) $product->id }};
-        const currency = @json($productCurrency);
-        const basePrice = {{ (float) $productPrice }};
-        const baseSku = @json($productSku);
-
-        const variantMap = @json($variantMap);
-        const colorDefaultVariantMap = @json($colorDefaultVariantMap ?? []);
-        const colorGalleryMap = @json($colorGalleryMap ?? []);
+        // ----------------------------------------------------------------
+        // PHP data
+        // ----------------------------------------------------------------
+        const productId     = {{ (int) $product->id }};
+        const currency      = @json($productCurrency);
+        const basePrice     = {{ (float) $productPrice }};
+        const baseSku       = @json($productSku);
+        const variantMatrix = @json($variantMatrix);
         const defaultGallery = @json($generalGallery);
 
         const i18n = {
-            copied: @json(__('site.copy_coupon_success')),
-            invalidCoupon: @json(__('site.invalid_coupon')),
-            checkFailed: @json(__('site.coupon_check_failed')),
-            selectRequired: @json(__('site.select_required_options')),
-            combinationUnavailable: @json(__('site.selected_combination_unavailable')),
-            couponApplied: @json(__('site.apply_coupon')),
-            outOfStock: @json(__('site.out_of_stock_variant')),
-            na: @json(__('site.n_a')),
+            copied:                   @json(__('site.copy_coupon_success')),
+            invalidCoupon:            @json(__('site.invalid_coupon')),
+            checkFailed:              @json(__('site.coupon_check_failed')),
+            selectRequired:           @json(__('site.select_required_options')),
+            combinationUnavailable:   @json(__('site.selected_combination_unavailable')),
+            couponApplied:            @json(__('site.apply_coupon')),
+            outOfStock:               @json(__('site.out_of_stock_variant')),
+            na:                       @json(__('site.n_a')),
         };
 
-        function selectedSize() {
-            return sizeSelect ? String(sizeSelect.value || '') : '';
-        }
-
-        function selectedColor() {
-            return colorSelect ? String(colorSelect.value || '') : '';
-        }
-
-        function hasSizes() {
-            return !!sizeSelect;
-        }
-
-        function hasColors() {
-            return !!colorSelect;
-        }
-
+        // ----------------------------------------------------------------
+        // Helpers
+        // ----------------------------------------------------------------
         function uniqueImages(images) {
             const seen = new Set();
 
@@ -1343,9 +1345,7 @@
         }
 
         function destroySlickIfExists() {
-            if (!(window.jQuery && $('.wrap-slick3').length)) {
-                return;
-            }
+            if (!(window.jQuery && $('.wrap-slick3').length)) return;
 
             const $slider = $('.wrap-slick3 .slick3');
 
@@ -1358,27 +1358,25 @@
         }
 
         function initProductGallery(imageCount) {
-            if (!(window.jQuery && $('.wrap-slick3').length)) {
-                return;
-            }
+            if (!(window.jQuery && $('.wrap-slick3').length)) return;
 
             destroySlickIfExists();
 
             $('.wrap-slick3').each(function () {
                 $(this).find('.slick3').slick({
-                    slidesToShow: 1,
+                    slidesToShow:   1,
                     slidesToScroll: 1,
-                    fade: true,
-                    infinite: false,
-                    autoplay: false,
-                    autoplaySpeed: 6000,
-                    arrows: imageCount > 1,
-                    appendArrows: $(this).find('.wrap-slick3-arrows'),
+                    fade:           true,
+                    infinite:       false,
+                    autoplay:       false,
+                    autoplaySpeed:  6000,
+                    arrows:         imageCount > 1,
+                    appendArrows:   $(this).find('.wrap-slick3-arrows'),
                     prevArrow: '<button class="arrow-slick3 prev-slick3"><i class="fa fa-angle-left" aria-hidden="true"></i></button>',
                     nextArrow: '<button class="arrow-slick3 next-slick3"><i class="fa fa-angle-right" aria-hidden="true"></i></button>',
-                    dots: imageCount > 1,
-                    appendDots: $(this).find('.wrap-slick3-dots'),
-                    dotsClass: 'slick3-dots',
+                    dots:         imageCount > 1,
+                    appendDots:   $(this).find('.wrap-slick3-dots'),
+                    dotsClass:    'slick3-dots',
                     customPaging: function (slick, index) {
                         const portrait = $(slick.$slides[index]).data('thumb');
                         return '<img src="' + portrait + '"/><div class="slick3-dot-overlay"></div>';
@@ -1399,8 +1397,8 @@
 
             gallery.innerHTML = finalImages.map(img => {
                 const thumb = img.thumb || img.url;
-                const url = img.url || img;
-                const alt = img.alt || @json($productName);
+                const url   = img.url || img;
+                const alt   = img.alt || @json($productName);
 
                 return `
                     <div class="item-slick3" data-thumb="${thumb}">
@@ -1417,275 +1415,220 @@
             initProductGallery(finalImages.length);
         }
 
-        function setActiveColorButtonByColorId(colorId) {
-            colorButtons.forEach(btn => {
-                const btnColorId = String(btn.dataset.colorId || '');
-                btn.classList.toggle('active', colorId && btnColorId === String(colorId));
-            });
-        }
+        // ----------------------------------------------------------------
+        // Dynamic Option Logic
+        // ----------------------------------------------------------------
 
-        function selectColorButton(button) {
-            if (!button) return;
+        /**
+         * Read the currently selected attribute values from selects + active buttons.
+         * Returns: { slug: "valueId", ... }
+         */
+        function getSelectedOptions() {
+            const selected = {};
 
-            colorButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-
-            const colorId = button.dataset.colorId || '';
-
-            if (colorSelect) {
-                colorSelect.value = colorId;
-
-                if (window.jQuery && $(colorSelect).hasClass('select2-hidden-accessible')) {
-                    $(colorSelect).trigger('change.select2');
+            // From <select> dropdowns
+            optionSelects.forEach(select => {
+                const slug  = select.dataset.attributeSlug;
+                const value = select.value;
+                if (slug && value) {
+                    selected[slug] = String(value);
                 }
-            }
+            });
 
-            updateVariantUI(true, button);
+            // From toggle buttons (only those marked active)
+            optionButtons.forEach(btn => {
+                const slug = btn.dataset.attributeSlug;
+                if (!slug) return;
+
+                if (btn.classList.contains('active')) {
+                    selected[slug] = String(btn.dataset.valueId || '');
+                }
+            });
+
+            return selected;
         }
 
-        function getBestVariant() {
-            const size = selectedSize();
-            const color = selectedColor();
+        /**
+         * Build a sorted variant key from a selected-options map.
+         */
+        function buildVariantKey(selected) {
+            return Object.keys(selected)
+                .sort()
+                .map(slug => `${slug}:${selected[slug]}`)
+                .join('|');
+        }
 
-            if (size && color && variantMap[`${size}-${color}`]) {
-                return variantMap[`${size}-${color}`];
+        /**
+         * Find the best matching variant for the currently selected options.
+         * Tries exact key first, then partial matching.
+         */
+        function findMatchingVariant(selected) {
+            const selectedKeys = Object.keys(selected);
+
+            if (!selectedKeys.length) return null;
+
+            // Exact match
+            const exactKey = buildVariantKey(selected);
+            if (variantMatrix[exactKey]) {
+                return variantMatrix[exactKey];
             }
 
-            if (color && colorDefaultVariantMap[color]) {
-                return colorDefaultVariantMap[color];
-            }
+            // Partial match: variant must satisfy all selected attributes
+            for (const key in variantMatrix) {
+                const variant = variantMatrix[key];
+                const attrs   = variant.attributes || {};
 
-            if (size && variantMap[size]) {
-                return variantMap[size];
+                const matches = selectedKeys.every(
+                    slug => String(attrs[slug]) === String(selected[slug])
+                );
+
+                if (matches) return variant;
             }
 
             return null;
         }
 
-        function getBestGallery() {
-            const size = selectedSize();
-            const color = selectedColor();
+        /**
+         * Mark a button active and deactivate siblings for the same attribute.
+         */
+        function setActiveOptionButton(button) {
+            const slug = button.dataset.attributeSlug;
 
-            if (size && color && variantMap[`${size}-${color}`]?.images?.length) {
-                return variantMap[`${size}-${color}`].images;
-            }
+            document.querySelectorAll(`.variant-option-btn[data-attribute-slug="${slug}"]`)
+                .forEach(btn => btn.classList.remove('active'));
 
-            if (color && colorGalleryMap[color]?.length) {
-                return colorGalleryMap[color];
-            }
-
-            if (size && variantMap[size]?.images?.length) {
-                return variantMap[size].images;
-            }
-
-            if (color && colorDefaultVariantMap[color]?.images?.length) {
-                return colorDefaultVariantMap[color].images;
-            }
-
-            return defaultGallery;
+            button.classList.add('active');
         }
 
+        // ----------------------------------------------------------------
+        // UI Update
+        // ----------------------------------------------------------------
         function resetBaseUI() {
             if (productPrice) {
                 productPrice.textContent = `${Number(basePrice).toFixed(2)} ${currency}`;
             }
-
             if (priceOriginal) {
                 priceOriginal.textContent = `${Number(basePrice).toFixed(2)} ${currency}`;
             }
-
-            if (dynamicSku) dynamicSku.textContent = baseSku || i18n.na;
-            if (skuInfo) skuInfo.textContent = baseSku || i18n.na;
-            if (footerSku) footerSku.textContent = baseSku || i18n.na;
+            if (dynamicSku)  dynamicSku.textContent  = baseSku || i18n.na;
+            if (skuInfo)      skuInfo.textContent      = baseSku || i18n.na;
+            if (footerSku)    footerSku.textContent    = baseSku || i18n.na;
             if (dynamicStock) dynamicStock.textContent = i18n.na;
-
-            if (variantInput) {
-                variantInput.value = '';
-            }
+            if (variantInput) variantInput.value       = '';
         }
 
-        function updateVariantUI(fromColorButton = false, clickedButton = null) {
-            const size = selectedSize();
-            const color = selectedColor();
+        function updateVariantUI() {
+            const selected      = getSelectedOptions();
+            const selectedCount = Object.keys(selected).length;
 
-            const bestVariant = getBestVariant();
-            const bestGallery = getBestGallery();
-
-            if (!fromColorButton) {
-                setActiveColorButtonByColorId(color);
-            }
-
-            setGallery(bestGallery);
-
-            if (size && color) {
-                const exactKey = `${size}-${color}`;
-
-                if (variantMap[exactKey]) {
-                    const exactVariant = variantMap[exactKey];
-
-                    if (variantInput) variantInput.value = exactVariant.id || '';
-                    if (productPrice) productPrice.textContent = `${Number(exactVariant.price).toFixed(2)} ${currency}`;
-                    if (priceOriginal) priceOriginal.textContent = `${Number(exactVariant.price).toFixed(2)} ${currency}`;
-                    if (dynamicSku) dynamicSku.textContent = exactVariant.sku || i18n.na;
-                    if (skuInfo) skuInfo.textContent = exactVariant.sku || i18n.na;
-                    if (footerSku) footerSku.textContent = exactVariant.sku || i18n.na;
-                    if (dynamicStock) dynamicStock.textContent = exactVariant.stock ?? i18n.na;
-
-                    if (variantError) {
-                        variantError.style.display = 'none';
-                    }
-
-                    return;
-                }
-
+            if (!selectedCount) {
                 resetBaseUI();
-
-                if (variantError) {
-                    variantError.textContent = i18n.combinationUnavailable;
-                    variantError.style.display = 'block';
-                }
-
+                setGallery(defaultGallery);
+                if (variantError) variantError.style.display = 'none';
                 return;
             }
 
-            if (fromColorButton && clickedButton) {
-                const clickedColorId = String(clickedButton.dataset.colorId || '');
-                const galleryFromColorMap = colorGalleryMap[clickedColorId] || [];
-                const galleryFromButton = JSON.parse(clickedButton.dataset.gallery || '[]');
-                const imageFromButton = clickedButton.dataset.image || '';
-                const priceFromButton = clickedButton.dataset.price || '';
-                const stockFromButton = clickedButton.dataset.stock || '';
-                const skuFromButton = clickedButton.dataset.sku || '';
-                const variantIdFromButton = clickedButton.dataset.variantId || '';
+            const variant = findMatchingVariant(selected);
 
-                if (galleryFromColorMap.length) {
-                    setGallery(galleryFromColorMap);
-                } else if (galleryFromButton.length) {
-                    setGallery(galleryFromButton.map(url => ({
-                        url: url,
-                        thumb: url,
-                        alt: @json($productName)
-                    })));
-                } else if (imageFromButton) {
-                    setGallery([{
-                        url: imageFromButton,
-                        thumb: imageFromButton,
-                        alt: @json($productName)
-                    }]);
-                }
-
-                if (!size) {
-                    if (variantInput) variantInput.value = variantIdFromButton;
-                    if (productPrice && priceFromButton) productPrice.textContent = `${Number(priceFromButton).toFixed(2)} ${currency}`;
-                    if (priceOriginal && priceFromButton) priceOriginal.textContent = `${Number(priceFromButton).toFixed(2)} ${currency}`;
-                    if (dynamicSku) dynamicSku.textContent = skuFromButton || i18n.na;
-                    if (skuInfo) skuInfo.textContent = skuFromButton || i18n.na;
-                    if (footerSku) footerSku.textContent = skuFromButton || i18n.na;
-                    if (dynamicStock) dynamicStock.textContent = stockFromButton || i18n.na;
-                }
-            } else if (bestVariant) {
-                if (variantInput) variantInput.value = bestVariant.id || '';
-                if (productPrice) productPrice.textContent = `${Number(bestVariant.price).toFixed(2)} ${currency}`;
-                if (priceOriginal) priceOriginal.textContent = `${Number(bestVariant.price).toFixed(2)} ${currency}`;
-                if (dynamicSku) dynamicSku.textContent = bestVariant.sku || i18n.na;
-                if (skuInfo) skuInfo.textContent = bestVariant.sku || i18n.na;
-                if (footerSku) footerSku.textContent = bestVariant.sku || i18n.na;
-                if (dynamicStock) dynamicStock.textContent = bestVariant.stock ?? i18n.na;
-            } else {
+            if (!variant) {
                 resetBaseUI();
-            }
-
-            if (variantError) {
-                variantError.style.display = 'none';
-            }
-        }
-
-        function validateVariantBeforeSubmit(e) {
-            const requireSize = hasSizes();
-            const requireColor = hasColors();
-
-            const size = selectedSize();
-            const color = selectedColor();
-
-            if (!requireSize && !requireColor) {
-                return true;
-            }
-
-            if ((requireSize && !size) || (requireColor && !color)) {
-                e.preventDefault();
-
-                if (variantError) {
-                    variantError.textContent = i18n.selectRequired;
-                    variantError.style.display = 'block';
-                }
-
-                return false;
-            }
-
-            const key = `${size}-${color}`;
-
-            if (requireSize && requireColor && !variantMap[key]) {
-                e.preventDefault();
-
                 if (variantError) {
                     variantError.textContent = i18n.combinationUnavailable;
                     variantError.style.display = 'block';
                 }
-
-                return false;
+                return;
             }
 
-            if (variantError) {
-                variantError.style.display = 'none';
+            // Apply variant data to UI
+            if (variantInput)  variantInput.value           = variant.id    || '';
+            if (productPrice)  productPrice.textContent     = `${Number(variant.price).toFixed(2)} ${currency}`;
+            if (priceOriginal) priceOriginal.textContent    = `${Number(variant.price).toFixed(2)} ${currency}`;
+            if (dynamicSku)    dynamicSku.textContent       = variant.sku   || i18n.na;
+            if (skuInfo)       skuInfo.textContent          = variant.sku   || i18n.na;
+            if (footerSku)     footerSku.textContent        = variant.sku   || i18n.na;
+            if (dynamicStock)  dynamicStock.textContent     = variant.stock ?? i18n.na;
+
+            setGallery(
+                (variant.images && variant.images.length) ? variant.images : defaultGallery
+            );
+
+            if (variantError) variantError.style.display = 'none';
+        }
+
+        // ----------------------------------------------------------------
+        // Form Validation
+        // ----------------------------------------------------------------
+        function validateVariantBeforeSubmit(e) {
+            const totalOptions =
+                document.querySelectorAll('.variant-option-select').length +
+                document.querySelectorAll('.variant-option-buttons').length;
+
+            if (!totalOptions) return true;
+
+            const selected = getSelectedOptions();
+            const variant  = findMatchingVariant(selected);
+
+            if (!variant) {
+                e.preventDefault();
+                if (variantError) {
+                    variantError.textContent   = i18n.selectRequired;
+                    variantError.style.display = 'block';
+                }
+                return false;
             }
 
             return true;
         }
 
+        // ----------------------------------------------------------------
+        // Coupon Preview
+        // ----------------------------------------------------------------
         async function runCouponPreview() {
             const code = (couponInput?.value || '').trim();
 
             if (!code) {
                 if (discountRow) discountRow.style.display = 'none';
-                if (couponMsg) couponMsg.style.display = 'none';
+                if (couponMsg)   couponMsg.style.display   = 'none';
                 return;
             }
 
             const payload = new FormData();
-            payload.append('_token', @json(csrf_token()));
-            payload.append('product_id', productId);
-            payload.append('variant_id', variantInput?.value || '');
+            payload.append('_token',      @json(csrf_token()));
+            payload.append('product_id',  productId);
+            payload.append('variant_id',  variantInput?.value || '');
             payload.append('coupon_code', code);
 
             try {
-                const res = await fetch(@json(route('cart.coupon.preview')), {
+                const res  = await fetch(@json(route('cart.coupon.preview')), {
                     method: 'POST',
-                    body: payload
+                    body:   payload
                 });
-
                 const data = await res.json();
 
                 couponMsg.style.display = 'block';
 
                 if (!data.ok) {
                     discountRow.style.display = 'none';
-                    couponMsg.style.color = '#e3342f';
-                    couponMsg.textContent = data.message || i18n.invalidCoupon;
+                    couponMsg.style.color     = '#e3342f';
+                    couponMsg.textContent     = data.message || i18n.invalidCoupon;
                     return;
                 }
 
-                discountRow.style.display = 'block';
+                discountRow.style.display   = 'block';
                 priceDiscounted.textContent = data.final.toFixed(2) + ' ' + currency;
-                couponMsg.style.color = '#38a169';
-                couponMsg.textContent = `${data.code} ✅ (-${data.discount.toFixed(2)} ${currency})`;
-            } catch (e) {
+                couponMsg.style.color       = '#38a169';
+                couponMsg.textContent       = `${data.code} ✅ (-${data.discount.toFixed(2)} ${currency})`;
+            } catch (err) {
                 discountRow.style.display = 'none';
-                couponMsg.style.display = 'block';
-                couponMsg.style.color = '#e3342f';
-                couponMsg.textContent = i18n.checkFailed;
+                couponMsg.style.display   = 'block';
+                couponMsg.style.color     = '#e3342f';
+                couponMsg.textContent     = i18n.checkFailed;
             }
         }
 
+        // ----------------------------------------------------------------
+        // Event Bindings
+        // ----------------------------------------------------------------
         if (applyBtn) {
             applyBtn.addEventListener('click', runCouponPreview);
         }
@@ -1699,41 +1642,35 @@
             });
         }
 
-        if (sizeSelect) {
-            sizeSelect.addEventListener('change', function () {
+        // Select dropdowns
+        optionSelects.forEach(select => {
+            select.addEventListener('change', function () {
                 updateVariantUI();
-                setTimeout(runCouponPreview, 80);
-            });
-        }
-
-        if (colorSelect) {
-            colorSelect.addEventListener('change', function () {
-                updateVariantUI();
-                setTimeout(runCouponPreview, 80);
-            });
-        }
-
-        colorButtons.forEach(btn => {
-            btn.addEventListener('click', function () {
-                selectColorButton(this);
                 setTimeout(runCouponPreview, 80);
             });
         });
 
+        // Toggle buttons (color, etc.)
+        optionButtons.forEach(btn => {
+            btn.addEventListener('click', function () {
+                setActiveOptionButton(this);
+                updateVariantUI();
+                setTimeout(runCouponPreview, 80);
+            });
+        });
+
+        // Form submit validation
         const addToCartForm = document.getElementById('addToCartForm');
         if (addToCartForm) {
             addToCartForm.addEventListener('submit', validateVariantBeforeSubmit);
         }
 
+        // ----------------------------------------------------------------
+        // Init
+        // ----------------------------------------------------------------
         setGallery(defaultGallery);
         resetBaseUI();
-
-        const initialColorBtn = document.querySelector('.color-variant-btn');
-        if (initialColorBtn && colorSelect && !colorSelect.value) {
-            selectColorButton(initialColorBtn);
-        } else {
-            updateVariantUI();
-        }
+        updateVariantUI();
     });
 </script>
 @endsection

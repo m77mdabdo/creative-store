@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\WishlistItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -181,336 +182,317 @@ class ProductController extends Controller
     }
 
 
-public function show(string $slug)
-{
-    $locale = app()->getLocale();
-    $fallback = config('app.fallback_locale');
+    public function show(string $slug)
+    {
+        $locale   = app()->getLocale();
+        $fallback = config('app.fallback_locale');
 
-    $product = Product::query()
-        ->where('slug', $slug)
-        ->where('status', 'active')
-        ->with([
-            'translations' => function ($q) use ($locale, $fallback) {
-                $q->select(['id', 'product_id', 'locale', 'name', 'description'])
-                    ->whereIn('locale', [$locale, $fallback]);
-            },
-            'images' => function ($q) {
-                $q->select([
-                    'id',
-                    'product_id',
-                    'variant_id',
-                    'path',
-                    'alt_text',
-                    'is_primary',
-                    'sort_order',
-                ])
-                ->orderByDesc('is_primary')
-                ->orderBy('sort_order')
-                ->orderBy('id');
-            },
-            'primaryImage:id,product_id,path,is_primary',
-            'category:id,slug',
-            'category.translations' => function ($q) use ($locale, $fallback) {
-                $q->select(['id', 'category_id', 'locale', 'name'])
-                    ->whereIn('locale', [$locale, $fallback]);
-            },
-            'variants' => function ($q) {
-                $q->select([
-                    'id',
-                    'product_id',
-                    'sku',
-                    'price',
-                    'stock',
-                    'is_active',
-                    'combination_key',
-                ])
-                ->where('is_active', true)
-                ->orderByDesc('id');
-            },
-            'variants.values' => function ($q) {
-                $q->select([
-                    'id',
-                    'product_variant_id',
-                    'attribute_id',
-                    'attribute_value_id',
-                ]);
-            },
-            'variants.values.attribute:id,slug,name,is_active',
-            'variants.values.value:id,attribute_id,value,slug,sort_order,is_active',
-            'variants.images' => function ($q) {
-                $q->select([
-                    'id',
-                    'product_id',
-                    'variant_id',
-                    'path',
-                    'alt_text',
-                    'is_primary',
-                    'sort_order',
-                ])
-                ->orderByDesc('is_primary')
-                ->orderBy('sort_order')
-                ->orderBy('id');
-            },
-            'coupons' => function ($q) {
-                $q->where('is_active', true)
-                    ->where(function ($query) {
-                        $query->whereNull('starts_at')
-                            ->orWhere('starts_at', '<=', now());
-                    })
-                    ->where(function ($query) {
-                        $query->whereNull('expires_at')
-                            ->orWhere('expires_at', '>=', now());
-                    });
-            },
-            'reviews' => function ($q) {
-                $q->where('is_approved', true)
-                    ->with('user:id,name')
-                    ->latest();
-            },
-        ])
-        ->firstOrFail();
+        $product = Product::query()
+            ->where('slug', $slug)
+            ->where('status', 'active')
+            ->with([
+                'translations' => function ($q) use ($locale, $fallback) {
+                    $q->select(['id', 'product_id', 'locale', 'name', 'description'])
+                        ->whereIn('locale', [$locale, $fallback]);
+                },
+                'images' => function ($q) {
+                    $q->select([
+                        'id',
+                        'product_id',
+                        'variant_id',
+                        'path',
+                        'alt_text',
+                        'is_primary',
+                        'sort_order',
+                    ])
+                        ->orderByDesc('is_primary')
+                        ->orderBy('sort_order')
+                        ->orderBy('id');
+                },
+                'primaryImage:id,product_id,path,is_primary',
+                'category:id,slug',
+                'category.translations' => function ($q) use ($locale, $fallback) {
+                    $q->select(['id', 'category_id', 'locale', 'name'])
+                        ->whereIn('locale', [$locale, $fallback]);
+                },
+                'variants' => function ($q) {
+                    $q->select([
+                        'id',
+                        'product_id',
+                        'sku',
+                        'price',
+                        'stock',
+                        'is_active',
+                        'combination_key',
+                    ])
+                        ->where('is_active', true)
+                        ->orderByDesc('id');
+                },
+                'variants.values' => function ($q) {
+                    $q->select([
+                        'id',
+                        'product_variant_id',
+                        'attribute_id',
+                        'attribute_value_id',
+                    ]);
+                },
+                'variants.values.attribute:id,slug,name,is_active',
+                'variants.values.value:id,attribute_id,value,slug,sort_order,is_active',
+                'variants.images' => function ($q) {
+                    $q->select([
+                        'id',
+                        'product_id',
+                        'variant_id',
+                        'path',
+                        'alt_text',
+                        'is_primary',
+                        'sort_order',
+                    ])
+                        ->orderByDesc('is_primary')
+                        ->orderBy('sort_order')
+                        ->orderBy('id');
+                },
+                'coupons' => function ($q) {
+                    $q->where('is_active', true)
+                        ->where(function ($query) {
+                            $query->whereNull('starts_at')
+                                ->orWhere('starts_at', '<=', now());
+                        })
+                        ->where(function ($query) {
+                            $query->whereNull('expires_at')
+                                ->orWhere('expires_at', '>=', now());
+                        });
+                },
+                'reviews' => function ($q) {
+                    $q->where('is_approved', true)
+                        ->with('user:id,name')
+                        ->latest();
+                },
+            ])
+            ->firstOrFail();
 
-    $fallbackMain = asset('cozastore/images/product-detail-01.jpg');
-    $fallbackThumb = asset('cozastore/images/product-detail-02.jpg');
-    $fallbackRelated = asset('cozastore/images/product-01.jpg');
+        $fallbackMain    = asset('cozastore/images/product-detail-01.jpg');
+        $fallbackThumb   = asset('cozastore/images/product-detail-02.jpg');
+        $fallbackRelated = asset('cozastore/images/product-01.jpg');
 
-    $productName = $product->name ?? $product->slug;
-    $productDescription = $product->description ?? '';
-    $productPrice = (float) ($product->variants->min('price') ?? $product->base_price ?? 0);
-    $productCurrency = $product->currency ?? 'SAR';
-    $productSku = $product->variants->first()?->sku ?? $product->sku ?? 'N/A';
-    $categoryName = $product->category?->name ?? $product->category?->slug;
-    $categorySlug = $product->category?->slug;
+        $productName        = $product->name ?? $product->slug;
+        $productDescription = $product->description ?? '';
+        $productPrice       = (float) ($product->variants->min('price') ?? $product->base_price ?? 0);
+        $productCurrency    = $product->currency ?? 'SAR';
+        $productSku         = $product->variants->first()?->sku ?? $product->sku ?? 'N/A';
+        $categoryName       = $product->category?->name ?? $product->category?->slug;
+        $categorySlug       = $product->category?->slug;
 
-    $generalGallery = $this->buildCleanImagePayload(
-        $product->images->whereNull('variant_id')->values(),
-        $productName,
-        $fallbackMain,
-        $fallbackThumb
-    );
-
-    if (empty($generalGallery)) {
-        $generalGallery = [[
-            'id' => null,
-            'path' => null,
-            'url' => $this->resolvePublicImageUrl($product->primaryImage?->path, $fallbackMain),
-            'thumb' => $this->resolvePublicImageUrl($product->primaryImage?->path, $fallbackMain),
-            'alt' => $productName,
-            'is_primary' => true,
-            'sort_order' => 0,
-        ]];
-    }
-
-    $sizes = collect();
-    $colors = collect();
-
-    $variantMap = [];
-    $colorGalleryMap = [];
-    $colorDefaultVariantMap = [];
-    $variantColorMap = [];
-    $colorButtons = [];
-
-    foreach ($product->variants as $variant) {
-        $normalized = $this->extractVariantOptionData($variant);
-
-        if ($normalized['size']) {
-            $sizes->push($normalized['size']);
-        }
-
-        if ($normalized['color']) {
-            $colors->push($normalized['color']);
-        }
-
-        $variantImages = $this->buildCleanImagePayload(
-            $variant->images,
+        $generalGallery = $this->buildCleanImagePayload(
+            $product->images->whereNull('variant_id')->values(),
             $productName,
             $fallbackMain,
             $fallbackThumb
         );
 
-        if (empty($variantImages) && !empty($generalGallery)) {
-            $variantImages = $generalGallery;
+        if (empty($generalGallery)) {
+            $generalGallery = [[
+                'id'         => null,
+                'path'       => null,
+                'url'        => $this->resolvePublicImageUrl($product->primaryImage?->path, $fallbackMain),
+                'thumb'      => $this->resolvePublicImageUrl($product->primaryImage?->path, $fallbackMain),
+                'alt'        => $productName,
+                'is_primary' => true,
+                'sort_order' => 0,
+            ]];
         }
 
-        $variantPayload = [
-            'id' => (int) $variant->id,
-            'sku' => $variant->sku,
-            'price' => (float) $variant->price,
-            'stock' => (int) $variant->stock,
-            'images' => $variantImages,
-            'size_id' => $normalized['size_id'],
-            'color_id' => $normalized['color_id'],
-        ];
+        // ---------------------------------------------------------------
+        // Dynamic Variant System
+        // ---------------------------------------------------------------
+        $optionAttributes = [];
+        $specifications   = [];
+        $variantMatrix    = [];
 
-        if ($normalized['size_id'] && $normalized['color_id']) {
-            $variantMap[$normalized['size_id'] . '-' . $normalized['color_id']] = $variantPayload;
-        } elseif ($normalized['size_id']) {
-            $variantMap[(string) $normalized['size_id']] = $variantPayload;
-        } elseif ($normalized['color_id']) {
-            $variantMap[(string) $normalized['color_id']] = $variantPayload;
-        }
+        foreach ($product->variants as $variant) {
+            $variantImages = $this->buildCleanImagePayload(
+                $variant->images,
+                $productName,
+                $fallbackMain,
+                $fallbackThumb
+            );
 
-        if ($normalized['color_id']) {
-            $colorId = (int) $normalized['color_id'];
-
-            $variantColorMap[$variant->id] = $colorId;
-
-            if (!isset($colorDefaultVariantMap[$colorId])) {
-                $colorDefaultVariantMap[$colorId] = $variantPayload;
+            if (empty($variantImages) && !empty($generalGallery)) {
+                $variantImages = $generalGallery;
             }
 
-            if (!empty($variantImages)) {
-                $existingImages = $colorGalleryMap[$colorId] ?? [];
+            $selectedAttributes = [];
 
-                $colorGalleryMap[$colorId] = $this->uniqueAndSortImages(
-                    array_merge($existingImages, $variantImages)
-                );
+            foreach ($variant->values as $row) {
+                $attribute = $row->attribute;
+                $value     = $row->value;
 
-                if (empty($colorDefaultVariantMap[$colorId]['images'] ?? [])) {
-                    $colorDefaultVariantMap[$colorId] = $variantPayload;
+                if (!$attribute || !$value || !$value->is_active) {
+                    continue;
                 }
-            }
 
-            $mainImage = $variantImages[0]['url'] ?? $generalGallery[0]['url'] ?? $fallbackMain;
+                $attrSlug = Str::slug($attribute->slug ?: $attribute->name);
+                $attrName = $attribute->name ?: ucfirst(str_replace('-', ' ', $attrSlug));
 
-            if (!isset($colorButtons[$colorId])) {
-                $colorButtons[$colorId] = [
-                    'variant_id' => (int) $variant->id,
-                    'sku' => $variant->sku,
-                    'price' => (float) $variant->price,
-                    'stock' => (int) $variant->stock,
-                    'is_active' => (bool) $variant->is_active,
-                    'color_id' => $colorId,
-                    'color_name' => $normalized['color_name'],
-                    'color_slug' => $normalized['color_slug'],
-                    'image' => $mainImage,
-                    'gallery' => [],
+                $optionAttributes[$attrSlug] ??= [
+                    'name'   => $attrName,
+                    'slug'   => $attrSlug,
+                    'values' => [],
                 ];
+
+                $optionAttributes[$attrSlug]['values'][$value->id] = [
+                    'id'         => (int) $value->id,
+                    'value'      => $value->value,
+                    'slug'       => $value->slug,
+                    'sort_order' => (int) ($value->sort_order ?? 0),
+                ];
+
+                $selectedAttributes[$attrSlug] = (int) $value->id;
+
+                $specifications[$attrSlug] ??= [
+                    'label'  => $attrName,
+                    'values' => [],
+                ];
+
+                $specifications[$attrSlug]['values'][$value->id] = $value->value;
             }
+
+            ksort($selectedAttributes);
+
+            $variantKey = collect($selectedAttributes)
+                ->map(fn($valueId, $slug) => $slug . ':' . $valueId)
+                ->implode('|');
+
+            $variantMatrix[$variantKey] = [
+                'id'         => (int) $variant->id,
+                'sku'        => $variant->sku,
+                'price'      => (float) $variant->price,
+                'stock'      => (int) $variant->stock,
+                'images'     => $variantImages,
+                'attributes' => $selectedAttributes,
+            ];
         }
-    }
 
-    $sizes = $sizes->filter()->unique('id')->sortBy('sort_order')->values()->all();
-    $colors = $colors->filter()->unique('id')->sortBy('id')->values()->all();
+        $optionAttributes = collect($optionAttributes)
+            ->map(function ($attribute) {
+                $attribute['values'] = collect($attribute['values'])
+                    ->sortBy([
+                        ['sort_order', 'asc'],
+                        ['id', 'asc'],
+                    ])
+                    ->values()
+                    ->all();
 
-    foreach ($colorGalleryMap as $colorId => $images) {
-        $colorGalleryMap[$colorId] = $this->uniqueAndSortImages($images);
-    }
-
-    foreach ($colorButtons as $colorId => $button) {
-        $galleryUrls = collect($colorGalleryMap[$colorId] ?? [])
-            ->pluck('url')
-            ->filter()
+                return $attribute;
+            })
             ->values()
             ->all();
 
-        $colorButtons[$colorId]['gallery'] = $galleryUrls;
+        $specifications = collect($specifications)
+            ->map(function ($spec) {
+                $spec['value'] = implode(' / ', collect($spec['values'])->values()->unique()->all());
+                unset($spec['values']);
+                return $spec;
+            })
+            ->values()
+            ->all();
 
-        if (empty($colorButtons[$colorId]['image']) && !empty($galleryUrls[0])) {
-            $colorButtons[$colorId]['image'] = $galleryUrls[0];
+        // ---------------------------------------------------------------
+
+        $related = Product::query()
+            ->select(['id', 'category_id', 'slug', 'base_price', 'currency', 'status', 'created_at'])
+            ->where('status', 'active')
+            ->where('id', '!=', $product->id)
+            ->when($product->category_id, fn($q) => $q->where('category_id', $product->category_id))
+            ->with([
+                'translations' => function ($q) use ($locale, $fallback) {
+                    $q->select(['id', 'product_id', 'locale', 'name'])
+                        ->whereIn('locale', [$locale, $fallback]);
+                },
+                'primaryImage:id,product_id,path,is_primary',
+            ])
+            ->latest()
+            ->take(8)
+            ->get()
+            ->map(function ($rp) use ($fallbackRelated) {
+                return [
+                    'slug'     => $rp->slug,
+                    'name'     => $rp->name ?? $rp->slug,
+                    'price'    => number_format((float) ($rp->base_price ?? 0), 2),
+                    'currency' => $rp->currency ?? 'SAR',
+                    'image'    => $this->resolvePublicImageUrl($rp->primaryImage?->path, $fallbackRelated),
+                ];
+            })
+            ->values()
+            ->all();
+
+        $productCoupons = ($product->coupons ?? collect())
+            ->map(function ($coupon) use ($productCurrency) {
+                return [
+                    'code'     => $coupon->code,
+                    'type'     => $coupon->type,
+                    'value'    => $coupon->value,
+                    'currency' => $productCurrency,
+                    'label'    => $coupon->type === 'percent'
+                        ? 'احصل على ' . rtrim(rtrim(number_format($coupon->value, 2), '0'), '.') . '% خصم على هذا المنتج'
+                        : 'احصل على ' . number_format($coupon->value, 2) . ' ' . $productCurrency . ' خصم على هذا المنتج',
+                ];
+            })
+            ->values()
+            ->all();
+
+        $reviews = ($product->reviews ?? collect())
+            ->map(function ($review) {
+                return [
+                    'user_name' => $review->user->name ?? 'مستخدم',
+                    'rating'    => (int) $review->rating,
+                    'title'     => $review->title,
+                    'comment'   => $review->comment,
+                ];
+            })
+            ->values()
+            ->all();
+
+        $reviewsCount  = count($reviews);
+        $averageRating = $reviewsCount > 0 ? round(collect($reviews)->avg('rating'), 1) : 0;
+
+        $wishlistExists = false;
+        if (auth()->check()) {
+            $wishlistExists = WishlistItem::whereHas('wishlist', function ($query) {
+                $query->where('user_id', auth()->id());
+            })
+                ->where('product_id', $product->id)
+                ->whereNull('variant_id')
+                ->exists();
         }
+
+        return view('site.product.product-detail', [
+            'product'            => $product,
+            'productName'        => $productName,
+            'productDescription' => $productDescription,
+            'productPrice'       => $productPrice,
+            'productCurrency'    => $productCurrency,
+            'productSku'         => $productSku,
+            'categoryName'       => $categoryName,
+            'categorySlug'       => $categorySlug,
+            'generalGallery'     => $generalGallery,
+            'optionAttributes'   => $optionAttributes,
+            'variantMatrix'      => $variantMatrix,
+            'specifications'     => $specifications,
+            'related'            => $related,
+            'productCoupons'     => $productCoupons,
+            'reviews'            => $reviews,
+            'reviewsCount'       => $reviewsCount,
+            'averageRating'      => $averageRating,
+            'wishlistExists'     => $wishlistExists,
+        ]);
     }
-
-    $colorButtons = collect($colorButtons)->values();
-
-    $related = Product::query()
-        ->select(['id', 'category_id', 'slug', 'base_price', 'currency', 'status', 'created_at'])
-        ->where('status', 'active')
-        ->where('id', '!=', $product->id)
-        ->when($product->category_id, fn ($q) => $q->where('category_id', $product->category_id))
-        ->with([
-            'translations' => function ($q) use ($locale, $fallback) {
-                $q->select(['id', 'product_id', 'locale', 'name'])
-                    ->whereIn('locale', [$locale, $fallback]);
-            },
-            'primaryImage:id,product_id,path,is_primary',
-        ])
-        ->latest()
-        ->take(8)
-        ->get()
-        ->map(function ($rp) use ($fallbackRelated) {
-            return [
-                'slug' => $rp->slug,
-                'name' => $rp->name ?? $rp->slug,
-                'price' => number_format((float) ($rp->base_price ?? 0), 2),
-                'currency' => $rp->currency ?? 'SAR',
-                'image' => $this->resolvePublicImageUrl($rp->primaryImage?->path, $fallbackRelated),
-            ];
-        })
-        ->values()
-        ->all();
-
-    $productCoupons = ($product->coupons ?? collect())
-        ->map(function ($coupon) use ($productCurrency) {
-            return [
-                'code' => $coupon->code,
-                'type' => $coupon->type,
-                'value' => $coupon->value,
-                'currency' => $productCurrency,
-                'label' => $coupon->type === 'percent'
-                    ? 'احصل على ' . rtrim(rtrim(number_format($coupon->value, 2), '0'), '.') . '% خصم على هذا المنتج'
-                    : 'احصل على ' . number_format($coupon->value, 2) . ' ' . $productCurrency . ' خصم على هذا المنتج',
-            ];
-        })
-        ->values()
-        ->all();
-
-    $reviews = ($product->reviews ?? collect())
-        ->map(function ($review) {
-            return [
-                'user_name' => $review->user->name ?? 'مستخدم',
-                'rating' => (int) $review->rating,
-                'title' => $review->title,
-                'comment' => $review->comment,
-            ];
-        })
-        ->values()
-        ->all();
-
-    $reviewsCount = count($reviews);
-    $averageRating = $reviewsCount > 0 ? round(collect($reviews)->avg('rating'), 1) : 0;
-
-    $wishlistExists = false;
-    if (auth()->check()) {
-        $wishlistExists = WishlistItem::whereHas('wishlist', function ($query) {
-            $query->where('user_id', auth()->id());
-        })
-            ->where('product_id', $product->id)
-            ->whereNull('variant_id')
-            ->exists();
-    }
-
-    return view('site.product.product-detail', [
-        'product' => $product,
-        'productName' => $productName,
-        'productDescription' => $productDescription,
-        'productPrice' => $productPrice,
-        'productCurrency' => $productCurrency,
-        'productSku' => $productSku,
-        'categoryName' => $categoryName,
-        'categorySlug' => $categorySlug,
-        'generalGallery' => $generalGallery,
-        'sizes' => $sizes,
-        'colors' => $colors,
-        'colorButtons' => $colorButtons,
-        'variantMap' => $variantMap,
-        'colorGalleryMap' => $colorGalleryMap,
-        'colorDefaultVariantMap' => $colorDefaultVariantMap,
-        'variantColorMap' => $variantColorMap,
-        'related' => $related,
-        'productCoupons' => $productCoupons,
-        'reviews' => $reviews,
-        'reviewsCount' => $reviewsCount,
-        'averageRating' => $averageRating,
-        'wishlistExists' => $wishlistExists,
-    ]);
-}
 
 
     private function buildCleanImagePayload($images, string $productName, string $fallbackMain, string $fallbackThumb): array
     {
         $unique = [];
-        $seen = [];
+        $seen   = [];
 
         foreach ($images as $img) {
             $path = trim((string) ($img->path ?? ''));
@@ -532,11 +514,11 @@ public function show(string $slug)
             $url = Storage::url($path);
 
             $unique[] = [
-                'id' => $img->id,
-                'path' => $path,
-                'url' => $url,
-                'thumb' => $url,
-                'alt' => $img->alt_text ?: $productName,
+                'id'         => $img->id,
+                'path'       => $path,
+                'url'        => $url,
+                'thumb'      => $url,
+                'alt'        => $img->alt_text ?: $productName,
                 'is_primary' => (bool) ($img->is_primary ?? false),
                 'sort_order' => (int) ($img->sort_order ?? 0),
             ];
@@ -551,7 +533,7 @@ public function show(string $slug)
 
     private function uniqueAndSortImages(array $images): array
     {
-        $seen = [];
+        $seen   = [];
         $unique = [];
 
         foreach ($images as $img) {
@@ -566,7 +548,7 @@ public function show(string $slug)
             }
 
             $seen[$key] = true;
-            $unique[] = $img;
+            $unique[]   = $img;
         }
 
         usort($unique, function ($a, $b) {
@@ -597,16 +579,16 @@ public function show(string $slug)
 
     protected function extractVariantOptionData($variant): array
     {
-        $size = null;
-        $color = null;
-        $sizeId = null;
-        $colorId = null;
+        $size      = null;
+        $color     = null;
+        $sizeId    = null;
+        $colorId   = null;
         $colorName = null;
         $colorSlug = null;
 
         foreach ($variant->values as $row) {
             $attribute = $row->attribute;
-            $value = $row->value;
+            $value     = $row->value;
 
             if (!$attribute || !$value || !$value->is_active) {
                 continue;
@@ -617,9 +599,9 @@ public function show(string $slug)
 
             if ($this->isSizeAttribute($attrSlug, $attrName)) {
                 $size = [
-                    'id' => (int) $value->id,
-                    'value' => $value->value,
-                    'slug' => $value->slug,
+                    'id'         => (int) $value->id,
+                    'value'      => $value->value,
+                    'slug'       => $value->slug,
                     'sort_order' => (int) ($value->sort_order ?? 0),
                 ];
 
@@ -628,23 +610,23 @@ public function show(string $slug)
 
             if ($this->isColorAttribute($attrSlug, $attrName, $attribute->name)) {
                 $color = [
-                    'id' => (int) $value->id,
-                    'value' => $value->value,
-                    'slug' => $value->slug,
+                    'id'         => (int) $value->id,
+                    'value'      => $value->value,
+                    'slug'       => $value->slug,
                     'sort_order' => (int) ($value->sort_order ?? 0),
                 ];
 
-                $colorId = (int) $row->attribute_value_id;
+                $colorId   = (int) $row->attribute_value_id;
                 $colorName = $value->value;
                 $colorSlug = $value->slug;
             }
         }
 
         return [
-            'size' => $size,
-            'color' => $color,
-            'size_id' => $sizeId,
-            'color_id' => $colorId,
+            'size'       => $size,
+            'color'      => $color,
+            'size_id'    => $sizeId,
+            'color_id'   => $colorId,
             'color_name' => $colorName,
             'color_slug' => $colorSlug,
         ];
