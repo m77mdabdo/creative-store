@@ -2,30 +2,42 @@
     footer.bg3 {
         overflow: hidden;
         position: relative;
+        padding-top: 45px !important;
+        padding-bottom: 18px !important;
     }
 
-    /* Logo */
     .footer-logo {
         text-align: center;
-        margin-bottom: 40px;
+        margin-bottom: 18px;
     }
 
     .footer-logo img {
-        max-width: 160px;
+        max-width: 110px;
         width: 100%;
         height: auto;
         transition: transform .3s ease;
     }
 
     .footer-logo a:hover img {
-        transform: translateY(-3px);
+        transform: translateY(-2px);
     }
 
-    /* Lists */
+    footer.bg3 h4 {
+        line-height: 1.4;
+        word-break: break-word;
+        padding-bottom: 16px !important;
+        margin-bottom: 0;
+        font-size: 18px;
+    }
+
     footer.bg3 ul {
         margin: 0;
         padding: 0;
         list-style: none;
+    }
+
+    footer.bg3 ul li {
+        padding-bottom: 8px !important;
     }
 
     footer.bg3 ul li a,
@@ -35,34 +47,40 @@
         word-break: break-word;
     }
 
-    footer.bg3 h4 {
-        line-height: 1.4;
-        word-break: break-word;
+    footer.bg3 .p-b-50 {
+        padding-bottom: 22px !important;
     }
 
-    /* Footer links hover */
+    footer.bg3 p.size-201 {
+        margin-bottom: 0;
+        line-height: 1.8;
+    }
+
     footer.bg3 a {
         transition: all .3s ease;
     }
 
     footer.bg3 ul li a:hover {
-        padding-inline-start: 6px;
+        padding-inline-start: 4px;
     }
 
-    /* Social */
     .footer-social {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 8px;
+    }
+
+    .footer-social.p-t-20 {
+        padding-top: 14px !important;
     }
 
     .footer-social a {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 42px;
-        height: 42px;
+        width: 38px;
+        height: 38px;
         border-radius: 50%;
         background: rgba(255,255,255,0.08);
         color: #fff;
@@ -73,22 +91,20 @@
     .footer-social a:hover {
         background: #717fe0;
         color: #fff;
-        transform: translateY(-4px) scale(1.05);
-        box-shadow: 0 8px 20px rgba(113, 127, 224, 0.25);
+        transform: translateY(-3px);
     }
 
-    /* Newsletter */
     .newsletter-box {
         background: rgba(255,255,255,0.04);
         border: 1px solid rgba(255,255,255,0.10);
-        padding: 20px;
-        border-radius: 14px;
+        padding: 14px;
+        border-radius: 12px;
         transition: all .3s ease;
     }
 
     .newsletter-box:hover {
-        border-color: rgba(255,255,255,0.18);
-        transform: translateY(-3px);
+        border-color: rgba(255,255,255,0.16);
+        transform: translateY(-2px);
     }
 
     .newsletter-box .wrap-input1 {
@@ -97,57 +113,53 @@
 
     .newsletter-box .input1 {
         width: 100%;
-        min-height: 45px;
+        min-height: 42px;
     }
 
     .newsletter-box button {
         width: 100%;
-        min-height: 46px;
+        min-height: 42px;
         border: none;
         cursor: pointer;
         transition: all .3s ease;
     }
 
     .newsletter-box button:hover {
-        transform: translateY(-2px);
+        transform: translateY(-1px);
     }
 
-    /* Payment icons */
     .footer-payments {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 18px;
+        gap: 8px;
+        margin-top: 12px;
     }
 
     .payment-badge {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 72px;
-        height: 42px;
-        padding: 0 14px;
+        min-width: 66px;
+        height: 38px;
+        padding: 0 12px;
         border-radius: 10px;
         background: rgba(255,255,255,0.06);
         border: 1px solid rgba(255,255,255,0.10);
         color: #fff;
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 600;
-        letter-spacing: .3px;
         transition: all .3s ease;
     }
 
     .payment-badge:hover {
-        transform: translateY(-3px);
+        transform: translateY(-2px);
         background: rgba(255,255,255,0.10);
-        border-color: rgba(255,255,255,0.18);
     }
 
-    /* Bottom bar */
     .footer-bottom {
-        margin-top: 20px;
-        padding-top: 22px;
+        margin-top: 6px;
+        padding-top: 16px;
         border-top: 1px solid rgba(255,255,255,0.08);
     }
 
@@ -155,13 +167,13 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 20px;
+        gap: 14px;
         flex-wrap: wrap;
     }
 
     .footer-copy {
         color: #b2b2b2;
-        font-size: 14px;
+        font-size: 13px;
         line-height: 1.7;
     }
 
@@ -169,12 +181,12 @@
         display: flex;
         align-items: center;
         flex-wrap: wrap;
-        gap: 18px;
+        gap: 14px;
     }
 
     .footer-bottom-links a {
         color: #b2b2b2;
-        font-size: 14px;
+        font-size: 13px;
         position: relative;
     }
 
@@ -182,7 +194,6 @@
         color: #fff;
     }
 
-    /* Back to top */
     .btn-back-to-top {
         transition: all .3s ease;
     }
@@ -191,33 +202,34 @@
         transform: translateY(-4px);
     }
 
-    /* Tablet */
     @media (max-width: 991px) {
         footer.bg3 {
-            padding-top: 55px !important;
-            padding-bottom: 25px !important;
+            padding-top: 38px !important;
+            padding-bottom: 16px !important;
         }
 
         footer.bg3 .p-b-50 {
-            padding-bottom: 35px !important;
-        }
-
-        footer.bg3 h4 {
-            font-size: 18px;
-            padding-bottom: 20px !important;
-        }
-    }
-
-    /* Mobile */
-    @media (max-width: 767px) {
-        footer.bg3 {
-            text-align: center;
-            padding-top: 45px !important;
-            padding-bottom: 20px !important;
+            padding-bottom: 18px !important;
         }
 
         .footer-logo {
-            margin-bottom: 25px;
+            margin-bottom: 14px;
+        }
+
+        .footer-logo img {
+            max-width: 100px;
+        }
+    }
+
+    @media (max-width: 767px) {
+        footer.bg3 {
+            text-align: center;
+            padding-top: 34px !important;
+            padding-bottom: 14px !important;
+        }
+
+        .footer-logo {
+            margin-bottom: 12px;
         }
 
         .footer-social,
@@ -226,33 +238,20 @@
             justify-content: center;
         }
 
-        .newsletter-box {
-            margin-top: 10px;
-        }
-
         .footer-bottom-wrap {
             justify-content: center;
             text-align: center;
         }
+
+        .newsletter-box {
+            margin-top: 6px;
+        }
     }
 
     @media (max-width: 575px) {
-        footer.bg3 {
-            padding-top: 40px !important;
-            padding-bottom: 18px !important;
-        }
-
-        footer.bg3 .p-b-50 {
-            padding-bottom: 28px !important;
-        }
-
         footer.bg3 h4 {
-            font-size: 17px;
-            padding-bottom: 16px !important;
-        }
-
-        footer.bg3 ul li {
-            padding-bottom: 8px !important;
+            font-size: 16px;
+            padding-bottom: 12px !important;
         }
 
         footer.bg3 .stext-107,
@@ -261,23 +260,13 @@
         footer.bg3 button,
         .footer-copy,
         .footer-bottom-links a {
-            font-size: 14px !important;
+            font-size: 13px !important;
         }
 
         .payment-badge {
-            min-width: 66px;
-            height: 40px;
-            font-size: 12px;
-        }
-
-        .btn-back-to-top {
-            right: 15px !important;
-            bottom: 15px !important;
-        }
-
-        html[dir="rtl"] .btn-back-to-top {
-            right: auto !important;
-            left: 15px !important;
+            min-width: 60px;
+            height: 36px;
+            font-size: 11px;
         }
     }
 </style>
