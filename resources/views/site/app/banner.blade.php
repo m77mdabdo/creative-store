@@ -1,3 +1,131 @@
+<style>
+    .sec-banner .block1 {
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px;
+        height: 100%;
+    }
+
+    .sec-banner .wrap-pic-w {
+        display: block;
+        width: 100%;
+    }
+
+    .sec-banner .wrap-pic-w img {
+        width: 100%;
+        height: 320px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .sec-banner .block1-txt {
+        z-index: 2;
+        text-decoration: none;
+    }
+
+    .sec-banner .block1-name,
+    .sec-banner .block1-info,
+    .sec-banner .block1-link {
+        word-break: break-word;
+    }
+
+    @media (max-width: 1199px) {
+        .sec-banner .wrap-pic-w img {
+            height: 280px;
+        }
+    }
+
+    @media (max-width: 991px) {
+        .sec-banner .wrap-pic-w img {
+            height: 240px;
+        }
+
+        .sec-banner .block1-txt {
+            padding-left: 25px !important;
+            padding-right: 25px !important;
+            padding-top: 25px !important;
+            padding-bottom: 25px !important;
+        }
+
+        .sec-banner .block1-name {
+            font-size: 24px !important;
+            line-height: 1.3 !important;
+        }
+
+        .sec-banner .block1-info {
+            font-size: 14px !important;
+            line-height: 1.4 !important;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .sec-banner {
+            padding-top: 50px !important;
+            padding-bottom: 20px !important;
+        }
+
+        .sec-banner .row {
+            margin-left: -10px;
+            margin-right: -10px;
+        }
+
+        .sec-banner .col-md-6,
+        .sec-banner .col-xl-4 {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .sec-banner .wrap-pic-w img {
+            height: 220px;
+        }
+
+        .sec-banner .block1-txt {
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+            padding-top: 20px !important;
+            padding-bottom: 20px !important;
+        }
+
+        .sec-banner .block1-name {
+            font-size: 22px !important;
+            padding-bottom: 6px !important;
+        }
+
+        .sec-banner .block1-info {
+            font-size: 13px !important;
+        }
+
+        .sec-banner .block1-link {
+            font-size: 13px !important;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .sec-banner .wrap-pic-w img {
+            height: 200px;
+        }
+
+        .sec-banner .block1-name {
+            font-size: 20px !important;
+        }
+
+        .sec-banner .block1-info {
+            font-size: 12px !important;
+        }
+
+        .sec-banner .block1-link {
+            font-size: 12px !important;
+        }
+
+        .sec-banner .block1-txt {
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+            padding-top: 16px !important;
+            padding-bottom: 16px !important;
+        }
+    }
+</style>
+
 <div class="sec-banner bg0 p-t-80 p-b-50">
     <div class="container">
         <div class="row">
