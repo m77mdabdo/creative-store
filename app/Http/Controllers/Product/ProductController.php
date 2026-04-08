@@ -52,22 +52,22 @@ class ProductController extends Controller
 
         $colorValues = $colorAttr
             ? AttributeValue::query()
-            ->select(['id', 'attribute_id', 'value', 'slug', 'sort_order'])
-            ->where('attribute_id', $colorAttr->id)
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->orderBy('id')
-            ->get()
+                ->select(['id', 'attribute_id', 'value', 'slug', 'sort_order'])
+                ->where('attribute_id', $colorAttr->id)
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderBy('id')
+                ->get()
             : collect();
 
         $tagValues = $tagAttr
             ? AttributeValue::query()
-            ->select(['id', 'attribute_id', 'value', 'slug', 'sort_order'])
-            ->where('attribute_id', $tagAttr->id)
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->orderBy('id')
-            ->get()
+                ->select(['id', 'attribute_id', 'value', 'slug', 'sort_order'])
+                ->where('attribute_id', $tagAttr->id)
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderBy('id')
+                ->get()
             : collect();
 
         $productsQuery = Product::query()
@@ -181,7 +181,6 @@ class ProductController extends Controller
         ));
     }
 
-
     public function show(string $slug)
     {
         $locale   = app()->getLocale();
@@ -290,21 +289,32 @@ class ProductController extends Controller
             $fallbackThumb
         );
 
-        if (empty($generalGallery)) {
+        if (empty($generalGallery) && $product->primaryImage?->path) {
+            $primaryUrl = $this->resolvePublicImageUrl($product->primaryImage->path, $fallbackMain);
+
             $generalGallery = [[
-                'id'         => null,
-                'path'       => null,
-                'url'        => $this->resolvePublicImageUrl($product->primaryImage?->path, $fallbackMain),
-                'thumb'      => $this->resolvePublicImageUrl($product->primaryImage?->path, $fallbackMain),
+                'id'         => $product->primaryImage->id ?? null,
+                'path'       => $product->primaryImage->path,
+                'url'        => $primaryUrl,
+                'thumb'      => $primaryUrl,
                 'alt'        => $productName,
                 'is_primary' => true,
                 'sort_order' => 0,
             ]];
         }
 
-        // ---------------------------------------------------------------
-        // Dynamic Variant System
-        // ---------------------------------------------------------------
+        if (empty($generalGallery)) {
+            $generalGallery = [[
+                'id'         => null,
+                'path'       => null,
+                'url'        => $fallbackMain,
+                'thumb'      => $fallbackThumb,
+                'alt'        => $productName,
+                'is_primary' => true,
+                'sort_order' => 0,
+            ]];
+        }
+
         $optionAttributes = [];
         $specifications   = [];
         $variantMatrix    = [];
@@ -317,7 +327,7 @@ class ProductController extends Controller
                 $fallbackThumb
             );
 
-            if (empty($variantImages) && !empty($generalGallery)) {
+            if (empty($variantImages)) {
                 $variantImages = $generalGallery;
             }
 
@@ -396,8 +406,6 @@ class ProductController extends Controller
             })
             ->values()
             ->all();
-
-        // ---------------------------------------------------------------
 
         $related = Product::query()
             ->select(['id', 'category_id', 'slug', 'base_price', 'currency', 'status', 'created_at'])
@@ -488,9 +496,12 @@ class ProductController extends Controller
         ]);
     }
 
-
     private function buildCleanImagePayload($images, string $productName, string $fallbackMain, string $fallbackThumb): array
     {
+        if (!$images || count($images) === 0) {
+            return [];
+        }
+
         $unique = [];
         $seen   = [];
 
@@ -501,20 +512,16 @@ class ProductController extends Controller
                 continue;
             }
 
-            if (!Storage::disk('public')->exists($path)) {
+            $url = $this->resolvePublicImageUrl($path, $fallbackMain);
+
+            if (isset($seen[$url])) {
                 continue;
             }
 
-            if (isset($seen[$path])) {
-                continue;
-            }
-
-            $seen[$path] = true;
-
-            $url = Storage::url($path);
+            $seen[$url] = true;
 
             $unique[] = [
-                'id'         => $img->id,
+                'id'         => $img->id ?? null,
                 'path'       => $path,
                 'url'        => $url,
                 'thumb'      => $url,
@@ -572,9 +579,17 @@ class ProductController extends Controller
             return $fallback;
         }
 
-        return Storage::disk('public')->exists($path)
-            ? Storage::url($path)
-            : $fallback;
+        $path = trim($path);
+
+        if ($path === '') {
+            return $fallback;
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        return Storage::url($path);
     }
 
     protected function extractVariantOptionData($variant): array
