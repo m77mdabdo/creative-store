@@ -5,104 +5,111 @@
 @section('content')
 
 <style>
-/* ─── Page Variables ─── */
 :root {
-    --bg-page:       #0b0c0f;
-    --bg-card:       #16181d;
-    --bg-card-hover: #1c1e25;
-    --bg-input:      #1e2028;
-    --accent:        #6c63ff;
-    --accent-soft:   rgba(108,99,255,.12);
-    --accent-glow:   rgba(108,99,255,.3);
-    --text-primary:  #f0f1f5;
-    --text-secondary:#8a8fa8;
-    --text-muted:    #4e5268;
-    --border:        rgba(255,255,255,.06);
-    --border-focus:  rgba(108,99,255,.5);
-    --success:       #10b981;
-    --success-soft:  rgba(16,185,129,.1);
-    --danger:        #ef4444;
-    --radius-sm:     8px;
-    --radius-md:     14px;
-    --radius-lg:     20px;
-    --transition:    .22s cubic-bezier(.4,0,.2,1);
+    --accent:        #717fe0;
+    --accent-dark:   #6c7ae0;
+    --accent-soft:   rgba(113,127,224,.10);
+    --accent-hover:  #5a6ad0;
+
+    --bg-page:       #f5f5f5;
+    --bg-card:       #ffffff;
+    --bg-input:      #f7f7f7;
+
+    --text-primary:  #333333;
+    --text-secondary:#555555;
+    --text-muted:    #888888;
+
+    --border:        #e6e6e6;
+    --border-focus:  rgba(113,127,224,.45);
+
+    --success:       #28a745;
+    --success-soft:  rgba(40,167,69,.08);
+    --danger:        #dc3545;
+
+    --radius-sm:     4px;
+    --radius-md:     8px;
+    --radius-lg:     12px;
+    --shadow-sm:     0 2px 8px rgba(0,0,0,.06);
+    --shadow-md:     0 4px 16px rgba(0,0,0,.08);
+    --transition:    .2s ease;
+    --font-main:     'Poppins', sans-serif;
 }
+html[lang="ar"] { --font-main: 'Cairo', sans-serif; }
 
 /* ─── Page Header ─── */
-.page-header {
-    margin-bottom: 32px;
-}
+.page-header { margin-bottom: 28px; }
 
 .page-title {
-    font-size: 26px;
+    font-size: 22px;
     font-weight: 700;
     color: var(--text-primary);
-    letter-spacing: -.5px;
-    line-height: 1.2;
+    letter-spacing: -.3px;
 }
 
 .page-subtitle {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-muted);
-    margin-top: 4px;
+    margin-top: 3px;
 }
 
 /* ─── Grid ─── */
 .acc-grid {
     display: grid;
-    grid-template-columns: 1fr 1.4fr;
+    grid-template-columns: 1fr 1.45fr;
     gap: 20px;
     align-items: start;
 }
 
-@media (max-width: 900px) {
-    .acc-grid { grid-template-columns: 1fr; }
-}
+@media (max-width: 900px) { .acc-grid { grid-template-columns: 1fr; } }
 
-/* ─── Cards ─── */
+/* ─── Card ─── */
 .acc-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     overflow: hidden;
-    transition: border-color var(--transition);
+    box-shadow: var(--shadow-sm);
     margin-bottom: 20px;
+    transition: box-shadow var(--transition);
 }
 
-.acc-card:hover { border-color: rgba(255,255,255,.1); }
+.acc-card:hover { box-shadow: var(--shadow-md); }
 
 .acc-card-head {
-    padding: 18px 22px;
+    padding: 16px 20px;
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    background: #fafafa;
 }
 
 html[dir="rtl"] .acc-card-head { flex-direction: row-reverse; }
 
 .acc-card-title {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--text-primary);
     display: flex;
     align-items: center;
     gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
 }
 
 html[dir="rtl"] .acc-card-title { flex-direction: row-reverse; }
 
 .acc-card-title-icon {
-    width: 28px; height: 28px;
+    width: 26px; height: 26px;
     border-radius: var(--radius-sm);
     background: var(--accent-soft);
     display: flex; align-items: center; justify-content: center;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--accent);
 }
 
-.acc-card-body { padding: 22px; }
+.acc-card-body { padding: 20px; }
 
 /* ─── Info Rows ─── */
 .info-row {
@@ -111,6 +118,7 @@ html[dir="rtl"] .acc-card-title { flex-direction: row-reverse; }
     justify-content: space-between;
     padding: 12px 0;
     border-bottom: 1px solid var(--border);
+    gap: 12px;
 }
 .info-row:last-child { border-bottom: none; padding-bottom: 0; }
 .info-row:first-child { padding-top: 0; }
@@ -120,14 +128,14 @@ html[dir="rtl"] .info-row { flex-direction: row-reverse; }
 .info-label {
     font-size: 12px;
     color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    font-weight: 600;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .info-value {
-    font-size: 14px;
-    color: var(--text-primary);
+    font-size: 13px;
+    color: var(--text-secondary);
     font-weight: 500;
     text-align: right;
     word-break: break-all;
@@ -139,61 +147,58 @@ html[dir="rtl"] .info-value { text-align: left; }
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
-    padding: 4px 10px;
+    padding: 3px 10px;
     border-radius: 20px;
     background: var(--success-soft);
     color: var(--success);
-    border: 1px solid rgba(16,185,129,.2);
+    border: 1px solid rgba(40,167,69,.2);
 }
 
-/* ─── Orders Table ─── */
+/* ─── Orders ─── */
 .orders-link-btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--accent);
     text-decoration: none;
     background: var(--accent-soft);
-    padding: 6px 12px;
-    border-radius: var(--radius-sm);
-    border: 1px solid rgba(108,99,255,.2);
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(113,127,224,.2);
     transition: var(--transition);
     white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: .04em;
 }
 
 html[dir="rtl"] .orders-link-btn { flex-direction: row-reverse; }
 
 .orders-link-btn:hover {
-    background: rgba(108,99,255,.2);
-    color: #a5b4fc;
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
     text-decoration: none;
 }
 
 .orders-empty {
     text-align: center;
-    padding: 36px 20px;
+    padding: 32px 20px;
     color: var(--text-muted);
 }
 
-.orders-empty i {
-    font-size: 36px;
-    margin-bottom: 10px;
-    display: block;
-    opacity: .4;
-}
-
-.orders-empty p { font-size: 14px; }
+.orders-empty i { font-size: 32px; margin-bottom: 10px; display: block; color: #ddd; }
+.orders-empty p { font-size: 13px; }
 
 /* Table */
 .orders-table-wrap {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    margin: 0 -22px;
-    padding: 0 22px;
+    margin: 0 -20px;
+    padding: 0 20px;
 }
 
 .orders-table {
@@ -206,18 +211,18 @@ html[dir="rtl"] .orders-link-btn { flex-direction: row-reverse; }
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: .08em;
+    letter-spacing: .07em;
     color: var(--text-muted);
-    padding: 0 12px 12px;
+    padding: 0 10px 12px;
     text-align: left;
     white-space: nowrap;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 2px solid var(--border);
 }
 
 html[dir="rtl"] .orders-table th { text-align: right; }
 
 .orders-table td {
-    padding: 13px 12px;
+    padding: 12px 10px;
     font-size: 13px;
     color: var(--text-secondary);
     border-bottom: 1px solid var(--border);
@@ -227,26 +232,23 @@ html[dir="rtl"] .orders-table th { text-align: right; }
 
 .orders-table tbody tr:last-child td { border-bottom: none; }
 
-.orders-table tbody tr {
-    transition: background var(--transition);
-}
+.orders-table tbody tr { transition: background var(--transition); }
+.orders-table tbody tr:hover { background: #fafafa; }
 
-.orders-table tbody tr:hover { background: rgba(255,255,255,.02); }
-
-.orders-table .order-num-link {
+.order-num-link {
     color: var(--accent);
     text-decoration: none;
     font-weight: 600;
     font-size: 12px;
 }
+.order-num-link:hover { color: var(--accent-hover); text-decoration: underline; }
 
-.orders-table .order-num-link:hover { color: #a5b4fc; }
-
+/* Status Badges */
 .status-badge {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 3px 9px;
+    gap: 4px;
+    padding: 3px 8px;
     border-radius: 20px;
     font-size: 11px;
     font-weight: 600;
@@ -260,25 +262,21 @@ html[dir="rtl"] .orders-table th { text-align: right; }
     flex-shrink: 0;
 }
 
-.status-pending   { background: rgba(251,191,36,.1);  color: #fbbf24; border: 1px solid rgba(251,191,36,.2); }
-.status-processing{ background: rgba(59,130,246,.1);  color: #60a5fa; border: 1px solid rgba(59,130,246,.2); }
-.status-completed { background: var(--success-soft);  color: var(--success); border: 1px solid rgba(16,185,129,.2); }
-.status-cancelled { background: rgba(239,68,68,.1);   color: #f87171; border: 1px solid rgba(239,68,68,.2); }
-.status-default   { background: rgba(255,255,255,.06); color: var(--text-secondary); border: 1px solid var(--border); }
+.status-pending    { background: rgba(255,193,7,.1);   color: #d97706; border: 1px solid rgba(255,193,7,.25); }
+.status-processing { background: rgba(113,127,224,.1); color: var(--accent); border: 1px solid rgba(113,127,224,.25); }
+.status-completed  { background: var(--success-soft);  color: var(--success); border: 1px solid rgba(40,167,69,.2); }
+.status-cancelled  { background: rgba(220,53,69,.08);  color: #dc3545; border: 1px solid rgba(220,53,69,.2); }
+.status-default    { background: #f5f5f5; color: var(--text-muted); border: 1px solid var(--border); }
 
 /* ─── Forms ─── */
-.cs-form-group {
-    margin-bottom: 18px;
-}
+.cs-form-group { margin-bottom: 16px; }
 
 .cs-label {
     display: block;
     font-size: 12px;
     font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: .07em;
-    margin-bottom: 8px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
 }
 
 .cs-input {
@@ -288,40 +286,51 @@ html[dir="rtl"] .orders-table th { text-align: right; }
     border-radius: var(--radius-sm);
     color: var(--text-primary);
     font-size: 14px;
-    font-family: inherit;
-    padding: 11px 14px;
+    font-family: var(--font-main);
+    padding: 10px 14px;
     outline: none;
     transition: border-color var(--transition), box-shadow var(--transition);
     -webkit-appearance: none;
+    height: 44px;
 }
 
 .cs-input:focus {
-    border-color: var(--border-focus);
+    border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-soft);
+    background: #fff;
 }
 
-.cs-input.is-invalid { border-color: rgba(239,68,68,.5); }
+.cs-input.is-invalid {
+    border-color: rgba(220,53,69,.5);
+}
 
 .cs-invalid-msg {
     font-size: 12px;
     color: var(--danger);
-    margin-top: 5px;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
+/* Buttons */
 .cs-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 11px 22px;
+    gap: 7px;
+    padding: 10px 22px;
     border-radius: var(--radius-sm);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    font-family: inherit;
+    font-family: var(--font-main);
     cursor: pointer;
     border: none;
     transition: var(--transition);
     text-decoration: none;
+    height: 42px;
+    letter-spacing: .02em;
+    text-transform: uppercase;
 }
 
 html[dir="rtl"] .cs-btn { flex-direction: row-reverse; }
@@ -332,32 +341,38 @@ html[dir="rtl"] .cs-btn { flex-direction: row-reverse; }
 }
 
 .cs-btn-primary:hover {
-    background: #5b52e5;
+    background: var(--accent-hover);
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(113,127,224,.4);
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px var(--accent-glow);
 }
 
-.cs-btn-primary:active { transform: translateY(0); }
+.cs-btn-primary:active { transform: translateY(0); box-shadow: none; }
 
 .cs-btn-block { width: 100%; }
 
 /* Alert */
 .cs-alert {
-    padding: 12px 16px;
+    padding: 10px 14px;
     border-radius: var(--radius-sm);
     font-size: 13px;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    border-left: 3px solid var(--success);
 }
 
-html[dir="rtl"] .cs-alert { flex-direction: row-reverse; }
+html[dir="rtl"] .cs-alert {
+    flex-direction: row-reverse;
+    border-left: none;
+    border-right: 3px solid var(--success);
+}
 
 .cs-alert-success {
     background: var(--success-soft);
-    border: 1px solid rgba(16,185,129,.2);
-    color: var(--success);
+    color: #1a6e3a;
 }
 
 /* Forgot link */
@@ -372,22 +387,25 @@ html[dir="rtl"] .cs-alert { flex-direction: row-reverse; }
     transition: color var(--transition);
 }
 
-.cs-forgot-link:hover { color: var(--accent); text-decoration: none; }
+.cs-forgot-link:hover {
+    color: var(--accent);
+    text-decoration: none;
+}
 
 html[dir="rtl"] .cs-forgot-link { flex-direction: row-reverse; }
 
-/* Section divider */
+/* Divider */
 .section-divider {
     height: 1px;
     background: var(--border);
-    margin: 4px 0 20px;
+    margin: 4px 0 18px;
 }
 </style>
 
-<!-- Page Header -->
+<!-- Header -->
 <div class="page-header">
     <h1 class="page-title">{{ __('account.my_account') }}</h1>
-    <p class="page-subtitle">{{ __('account.manage_your_account') ?? 'Manage your profile and orders' }}</p>
+    <p class="page-subtitle">{{ __('account.manage_your_account') ?? 'Manage your profile, orders and settings' }}</p>
 </div>
 
 <div class="acc-grid">
@@ -395,7 +413,7 @@ html[dir="rtl"] .cs-forgot-link { flex-direction: row-reverse; }
     <!-- ── Left Column ── -->
     <div>
 
-        {{-- Account Details Card --}}
+        {{-- Account Details --}}
         <div class="acc-card">
             <div class="acc-card-head">
                 <span class="acc-card-title">
@@ -410,7 +428,7 @@ html[dir="rtl"] .cs-forgot-link { flex-direction: row-reverse; }
                 </div>
                 <div class="info-row">
                     <span class="info-label">{{ __('account.email') }}</span>
-                    <span class="info-value" style="font-size:13px;">{{ $user->email }}</span>
+                    <span class="info-value" style="font-size:12px;">{{ $user->email }}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">{{ __('account.member_since') }}</span>
@@ -424,7 +442,7 @@ html[dir="rtl"] .cs-forgot-link { flex-direction: row-reverse; }
             </div>
         </div>
 
-        {{-- Recent Orders Card --}}
+        {{-- Recent Orders --}}
         <div class="acc-card">
             <div class="acc-card-head">
                 <span class="acc-card-title">
@@ -433,10 +451,10 @@ html[dir="rtl"] .cs-forgot-link { flex-direction: row-reverse; }
                 </span>
                 <a href="{{ route('shipping.orders.index') }}" class="orders-link-btn">
                     {{ __('account.view_all') }}
-                    <i class="fas fa-arrow-right" style="font-size:10px;"></i>
+                    <i class="fas fa-arrow-right" style="font-size:9px;"></i>
                 </a>
             </div>
-            <div class="acc-card-body" style="padding: 0 22px 22px;">
+            <div class="acc-card-body" style="padding-top:0; padding-bottom:20px;">
                 @if($orders->count())
                     <div class="orders-table-wrap">
                         <table class="orders-table">
@@ -465,9 +483,7 @@ html[dir="rtl"] .cs-forgot-link { flex-direction: row-reverse; }
                                                 #{{ $order->order_number }}
                                             </a>
                                         </td>
-                                        <td>
-                                            {{ $order->total ? number_format($order->total, 2) . ' ' . $order->currency : '—' }}
-                                        </td>
+                                        <td>{{ $order->total ? number_format($order->total, 2) . ' ' . $order->currency : '—' }}</td>
                                         <td>
                                             <span class="status-badge {{ $statusClass }}">
                                                 {{ ucfirst($order->status) }}
@@ -493,7 +509,7 @@ html[dir="rtl"] .cs-forgot-link { flex-direction: row-reverse; }
     <!-- ── Right Column ── -->
     <div>
 
-        {{-- Update Name Card --}}
+        {{-- Update Name --}}
         <div class="acc-card">
             <div class="acc-card-head">
                 <span class="acc-card-title">
@@ -520,18 +536,22 @@ html[dir="rtl"] .cs-forgot-link { flex-direction: row-reverse; }
                                class="cs-input @error('name') is-invalid @enderror"
                                placeholder="{{ __('account.full_name') }}">
                         @error('name')
-                            <div class="cs-invalid-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
+                            <div class="cs-invalid-msg">
+                                <i class="fas fa-exclamation-circle" style="font-size:11px;"></i>
+                                {{ $message }}
+                            </div>
                         @enderror
                     </div>
                     <button type="submit" class="cs-btn cs-btn-primary">
-                        <i class="fas fa-save"></i> {{ __('account.save') }}
+                        <i class="fas fa-save"></i>
+                        {{ __('account.save') }}
                     </button>
                 </form>
 
             </div>
         </div>
 
-        {{-- Change Password Card --}}
+        {{-- Change Password --}}
         <div class="acc-card">
             <div class="acc-card-head">
                 <span class="acc-card-title">
@@ -558,7 +578,10 @@ html[dir="rtl"] .cs-forgot-link { flex-direction: row-reverse; }
                                class="cs-input @error('current_password') is-invalid @enderror"
                                placeholder="••••••••">
                         @error('current_password')
-                            <div class="cs-invalid-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
+                            <div class="cs-invalid-msg">
+                                <i class="fas fa-exclamation-circle" style="font-size:11px;"></i>
+                                {{ $message }}
+                            </div>
                         @enderror
                     </div>
 
@@ -569,7 +592,10 @@ html[dir="rtl"] .cs-forgot-link { flex-direction: row-reverse; }
                                class="cs-input @error('password') is-invalid @enderror"
                                placeholder="••••••••">
                         @error('password')
-                            <div class="cs-invalid-msg"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
+                            <div class="cs-invalid-msg">
+                                <i class="fas fa-exclamation-circle" style="font-size:11px;"></i>
+                                {{ $message }}
+                            </div>
                         @enderror
                     </div>
 
@@ -582,7 +608,8 @@ html[dir="rtl"] .cs-forgot-link { flex-direction: row-reverse; }
                     </div>
 
                     <button type="submit" class="cs-btn cs-btn-primary cs-btn-block">
-                        <i class="fas fa-key"></i> {{ __('account.update_password') }}
+                        <i class="fas fa-key"></i>
+                        {{ __('account.update_password') }}
                     </button>
                 </form>
 
