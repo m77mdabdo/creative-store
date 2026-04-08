@@ -1,3 +1,87 @@
+<style>
+
+/* 🔥 HERO SLIDER FIX FOR MOBILE */
+.section-slide {
+    position: relative;
+}
+
+.item-slick1 {
+    height: 90vh;
+    min-height: 500px;
+    display: flex !important;
+    align-items: center;
+}
+
+.item-slick1 .container {
+    width: 100%;
+}
+
+.item-slick1 .wrap-content-slide1 {
+    max-width: 100%;
+}
+
+/* الصورة */
+.item-slick1 {
+    background-position: center center !important;
+    background-size: cover !important;
+}
+
+/* النص */
+.item-slick1 .layer-slick1 {
+    text-align: center;
+}
+
+/* زرار */
+.item-slick1 .layer-slick1 a {
+    display: inline-block;
+    margin-top: 15px;
+}
+
+/* 📱 موبايل */
+@media (max-width: 768px) {
+
+    .item-slick1 {
+        height: 75vh;
+        min-height: 400px;
+        padding: 40px 15px;
+    }
+
+    .item-slick1 .layer-slick1 {
+        text-align: center !important;
+    }
+
+    .item-slick1 h2 {
+        font-size: 28px !important;
+        line-height: 1.3 !important;
+    }
+
+    .item-slick1 span {
+        font-size: 14px !important;
+    }
+
+    .item-slick1 a {
+        font-size: 14px !important;
+        padding: 10px 20px !important;
+    }
+
+}
+
+/* 📱 موبايل صغير */
+@media (max-width: 480px) {
+
+    .item-slick1 {
+        height: 70vh;
+        min-height: 350px;
+    }
+
+    .item-slick1 h2 {
+        font-size: 24px !important;
+    }
+
+}
+</style>
+
+
 <section class="section-slide">
     <div class="wrap-slick1">
         <div class="slick1">
