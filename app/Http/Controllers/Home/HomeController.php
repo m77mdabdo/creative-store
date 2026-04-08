@@ -172,28 +172,33 @@ class HomeController extends Controller
         ['label' => '$200.00+', 'min' => 200, 'max' => null],
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Blogs
-    |--------------------------------------------------------------------------
-    */
-    $blogsQuery = Blog::query()->with('category');
+/*
+|--------------------------------------------------------------------------
+| Blogs
+|--------------------------------------------------------------------------
+*/
+$fallbackBlogImage = asset('images/default-blog.jpg');
 
-    if (Schema::hasColumn('blogs', 'status')) {
-        $blogsQuery->whereIn('status', ['published', 'active', 1]);
-    }
+$blogsQuery = Blog::query()->with('category');
 
-    if (Schema::hasColumn('blogs', 'is_active')) {
-        $blogsQuery->where('is_active', 1);
-    }
+if (Schema::hasColumn('blogs', 'status')) {
+    $blogsQuery->whereIn('status', ['published', 'active', 1]);
+}
 
-    if (Schema::hasColumn('blogs', 'published_at')) {
-        $blogsQuery->orderByDesc('published_at');
-    } else {
-        $blogsQuery->latest();
-    }
+if (Schema::hasColumn('blogs', 'is_active')) {
+    $blogsQuery->where('is_active', 1);
+}
 
-    $blogs = $blogsQuery->take(6)->get();
+if (Schema::hasColumn('blogs', 'published_at')) {
+    $blogsQuery->orderByDesc('published_at');
+} else {
+    $blogsQuery->latest();
+}
+
+$blogs = $blogsQuery->take(6)->get()->map(function ($blog) use ($fallbackBlogImage) {
+    $blog->image_url = $this->resolveHomeBlogImageUrl($blog->image ?? null, $fallbackBlogImage);
+    return $blog;
+});
 
     /*
 |--------------------------------------------------------------------------
@@ -368,6 +373,29 @@ $homeContent   = $homePayload['content'] ?? [];
         $first = $translations->first();
         return $first->{$field} ?? $default;
     }
+
+    protected function resolveHomeBlogImageUrl(?string $path, string $fallback): string
+{
+    if (!$path) {
+        return $fallback;
+    }
+
+    $path = trim($path);
+
+    if ($path === '') {
+        return $fallback;
+    }
+
+    if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+        return $path;
+    }
+
+    if (str_starts_with($path, 'storage/')) {
+        return asset($path);
+    }
+
+    return \Illuminate\Support\Facades\Storage::url($path);
+}
 
 
 }

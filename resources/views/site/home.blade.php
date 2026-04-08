@@ -2877,7 +2877,7 @@ html[dir="rtl"] .products-pagination nav > div {
                             <article class="blog-card">
                                 <a href="{{ route('blog.show', $blog->slug) }}" class="blog-card-image-link">
                                     <img
-                                        src="{{ !empty($blog->image) ? asset('storage/' . $blog->image) : asset('images/default-blog.jpg') }}"
+                                        src="{{ $blog->image_url }}"
                                         alt="{{ $blog->title }}"
                                         class="blog-card-image"
                                     >
@@ -2926,6 +2926,8 @@ html[dir="rtl"] .products-pagination nav > div {
 
     </div>
 </section>
+
+
 
 {{-- ===== ABOUT SECTION ===== --}}
 @php
