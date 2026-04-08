@@ -2954,19 +2954,34 @@ html[dir="rtl"] .products-pagination nav > div {
 
 
 {{-- ===== ABOUT SECTION ===== --}}
+
+<style>
+    @media (max-width: 991px) {
+    .about-image {
+        height: 320px;
+    }
+}
+
+@media (max-width: 576px) {
+    .about-image {
+        height: 250px;
+    }
+}
+</style>
+
 @php
     $aboutContent = $aboutContent ?? [];
 
     $image1 = $aboutContent['image_1'] ?? 'images/about-01.jpg';
     $image2 = $aboutContent['image_2'] ?? 'images/about-02.jpg';
 
-    $image1Url = str_starts_with($image1, 'images/')
-        ? asset($image1)
-        : asset('storage/' . ltrim($image1, '/'));
+   $image1Url = str_starts_with($image1, 'images/')
+    ? asset($image1)
+    : Storage::url($image1);
 
-    $image2Url = str_starts_with($image2, 'images/')
-        ? asset($image2)
-        : asset('storage/' . ltrim($image2, '/'));
+   $image2Url = str_starts_with($image2, 'images/')
+    ? asset($image2)
+    : Storage::url($image2);
 @endphp
 
 <section class="bg0 p-t-90 p-b-30">
@@ -3006,9 +3021,9 @@ html[dir="rtl"] .products-pagination nav > div {
 
             <div class="col-11 col-md-5 col-lg-4 m-lr-auto">
                 <div class="how-bor1">
-                    <div class="hov-img0">
-                        <img src="{{ $image1Url }}" alt="About Image 1">
-                    </div>
+                    <div class="hov-img0 about-image-box">
+    <img src="{{ $image1Url }}" alt="About Image 1" class="about-image">
+</div>
                 </div>
             </div>
         </div>
@@ -3042,9 +3057,9 @@ html[dir="rtl"] .products-pagination nav > div {
 
             <div class="order-md-1 col-11 col-md-5 col-lg-4 m-lr-auto p-b-30">
                 <div class="how-bor2">
-                    <div class="hov-img0">
-                        <img src="{{ $image2Url }}" alt="About Image 2">
-                    </div>
+                   <div class="hov-img0 about-image-box">
+    <img src="{{ $image2Url }}" alt="About Image 2" class="about-image">
+</div>
                 </div>
             </div>
         </div>
