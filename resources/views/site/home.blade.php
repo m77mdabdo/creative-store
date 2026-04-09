@@ -3232,3 +3232,6 @@ html[dir="rtl"] .products-pagination nav > div {
 
 
 @endsection
+
+
+
