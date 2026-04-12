@@ -227,21 +227,23 @@
             </a>
         </li>
 
-        {{-- Language Switcher --}}
-        <li class="nav-item dropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#">
-                <i class="fas fa-globe"></i>
-                <span class="ml-1">{{ app()->getLocale() === 'ar' ? 'ع' : 'EN' }}</span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right">
-                <a href="{{ route('lang.switch', 'ar') }}" class="dropdown-item {{ app()->getLocale() === 'ar' ? 'active' : '' }}">
-                    🇸🇦 العربية
-                </a>
-                <a href="{{ route('lang.switch', 'en') }}" class="dropdown-item {{ app()->getLocale() === 'en' ? 'active' : '' }}">
-                    🇬🇧 English
-                </a>
-            </div>
-        </li>
+{{-- Language Switcher --}}
+<li class="nav-item dropdown">
+    <a class="nav-link" data-toggle="dropdown" href="#">
+        <i class="fas fa-globe"></i>
+        <span class="ml-1">{{ app()->getLocale() === 'ar' ? 'ع' : 'EN' }}</span>
+    </a>
+    <div class="dropdown-menu dropdown-menu-right">
+        <a href="{{ LaravelLocalization::getLocalizedURL('ar') }}"
+           class="dropdown-item {{ app()->getLocale() === 'ar' ? 'active' : '' }}">
+            🇸🇦 العربية
+        </a>
+        <a href="{{ LaravelLocalization::getLocalizedURL('en') }}"
+           class="dropdown-item {{ app()->getLocale() === 'en' ? 'active' : '' }}">
+            🇬🇧 English
+        </a>
+    </div>
+</li>
 
         {{-- User Dropdown --}}
         <li class="nav-item dropdown">
