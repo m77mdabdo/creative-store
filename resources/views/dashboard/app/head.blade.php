@@ -39,7 +39,7 @@
     <link rel="stylesheet" href="{{ asset('AdminLTE/plugins/summernote/summernote-bs4.min.css') }}">
 
     <style>
-        :root{
+        :root {
             --sidebar-width: 250px;
             --radius-md: 0.75rem;
         }
@@ -279,3 +279,52 @@
 
     @stack('styles')
 </head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+    {{-- Navbar --}}
+    @include('dashboard.app.partials.navbar')
+
+    {{-- Sidebar --}}
+    @include('dashboard.app.partials.sidebar')
+
+    {{-- Content --}}
+    @yield('content')
+
+    {{-- Footer --}}
+    @include('dashboard.app.partials.footer')
+
+</div>
+
+{{-- jQuery --}}
+<script src="{{ asset('AdminLTE/plugins/jquery/jquery.min.js') }}"></script>
+
+{{-- jQuery UI --}}
+<script src="{{ asset('AdminLTE/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
+
+{{-- Bootstrap 4 --}}
+<script src="{{ asset('AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+{{-- overlayScrollbars --}}
+<script src="{{ asset('AdminLTE/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
+
+{{-- AdminLTE App --}}
+<script src="{{ asset('AdminLTE/dist/js/adminlte.min.js') }}"></script>
+
+{{-- Chart.js --}}
+<script src="{{ asset('AdminLTE/plugins/chart.js/Chart.min.js') }}"></script>
+
+{{-- Tempusdominus --}}
+<script src="{{ asset('AdminLTE/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
+
+{{-- Summernote --}}
+<script src="{{ asset('AdminLTE/plugins/summernote/summernote-bs4.min.js') }}"></script>
+
+{{-- Select2 --}}
+<script src="{{ asset('AdminLTE/plugins/select2/js/select2.full.min.js') }}"></script>
+
+@stack('scripts')
+
+</body>
+</html>
