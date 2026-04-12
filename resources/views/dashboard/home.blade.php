@@ -26,9 +26,7 @@
 
             @include('dashboard.app.partials.alerts')
 
-            {{-- ══════════════════════════════════════
-                 ROW 1 — Top Sales Stats
-            ══════════════════════════════════════ --}}
+            {{-- Top Sales Stats --}}
             <div class="row">
                 @if(auth()->user()->hasPermission('dashboard.sales-totals.view'))
                     <div class="col-lg-3 col-md-6 col-12">
@@ -37,8 +35,9 @@
                                 <h3>{{ number_format($totalSales, 2) }}</h3>
                                 <p>{{ __('site.Total Sales') }}</p>
                             </div>
-                            <div class="icon"><i class="fas fa-sack-dollar"></i></div>
-                            <div style="height:36px; border-radius:0 0 18px 18px; background:rgba(0,0,0,.12);"></div>
+                            <div class="icon">
+                                <i class="fas fa-sack-dollar"></i>
+                            </div>
                         </div>
                     </div>
                 @endif
@@ -49,7 +48,9 @@
                             <h3>{{ $ordersCount }}</h3>
                             <p>{{ __('site.Orders Count') }}</p>
                         </div>
-                        <div class="icon"><i class="fas fa-shopping-bag"></i></div>
+                        <div class="icon">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
                         <a href="{{ route('dashboard.orders.index') }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
                             {{ __('site.More info') }} <i class="fas fa-arrow-circle-right"></i>
                         </a>
@@ -62,7 +63,9 @@
                             <h3>{{ $paidOrdersCount }}</h3>
                             <p>{{ __('site.Paid Orders') }}</p>
                         </div>
-                        <div class="icon"><i class="fas fa-circle-check"></i></div>
+                        <div class="icon">
+                            <i class="fas fa-circle-check"></i>
+                        </div>
                         <a href="{{ route('dashboard.orders.index') }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
                             {{ __('site.More info') }} <i class="fas fa-arrow-circle-right"></i>
                         </a>
@@ -75,7 +78,9 @@
                             <h3>{{ $pendingOrdersCount }}</h3>
                             <p>{{ __('site.Pending Orders') }}</p>
                         </div>
-                        <div class="icon"><i class="fas fa-hourglass-half"></i></div>
+                        <div class="icon">
+                            <i class="fas fa-hourglass-half"></i>
+                        </div>
                         <a href="{{ route('dashboard.orders.index') }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
                             {{ __('site.More info') }} <i class="fas fa-arrow-circle-right"></i>
                         </a>
@@ -83,9 +88,7 @@
                 </div>
             </div>
 
-            {{-- ══════════════════════════════════════
-                 ROW 2 — Review Stats
-            ══════════════════════════════════════ --}}
+            {{-- Review Stats --}}
             <div class="row">
                 <div class="col-lg-3 col-md-6 col-12">
                     <div class="small-box shadow-sm" style="border-radius:18px; background:linear-gradient(135deg,#0ea5e9,#0284c7); color:#fff;">
@@ -93,7 +96,9 @@
                             <h3>{{ $stats['totalReviews'] ?? 0 }}</h3>
                             <p>{{ __('site.Total Reviews') }}</p>
                         </div>
-                        <div class="icon"><i class="fas fa-comments"></i></div>
+                        <div class="icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
                         <a href="{{ route('dashboard.reviews.index') }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
                             {{ __('site.More info') }} <i class="fas fa-arrow-circle-right"></i>
                         </a>
@@ -106,7 +111,9 @@
                             <h3>{{ $stats['pendingReviews'] ?? 0 }}</h3>
                             <p>{{ __('site.Pending Reviews') }}</p>
                         </div>
-                        <div class="icon"><i class="fas fa-clock"></i></div>
+                        <div class="icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
                         <a href="{{ route('dashboard.reviews.index', ['status' => 'pending']) }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
                             {{ __('site.More info') }} <i class="fas fa-arrow-circle-right"></i>
                         </a>
@@ -119,7 +126,9 @@
                             <h3>{{ $stats['approvedReviews'] ?? 0 }}</h3>
                             <p>{{ __('site.Approved Reviews') }}</p>
                         </div>
-                        <div class="icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
                         <a href="{{ route('dashboard.reviews.index', ['status' => 'approved']) }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
                             {{ __('site.More info') }} <i class="fas fa-arrow-circle-right"></i>
                         </a>
@@ -132,7 +141,9 @@
                             <h3>{{ number_format((float) ($stats['averageRating'] ?? 0), 1) }}</h3>
                             <p>{{ __('site.Average Rating') }}</p>
                         </div>
-                        <div class="icon"><i class="fas fa-star"></i></div>
+                        <div class="icon">
+                            <i class="fas fa-star"></i>
+                        </div>
                         <a href="{{ route('dashboard.reviews.index') }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
                             {{ __('site.More info') }} <i class="fas fa-arrow-circle-right"></i>
                         </a>
@@ -140,140 +151,131 @@
                 </div>
             </div>
 
-            {{-- ══════════════════════════════════════
-                 ROW 3 — KPI Mini Cards (6 متساوية)
-                 كل card قابلة للضغط، بدون زرار داخلي
-                 عشان يبقوا كلهم نفس الارتفاع
-            ══════════════════════════════════════ --}}
+            {{-- Secondary Stats --}}
             <div class="row">
-
-                {{-- Products Count --}}
-                <div class="col-xl-2 col-lg-4 col-md-4 col-6 mb-3">
-                    <a href="{{ route('dashboard.products.index') }}" class="text-decoration-none">
-                        <div class="card shadow-sm border-0 h-100 kpi-card" style="border-radius:18px;">
-                            <div class="card-body d-flex flex-column align-items-center justify-content-center text-center py-4">
-                                <div class="kpi-icon mb-3" style="background:#eef2ff; color:#4338ca;">
-                                    <i class="fas fa-box fa-lg"></i>
-                                </div>
-                                <h3 class="mb-1 font-weight-bold" style="font-size:28px; color:#111827;">
-                                    {{ $productsCount ?? ($stats['totalProducts'] ?? 0) }}
-                                </h3>
-                                <div class="text-muted" style="font-size:12px; line-height:1.3;">
-                                    {{ __('site.Products Count') }}
-                                </div>
+                <div class="col-lg-3 col-md-6 col-12">
+                    <div class="card shadow-sm border-0" style="border-radius:18px;">
+                        <div class="card-body d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-muted mb-1">{{ __('site.Products Count') }}</div>
+                                <h3 class="mb-0 font-weight-bold">{{ $productsCount ?? ($stats['totalProducts'] ?? 0) }}</h3>
+                            </div>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width:52px;height:52px;background:#eef2ff;color:#4338ca;">
+                                <i class="fas fa-box fa-lg"></i>
                             </div>
                         </div>
-                    </a>
+                        <div class="px-3 pb-3">
+                            <a href="{{ route('dashboard.products.index') }}" class="btn btn-sm btn-outline-dark btn-block" style="border-radius:10px;">
+                                {{ __('site.More info') }}
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
-                {{-- Customers Count --}}
-                <div class="col-xl-2 col-lg-4 col-md-4 col-6 mb-3">
-                    <div class="card shadow-sm border-0 h-100 kpi-card" style="border-radius:18px;">
-                        <div class="card-body d-flex flex-column align-items-center justify-content-center text-center py-4">
-                            <div class="kpi-icon mb-3" style="background:#ecfeff; color:#0891b2;">
+                <div class="col-lg-3 col-md-6 col-12">
+                    <div class="card shadow-sm border-0" style="border-radius:18px;">
+                        <div class="card-body d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-muted mb-1">{{ __('site.Customers Count') }}</div>
+                                <h3 class="mb-0 font-weight-bold">{{ $customersCount }}</h3>
+                            </div>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width:52px;height:52px;background:#ecfeff;color:#0891b2;">
                                 <i class="fas fa-users fa-lg"></i>
                             </div>
-                            <h3 class="mb-1 font-weight-bold" style="font-size:28px; color:#111827;">
-                                {{ $customersCount }}
-                            </h3>
-                            <div class="text-muted" style="font-size:12px; line-height:1.3;">
-                                {{ __('site.Customers Count') }}
-                            </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- Low Stock --}}
-                <div class="col-xl-2 col-lg-4 col-md-4 col-6 mb-3">
-                    <div class="card shadow-sm border-0 h-100 kpi-card" style="border-radius:18px;">
-                        <div class="card-body d-flex flex-column align-items-center justify-content-center text-center py-4">
-                            <div class="kpi-icon mb-3" style="background:#fff7ed; color:#ea580c;">
+                <div class="col-lg-3 col-md-6 col-12">
+                    <div class="card shadow-sm border-0" style="border-radius:18px;">
+                        <div class="card-body d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-muted mb-1">{{ __('site.Low Stock Products') }}</div>
+                                <h3 class="mb-0 font-weight-bold">{{ $lowStockProductsCount }}</h3>
+                            </div>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width:52px;height:52px;background:#fff7ed;color:#ea580c;">
                                 <i class="fas fa-triangle-exclamation fa-lg"></i>
                             </div>
-                            <h3 class="mb-1 font-weight-bold" style="font-size:28px; color:#111827;">
-                                {{ $lowStockProductsCount }}
-                            </h3>
-                            <div class="text-muted" style="font-size:12px; line-height:1.3;">
-                                {{ __('site.Low Stock Products') }}
-                            </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- New Reviews --}}
-                <div class="col-xl-2 col-lg-4 col-md-4 col-6 mb-3">
-                    <a href="{{ route('dashboard.reviews.index') }}" class="text-decoration-none">
-                        <div class="card shadow-sm border-0 h-100 kpi-card" style="border-radius:18px;">
-                            <div class="card-body d-flex flex-column align-items-center justify-content-center text-center py-4">
-                                <div class="kpi-icon mb-3" style="background:#fdf4ff; color:#c026d3;">
-                                    <i class="fas fa-star fa-lg"></i>
-                                </div>
-                                <h3 class="mb-1 font-weight-bold" style="font-size:28px; color:#111827;">
-                                    {{ $newReviewsCount }}
-                                </h3>
-                                <div class="text-muted" style="font-size:12px; line-height:1.3;">
-                                    {{ __('site.New Reviews') }}
-                                </div>
+                <div class="col-lg-3 col-md-6 col-12">
+                    <div class="card shadow-sm border-0" style="border-radius:18px;">
+                        <div class="card-body d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-muted mb-1">{{ __('site.New Reviews') }}</div>
+                                <h3 class="mb-0 font-weight-bold">{{ $newReviewsCount }}</h3>
+                            </div>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width:52px;height:52px;background:#fdf4ff;color:#c026d3;">
+                                <i class="fas fa-star fa-lg"></i>
                             </div>
                         </div>
-                    </a>
-                </div>
-
-                {{-- Active Products --}}
-                <div class="col-xl-2 col-lg-4 col-md-4 col-6 mb-3">
-                    <a href="{{ route('dashboard.products.index', ['status' => 'active']) }}" class="text-decoration-none">
-                        <div class="card shadow-sm border-0 h-100 kpi-card" style="border-radius:18px;">
-                            <div class="card-body d-flex flex-column align-items-center justify-content-center text-center py-4">
-                                <div class="kpi-icon mb-3" style="background:#ecfdf5; color:#059669;">
-                                    <i class="fas fa-cubes fa-lg"></i>
-                                </div>
-                                <h3 class="mb-1 font-weight-bold" style="font-size:28px; color:#111827;">
-                                    {{ $stats['activeProducts'] ?? 0 }}
-                                </h3>
-                                <div class="text-muted" style="font-size:12px; line-height:1.3;">
-                                    {{ __('site.Active Products') }}
-                                </div>
-                            </div>
+                        <div class="px-3 pb-3">
+                            <a href="{{ route('dashboard.reviews.index') }}" class="btn btn-sm btn-outline-dark btn-block" style="border-radius:10px;">
+                                {{ __('site.More info') }}
+                            </a>
                         </div>
-                    </a>
+                    </div>
                 </div>
-
-                {{-- Unread Messages --}}
-                <div class="col-xl-2 col-lg-4 col-md-4 col-6 mb-3">
-                    <a href="{{ route('dashboard.contact-messages.index') }}" class="text-decoration-none">
-                        <div class="card shadow-sm border-0 h-100 kpi-card" style="border-radius:18px;">
-                            <div class="card-body d-flex flex-column align-items-center justify-content-center text-center py-4">
-                                <div class="kpi-icon mb-3" style="background:#fef2f2; color:#dc2626;">
-                                    <i class="fas fa-envelope fa-lg"></i>
-                                </div>
-                                <h3 class="mb-1 font-weight-bold" style="font-size:28px; color:#111827;">
-                                    {{ $unreadContactMessagesCount ?? ($stats['unreadMessages'] ?? 0) }}
-                                </h3>
-                                <div class="text-muted" style="font-size:12px; line-height:1.3;">
-                                    {{ __('site.Unread Messages') }}
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
             </div>
 
-            {{-- ══════════════════════════════════════
-                 ROW 4 — Sales Chart
-            ══════════════════════════════════════ --}}
+            {{-- Extra Stats --}}
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-12">
+                    <div class="card shadow-sm border-0" style="border-radius:18px;">
+                        <div class="card-body d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-muted mb-1">{{ __('site.Active Products') }}</div>
+                                <h3 class="mb-0 font-weight-bold">{{ $stats['activeProducts'] ?? 0 }}</h3>
+                            </div>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width:52px;height:52px;background:#ecfdf5;color:#059669;">
+                                <i class="fas fa-cubes fa-lg"></i>
+                            </div>
+                        </div>
+                        <div class="px-3 pb-3">
+                            <a href="{{ route('dashboard.products.index', ['status' => 'active']) }}" class="btn btn-sm btn-outline-dark btn-block" style="border-radius:10px;">
+                                {{ __('site.More info') }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-12">
+                    <div class="card shadow-sm border-0" style="border-radius:18px;">
+                        <div class="card-body d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-muted mb-1">{{ __('site.Unread Messages') }}</div>
+                                <h3 class="mb-0 font-weight-bold">{{ $unreadContactMessagesCount ?? ($stats['unreadMessages'] ?? 0) }}</h3>
+                            </div>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width:52px;height:52px;background:#fef2f2;color:#dc2626;">
+                                <i class="fas fa-envelope fa-lg"></i>
+                            </div>
+                        </div>
+                        <div class="px-3 pb-3">
+                            <a href="{{ route('dashboard.contact-messages.index') }}" class="btn btn-sm btn-outline-dark btn-block" style="border-radius:10px;">
+                                {{ __('site.More info') }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Sales Chart --}}
             @if(auth()->user()->hasPermission('dashboard.sales-totals.view'))
                 <div class="row">
                     <div class="col-lg-12 col-12">
                         <div class="card shadow-sm border-0" style="border-radius:20px;">
                             <div class="card-header bg-white border-0 pt-4 pb-0">
                                 <div class="d-flex justify-content-between align-items-center flex-wrap">
-                                    <h3 class="card-title font-weight-bold mb-2" style="font-size:20px;">
-                                        {{ __('site.Sales Chart') }}
-                                    </h3>
-                                    <span class="text-muted" style="font-size:13px;">
-                                        {{ __('site.Last 7 days') }}
-                                    </span>
+                                    <h3 class="card-title font-weight-bold mb-2" style="font-size:20px;">{{ __('site.Sales Chart') }}</h3>
+                                    <span class="text-muted" style="font-size:13px;">{{ __('site.Last 7 days') }}</span>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -286,20 +288,14 @@
                 </div>
             @endif
 
-            {{-- ══════════════════════════════════════
-                 ROW 5 — Latest Orders + Top Products
-            ══════════════════════════════════════ --}}
+            {{-- Latest Orders + Top Products --}}
             <div class="row">
                 <div class="col-lg-8">
                     <div class="card shadow-sm border-0" style="border-radius:20px;">
                         <div class="card-header bg-white border-0 pt-4">
                             <div class="d-flex justify-content-between align-items-center">
-                                <h3 class="card-title font-weight-bold" style="font-size:20px;">
-                                    {{ __('site.Latest Orders') }}
-                                </h3>
-                                <a href="{{ route('dashboard.orders.index') }}"
-                                   class="btn btn-sm btn-outline-dark"
-                                   style="border-radius:10px;">
+                                <h3 class="card-title font-weight-bold" style="font-size:20px;">{{ __('site.Latest Orders') }}</h3>
+                                <a href="{{ route('dashboard.orders.index') }}" class="btn btn-sm btn-outline-dark" style="border-radius:10px;">
                                     {{ __('site.View All') }}
                                 </a>
                             </div>
@@ -322,21 +318,19 @@
                                     @forelse($latestOrders as $order)
                                         <tr>
                                             <td style="padding:16px;">
-                                                <a href="{{ route('dashboard.orders.show', $order->id) }}"
-                                                   class="font-weight-bold text-dark">
+                                                <a href="{{ route('dashboard.orders.show', $order->id) }}" class="font-weight-bold text-dark">
                                                     #{{ $order->order_number }}
                                                 </a>
                                             </td>
                                             <td>{{ $order->user->name ?? $order->guest_email ?? __('site.Guest') }}</td>
                                             <td>
                                                 <span class="badge badge-light px-3 py-2" style="border-radius:10px;">
-                                                    {{ __('site.status_' . strtolower($order->status)) }}
+                                                   {{ __('site.status_' . strtolower($order->status)) }}
                                                 </span>
                                             </td>
                                             <td>
-                                                <span class="badge {{ $order->payment_status === 'paid' ? 'badge-success' : 'badge-warning' }} px-3 py-2"
-                                                      style="border-radius:10px;">
-                                                    {{ __('site.status_' . strtolower($order->payment_status)) }}
+                                                <span class="badge {{ $order->payment_status === 'paid' ? 'badge-success' : 'badge-warning' }} px-3 py-2" style="border-radius:10px;">
+                                                   {{ __('site.status_' . strtolower($order->payment_status)) }}
                                                 </span>
                                             </td>
                                             @if(auth()->user()->hasPermission('orders.view-totals'))
@@ -346,8 +340,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="{{ auth()->user()->hasPermission('orders.view-totals') ? 6 : 5 }}"
-                                                class="text-center text-muted py-4">
+                                            <td colspan="{{ auth()->user()->hasPermission('orders.view-totals') ? 6 : 5 }}" class="text-center text-muted py-4">
                                                 {{ __('site.No orders found.') }}
                                             </td>
                                         </tr>
@@ -361,9 +354,7 @@
                 <div class="col-lg-4">
                     <div class="card shadow-sm border-0" style="border-radius:20px;">
                         <div class="card-header bg-white border-0 pt-4">
-                            <h3 class="card-title font-weight-bold" style="font-size:20px;">
-                                {{ __('site.Top Products') }}
-                            </h3>
+                            <h3 class="card-title font-weight-bold" style="font-size:20px;">{{ __('site.Top Products') }}</h3>
                         </div>
                         <div class="card-body p-0">
                             @forelse($topProducts as $product)
@@ -397,16 +388,12 @@
                 </div>
             </div>
 
-            {{-- ══════════════════════════════════════
-                 ROW 6 — Recent Activity
-            ══════════════════════════════════════ --}}
+            {{-- Recent Activity --}}
             <div class="row">
                 <div class="col-12">
                     <div class="card shadow-sm border-0" style="border-radius:20px;">
                         <div class="card-header bg-white border-0 pt-4">
-                            <h3 class="card-title font-weight-bold" style="font-size:20px;">
-                                {{ __('site.Recent Activity') }}
-                            </h3>
+                            <h3 class="card-title font-weight-bold" style="font-size:20px;">{{ __('site.Recent Activity') }}</h3>
                         </div>
                         <div class="card-body">
                             <div class="timeline timeline-inverse">
@@ -416,12 +403,13 @@
                                             {{ $activity->created_at?->translatedFormat('d M Y') }}
                                         </span>
                                     </div>
+
                                     <div>
                                         <i class="fas fa-history bg-primary"></i>
                                         <div class="timeline-item shadow-sm" style="border-radius:16px;">
                                             <span class="time">
                                                 <i class="far fa-clock"></i>
-                                                {{ $activity->created_at?->translatedFormat('h:i A') }}
+                                               {{ $activity->created_at?->translatedFormat('h:i A') }}
                                             </span>
                                             <h3 class="timeline-header border-0">
                                                 <strong>{{ $activity->user->name ?? __('site.System') }}</strong>
@@ -430,7 +418,9 @@
                                             </h3>
                                             <div class="timeline-body text-muted">
                                                 {{ $activity->auditable_type ?? __('site.Activity') }}
-                                                @if($activity->auditable_id) #{{ $activity->auditable_id }} @endif
+                                                @if($activity->auditable_id)
+                                                    #{{ $activity->auditable_id }}
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -451,51 +441,15 @@
         </div>
     </section>
 </div>
-
-<style>
-    /* ── KPI Mini Cards ── */
-    .kpi-card {
-        transition: transform .2s ease, box-shadow .2s ease;
-        cursor: default;
-    }
-
-    a .kpi-card {
-        cursor: pointer;
-    }
-
-    a:hover .kpi-card {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 28px rgba(0,0,0,.10) !important;
-    }
-
-    .kpi-icon {
-        width: 52px;
-        height: 52px;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    /* ── RTL fix for top products row ── */
-    html[dir="rtl"] .text-right {
-        text-align: left !important;
-    }
-
-    html[dir="rtl"] .mr-3 {
-        margin-right: 0 !important;
-        margin-left: 1rem !important;
-    }
-</style>
 @endsection
 
 @push('scripts')
 @if(auth()->user()->hasPermission('dashboard.sales-totals.view'))
 <script>
     const salesChartLabels = @json($salesChartLabels);
-    const salesChartData   = @json($salesChartData);
-    const chartElement     = document.getElementById('salesChart');
+    const salesChartData = @json($salesChartData);
+
+    const chartElement = document.getElementById('salesChart');
 
     if (chartElement) {
         const ctx = chartElement.getContext('2d');
@@ -521,10 +475,23 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
                 scales: {
-                    x: { grid: { display: false } },
-                    y: { beginAtZero: true, grid: { color: '#eef2f7' } }
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#eef2f7'
+                        }
+                    }
                 }
             }
         });
