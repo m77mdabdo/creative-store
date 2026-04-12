@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 @include('dashboard.app.head')
 
 <body class="hold-transition sidebar-mini layout-fixed text-sm">
