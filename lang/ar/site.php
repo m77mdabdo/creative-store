@@ -445,4 +445,7 @@ return [
 'No menu available' => 'لا توجد قائمة متاحة',
 'ACCOUNT' => 'الحساب',
 
+
+
+
 ];

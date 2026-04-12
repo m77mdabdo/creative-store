@@ -325,18 +325,18 @@
                                             <td>{{ $order->user->name ?? $order->guest_email ?? __('site.Guest') }}</td>
                                             <td>
                                                 <span class="badge badge-light px-3 py-2" style="border-radius:10px;">
-                                                    {{ ucfirst($order->status) }}
+                                                   {{ __('site.status_' . strtolower($order->status)) }}
                                                 </span>
                                             </td>
                                             <td>
                                                 <span class="badge {{ $order->payment_status === 'paid' ? 'badge-success' : 'badge-warning' }} px-3 py-2" style="border-radius:10px;">
-                                                    {{ ucfirst($order->payment_status) }}
+                                                   {{ __('site.status_' . strtolower($order->payment_status)) }}
                                                 </span>
                                             </td>
                                             @if(auth()->user()->hasPermission('orders.view-totals'))
                                                 <td class="font-weight-bold">{{ number_format($order->total, 2) }}</td>
                                             @endif
-                                            <td class="text-muted">{{ $order->created_at?->format('d M Y') }}</td>
+                                            <td class="text-muted">{{ $order->created_at?->translatedFormat('d M Y') }}</td>
                                         </tr>
                                     @empty
                                         <tr>
@@ -400,7 +400,7 @@
                                 @forelse($recentActivities as $activity)
                                     <div class="time-label mb-3">
                                         <span class="bg-dark px-3 py-2" style="border-radius:12px;">
-                                            {{ $activity->created_at?->format('d M Y') }}
+                                            {{ $activity->created_at?->translatedFormat('d M Y') }}
                                         </span>
                                     </div>
 
@@ -409,7 +409,7 @@
                                         <div class="timeline-item shadow-sm" style="border-radius:16px;">
                                             <span class="time">
                                                 <i class="far fa-clock"></i>
-                                                {{ $activity->created_at?->format('h:i A') }}
+                                               {{ $activity->created_at?->translatedFormat('h:i A') }}
                                             </span>
                                             <h3 class="timeline-header border-0">
                                                 <strong>{{ $activity->user->name ?? __('site.System') }}</strong>
