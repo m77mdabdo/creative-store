@@ -49,7 +49,7 @@
                                 <i class="nav-icon {{ $item['icon'] }}"></i>
 
                                 <p>
-                                    {{ __('site.' . $item['title']) }}
+                                    {{ __($item['title_key'] ?? $item['title']) }}
 
                                     @if(!empty($item['badge']))
                                         <span class="right badge {{ $item['badge']['class'] }}">
@@ -70,7 +70,7 @@
                                 <i class="nav-icon {{ $item['icon'] }}"></i>
 
                                 <p>
-                                    {{ __('site.' . $item['title']) }}
+                                    {{ __($item['title_key'] ?? $item['title']) }}
 
                                     @if(!empty($item['badge']))
                                         <span class="right badge {{ $item['badge']['class'] }}">
@@ -91,7 +91,7 @@
                                             <i class="{{ $child['icon'] ?? 'far fa-circle' }} nav-icon"></i>
 
                                             <p>
-                                                {{ __('site.' . $child['title']) }}
+                                                {{ __($child['title_key'] ?? $child['title']) }}
 
                                                 @if(!empty($child['badge']))
                                                     <span class="right badge {{ $child['badge']['class'] }}">
@@ -107,16 +107,13 @@
                     @endif
 
                 @empty
-                    {{-- ⚠️ لو مفيش items --}}
                     <li class="nav-item text-center text-muted mt-3">
                         <small>{{ __('site.No menu available') }}</small>
                     </li>
                 @endforelse
 
-                {{-- ===== Divider ===== --}}
                 <li class="nav-header mt-3">{{ __('site.ACCOUNT') }}</li>
 
-                {{-- ===== Logout ===== --}}
                 <li class="nav-item px-2">
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
