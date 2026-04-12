@@ -30,7 +30,6 @@
                 </a>
             </div>
         </div>
-        
 
         {{-- ===== Menu ===== --}}
         <nav class="mt-2">
@@ -50,7 +49,7 @@
                                 <i class="nav-icon {{ $item['icon'] }}"></i>
 
                                 <p>
-                                    {{ $item['title'] }}
+                                    {{ __('site.' . $item['title']) }}
 
                                     @if(!empty($item['badge']))
                                         <span class="right badge {{ $item['badge']['class'] }}">
@@ -71,7 +70,7 @@
                                 <i class="nav-icon {{ $item['icon'] }}"></i>
 
                                 <p>
-                                    {{ $item['title'] }}
+                                    {{ __('site.' . $item['title']) }}
 
                                     @if(!empty($item['badge']))
                                         <span class="right badge {{ $item['badge']['class'] }}">
@@ -92,7 +91,7 @@
                                             <i class="{{ $child['icon'] ?? 'far fa-circle' }} nav-icon"></i>
 
                                             <p>
-                                                {{ $child['title'] }}
+                                                {{ __('site.' . $child['title']) }}
 
                                                 @if(!empty($child['badge']))
                                                     <span class="right badge {{ $child['badge']['class'] }}">
@@ -110,12 +109,12 @@
                 @empty
                     {{-- ⚠️ لو مفيش items --}}
                     <li class="nav-item text-center text-muted mt-3">
-                        <small>No menu available</small>
+                        <small>{{ __('site.No menu available') }}</small>
                     </li>
                 @endforelse
 
                 {{-- ===== Divider ===== --}}
-                <li class="nav-header mt-3">ACCOUNT</li>
+                <li class="nav-header mt-3">{{ __('site.ACCOUNT') }}</li>
 
                 {{-- ===== Logout ===== --}}
                 <li class="nav-item px-2">
@@ -124,7 +123,7 @@
                         <button type="submit"
                                 class="btn btn-danger btn-block btn-sm elevation-2">
                             <i class="fas fa-sign-out-alt mr-1"></i>
-                            Logout
+                            {{ __('site.Logout') }}
                         </button>
                     </form>
                 </li>
