@@ -32,7 +32,10 @@
             color: #9ca3af;
             text-align: center;
         }
+
+
     </style>
+
 </head>
 <body>
 
@@ -56,3 +59,4 @@
 
 </body>
 </html>
+

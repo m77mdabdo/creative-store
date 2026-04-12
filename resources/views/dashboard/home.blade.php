@@ -1,6 +1,6 @@
 @extends('dashboard.app.layout')
 
-@section('title', 'Dashboard')
+@section('title', __('Dashboard Overview'))
 
 @section('content')
 <div class="content-wrapper" style="background: #f4f6f9;">
@@ -8,8 +8,8 @@
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center flex-wrap">
                 <div>
-                    <h1 class="mb-1" style="font-weight:700; color:#1f2937;">Dashboard Overview</h1>
-                    <p class="text-muted mb-0">Welcome back, {{ auth()->user()->name }} 👋</p>
+                    <h1 class="mb-1" style="font-weight:700; color:#1f2937;">{{ __('Dashboard Overview') }}</h1>
+                    <p class="text-muted mb-0">{{ __('Welcome back') }}, {{ auth()->user()->name }} 👋</p>
                 </div>
                 <div class="mt-2 mt-md-0">
                     <span class="badge badge-light p-2 shadow-sm" style="font-size: 13px;">
@@ -33,7 +33,7 @@
                         <div class="small-box shadow-sm" style="border-radius:18px; background:linear-gradient(135deg,#111827,#1f2937); color:#fff;">
                             <div class="inner">
                                 <h3>{{ number_format($totalSales, 2) }}</h3>
-                                <p>Total Sales</p>
+                                <p>{{ __('Total Sales') }}</p>
                             </div>
                             <div class="icon">
                                 <i class="fas fa-sack-dollar"></i>
@@ -46,13 +46,13 @@
                     <div class="small-box shadow-sm" style="border-radius:18px; background:linear-gradient(135deg,#2563eb,#1d4ed8); color:#fff;">
                         <div class="inner">
                             <h3>{{ $ordersCount }}</h3>
-                            <p>Orders Count</p>
+                            <p>{{ __('Orders Count') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-shopping-bag"></i>
                         </div>
                         <a href="{{ route('dashboard.orders.index') }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
-                            More info <i class="fas fa-arrow-circle-right"></i>
+                            {{ __('More info') }} <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
                 </div>
@@ -61,13 +61,13 @@
                     <div class="small-box shadow-sm" style="border-radius:18px; background:linear-gradient(135deg,#059669,#047857); color:#fff;">
                         <div class="inner">
                             <h3>{{ $paidOrdersCount }}</h3>
-                            <p>Paid Orders</p>
+                            <p>{{ __('Paid Orders') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-circle-check"></i>
                         </div>
                         <a href="{{ route('dashboard.orders.index') }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
-                            More info <i class="fas fa-arrow-circle-right"></i>
+                            {{ __('More info') }} <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
                 </div>
@@ -76,13 +76,13 @@
                     <div class="small-box shadow-sm" style="border-radius:18px; background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff;">
                         <div class="inner">
                             <h3>{{ $pendingOrdersCount }}</h3>
-                            <p>Pending Orders</p>
+                            <p>{{ __('Pending Orders') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-hourglass-half"></i>
                         </div>
                         <a href="{{ route('dashboard.orders.index') }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
-                            More info <i class="fas fa-arrow-circle-right"></i>
+                            {{ __('More info') }} <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
                 </div>
@@ -94,13 +94,13 @@
                     <div class="small-box shadow-sm" style="border-radius:18px; background:linear-gradient(135deg,#0ea5e9,#0284c7); color:#fff;">
                         <div class="inner">
                             <h3>{{ $stats['totalReviews'] ?? 0 }}</h3>
-                            <p>Total Reviews</p>
+                            <p>{{ __('Total Reviews') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-comments"></i>
                         </div>
                         <a href="{{ route('dashboard.reviews.index') }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
-                            More info <i class="fas fa-arrow-circle-right"></i>
+                            {{ __('More info') }} <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
                 </div>
@@ -109,13 +109,13 @@
                     <div class="small-box shadow-sm" style="border-radius:18px; background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff;">
                         <div class="inner">
                             <h3>{{ $stats['pendingReviews'] ?? 0 }}</h3>
-                            <p>Pending Reviews</p>
+                            <p>{{ __('Pending Reviews') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-clock"></i>
                         </div>
                         <a href="{{ route('dashboard.reviews.index', ['status' => 'pending']) }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
-                            More info <i class="fas fa-arrow-circle-right"></i>
+                            {{ __('More info') }} <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
                 </div>
@@ -124,13 +124,13 @@
                     <div class="small-box shadow-sm" style="border-radius:18px; background:linear-gradient(135deg,#10b981,#059669); color:#fff;">
                         <div class="inner">
                             <h3>{{ $stats['approvedReviews'] ?? 0 }}</h3>
-                            <p>Approved Reviews</p>
+                            <p>{{ __('Approved Reviews') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-check-circle"></i>
                         </div>
                         <a href="{{ route('dashboard.reviews.index', ['status' => 'approved']) }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
-                            More info <i class="fas fa-arrow-circle-right"></i>
+                            {{ __('More info') }} <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
                 </div>
@@ -139,13 +139,13 @@
                     <div class="small-box shadow-sm" style="border-radius:18px; background:linear-gradient(135deg,#6366f1,#4f46e5); color:#fff;">
                         <div class="inner">
                             <h3>{{ number_format((float) ($stats['averageRating'] ?? 0), 1) }}</h3>
-                            <p>Average Rating</p>
+                            <p>{{ __('Average Rating') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-star"></i>
                         </div>
                         <a href="{{ route('dashboard.reviews.index') }}" class="small-box-footer" style="border-radius:0 0 18px 18px;">
-                            More info <i class="fas fa-arrow-circle-right"></i>
+                            {{ __('More info') }} <i class="fas fa-arrow-circle-right"></i>
                         </a>
                     </div>
                 </div>
@@ -157,7 +157,7 @@
                     <div class="card shadow-sm border-0" style="border-radius:18px;">
                         <div class="card-body d-flex align-items-center justify-content-between">
                             <div>
-                                <div class="text-muted mb-1">Products Count</div>
+                                <div class="text-muted mb-1">{{ __('Products Count') }}</div>
                                 <h3 class="mb-0 font-weight-bold">{{ $productsCount ?? ($stats['totalProducts'] ?? 0) }}</h3>
                             </div>
                             <div class="rounded-circle d-flex align-items-center justify-content-center"
@@ -167,7 +167,7 @@
                         </div>
                         <div class="px-3 pb-3">
                             <a href="{{ route('dashboard.products.index') }}" class="btn btn-sm btn-outline-dark btn-block" style="border-radius:10px;">
-                                More info
+                                {{ __('More info') }}
                             </a>
                         </div>
                     </div>
@@ -177,7 +177,7 @@
                     <div class="card shadow-sm border-0" style="border-radius:18px;">
                         <div class="card-body d-flex align-items-center justify-content-between">
                             <div>
-                                <div class="text-muted mb-1">Customers Count</div>
+                                <div class="text-muted mb-1">{{ __('Customers Count') }}</div>
                                 <h3 class="mb-0 font-weight-bold">{{ $customersCount }}</h3>
                             </div>
                             <div class="rounded-circle d-flex align-items-center justify-content-center"
@@ -192,7 +192,7 @@
                     <div class="card shadow-sm border-0" style="border-radius:18px;">
                         <div class="card-body d-flex align-items-center justify-content-between">
                             <div>
-                                <div class="text-muted mb-1">Low Stock Products</div>
+                                <div class="text-muted mb-1">{{ __('Low Stock Products') }}</div>
                                 <h3 class="mb-0 font-weight-bold">{{ $lowStockProductsCount }}</h3>
                             </div>
                             <div class="rounded-circle d-flex align-items-center justify-content-center"
@@ -207,7 +207,7 @@
                     <div class="card shadow-sm border-0" style="border-radius:18px;">
                         <div class="card-body d-flex align-items-center justify-content-between">
                             <div>
-                                <div class="text-muted mb-1">New Reviews</div>
+                                <div class="text-muted mb-1">{{ __('New Reviews') }}</div>
                                 <h3 class="mb-0 font-weight-bold">{{ $newReviewsCount }}</h3>
                             </div>
                             <div class="rounded-circle d-flex align-items-center justify-content-center"
@@ -217,7 +217,7 @@
                         </div>
                         <div class="px-3 pb-3">
                             <a href="{{ route('dashboard.reviews.index') }}" class="btn btn-sm btn-outline-dark btn-block" style="border-radius:10px;">
-                                More info
+                                {{ __('More info') }}
                             </a>
                         </div>
                     </div>
@@ -230,7 +230,7 @@
                     <div class="card shadow-sm border-0" style="border-radius:18px;">
                         <div class="card-body d-flex align-items-center justify-content-between">
                             <div>
-                                <div class="text-muted mb-1">Active Products</div>
+                                <div class="text-muted mb-1">{{ __('Active Products') }}</div>
                                 <h3 class="mb-0 font-weight-bold">{{ $stats['activeProducts'] ?? 0 }}</h3>
                             </div>
                             <div class="rounded-circle d-flex align-items-center justify-content-center"
@@ -240,7 +240,7 @@
                         </div>
                         <div class="px-3 pb-3">
                             <a href="{{ route('dashboard.products.index', ['status' => 'active']) }}" class="btn btn-sm btn-outline-dark btn-block" style="border-radius:10px;">
-                                More info
+                                {{ __('More info') }}
                             </a>
                         </div>
                     </div>
@@ -250,7 +250,7 @@
                     <div class="card shadow-sm border-0" style="border-radius:18px;">
                         <div class="card-body d-flex align-items-center justify-content-between">
                             <div>
-                                <div class="text-muted mb-1">Unread Messages</div>
+                                <div class="text-muted mb-1">{{ __('Unread Messages') }}</div>
                                 <h3 class="mb-0 font-weight-bold">{{ $unreadContactMessagesCount ?? ($stats['unreadMessages'] ?? 0) }}</h3>
                             </div>
                             <div class="rounded-circle d-flex align-items-center justify-content-center"
@@ -260,7 +260,7 @@
                         </div>
                         <div class="px-3 pb-3">
                             <a href="{{ route('dashboard.contact-messages.index') }}" class="btn btn-sm btn-outline-dark btn-block" style="border-radius:10px;">
-                                More info
+                                {{ __('More info') }}
                             </a>
                         </div>
                     </div>
@@ -274,8 +274,8 @@
                         <div class="card shadow-sm border-0" style="border-radius:20px;">
                             <div class="card-header bg-white border-0 pt-4 pb-0">
                                 <div class="d-flex justify-content-between align-items-center flex-wrap">
-                                    <h3 class="card-title font-weight-bold mb-2" style="font-size:20px;">Sales Chart</h3>
-                                    <span class="text-muted" style="font-size:13px;">Last 7 days</span>
+                                    <h3 class="card-title font-weight-bold mb-2" style="font-size:20px;">{{ __('Sales Chart') }}</h3>
+                                    <span class="text-muted" style="font-size:13px;">{{ __('Last 7 days') }}</span>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -294,9 +294,9 @@
                     <div class="card shadow-sm border-0" style="border-radius:20px;">
                         <div class="card-header bg-white border-0 pt-4">
                             <div class="d-flex justify-content-between align-items-center">
-                                <h3 class="card-title font-weight-bold" style="font-size:20px;">Latest Orders</h3>
+                                <h3 class="card-title font-weight-bold" style="font-size:20px;">{{ __('Latest Orders') }}</h3>
                                 <a href="{{ route('dashboard.orders.index') }}" class="btn btn-sm btn-outline-dark" style="border-radius:10px;">
-                                    View All
+                                    {{ __('View All') }}
                                 </a>
                             </div>
                         </div>
@@ -304,14 +304,14 @@
                             <table class="table table-hover align-middle mb-0">
                                 <thead style="background:#f8fafc;">
                                     <tr>
-                                        <th style="padding:16px;">Order</th>
-                                        <th>Customer</th>
-                                        <th>Status</th>
-                                        <th>Payment</th>
+                                        <th style="padding:16px;">{{ __('Order') }}</th>
+                                        <th>{{ __('Customer') }}</th>
+                                        <th>{{ __('Status') }}</th>
+                                        <th>{{ __('Payment') }}</th>
                                         @if(auth()->user()->hasPermission('orders.view-totals'))
-                                            <th>Total</th>
+                                            <th>{{ __('Total') }}</th>
                                         @endif
-                                        <th>Date</th>
+                                        <th>{{ __('Date') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -322,7 +322,7 @@
                                                     #{{ $order->order_number }}
                                                 </a>
                                             </td>
-                                            <td>{{ $order->user->name ?? $order->guest_email ?? 'Guest' }}</td>
+                                            <td>{{ $order->user->name ?? $order->guest_email ?? __('Guest') }}</td>
                                             <td>
                                                 <span class="badge badge-light px-3 py-2" style="border-radius:10px;">
                                                     {{ ucfirst($order->status) }}
@@ -341,7 +341,7 @@
                                     @empty
                                         <tr>
                                             <td colspan="{{ auth()->user()->hasPermission('orders.view-totals') ? 6 : 5 }}" class="text-center text-muted py-4">
-                                                No orders found.
+                                                {{ __('No orders found.') }}
                                             </td>
                                         </tr>
                                     @endforelse
@@ -354,7 +354,7 @@
                 <div class="col-lg-4">
                     <div class="card shadow-sm border-0" style="border-radius:20px;">
                         <div class="card-header bg-white border-0 pt-4">
-                            <h3 class="card-title font-weight-bold" style="font-size:20px;">Top Products</h3>
+                            <h3 class="card-title font-weight-bold" style="font-size:20px;">{{ __('Top Products') }}</h3>
                         </div>
                         <div class="card-body p-0">
                             @forelse($topProducts as $product)
@@ -370,17 +370,17 @@
                                             {{ $product->name ?? 'Unnamed Product' }}
                                         </div>
                                         <small class="text-muted">
-                                            SKU: {{ $product->sku ?? '-' }}
+                                            {{ __('SKU') }}: {{ $product->sku ?? '-' }}
                                         </small>
                                     </div>
                                     <div class="text-right">
                                         <div class="font-weight-bold">{{ (int) ($product->sold_qty ?? 0) }}</div>
-                                        <small class="text-muted">sold</small>
+                                        <small class="text-muted">{{ __('sold') }}</small>
                                     </div>
                                 </div>
                             @empty
                                 <div class="p-4 text-center text-muted">
-                                    No product sales data yet.
+                                    {{ __('No product sales data yet.') }}
                                 </div>
                             @endforelse
                         </div>
@@ -393,7 +393,7 @@
                 <div class="col-12">
                     <div class="card shadow-sm border-0" style="border-radius:20px;">
                         <div class="card-header bg-white border-0 pt-4">
-                            <h3 class="card-title font-weight-bold" style="font-size:20px;">Recent Activity</h3>
+                            <h3 class="card-title font-weight-bold" style="font-size:20px;">{{ __('Recent Activity') }}</h3>
                         </div>
                         <div class="card-body">
                             <div class="timeline timeline-inverse">
@@ -412,12 +412,12 @@
                                                 {{ $activity->created_at?->format('h:i A') }}
                                             </span>
                                             <h3 class="timeline-header border-0">
-                                                <strong>{{ $activity->user->name ?? 'System' }}</strong>
-                                                <span class="text-muted">performed</span>
+                                                <strong>{{ $activity->user->name ?? __('System') }}</strong>
+                                                <span class="text-muted">{{ __('performed') }}</span>
                                                 {{ $activity->action }}
                                             </h3>
                                             <div class="timeline-body text-muted">
-                                                {{ $activity->auditable_type ?? 'Activity' }}
+                                                {{ $activity->auditable_type ?? __('Activity') }}
                                                 @if($activity->auditable_id)
                                                     #{{ $activity->auditable_id }}
                                                 @endif
@@ -426,7 +426,7 @@
                                     </div>
                                 @empty
                                     <div class="text-center text-muted py-4">
-                                        No recent activity found.
+                                        {{ __('No recent activity found.') }}
                                     </div>
                                 @endforelse
                                 <div>
@@ -459,7 +459,7 @@
             data: {
                 labels: salesChartLabels,
                 datasets: [{
-                    label: 'Sales',
+                    label: '{{ __("sales") }}',
                     data: salesChartData,
                     borderWidth: 3,
                     fill: true,
@@ -499,3 +499,5 @@
 </script>
 @endif
 @endpush
+
+

@@ -15,6 +15,7 @@
                 Hello,
             @endif
         </p>
+        
 
         <p style="color:#4b5563; font-size:15px;">
             You added some products to your cart but didn’t complete the checkout.
@@ -63,3 +64,4 @@
     </div>
 </body>
 </html>
+

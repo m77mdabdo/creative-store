@@ -8,11 +8,11 @@
         </li>
 
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="{{ route('dashboard.home') }}" class="nav-link">Dashboard</a>
+            <a href="{{ route('dashboard.home') }}" class="nav-link">{{ __('Dashboard') }}</a>
         </li>
 
         <li class="nav-item d-none d-sm-inline-block">
-            <a href="{{ url('/') }}" class="nav-link" target="_blank">Visit Website</a>
+            <a href="{{ url('/') }}" class="nav-link" target="_blank">{{ __('Visit Website') }}</a>
         </li>
     </ul>
 
@@ -31,8 +31,8 @@
                         <input
                             class="form-control form-control-navbar"
                             type="search"
-                            placeholder="Search"
-                            aria-label="Search"
+                            placeholder="{{ __('Search') }}"
+                            aria-label="{{ __('Search') }}"
                         >
                         <div class="input-group-append">
                             <button class="btn btn-navbar" type="submit">
@@ -60,7 +60,7 @@
 
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                 <span class="dropdown-item dropdown-header">
-                    {{ $dashboardPendingOrdersCount ?? 0 }} Pending Orders
+                    {{ trans(':count Pending Orders', ['count' => $dashboardPendingOrdersCount ?? 0]) }}
                 </span>
 
                 <div class="dropdown-divider"></div>
@@ -68,23 +68,23 @@
                 @forelse(($dashboardPendingOrders ?? []) as $order)
                     <a href="{{ route('dashboard.orders.show', $order->id) }}" class="dropdown-item">
                         <i class="fas fa-shopping-cart mr-2"></i>
-                        Order #{{ $order->order_number }}
+                        {{ __('Order') }} #{{ $order->order_number }}
                         <span class="float-right text-muted text-sm">
                             {{ $order->created_at?->diffForHumans() }}
                         </span>
                         <br>
                         <small class="text-muted">
-                            {{ $order->user->name ?? $order->guest_email ?? 'Customer' }}
+                            {{ $order->user->name ?? $order->guest_email ?? __('Customer') }}
                         </small>
                     </a>
                     <div class="dropdown-divider"></div>
                 @empty
-                    <span class="dropdown-item text-muted">No pending orders</span>
+                    <span class="dropdown-item text-muted">{{ __('No pending orders') }}</span>
                     <div class="dropdown-divider"></div>
                 @endforelse
 
                 <a href="{{ route('dashboard.orders.index') }}" class="dropdown-item dropdown-footer">
-                    See All Orders
+                    {{ __('See All Orders') }}
                 </a>
             </div>
         </li>
@@ -102,7 +102,7 @@
 
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                 <span class="dropdown-item dropdown-header">
-                    {{ $dashboardUnreadMessagesCount ?? 0 }} New Messages
+                    {{ trans(':count New Messages', ['count' => $dashboardUnreadMessagesCount ?? 0]) }}
                 </span>
 
                 <div class="dropdown-divider"></div>
@@ -121,12 +121,12 @@
                     </a>
                     <div class="dropdown-divider"></div>
                 @empty
-                    <span class="dropdown-item text-muted">No new messages</span>
+                    <span class="dropdown-item text-muted">{{ __('No new messages') }}</span>
                     <div class="dropdown-divider"></div>
                 @endforelse
 
                 <a href="{{ route('dashboard.contact-messages.index') }}" class="dropdown-item dropdown-footer">
-                    See All Messages
+                    {{ __('See All Messages') }}
                 </a>
             </div>
         </li>
@@ -144,7 +144,7 @@
 
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                 <span class="dropdown-item dropdown-header">
-                    {{ $dashboardPendingReviewsCount ?? 0 }} Pending Reviews
+                    {{ trans(':count Pending Reviews', ['count' => $dashboardPendingReviewsCount ?? 0]) }}
                 </span>
 
                 <div class="dropdown-divider"></div>
@@ -152,23 +152,23 @@
                 @forelse(($dashboardPendingReviews ?? []) as $review)
                     <a href="{{ route('dashboard.reviews.show', $review->id) }}" class="dropdown-item">
                         <div>
-                            <strong>{{ $review->user->name ?? 'Customer' }}</strong>
+                            <strong>{{ $review->user->name ?? __('Customer') }}</strong>
                             <span class="float-right text-muted text-sm">
                                 {{ $review->created_at?->diffForHumans() }}
                             </span>
                         </div>
                         <div class="text-sm text-muted">
-                            {{ $review->product->name ?? $review->product->sku ?? 'Product' }} — {{ $review->rating }}/5
+                            {{ $review->product->name ?? $review->product->sku ?? __('Product') }} — {{ $review->rating }}/5
                         </div>
                     </a>
                     <div class="dropdown-divider"></div>
                 @empty
-                    <span class="dropdown-item text-muted">No pending reviews</span>
+                    <span class="dropdown-item text-muted">{{ __('No pending reviews') }}</span>
                     <div class="dropdown-divider"></div>
                 @endforelse
 
                 <a href="{{ route('dashboard.reviews.index', ['status' => 'pending']) }}" class="dropdown-item dropdown-footer">
-                    See Pending Reviews
+                    {{ __('See Pending Reviews') }}
                 </a>
             </div>
         </li>
@@ -191,7 +191,7 @@
                     @forelse(auth()->user()->notifications()->latest()->take(10)->get() as $notification)
                         <a href="#" class="dropdown-item">
                             <div>
-                                <strong>{{ $notification->data['title'] ?? 'Notification' }}</strong>
+                                <strong>{{ $notification->data['title'] ?? __('Notification') }}</strong>
                                 <span class="float-right text-muted text-sm">
                                     {{ $notification->created_at?->diffForHumans() }}
                                 </span>
@@ -203,18 +203,18 @@
 
                             @if(!empty($notification->data['order_number']))
                                 <div class="text-xs text-primary mt-1">
-                                    Order #{{ $notification->data['order_number'] }}
+                                    {{ __('Order') }} #{{ $notification->data['order_number'] }}
                                 </div>
                             @endif
                         </a>
                         <div class="dropdown-divider"></div>
                     @empty
-                        <span class="dropdown-item text-muted">No notifications</span>
+                        <span class="dropdown-item text-muted">{{ __('No notifications') }}</span>
                         <div class="dropdown-divider"></div>
                     @endforelse
 
                     <a href="#" class="dropdown-item dropdown-footer">
-                        See All Notifications
+                        {{ __('See All Notifications') }}
                     </a>
                 @endauth
             </div>
@@ -227,23 +227,39 @@
             </a>
         </li>
 
+        {{-- Language Switcher --}}
+        <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#">
+                <i class="fas fa-globe"></i>
+                <span class="ml-1">{{ app()->getLocale() === 'ar' ? 'ع' : 'EN' }}</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right">
+                <a href="{{ route('lang.switch', 'ar') }}" class="dropdown-item {{ app()->getLocale() === 'ar' ? 'active' : '' }}">
+                    🇸🇦 العربية
+                </a>
+                <a href="{{ route('lang.switch', 'en') }}" class="dropdown-item {{ app()->getLocale() === 'en' ? 'active' : '' }}">
+                    🇬🇧 English
+                </a>
+            </div>
+        </li>
+
         {{-- User Dropdown --}}
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
                 <i class="fas fa-user-circle"></i>
-                <span class="ml-1">{{ auth()->user()->name ?? 'User' }}</span>
+                <span class="ml-1">{{ auth()->user()->name ?? __('Guest') }}</span>
             </a>
 
             <div class="dropdown-menu dropdown-menu-right">
                 <span class="dropdown-item-text">
-                    <strong>{{ auth()->user()->name ?? 'User' }}</strong><br>
+                    <strong>{{ auth()->user()->name ?? __('Guest') }}</strong><br>
                     <small>{{ auth()->user()->email ?? '' }}</small>
                 </span>
 
                 <div class="dropdown-divider"></div>
 
                 <a href="{{ route('myaccount') }}" class="dropdown-item">
-                    <i class="fas fa-user mr-2"></i> My Account
+                    <i class="fas fa-user mr-2"></i> {{ __('My Account') }}
                 </a>
 
                 <div class="dropdown-divider"></div>
@@ -251,7 +267,7 @@
                 <form action="{{ route('logout') }}" method="POST" class="m-0">
                     @csrf
                     <button type="submit" class="dropdown-item">
-                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        <i class="fas fa-sign-out-alt mr-2"></i> {{ __('Logout') }}
                     </button>
                 </form>
             </div>
