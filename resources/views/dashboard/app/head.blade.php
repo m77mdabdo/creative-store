@@ -88,26 +88,25 @@
             width: var(--sidebar-width);
         }
 
-        .content-wrapper,
-        .main-footer,
-        .main-header {
+        /* =====================
+           LTR (English)
+        ===================== */
+        html[dir="ltr"] .main-sidebar {
+            left: 0;
+            right: auto;
+        }
+
+        html[dir="ltr"] .content-wrapper,
+        html[dir="ltr"] .main-footer,
+        html[dir="ltr"] .main-header {
             margin-left: var(--sidebar-width);
             margin-right: 0;
             transition: margin .2s ease-in-out;
         }
 
-        @media (max-width: 991.98px) {
-            .content-wrapper,
-            .main-footer,
-            .main-header {
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-            }
-        }
-
-        /* =========================
-           RTL Global Fixes
-        ========================= */
+        /* =====================
+           RTL (Arabic)
+        ===================== */
         html[dir="rtl"] body {
             direction: rtl;
             text-align: right;
@@ -121,14 +120,19 @@
         html[dir="rtl"] .content-wrapper,
         html[dir="rtl"] .main-footer,
         html[dir="rtl"] .main-header {
-            margin-left: 0;
             margin-right: var(--sidebar-width);
+            margin-left: 0;
+            transition: margin .2s ease-in-out;
         }
 
         @media (max-width: 991.98px) {
+            html[dir="ltr"] .content-wrapper,
+            html[dir="ltr"] .main-footer,
+            html[dir="ltr"] .main-header,
             html[dir="rtl"] .content-wrapper,
             html[dir="rtl"] .main-footer,
             html[dir="rtl"] .main-header {
+                margin-left: 0 !important;
                 margin-right: 0 !important;
             }
         }
@@ -263,7 +267,6 @@
             margin: 0 auto 0 0;
         }
 
-        /* Better Arabic appearance */
         html[lang="ar"] .nav-header,
         html[lang="ar"] .small-box-footer,
         html[lang="ar"] .btn,
