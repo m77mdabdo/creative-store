@@ -143,11 +143,13 @@
                                             @endif
                                             <td>{{ $product->id }}</td>
                                             <td>
-                                                @if($product->primaryImage)
-                                                    <img src="{{ asset('storage/' . $product->primaryImage->path) }}" alt="" width="50" height="50" style="object-fit:cover;border-radius:6px;">
-                                                @else
-                                                    -
-                                                @endif
+                                               @php
+    $img = $product->primaryImage?->path
+        ? Storage::url($product->primaryImage->path)
+        : asset('cozastore/images/product-01.jpg');
+@endphp
+
+<img src="{{ $img }}" alt="" width="50" height="50" style="object-fit:cover;border-radius:6px;">
                                             </td>
                                             <td>{{ $product->name ?? '-' }}</td>
                                             <td>{{ $product->sku }}</td>
