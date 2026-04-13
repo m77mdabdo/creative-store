@@ -98,7 +98,13 @@
                                 <div class="row">
                                     @forelse($product->images as $image)
                                         <div class="col-6 mb-3">
-                                            <img src="{{ asset('storage/' . $image->path) }}" class="img-fluid rounded border" alt="">
+                                          @php
+    $img = $image->path
+        ? Storage::url($image->path)
+        : asset('cozastore/images/product-01.jpg');
+@endphp
+
+<img src="{{ $img }}" class="img-fluid rounded border" style="height:120px; object-fit:cover; width:100%;" alt="">
                                         </div>
                                     @empty
                                         <div class="col-12">
