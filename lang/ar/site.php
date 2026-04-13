@@ -446,6 +446,57 @@ return [
 'ACCOUNT' => 'الحساب',
 
 
+'Shipping' => 'الشحن',
+'Customers' => 'العملاء',
+'Content' => 'المحتوى',
+'Access Control' => 'التحكم في الصلاحيات',
 
+'Sales Operations' => 'عمليات المبيعات',
+'Orders' => 'الطلبات',
+'Returns' => 'المرتجعات',
+'Coupons' => 'الكوبونات',
+
+'Finance' => 'المالية',
+'Payments' => 'المدفوعات',
+'Refunds' => 'الاستردادات',
+
+'Shipping Methods' => 'وسائل الشحن',
+'Shipping Zones' => 'مناطق الشحن',
+'Shipping Rates' => 'أسعار الشحن',
+'Shipments' => 'الشحنات',
+
+'Catalog' => 'الكتالوج',
+'Categories' => 'التصنيفات',
+'Products' => 'المنتجات',
+'Attributes' => 'الخصائص',
+'Product Reviews' => 'تقييمات المنتجات',
+
+'Addresses' => 'العناوين',
+'Wishlist Activity' => 'نشاط المفضلة',
+'Carts' => 'السلات',
+'Abandoned Carts' => 'السلات المتروكة',
+'Cart Recovery' => 'استعادة السلة',
+
+'Blogs' => 'المدونات',
+'Blog Categories' => 'تصنيفات المدونة',
+'Comments' => 'التعليقات',
+'Static Pages' => 'الصفحات الثابتة',
+'Contact Messages' => 'رسائل التواصل',
+
+'Users' => 'المستخدمون',
+'Roles' => 'الأدوار',
+'Permissions' => 'الصلاحيات',
+
+'System' => 'النظام',
+'Audit Logs' => 'سجلات التدقيق',
+'Error Logs' => 'سجلات الأخطاء',
+'Backup History' => 'سجل النسخ الاحتياطية',
+'Settings' => 'الإعدادات',
+'UAT' => 'اختبار المستخدم',
+'Privacy Requests' => 'طلبات الخصوصية',
+'Retention Policies' => 'سياسات الاحتفاظ',
+
+'ACCOUNT' => 'الحساب',
+'No menu available' => 'لا توجد قائمة متاحة',
 
 ];

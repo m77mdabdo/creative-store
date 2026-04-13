@@ -454,4 +454,65 @@ return [
 'ACCOUNT' => 'ACCOUNT',
 
 
+'Shipping' => 'Shipping',
+'Customers' => 'Customers',
+'Content' => 'Content',
+'Access Control' => 'Access Control',
+
+'Shipping' => 'Shipping',
+'Customers' => 'Customers',
+'Content' => 'Content',
+'Access Control' => 'Access Control',
+
+'Sales Operations' => 'Sales Operations',
+'Orders' => 'Orders',
+'Returns' => 'Returns',
+'Coupons' => 'Coupons',
+
+'Finance' => 'Finance',
+'Payments' => 'Payments',
+'Refunds' => 'Refunds',
+
+'Shipping Methods' => 'Shipping Methods',
+'Shipping Zones' => 'Shipping Zones',
+'Shipping Rates' => 'Shipping Rates',
+'Shipments' => 'Shipments',
+
+'Catalog' => 'Catalog',
+'Categories' => 'Categories',
+'Products' => 'Products',
+'Attributes' => 'Attributes',
+'Product Reviews' => 'Product Reviews',
+
+'Addresses' => 'Addresses',
+'Wishlist Activity' => 'Wishlist Activity',
+'Carts' => 'Carts',
+'Abandoned Carts' => 'Abandoned Carts',
+'Cart Recovery' => 'Cart Recovery',
+
+'Blogs' => 'Blogs',
+'Blog Categories' => 'Blog Categories',
+'Comments' => 'Comments',
+'Static Pages' => 'Static Pages',
+'Contact Messages' => 'Contact Messages',
+
+'Users' => 'Users',
+'Roles' => 'Roles',
+'Permissions' => 'Permissions',
+
+'System' => 'System',
+'Audit Logs' => 'Audit Logs',
+'Error Logs' => 'Error Logs',
+'Backup History' => 'Backup History',
+'Settings' => 'Settings',
+'UAT' => 'UAT',
+'Privacy Requests' => 'Privacy Requests',
+'Retention Policies' => 'Retention Policies',
+
+'ACCOUNT' => 'ACCOUNT',
+'No menu available' => 'No menu available',
+
+
+
+
 ];

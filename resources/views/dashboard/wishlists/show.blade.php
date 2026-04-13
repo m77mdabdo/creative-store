@@ -19,6 +19,7 @@
     </section>
 
     <section class="content">
+
         <div class="container-fluid">
 
             @if(session('success'))
@@ -44,14 +45,17 @@
                             <th>Email</th>
                             <td>{{ $wishlist->user->email ?? '-' }}</td>
                         </tr>
+
                         <tr>
                             <th>Phone</th>
                             <td>{{ $wishlist->user->phone ?? '-' }}</td>
                         </tr>
+
                         <tr>
                             <th>Items Count</th>
                             <td>{{ $wishlist->items->count() }}</td>
                         </tr>
+
                         <tr>
                             <th>Created At</th>
                             <td>{{ $wishlist->created_at?->format('Y-m-d H:i') }}</td>
@@ -63,6 +67,8 @@
                     </table>
                 </div>
             </div>
+
+
 
             <div class="card">
                 <div class="card-header">
@@ -143,3 +149,11 @@
     </section>
 </div>
 @endsection
+
+
+
+
+
+
+
+
