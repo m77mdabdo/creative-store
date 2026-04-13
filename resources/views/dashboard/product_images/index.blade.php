@@ -38,7 +38,13 @@
                     <div class="row">
                         @forelse($generalImages as $image)
                             <div class="col-md-2 mb-3">
-                                <img src="{{ asset('storage/' . $image->path) }}" class="img-fluid rounded border mb-2" alt="">
+                                @php
+    $img = $image->path
+        ? Storage::url($image->path)
+        : asset('cozastore/images/product-01.jpg');
+@endphp
+
+<img src="{{ $img }}" class="img-fluid rounded border" style="height:120px; object-fit:cover; width:100%;" alt="">
                                 <div class="mb-2">
                                     <form action="{{ route('dashboard.products.images.set-primary', [$product, $image]) }}" method="POST" class="d-inline">
                                         @csrf
@@ -91,7 +97,13 @@
                             <div class="row">
                                 @forelse($variant->images as $image)
                                     <div class="col-md-2 mb-3">
-                                        <img src="{{ asset('storage/' . $image->path) }}" class="img-fluid rounded border mb-2" alt="">
+                                        @php
+    $img = $image->path
+        ? Storage::url($image->path)
+        : asset('cozastore/images/product-01.jpg');
+@endphp
+
+<img src="{{ $img }}" class="img-fluid rounded border" style="height:120px; object-fit:cover; width:100%;" alt="">
 
                                         <form action="{{ route('dashboard.products.variants.images.set-primary', [$product, $variant, $image]) }}" method="POST" class="d-inline">
                                             @csrf

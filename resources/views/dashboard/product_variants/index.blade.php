@@ -222,8 +222,14 @@
                                     <div class="row mt-3">
                                         @foreach($variant->images as $image)
                                             <div class="col-md-2 mb-3">
-                                                <img src="{{ asset('storage/' . $image->path) }}" class="img-fluid rounded border mb-2"
-                                                    alt="">
+                                                @php
+    $img = $image->path
+        ? Storage::url($image->path)
+        : asset('cozastore/images/product-01.jpg');
+@endphp
+
+<img src="{{ $img }}" class="img-fluid rounded border" style="height:120px; object-fit:cover; width:100%;" alt="">
+
                                                 <div>
                                                     <form
                                                         action="{{ route('dashboard.products.variants.images.set-primary', [$product, $variant, $image]) }}"
