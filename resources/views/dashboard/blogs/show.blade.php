@@ -30,7 +30,15 @@
                 <div class="card-body">
                     @if($blog->image)
                         <div class="mb-4">
-                            <img src="{{ asset('storage/' . $blog->image) }}" alt="{{ $blog->title }}" style="max-width: 100%; max-height: 320px; border-radius: 10px;">
+                           @php
+    $img = $blog->image
+        ? Storage::url($blog->image)
+        : asset('cozastore/images/product-01.jpg');
+@endphp
+
+<img src="{{ $img }}"
+     alt="{{ $blog->title }}"
+     style="width: 60px; height: 45px; object-fit: cover; border-radius: 8px;">
                         </div>
                     @endif
 

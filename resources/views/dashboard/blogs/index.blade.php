@@ -86,6 +86,7 @@
                 <div class="card-body table-responsive p-0">
                     <table class="table table-hover text-nowrap mb-0">
                         <thead>
+
                             <tr>
                                 <th>#</th>
                                 <th>Image</th>
@@ -99,6 +100,7 @@
                                 <th>Published At</th>
                                 <th class="text-center">Actions</th>
                             </tr>
+
                         </thead>
                         <tbody>
                             @forelse($blogs as $blog)
@@ -106,8 +108,15 @@
                                     <td>{{ $blog->id }}</td>
                                     <td>
                                         @if($blog->image)
-                                            <img src="{{ asset('storage/' . $blog->image) }}" alt="{{ $blog->title }}"
-                                                 style="width: 60px; height: 45px; object-fit: cover; border-radius: 8px;">
+                                           @php
+    $img = $blog->image
+        ? Storage::url($blog->image)
+        : asset('cozastore/images/product-01.jpg');
+@endphp
+
+<img src="{{ $img }}"
+     alt="{{ $blog->title }}"
+     style="width: 60px; height: 45px; object-fit: cover; border-radius: 8px;">
                                         @else
                                             <span class="text-muted">No image</span>
                                         @endif

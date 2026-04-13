@@ -90,7 +90,15 @@
 
                     @if(!empty($blog?->image))
                         <div class="mt-3">
-                            <img src="{{ asset('storage/' . $blog->image) }}" alt="{{ $blog->title }}" style="max-height: 120px; border-radius: 8px;">
+                           @php
+    $img = $blog->image
+        ? Storage::url($blog->image)
+        : asset('cozastore/images/product-01.jpg');
+@endphp
+
+<img src="{{ $img }}"
+     alt="{{ $blog->title }}"
+     style="width: 60px; height: 45px; object-fit: cover; border-radius: 8px;">
                         </div>
                     @endif
                 </div>
