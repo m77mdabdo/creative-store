@@ -24,6 +24,10 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->validateCsrfTokens(except: [
+            'webhooks/moyasar',
+        ]);
+
         $middleware->alias([
             'role'       => \App\Http\Middleware\CheckRole::class,
             'permission' => \App\Http\Middleware\CheckPermission::class,
@@ -81,7 +85,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (Schedule $schedule): void {
         $schedule->command('carts:process-abandoned')->everyMinute();
 
-        $schedule->command('backup:run scheduled --cleanup-days=' . (int) env('BACKUP_RETENTION_DAYS', 30))
+        $schedule->command('backup:run scheduled --cleanup-days=' . (int) config('backup.retention_days', 30))
             ->cron('0 */12 * * *')
             ->withoutOverlapping(120)
             ->runInBackground();

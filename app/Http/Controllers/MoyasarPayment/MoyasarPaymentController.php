@@ -2,222 +2,118 @@
 
 namespace App\Http\Controllers\MoyasarPayment;
 
+use App\Exceptions\PaymentGatewayException;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Order;
-use App\Models\OrderStatusLog;
-use App\Models\Payment;
 use App\Models\PaymentWebhookLog;
-use App\Notifications\OrderPlacedNotification;
-use Illuminate\Support\Facades\Notification;
-use App\Models\User;
+use App\Services\Payments\Moyasar\MoyasarGateway;
+use App\Services\Payments\Moyasar\MoyasarPayment;
+use App\Services\Payments\OrderPaymentService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 class MoyasarPaymentController extends Controller
 {
-    //
-     public function show(Order $order)
-    {
-        abort_if($order->user_id !== Auth::id(), 403);
+    private const CHECKOUT_SESSION_KEYS = ['cart', 'coupon', 'shipping', 'checkout_totals'];
 
-        $payment = $order->payments()
-            ->where('gateway', 'moyasar')
-            ->latest()
-            ->first();
-
-        if (!$payment) {
-            abort(404, 'Payment record not found.');
-        }
-
-        return view('site.checkout.payment', [
-            'order' => $order,
-            'payment' => $payment,
-            'publishableKey' => config('services.moyasar.publishable_key'),
-            'callbackUrl' => route('checkout.payment.callback'),
-        ]);
+    public function __construct(
+        private readonly OrderPaymentService $payments,
+    ) {
     }
 
-    public function callback(Request $request)
+    public function show(Request $request, Order $order): View
     {
-        $request->validate([
-            'id' => ['required', 'string'],
-            'status' => ['nullable', 'string'],
-            'message' => ['nullable', 'string'],
-        ]);
-
-        $paymentId = $request->id;
-
-        $response = Http::withBasicAuth(
-            config('services.moyasar.secret_key'),
-            ''
-        )->get("https://api.moyasar.com/v1/payments/{$paymentId}");
-
-        if (!$response->successful()) {
-
-    dd([
-        'status_code' => $response->status(),
-        'body' => $response->body(),
-        'json' => $response->json(),
-    ]);
-
-}
-
-        $remotePayment = $response->json();
-
-        $orderId = data_get($remotePayment, 'metadata.order_id');
-        $status = data_get($remotePayment, 'status');
-        $amount = (int) data_get($remotePayment, 'amount');
-        $currency = data_get($remotePayment, 'currency');
-
-        $order = Order::findOrFail($orderId);
-
-        if ($order->user_id !== Auth::id()) {
-            abort(403);
-        }
+        $this->authorizeOwner($request, $order);
 
         $payment = $order->payments()
             ->where('gateway', 'moyasar')
-            ->latest()
+            ->latest('id')
             ->firstOrFail();
 
-        $expectedAmount = (int) round($order->total * 100);
-
-        if ($amount !== $expectedAmount || $currency !== $order->currency) {
-            $payment->update([
-                'transaction_id' => data_get($remotePayment, 'id'),
-                'status' => 'verification_mismatch',
-                'raw_response' => $remotePayment,
-            ]);
-
-            return redirect()->route('checkout.payment', $order->id)
-                ->with('error', 'Payment verification mismatch.');
-        }
-
-        $payment->update([
-            'transaction_id' => data_get($remotePayment, 'id'),
-            'status' => $status,
-            'raw_response' => $remotePayment,
-            'paid_at' => in_array($status, ['paid', 'captured']) ? now() : null,
+        return view('site.checkout.payment', [
+            'order'          => $order,
+            'payment'        => $payment,
+            'publishableKey' => config('services.moyasar.publishable_key'),
+            'callbackUrl'    => route('checkout.payment.callback'),
         ]);
-
-        if (in_array($status, ['paid', 'captured'])) {
-            $oldStatus = $order->status;
-
-            $order->update([
-                'payment_status' => 'paid',
-                'status' => 'confirmed',
-                'paid_at' => now(),
-            ]);
-
-            OrderStatusLog::create([
-                'order_id' => $order->id,
-                'from_status' => $oldStatus,
-                'to_status' => 'confirmed',
-                'changed_by' => $order->user_id,
-                'note' => 'Payment verified successfully from Moyasar callback.',
-            ]);
-
-            session()->forget('cart');
-            session()->forget('coupon');
-            session()->forget('shipping');
-            session()->forget('checkout_totals');
-             $order->user->notify(new OrderPlacedNotification($order));
-
-             $admins = User::all()->filter(function ($user) {
-              return $user->isDashboardUser();
-                  });
-
-            Notification::send($admins,new OrderPlacedNotification($order));
-            return redirect()->route('order.success', $order->id)
-                ->with('success', 'Payment completed successfully.');
-        }
-
-        $order->update([
-            'payment_status' => 'failed',
-        ]);
-
-        return redirect()->route('checkout.payment', $order->id)
-            ->with('error', 'Payment was not completed.');
     }
 
-    public function webhook(Request $request)
+    public function callback(Request $request): RedirectResponse
     {
-        $payload = $request->all();
+        $validated = $request->validate([
+            'id' => ['required', 'string', 'max:64'],
+        ]);
+
+        try {
+            $remote = MoyasarGateway::fromConfig()->fetchPayment($validated['id']);
+        } catch (PaymentGatewayException) {
+            return redirect()->route('cart.index')
+                ->with('error', __('We could not verify your payment. Please contact support if you were charged.'));
+        }
+
+        $order = Order::query()->findOrFail($remote->orderId);
+        $this->authorizeOwner($request, $order);
+
+        $result = $this->payments->apply($order, $remote, 'callback');
+
+        return match ($result) {
+            OrderPaymentService::RESULT_PAID,
+            OrderPaymentService::RESULT_ALREADY_PAID => $this->completeCheckout($request, $order),
+            OrderPaymentService::RESULT_MISMATCH     => redirect()->route('checkout.payment', $order)
+                ->with('error', __('Payment verification failed.')),
+            default                                  => redirect()->route('checkout.payment', $order)
+                ->with('error', __('Payment was not completed.')),
+        };
+    }
+
+    public function webhook(Request $request): JsonResponse
+    {
+        $gateway = MoyasarGateway::fromConfig();
+
+        if (! $gateway->hasValidWebhookSecret($request->input('secret_token'))) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $payload = $request->except('secret_token');
 
         $log = PaymentWebhookLog::create([
-            'gateway' => 'moyasar',
-            'event_id' => data_get($payload, 'id'),
+            'gateway'    => 'moyasar',
+            'event_id'   => data_get($payload, 'id'),
             'event_type' => data_get($payload, 'type'),
-            'payload' => $payload,
-            'processed' => false,
-            'processed_at' => null,
+            'payload'    => $payload,
+            'processed'  => false,
         ]);
 
-        if (data_get($payload, 'secret_token') !== config('services.moyasar.webhook_secret')) {
-            return response()->json(['message' => 'Invalid webhook secret'], 403);
+        $remote = MoyasarPayment::fromArray((array) data_get($payload, 'data', []));
+
+        if ($remote->orderId && $order = Order::query()->find($remote->orderId)) {
+            $this->payments->apply($order, $remote, 'webhook');
         }
 
-        $paymentData = data_get($payload, 'data', []);
-        $orderId = data_get($paymentData, 'metadata.order_id');
-        $status = data_get($paymentData, 'status');
+        $log->update(['processed' => true, 'processed_at' => now()]);
 
-        if ($orderId) {
-            $order = Order::find($orderId);
-
-            if ($order) {
-                $payment = $order->payments()
-                    ->where('gateway', 'moyasar')
-                    ->latest()
-                    ->first();
-
-                if ($payment) {
-                    $payment->update([
-                        'transaction_id' => data_get($paymentData, 'id'),
-                        'status' => $status,
-                        'raw_response' => $paymentData,
-                        'paid_at' => in_array($status, ['paid', 'captured']) ? now() : null,
-                    ]);
-                }
-
-                if (in_array($status, ['paid', 'captured'])) {
-                    $oldStatus = $order->status;
-
-                    $order->update([
-                        'payment_status' => 'paid',
-                        'status' => 'confirmed',
-                        'paid_at' => now(),
-                    ]);
-
-                    OrderStatusLog::create([
-                        'order_id' => $order->id,
-                        'from_status' => $oldStatus,
-                        'to_status' => 'confirmed',
-                        'changed_by' => $order->user_id,
-                        'note' => 'Payment confirmed by Moyasar webhook.',
-                    ]);
-                }
-
-                if (in_array($status, ['failed', 'voided'])) {
-                    $order->update([
-                        'payment_status' => 'failed',
-                    ]);
-                }
-            }
-        }
-
-        $log->update([
-            'processed' => true,
-            'processed_at' => now(),
-        ]);
-
-        return response()->json(['message' => 'ok'], 200);
+        return response()->json(['message' => 'ok']);
     }
 
-    public function success(Order $order)
+    public function success(Request $request, Order $order): View
     {
-        abort_if($order->user_id !== Auth::id(), 403);
+        $this->authorizeOwner($request, $order);
 
         return view('site.orders.success', compact('order'));
+    }
+
+    private function completeCheckout(Request $request, Order $order): RedirectResponse
+    {
+        $request->session()->forget(self::CHECKOUT_SESSION_KEYS);
+
+        return redirect()->route('order.success', $order)
+            ->with('success', __('Payment completed successfully.'));
+    }
+
+    private function authorizeOwner(Request $request, Order $order): void
+    {
+        abort_unless((int) $order->user_id === (int) $request->user()?->id, 403);
     }
 }

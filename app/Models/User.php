@@ -246,6 +246,11 @@ class User extends Authenticatable
         $this->permissions()->detach($permission->id);
     }
 
+    public function scopeDashboardUsers($query)
+    {
+        return $query->whereHas('roles', fn ($q) => $q->whereIn('name', ['owner', 'admin', 'employee']));
+    }
+
     public function isDashboardUser(): bool
     {
         return $this->isOwner()

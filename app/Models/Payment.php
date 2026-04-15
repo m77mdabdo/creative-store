@@ -14,6 +14,7 @@ class Payment extends Model
     public const STATUS_PENDING            = 'pending';
     public const STATUS_AUTHORIZED         = 'authorized';
     public const STATUS_CAPTURED           = 'captured';
+    public const STATUS_PAID               = 'paid';
     public const STATUS_FAILED             = 'failed';
     public const STATUS_REFUNDED           = 'refunded';
     public const STATUS_PARTIALLY_REFUNDED = 'partially_refunded';
@@ -44,6 +45,7 @@ class Payment extends Model
             self::STATUS_PENDING,
             self::STATUS_AUTHORIZED,
             self::STATUS_CAPTURED,
+            self::STATUS_PAID,
             self::STATUS_FAILED,
             self::STATUS_REFUNDED,
             self::STATUS_PARTIALLY_REFUNDED,
@@ -55,6 +57,7 @@ class Payment extends Model
         return [
             self::STATUS_AUTHORIZED,
             self::STATUS_CAPTURED,
+            self::STATUS_PAID,
             self::STATUS_REFUNDED,
             self::STATUS_PARTIALLY_REFUNDED,
         ];
