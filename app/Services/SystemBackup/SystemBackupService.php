@@ -336,7 +336,7 @@ protected function createDatabaseDump(): string
         throw new \RuntimeException('Database credentials are incomplete for mysql dump.');
     }
 
-    $mysqldumpPath = (string) env('MYSQLDUMP_PATH', 'mysqldump');
+    $mysqldumpPath = (string) config('backup.mysqldump_path', 'mysqldump');
     $tempSqlPath = storage_path('app/backups/tmp/database-' . now()->format('Ymd-His-u') . '.sql');
 
     if (! \Illuminate\Support\Facades\File::exists(dirname($tempSqlPath))) {
@@ -384,7 +384,7 @@ protected function createDatabaseDump(): string
 
     protected function buildPublicFilesSummary(): array
     {
-        $includePublicFiles = filter_var(env('BACKUP_INCLUDE_PUBLIC_FILES', false), FILTER_VALIDATE_BOOL);
+        $includePublicFiles = (bool) config('backup.include_public_files', false);
 
         if (! $includePublicFiles) {
             return [
@@ -408,12 +408,12 @@ protected function createDatabaseDump(): string
             ];
         }
 
-        $maxSizeMb = (float) env('BACKUP_PUBLIC_FILES_MAX_SIZE_MB', 300);
+        $maxSizeMb = (float) config('backup.public_files_max_size_mb', 300);
         $maxSizeBytes = (int) round($maxSizeMb * 1024 * 1024);
 
         $excludedExtensions = array_filter(array_map(
             fn ($ext) => strtolower(trim($ext)),
-            explode(',', (string) env('BACKUP_EXCLUDED_EXTENSIONS', 'mp4,mov,avi,mkv,zip,rar,7z,iso'))
+            explode(',', (string) config('backup.excluded_extensions'))
         ));
 
         $files = [];
