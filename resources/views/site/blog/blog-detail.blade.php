@@ -510,7 +510,7 @@
                             @endif
 
                             <div class="blog-content-box">
-                                {!! $blog->content !!}
+                                {!! $blog->safe_content !!}
                             </div>
                         </div>
                     </article>
