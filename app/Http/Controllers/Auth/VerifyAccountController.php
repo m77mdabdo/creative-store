@@ -4,71 +4,78 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\VerifyAccountRequest;
-
-     use App\Mail\AccountVerifiedMail;
-use App\Models\User;
+use App\Mail\AccountVerifiedMail;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class VerifyAccountController extends Controller
 {
-    public function __invoke(VerifyAccountRequest $request)
+    private const MAX_ATTEMPTS = 5;
+
+    public function __invoke(VerifyAccountRequest $request): RedirectResponse
     {
-        $key = 'pending_register:' . strtolower($request->email);
+        $key = RegisterController::cacheKey($request->email);
         $pending = Cache::get($key);
 
-        if (!$pending) {
-            return back()->with('error', 'The verification code has expired. Please register again.');
-        }
-
-        if (now()->greaterThan($pending['expires_at'])) {
+        if (! $pending || now()->greaterThan($pending['expires_at'])) {
             Cache::forget($key);
-            return back()->with('error', 'The verification code has expired. Please request a new one.');
+
+            return back()->with('error', __('The verification code has expired. Please register again.'));
         }
 
         $enteredOtp = implode('', $request->otp);
 
-        if (($pending['otp'] ?? null) !== $enteredOtp) {
-            return back()->with('error', 'Invalid verification code.');
+        if (! hash_equals((string) ($pending['otp'] ?? ''), $enteredOtp)) {
+            return $this->registerFailedAttempt($key, $pending);
         }
-
-        // Create user after correct OTP
-        $user = User::create([
-            'name' => $pending['name'],
-            'email' => $pending['email'],
-            'phone' => $pending['phone'] ?? null,
-            'password' => $pending['password'],
-            'email_verified_at' => now(),
-            'otp' => null,
-        ]);
-
-         // ✅ تأكد أن رول customer موجود
-        Role::firstOrCreate(['name' => 'customer']);
-
-        // ✅ Assign role للمستخدم
-        $user->assignRole('customer');
-
-        event(new Registered($user));
 
         Cache::forget($key);
 
-        // Send success email
+        if (User::withTrashed()->where('email', $pending['email'])->exists()) {
+            return redirect()->route('login')
+                ->with('success', __('This email is already registered. Please log in.'));
+        }
 
+        $user = DB::transaction(function () use ($pending) {
+            $user = User::create([
+                'name'              => $pending['name'],
+                'email'             => $pending['email'],
+                'phone'             => $pending['phone'] ?? null,
+                'password'          => $pending['password'],
+                'email_verified_at' => now(),
+            ]);
 
+            Role::firstOrCreate(['name' => 'customer']);
+            $user->assignRole('customer');
 
-Mail::to($user->email)->send(
-    new AccountVerifiedMail($user->name)
-);
+            return $user;
+        });
 
+        event(new Registered($user));
+
+        Mail::to($user->email)->queue(new AccountVerifiedMail($user->name));
 
         return redirect()->route('login')
-            ->with('success', 'Your email has been verified. You can now log in.');
+            ->with('success', __('Your email has been verified. You can now log in.'));
     }
 
+    private function registerFailedAttempt(string $key, array $pending): RedirectResponse
+    {
+        $pending['attempts'] = ($pending['attempts'] ?? 0) + 1;
 
+        if ($pending['attempts'] >= self::MAX_ATTEMPTS) {
+            Cache::forget($key);
 
+            return back()->with('error', __('Too many incorrect attempts. Please register again.'));
+        }
 
+        Cache::put($key, $pending, $pending['expires_at']);
 
+        return back()->with('error', __('Invalid verification code.'));
+    }
 }

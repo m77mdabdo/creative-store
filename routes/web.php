@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
@@ -29,10 +28,6 @@ use App\Http\Controllers\Shipping\OrderController;
 use App\Http\Controllers\Shipping\ShippingController;
 use App\Http\Controllers\Tracking\CustomerTrackingController;
 use App\Http\Controllers\Wishlist\WishlistController;
-
-
-
-
 
 Route::group([
     'prefix' => LaravelLocalization::setLocale(),
@@ -66,16 +61,17 @@ Route::group([
         return view('auth.register');
     })->name('register');
 
-    Route::post('/register', RegisterController::class)->name('register.submit');
+    Route::post('/register', RegisterController::class)
+        ->middleware(['guest', 'throttle:auth'])
+        ->name('register.submit');
 
     Route::post('/login', [LoginController::class, 'login'])
+        ->middleware(['guest', 'throttle:auth'])
         ->name('login.submit');
 
-    Route::post('/logout', function () {
-        Auth::logout();
-
-        return redirect()->route('home');
-    })->name('logout');
+    Route::post('/logout', [LoginController::class, 'logout'])
+        ->middleware('auth')
+        ->name('logout');
 
     /*
     |--------------------------------------------------------------------------
@@ -88,6 +84,7 @@ Route::group([
     })->name('forgot-password');
 
     Route::post('/forgot-password', ForgotPasswordController::class)
+        ->middleware('throttle:auth')
         ->name('forgot-password.submit');
 
     Route::get('/reset-password/{token}', function ($token) {
@@ -95,6 +92,7 @@ Route::group([
     })->name('password.reset');
 
     Route::post('/reset-password', ResetPasswordController::class)
+        ->middleware('throttle:auth')
         ->name('password.update');
 
     /*
@@ -106,6 +104,7 @@ Route::group([
     Route::view('/verify-email/{email}', 'auth.verify-email')->name('email.verify');
 
     Route::post('/verify-email', VerifyAccountController::class)
+        ->middleware('throttle:otp')
         ->name('email.verify.submit');
 
     /*
@@ -155,7 +154,7 @@ Route::group([
     Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
     Route::post('/blog/{blog}/comment', [BlogCommentController::class, 'store'])
-        ->middleware('auth')
+        ->middleware(['auth', 'throttle:forms'])
         ->name('blog.comment.store');
 
     // Route::get('/blog/{slug}', [FrontBlogController::class, 'show'])
@@ -170,7 +169,9 @@ Route::group([
     Route::get('/about', [AboutController::class, 'index'])->name('about.index');
 
     Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
-    Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+    Route::post('/contact', [ContactController::class, 'store'])
+        ->middleware('throttle:forms')
+        ->name('contact.store');
 
     Route::get('/pages/{slug}', [FrontPageController::class, 'show'])
         ->name('frontend.pages.show');
@@ -194,12 +195,15 @@ Route::group([
             Route::post('/update', [CartController::class, 'update'])->name('update');
             Route::post('/clear', [CartController::class, 'clear'])->name('clear');
 
-            Route::post('/coupon', [CartController::class, 'applyCoupon'])->name('coupon');
+            Route::post('/coupon', [CartController::class, 'applyCoupon'])
+                ->middleware('throttle:forms')
+                ->name('coupon');
 
             Route::delete('/coupon/remove', [CartController::class, 'removeCoupon'])
                 ->name('coupon.remove');
 
             Route::post('/coupon/preview', [CartController::class, 'previewCoupon'])
+                ->middleware('throttle:forms')
                 ->name('coupon.preview');
         });
     });
@@ -281,6 +285,7 @@ Route::group([
 
     Route::middleware('auth')->group(function () {
         Route::post('/shipping/place-order', [CheckoutController::class, 'placeOrder'])
+            ->middleware('throttle:checkout')
             ->name('shipping.place-order');
 
         Route::get('/checkout/payment/callback', [MoyasarPaymentController::class, 'callback'])
@@ -305,6 +310,7 @@ Route::group([
         ->name('tracking.search-form');
 
     Route::post('/track-order', [CustomerTrackingController::class, 'track'])
+        ->middleware('throttle:forms')
         ->name('tracking.track');
 });
 
@@ -318,4 +324,5 @@ Route::group([
 */
 
 Route::post('/webhooks/moyasar', [MoyasarPaymentController::class, 'webhook'])
+    ->middleware('throttle:webhooks')
     ->name('webhooks.moyasar');

@@ -15,9 +15,12 @@ use App\Models\User;
 use App\Models\Wishlist;
 use App\Services\Dashboard\DashboardLayoutService;
 use App\Support\Dashboard\SidebarBuilder;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -37,6 +40,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->configureRateLimiting();
+
         View::composer('dashboard.app.nav', function ($view) {
             if (auth()->check()) {
                 $view->with(app(DashboardLayoutService::class)->data());
@@ -217,5 +222,30 @@ class AppServiceProvider extends ServiceProvider
         }
 
         return 0;
+    }
+
+    private function configureRateLimiting(): void
+    {
+        RateLimiter::for('auth', function (Request $request) {
+            $email = strtolower((string) $request->input('email'));
+
+            return [
+                Limit::perMinute(5)->by('auth:' . $email . '|' . $request->ip()),
+                Limit::perMinute(20)->by('auth-ip:' . $request->ip()),
+            ];
+        });
+
+        RateLimiter::for('otp', fn (Request $request) => [
+            Limit::perMinutes(10, 5)->by('otp:' . strtolower((string) $request->input('email'))),
+            Limit::perMinute(10)->by('otp-ip:' . $request->ip()),
+        ]);
+
+        RateLimiter::for('forms', fn (Request $request) => Limit::perMinute(6)
+            ->by($request->user()?->id ?: $request->ip()));
+
+        RateLimiter::for('checkout', fn (Request $request) => Limit::perMinute(10)
+            ->by($request->user()?->id ?: $request->ip()));
+
+        RateLimiter::for('webhooks', fn (Request $request) => Limit::perMinute(120)->by($request->ip()));
     }
 }

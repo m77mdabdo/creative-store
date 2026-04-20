@@ -16,7 +16,7 @@ class RegisterController extends Controller
         $otp = (string) random_int(100000, 999999);
 
         // Store pending registration for 10 minutes
-        Cache::put($this->cacheKey($request->email), [
+        Cache::put(self::cacheKey($request->email), [
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
@@ -35,7 +35,7 @@ class RegisterController extends Controller
     }
     
 
-    private function cacheKey(string $email): string
+    public static function cacheKey(string $email): string
     {
         return 'pending_register:' . strtolower($email);
     }
