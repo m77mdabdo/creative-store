@@ -557,5 +557,10 @@ return [
     'google_unverified' => 'Your Google account email is not verified yet. Verify it with Google, or sign in with your password.',
     'google_other_account' => 'This email is already linked to a different Google account. Sign in with your password instead.',
     'account_deleted' => 'This account was closed. Please contact support to restore it.',
+    'contact_reply_subject' => 'We received your message',
+    'contact_reply_greeting' => 'Hello :name,',
+    'contact_reply_body' => 'Thank you for contacting :store. We have received your message and our team will get back to you as soon as possible.',
+    'contact_reply_note' => 'If you did not send this message, you can ignore this email.',
+    'contact_reply_signoff' => 'Best regards, the :store team',
 
 ];

@@ -22,14 +22,14 @@ class ContactAutoReplyMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'We received your message'
+            subject: __('site.contact_reply_subject')
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.contact.auto-reply'
+            view: 'emails.contact-auto-reply'
         );
     }
 
