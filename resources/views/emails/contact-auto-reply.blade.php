@@ -1,23 +1,22 @@
+@php
+    $rtl = app()->getLocale() === 'ar';
+    $store = config('app.name');
+@endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ $rtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
-    <title>We Received Your Message</title>
+    <title>{{ __('site.contact_reply_subject') }}</title>
 </head>
-<body style="font-family: Arial, sans-serif; line-height: 1.8; color: #333;">
-    <h2>Hello {{ $contactMessage->name }},</h2>
+{{-- Static text only: the visitor's message is not repeated, so the form
+     cannot be used to send arbitrary text to someone else's inbox. --}}
+<body style="font-family: Tahoma, Arial, sans-serif; line-height: 1.8; color: #333; text-align: {{ $rtl ? 'right' : 'left' }};">
+    <h2>{{ __('site.contact_reply_greeting', ['name' => \Illuminate\Support\Str::limit($contactMessage->name, 60)]) }}</h2>
 
-    <p>Thank you for contacting Creative Store.</p>
+    <p>{{ __('site.contact_reply_body', ['store' => $store]) }}</p>
 
-    <p>We have received your message and our team will get back to you as soon as possible.</p>
+    <p style="color:#6b7280; font-size:13px;">{{ __('site.contact_reply_note') }}</p>
 
-    <p><strong>Your message details:</strong></p>
-
-    <p>
-        <strong>Subject:</strong> {{ $contactMessage->subject ?: 'No Subject' }}<br>
-        <strong>Message:</strong> {{ $contactMessage->message }}
-    </p>
-
-    <p>Best regards,<br>Creative Store Team</p>
+    <p>{{ __('site.contact_reply_signoff', ['store' => $store]) }}</p>
 </body>
 </html>
