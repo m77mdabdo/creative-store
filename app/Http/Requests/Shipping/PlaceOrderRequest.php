@@ -14,10 +14,10 @@ class PlaceOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'address_id' => ['required', 'exists:addresses,id'],
-            'shipping_method_id' => ['required', 'exists:shipping_methods,id'],
-            'shipping_rate_id' => ['required', 'exists:shipping_rates,id'],
-            'payment_method' => ['nullable', 'string', 'max:50'],
+            'address_id' => ['required', 'integer'],
+            'shipping_method_id' => ['required', 'integer', 'exists:shipping_methods,id'],
+            'shipping_rate_id' => ['required', 'integer', 'exists:shipping_rates,id'],
+            'payment_method' => ['required', 'in:moyasar'],
         ];
     }
 }
