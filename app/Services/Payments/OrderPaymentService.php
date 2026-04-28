@@ -24,6 +24,8 @@ class OrderPaymentService
 
     public const RESULT_MISMATCH = 'mismatch';
 
+    public const RESULT_ORDER_CLOSED = 'order_closed';
+
     /**
      * Apply a verified gateway payment to its order.
      *
@@ -46,6 +48,23 @@ class OrderPaymentService
                 ->latest('id')
                 ->lockForUpdate()
                 ->first();
+
+            if ($order->status === 'cancelled') {
+                $payment?->update([
+                    'transaction_id' => $remote->id,
+                    'status'         => $remote->localStatus(),
+                    'raw_response'   => $remote->raw,
+                ]);
+
+                if ($remote->isSuccessful()) {
+                    Log::error('Payment received for a cancelled order; refund required', [
+                        'order_id'   => $order->id,
+                        'payment_id' => $remote->id,
+                    ]);
+                }
+
+                return self::RESULT_ORDER_CLOSED;
+            }
 
             if (! $this->amountMatches($order, $remote)) {
                 Log::warning('Payment amount mismatch', [

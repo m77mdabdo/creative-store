@@ -83,7 +83,9 @@ return Application::configure(basePath: dirname(__DIR__))
         });
     })
     ->withSchedule(function (Schedule $schedule): void {
-        $schedule->command('carts:process-abandoned')->everyMinute();
+        $schedule->command('carts:process-abandoned')->everyFiveMinutes()->withoutOverlapping();
+
+        $schedule->command('orders:expire-unpaid')->everyFifteenMinutes()->withoutOverlapping();
 
         $schedule->command('backup:run scheduled --cleanup-days=' . (int) config('backup.retention_days', 30))
             ->cron('0 */12 * * *')
