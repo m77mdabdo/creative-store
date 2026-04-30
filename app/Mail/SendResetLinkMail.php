@@ -22,7 +22,7 @@ class SendResetLinkMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Reset Your Password',
+            subject: __('site.reset_mail_subject'),
         );
     }
 
