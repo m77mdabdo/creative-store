@@ -562,5 +562,13 @@ return [
     'contact_reply_body' => 'Thank you for contacting :store. We have received your message and our team will get back to you as soon as possible.',
     'contact_reply_note' => 'If you did not send this message, you can ignore this email.',
     'contact_reply_signoff' => 'Best regards, the :store team',
+    'reset_mail_subject' => 'Reset your password',
+    'reset_mail_title' => 'Reset your password',
+    'reset_mail_hello' => 'Hello,',
+    'reset_mail_body' => 'You asked to reset your password. Use the button below to choose a new one. The link works for 60 minutes.',
+    'reset_mail_button' => 'Reset password',
+    'reset_mail_ignore' => 'If you did not ask for this, you can ignore this email and your password will stay the same.',
+    'reset_mail_fallback' => 'If the button does not work, copy this link into your browser:',
+    'reset_mail_signoff' => 'Thank you, :store',
 
 ];
