@@ -107,6 +107,13 @@ class Blog extends Model
         return $this->hasMany(BlogComment::class)->latest();
     }
 
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query
+            ->where('status', true)
+            ->where(fn (Builder $q) => $q->whereNull('published_at')->orWhere('published_at', '<=', now()));
+    }
+
     public function scopeSearch(Builder $query, ?string $term): Builder
     {
         $term = trim((string) $term);

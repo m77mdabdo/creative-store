@@ -2776,20 +2776,13 @@ html[dir="rtl"] .products-pagination nav > div {
                                 ? Storage::url($product->primaryImage->path)
                                 : asset('cozastore/images/product-01.jpg');
 
-                            $wishlistExists = false;
-
-                            if (auth()->check() && auth()->user()->wishlist) {
-                                $wishlistExists = auth()->user()->wishlist->items()
-                                    ->where('product_id', $product->id)
-                                    ->whereNull('variant_id')
-                                    ->exists();
-                            }
+                            $wishlistExists = isset($wishlistedProducts[$product->id]);
                         @endphp
 
                         <div class="item-slick2 p-l-15 p-r-15 p-b-30">
                             <div class="product-card">
                                 <div class="product-card-media">
-                                    <img src="{{ $img }}" alt="{{ $product->name ?? $product->slug }}">
+                                    <img src="{{ $img }}" alt="{{ $product->display_name }}" loading="lazy" decoding="async" width="600" height="750">
 
                                     <a href="{{ route('products.show', $product->slug) }}"
                                        class="product-card-btn">

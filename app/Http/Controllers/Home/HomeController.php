@@ -3,399 +3,96 @@
 namespace App\Http\Controllers\Home;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
-use App\Models\Attribute;
-use App\Models\AttributeValue;
 use App\Models\Blog;
-use App\Models\Page;
-use App\Models\PageTranslation;
-use App\Models\Category;
-use App\Models\Product;
-use Illuminate\Support\Facades\Cache;
-
+use App\Services\Catalog\ProductCatalogService;
+use App\Services\Content\PageContentService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
-
-use App\Support\PageContent\AboutPageContent; // لو عندك decoder مخصص
-
-
-
-
 
 class HomeController extends Controller
 {
- public function index(Request $request)
-{
-    $filters = $request->validate([
-        'category' => ['nullable', 'string', 'max:120'],
-        'q'        => ['nullable', 'string', 'max:200'],
-        'min'      => ['nullable', 'numeric', 'min:0'],
-        'max'      => ['nullable', 'numeric', 'min:0'],
-        'color'    => ['nullable', 'integer', 'min:1'],
-        'tag'      => ['nullable', 'integer', 'min:1'],
-        'sort'     => ['nullable', 'in:new,price_asc,price_desc'],
-    ]);
+    private const PRODUCT_LIMIT = 16;
 
-    $locale   = app()->getLocale();
-    $fallback = config('app.fallback_locale');
+    private const BLOG_LIMIT = 6;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Categories
-    |--------------------------------------------------------------------------
-    */
-    $categories = Category::query()
-        ->select(['id', 'parent_id', 'slug', 'sort_order'])
-        ->whereNull('parent_id')
-        ->where('is_active', true)
-        ->with([
-            'translations' => function ($query) use ($locale, $fallback) {
-                $query->select(['id', 'category_id', 'locale', 'name'])
-                    ->whereIn('locale', [$locale, $fallback]);
-            }
-        ])
-        ->orderBy('sort_order')
-        ->get()
-        ->map(function ($category) use ($locale, $fallback) {
-            $category->display_name = $this->translatedValue(
-                $category->translations,
-                'name',
-                $locale,
-                $fallback,
-                $category->slug
-            );
+    public function __construct(
+        private readonly ProductCatalogService $catalog,
+        private readonly PageContentService $pages,
+    ) {
+    }
 
-            return $category;
-        });
-
-    /*
-    |--------------------------------------------------------------------------
-    | Attributes (Color / Tags)
-    |--------------------------------------------------------------------------
-    */
-    $attributes = Attribute::query()
-        ->select(['id', 'slug'])
-        ->where('is_active', true)
-        ->whereIn('slug', ['color', 'colors', 'tag', 'tags'])
-        ->get()
-        ->keyBy('slug');
-
-    $colorAttr = $attributes->get('color') ?? $attributes->get('colors');
-    $tagAttr   = $attributes->get('tag') ?? $attributes->get('tags');
-
-    $colorValues = $this->attributeValues($colorAttr?->id);
-    $tagValues   = $this->attributeValues($tagAttr?->id);
-
-    /*
-    |--------------------------------------------------------------------------
-    | Products
-    |--------------------------------------------------------------------------
-    */
-    $productsQuery = Product::query()
-        ->select([
-            'id',
-            'category_id',
-            'slug',
-            'base_price',
-            'currency',
-            'created_at',
-        ])
-        ->where('status', 'active')
-        ->with([
-            'translations' => function ($query) use ($locale, $fallback) {
-                $query->select(['id', 'product_id', 'locale', 'name'])
-                    ->whereIn('locale', [$locale, $fallback]);
-            },
-            'primaryImage' => function ($query) {
-                $query->select(['id', 'product_id', 'path', 'is_primary'])
-                    ->where('is_primary', true);
-            },
-            'category' => function ($query) use ($locale, $fallback) {
-                $query->select(['id', 'slug'])
-                    ->with([
-                        'translations' => function ($translationQuery) use ($locale, $fallback) {
-                            $translationQuery->select(['id', 'category_id', 'locale', 'name'])
-                                ->whereIn('locale', [$locale, $fallback]);
-                        }
-                    ]);
-            },
+    public function index(Request $request): View
+    {
+        $filters = $request->validate([
+            'category' => ['nullable', 'string', 'max:120'],
+            'q'        => ['nullable', 'string', 'max:200'],
+            'min'      => ['nullable', 'numeric', 'min:0'],
+            'max'      => ['nullable', 'numeric', 'min:0', 'gte:min'],
+            'color'    => ['nullable', 'integer', 'min:1'],
+            'tag'      => ['nullable', 'integer', 'min:1'],
+            'sort'     => ['nullable', 'in:new,price_asc,price_desc'],
         ]);
 
-    $this->applyProductFilters(
-        query: $productsQuery,
-        filters: $filters,
-        locale: $locale,
-        fallback: $fallback,
-        colorAttributeId: $colorAttr?->id,
-        tagAttributeId: $tagAttr?->id,
-    );
+        $attributes = $this->catalog->filterAttributes();
+        $home = $this->pages->forSlug('home');
+        $about = $this->pages->forSlug('about');
 
-    $products = $productsQuery->get();
-
-    $products = $products->map(function ($product) use ($locale, $fallback) {
-        $product->display_name = $this->translatedValue(
-            $product->translations,
-            'name',
-            $locale,
-            $fallback,
-            $product->slug
-        );
-
-        $product->category_name = $product->category
-            ? $this->translatedValue(
-                $product->category->translations,
-                'name',
-                $locale,
-                $fallback,
-                $product->category->slug
-            )
-            : null;
-
-        $product->image_url = $product->primaryImage?->path
-            ? asset('storage/' . ltrim($product->primaryImage->path, '/'))
-            : asset('cozastore/images/product-01.jpg');
-
-        return $product;
-    });
-
-    /*
-    |--------------------------------------------------------------------------
-    | Price Ranges
-    |--------------------------------------------------------------------------
-    */
-    $priceRanges = [
-        ['label' => 'All', 'min' => null, 'max' => null],
-        ['label' => '$0.00 - $50.00', 'min' => 0, 'max' => 50],
-        ['label' => '$50.00 - $100.00', 'min' => 50, 'max' => 100],
-        ['label' => '$100.00 - $150.00', 'min' => 100, 'max' => 150],
-        ['label' => '$150.00 - $200.00', 'min' => 150, 'max' => 200],
-        ['label' => '$200.00+', 'min' => 200, 'max' => null],
-    ];
-
-/*
-|--------------------------------------------------------------------------
-| Blogs
-|--------------------------------------------------------------------------
-*/
-$fallbackBlogImage = asset('images/default-blog.jpg');
-
-$blogsQuery = Blog::query()->with('category');
-
-if (Schema::hasColumn('blogs', 'status')) {
-    $blogsQuery->whereIn('status', ['published', 'active', 1]);
-}
-
-if (Schema::hasColumn('blogs', 'is_active')) {
-    $blogsQuery->where('is_active', 1);
-}
-
-if (Schema::hasColumn('blogs', 'published_at')) {
-    $blogsQuery->orderByDesc('published_at');
-} else {
-    $blogsQuery->latest();
-}
-
-$blogs = $blogsQuery->take(6)->get()->map(function ($blog) use ($fallbackBlogImage) {
-    $blog->image_url = $this->resolveHomeBlogImageUrl($blog->image ?? null, $fallbackBlogImage);
-    return $blog;
-});
-
-    /*
-|--------------------------------------------------------------------------
-| Home Page Content
-|--------------------------------------------------------------------------
-*/
-$homePayload = Cache::remember("page.home.{$locale}", now()->addMinutes(30), function () use ($locale, $fallback) {
-    $page = Page::query()
-        ->where('slug', 'home')
-        ->where('is_active', true)
-        ->with('translations')
-        ->first();
-
-    if (! $page) {
-        return [
-            'title' => 'Home',
-            'content' => [],
-        ];
+        return view('site.home', [
+            'categories'         => $this->catalog->topCategories(),
+            'products'           => $this->catalog->listing($filters, $attributes, self::PRODUCT_LIMIT),
+            'wishlistedProducts' => $this->catalog->wishlistedProductIds($request->user()),
+            'colorValues'        => $this->catalog->attributeValues($attributes['color']?->id),
+            'tagValues'          => $this->catalog->attributeValues($attributes['tag']?->id),
+            'priceRanges'        => $this->priceRanges(),
+            'blogs'              => $this->latestBlogs(),
+            'homePageTitle'      => $home['title'],
+            'homeContent'        => $home['content'],
+            'pageTitle'          => $about['title'],
+            'aboutContent'       => $about['content'],
+        ]);
     }
 
-    $translation = $page->translate($locale, true);
+    private function latestBlogs()
+    {
+        $fallback = asset('images/default-blog.jpg');
 
-    if (! $translation && $fallback && $fallback !== $locale) {
-        $translation = $page->translate($fallback, true);
+        return Blog::query()
+            ->published()
+            ->with('category')
+            ->orderByDesc('published_at')
+            ->latest('id')
+            ->take(self::BLOG_LIMIT)
+            ->get()
+            ->each(fn (Blog $blog) => $blog->image_url = $this->imageUrl($blog->image, $fallback));
     }
 
-    return [
-        'title' => $translation?->title ?? 'Home',
-        'content' => is_array($translation?->content)
-            ? $translation->content
-            : (json_decode($translation?->content ?? '{}', true) ?: []),
-    ];
-});
+    private function imageUrl(?string $path, string $fallback): string
+    {
+        $path = trim((string) $path);
 
-$homePageTitle = $homePayload['title'] ?? 'Home';
-$homeContent   = $homePayload['content'] ?? [];
-
-    /*
-    |--------------------------------------------------------------------------
-    | About Section
-    |--------------------------------------------------------------------------
-    */
-    $payload = Cache::remember("page.about.{$locale}", now()->addMinutes(30), function () use ($locale, $fallback) {
-        $page = Page::query()
-            ->where('slug', 'about')
-            ->where('is_active', true)
-            ->with('translations')
-            ->first();
-
-        if (! $page) {
-            return [
-                'title' => 'About',
-                'content' => [],
-            ];
-        }
-
-        $translation = $page->translate($locale, true);
-
-        if (! $translation && $fallback && $fallback !== $locale) {
-            $translation = $page->translate($fallback, true);
-        }
-
-        return [
-            'title' => $translation?->title ?? 'About',
-            'content' => is_array($translation?->content)
-                ? $translation->content
-                : (json_decode($translation?->content ?? '{}', true) ?: []),
-        ];
-    });
-
-    $pageTitle    = $payload['title'] ?? 'About';
-    $aboutContent = $payload['content'] ?? [];
-
-    return view('site.home', compact(
-        'categories',
-        'products',
-        'colorValues',
-        'tagValues',
-        'priceRanges',
-        'blogs',
-        'pageTitle',
-        'aboutContent',
-        'homePageTitle',
-        'homeContent'
-    ));
-}
-
-    protected function applyProductFilters(
-        $query,
-        array $filters,
-        string $locale,
-        string $fallback,
-        ?int $colorAttributeId,
-        ?int $tagAttributeId
-    ): void {
-        if (!empty($filters['category'])) {
-            $query->whereHas('category', function ($categoryQuery) use ($filters) {
-                $categoryQuery->where('slug', $filters['category']);
-            });
-        }
-
-        if (!empty($filters['q'])) {
-            $term = trim($filters['q']);
-
-            $query->whereHas('translations', function ($translationQuery) use ($term, $locale, $fallback) {
-                $translationQuery->whereIn('locale', [$locale, $fallback])
-                    ->where('name', 'like', '%' . $term . '%');
-            });
-        }
-
-        if (isset($filters['min']) && $filters['min'] !== null && $filters['min'] !== '') {
-            $query->where('base_price', '>=', (float) $filters['min']);
-        }
-
-        if (isset($filters['max']) && $filters['max'] !== null && $filters['max'] !== '') {
-            $query->where('base_price', '<=', (float) $filters['max']);
-        }
-
-        if ($colorAttributeId && !empty($filters['color'])) {
-            $query->whereHas('variants.values', function ($valueQuery) use ($colorAttributeId, $filters) {
-                $valueQuery->where('attribute_id', $colorAttributeId)
-                    ->where('attribute_value_id', (int) $filters['color']);
-            });
-        }
-
-        if ($tagAttributeId && !empty($filters['tag'])) {
-            $query->whereHas('variants.values', function ($valueQuery) use ($tagAttributeId, $filters) {
-                $valueQuery->where('attribute_id', $tagAttributeId)
-                    ->where('attribute_value_id', (int) $filters['tag']);
-            });
-        }
-
-        $sort = $filters['sort'] ?? 'new';
-
-        match ($sort) {
-            'price_asc'  => $query->orderBy('base_price', 'asc')->orderBy('created_at', 'desc'),
-            'price_desc' => $query->orderBy('base_price', 'desc')->orderBy('created_at', 'desc'),
-            default      => $query->orderBy('created_at', 'desc'),
+        return match (true) {
+            $path === ''                       => $fallback,
+            str_starts_with($path, 'http')     => $path,
+            str_starts_with($path, 'storage/') => asset($path),
+            default                            => Storage::url($path),
         };
     }
 
-    protected function attributeValues(?int $attributeId)
+    /**
+     * @return list<array{label: string, min: ?int, max: ?int}>
+     */
+    private function priceRanges(): array
     {
-        if (!$attributeId) {
-            return collect();
-        }
+        $currency = __('SAR');
 
-        return AttributeValue::query()
-            ->select(['id', 'attribute_id', 'value', 'slug', 'sort_order'])
-            ->where('attribute_id', $attributeId)
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
+        return [
+            ['label' => __('All'), 'min' => null, 'max' => null],
+            ['label' => "0 - 100 {$currency}", 'min' => 0, 'max' => 100],
+            ['label' => "100 - 250 {$currency}", 'min' => 100, 'max' => 250],
+            ['label' => "250 - 500 {$currency}", 'min' => 250, 'max' => 500],
+            ['label' => "500 - 1000 {$currency}", 'min' => 500, 'max' => 1000],
+            ['label' => "1000+ {$currency}", 'min' => 1000, 'max' => null],
+        ];
     }
-
-    protected function translatedValue($translations, string $field, string $locale, string $fallback, ?string $default = null): ?string
-    {
-        if (!$translations || $translations->isEmpty()) {
-            return $default;
-        }
-
-        $current = $translations->firstWhere('locale', $locale);
-        if ($current && filled($current->{$field})) {
-            return $current->{$field};
-        }
-
-        $fallbackTranslation = $translations->firstWhere('locale', $fallback);
-        if ($fallbackTranslation && filled($fallbackTranslation->{$field})) {
-            return $fallbackTranslation->{$field};
-        }
-
-        $first = $translations->first();
-        return $first->{$field} ?? $default;
-    }
-
-    protected function resolveHomeBlogImageUrl(?string $path, string $fallback): string
-{
-    if (!$path) {
-        return $fallback;
-    }
-
-    $path = trim($path);
-
-    if ($path === '') {
-        return $fallback;
-    }
-
-    if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
-        return $path;
-    }
-
-    if (str_starts_with($path, 'storage/')) {
-        return asset($path);
-    }
-
-    return \Illuminate\Support\Facades\Storage::url($path);
-}
-
-
 }
