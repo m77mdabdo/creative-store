@@ -162,7 +162,7 @@ public function add(Request $request)
 
     if (!empty($validated['coupon_code'])) {
         $code = strtoupper(trim($validated['coupon_code']));
-        $coupon = Coupon::whereRaw('UPPER(code) = ?', [$code])->first();
+        $coupon = Coupon::query()->where('code', $code)->first();
 
         if (!$coupon) {
             $this->refreshCoupons();
@@ -355,7 +355,7 @@ public function add(Request $request)
             return back()->with('error', 'Cart is empty.');
         }
 
-        $coupon = Coupon::whereRaw('UPPER(code) = ?', [$code])->first();
+        $coupon = Coupon::query()->where('code', $code)->first();
 
         if (!$coupon) {
             return back()->with('error', 'Invalid coupon code.');
@@ -435,7 +435,7 @@ public function add(Request $request)
         }
 
         $code = strtoupper(trim($validated['coupon_code']));
-        $coupon = Coupon::whereRaw('UPPER(code) = ?', [$code])->first();
+        $coupon = Coupon::query()->where('code', $code)->first();
 
         if (!$coupon) {
             return response()->json([
