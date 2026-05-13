@@ -1,0 +1,80 @@
+/* Global storefront foundations built on tokens.css */
+
+html[dir="rtl"] body {
+    font-family: var(--cs-font-arabic);
+}
+
+body {
+    color: var(--cs-text);
+    background: var(--cs-surface);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+img,
+video {
+    max-width: 100%;
+    height: auto;
+}
+
+a,
+button,
+input,
+select,
+textarea {
+    transition: color var(--cs-duration) var(--cs-ease),
+        background-color var(--cs-duration) var(--cs-ease),
+        border-color var(--cs-duration) var(--cs-ease),
+        box-shadow var(--cs-duration) var(--cs-ease);
+}
+
+:focus-visible {
+    outline: 2px solid var(--cs-primary);
+    outline-offset: 2px;
+}
+
+::selection {
+    background: rgba(var(--cs-primary-rgb), 0.18);
+}
+
+.cs-visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* Comfortable tap targets on touch screens */
+@media (pointer: coarse) {
+    .btn,
+    button,
+    .stext-101,
+    .flex-c-m {
+        min-height: 44px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Never let a wide element push the page sideways on phones */
+@media (max-width: 575.98px) {
+    html,
+    body {
+        overflow-x: hidden;
+    }
+
+    .container {
+        padding-inline: var(--cs-space-4);
+    }
+}

@@ -1,0 +1,70 @@
+/*
+ * Creative Store design tokens.
+ * Every storefront stylesheet reads colour, type, spacing, radius and
+ * elevation from these variables so the brand can be tuned in one place.
+ */
+:root {
+    /* Brand */
+    --cs-primary: #717fe0;
+    --cs-primary-rgb: 113, 127, 224;
+    --cs-primary-hover: #5a69d6;
+    --cs-primary-contrast: #ffffff;
+    --cs-accent: #c9a14a;
+
+    /* Neutrals */
+    --cs-ink-strong: #111111;
+    --cs-ink: #222222;
+    --cs-text: #333333;
+    --cs-text-muted: #666666;
+    --cs-text-subtle: #888888;
+    --cs-surface: #ffffff;
+    --cs-surface-alt: #f7f7f7;
+    --cs-border: #ececec;
+    --cs-black: #000000;
+    --cs-shadow-rgb: 0, 0, 0;
+
+    /* Feedback */
+    --cs-success: #1f9d55;
+    --cs-warning: #8a6d3b;
+    --cs-danger: #d64545;
+
+    /* Typography */
+    --cs-font-sans: "Poppins", "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --cs-font-arabic: "Cairo", "Tajawal", system-ui, sans-serif;
+    --cs-text-xs: 0.75rem;
+    --cs-text-sm: 0.875rem;
+    --cs-text-base: 1rem;
+    --cs-text-lg: 1.125rem;
+    --cs-text-xl: 1.375rem;
+    --cs-text-2xl: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+    --cs-text-3xl: clamp(1.875rem, 1.4rem + 2vw, 2.75rem);
+    --cs-leading-tight: 1.25;
+    --cs-leading-normal: 1.6;
+
+    /* Spacing scale (4px base) */
+    --cs-space-1: 0.25rem;
+    --cs-space-2: 0.5rem;
+    --cs-space-3: 0.75rem;
+    --cs-space-4: 1rem;
+    --cs-space-5: 1.5rem;
+    --cs-space-6: 2rem;
+    --cs-space-7: 3rem;
+    --cs-space-8: 4rem;
+
+    /* Shape & elevation */
+    --cs-radius-sm: 6px;
+    --cs-radius-md: 12px;
+    --cs-radius-lg: 18px;
+    --cs-radius-pill: 999px;
+    --cs-shadow-sm: 0 2px 8px rgba(var(--cs-shadow-rgb), 0.05);
+    --cs-shadow-md: 0 10px 30px rgba(var(--cs-shadow-rgb), 0.08);
+    --cs-shadow-lg: 0 20px 50px rgba(var(--cs-shadow-rgb), 0.12);
+
+    /* Motion */
+    --cs-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --cs-duration: 200ms;
+
+    /* Layout */
+    --cs-container: 1200px;
+    --cs-header-height: 84px;
+}
