@@ -38,7 +38,8 @@ class SeedingTest extends TestCase
         $this->app['env'] = 'production';
         $this->setEnv('SEED_OWNER_EMAIL', 'Owner@Store.test');
 
-        $this->seed(AuthSeeder::class);
+        // Run directly: db:seed asks for confirmation in production.
+        $this->app->make(AuthSeeder::class)->run();
 
         $owner = User::query()->sole();
         $this->assertSame('owner@store.test', $owner->email);
@@ -50,7 +51,8 @@ class SeedingTest extends TestCase
     {
         $this->app['env'] = 'production';
 
-        $this->seed(AuthSeeder::class);
+        // Run directly: db:seed asks for confirmation in production.
+        $this->app->make(AuthSeeder::class)->run();
 
         $this->assertSame(0, User::query()->count());
     }
