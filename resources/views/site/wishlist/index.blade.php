@@ -130,27 +130,5 @@
 @endsection
 
 @push('styles')
-<style>
-    .table-shopping-cart .column-5 .flex-w {
-        align-items: center;
-        gap: 10px;
-    }
-
-    .table-shopping-cart .column-4 {
-        min-width: 140px;
-    }
-
-    .table-shopping-cart .column-5 {
-        min-width: 220px;
-    }
-
-    html[dir="rtl"] .table-shopping-cart th,
-    html[dir="rtl"] .table-shopping-cart td {
-        text-align: right;
-    }
-
-    html[dir="rtl"] .table-shopping-cart .column-5 .flex-w {
-        justify-content: flex-start;
-    }
-</style>
+<link rel="stylesheet" href="{{ versioned_asset('css/site/site-wishlist-index.css') }}">
 @endpush

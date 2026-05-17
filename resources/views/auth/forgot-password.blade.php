@@ -1,30 +1,6 @@
 @include('auth.app.head')
 
-<style>
-    body { margin:0; overflow-x:hidden; }
-    .auth-video{ position:fixed; inset:0; z-index:-2; }
-    .auth-video video{ width:100%; height:100%; object-fit:cover; }
-    .video-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:-1; }
-    .auth-wrapper{ min-height:100vh; display:flex; justify-content:center; align-items:center; padding:20px; }
-    .login-box{ width:420px; max-width:100%; }
-    .card{
-        border-radius:16px;
-        background:rgba(255,255,255,.15);
-        backdrop-filter:blur(12px);
-        -webkit-backdrop-filter:blur(12px);
-        border:1px solid rgba(255,255,255,.3);
-        box-shadow:0 15px 35px rgba(0,0,0,.25);
-        overflow:hidden;
-    }
-    .logo-header{ text-align:center; padding:20px 10px; }
-    .logo-header img{ max-height:90px; }
-    .card-body{ padding:30px; }
-    .login-box-msg{ text-align:center; margin-bottom:25px; color:#fff; font-weight:500; }
-    .form-control{ background:rgba(255,255,255,.85); }
-    .btn-primary{ background:#000; border-color:#000; border-radius:6px; }
-    .btn-primary:hover{ background:#333; border-color:#333; }
-    a{ color:#fff; } a:hover{ opacity:.8; }
-</style>
+<link rel="stylesheet" href="{{ versioned_asset('css/site/auth-forgot-password.css') }}">
 
 <body class="hold-transition">
 

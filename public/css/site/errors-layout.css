@@ -1,0 +1,31 @@
+body{
+    font-family: Arial;
+    background:var(--cs-surface-alt);
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.error-box{
+    text-align:center;
+}
+
+.error-code{
+    font-size:120px;
+    font-weight:bold;
+}
+
+.error-message{
+    font-size:22px;
+    margin:10px 0;
+}
+
+.error-actions a{
+    display:inline-block;
+    padding:12px 25px;
+    background:var(--cs-black);
+    color:var(--cs-surface);
+    text-decoration:none;
+    margin-top:15px;
+}

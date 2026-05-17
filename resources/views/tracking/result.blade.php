@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tracking Result</title>
     <link rel="stylesheet" href="{{ asset('AdminLTE/plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('AdminLTE/dist/css/adminlte.min.css') }}">
+    <link rel="stylesheet" href="{{ versioned_asset('css/site/tokens.css') }}">
 </head>
 <body class="hold-transition layout-top-nav">
 <div class="wrapper">

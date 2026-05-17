@@ -2,64 +2,7 @@
 
 @section('content')
 
-<style>
-    .address-page {
-        padding-top: 70px;
-        padding-bottom: 90px;
-    }
-
-    .address-card {
-        border: 1px solid #eee;
-        border-radius: 24px;
-        padding: 35px;
-        background: #fff;
-        box-shadow: 0 12px 30px rgba(0,0,0,.05);
-    }
-
-    .address-title {
-        font-size: 28px;
-        font-weight: 800;
-        margin-bottom: 25px;
-    }
-
-    .address-input {
-        border-radius: 14px !important;
-        min-height: 48px;
-    }
-
-    .address-textarea {
-        border-radius: 14px !important;
-    }
-
-    .map-box {
-        border-radius: 16px;
-        overflow: hidden;
-        border: 1px solid #eee;
-    }
-
-    .location-actions button {
-        border-radius: 999px;
-    }
-
-    .submit-btn {
-        min-height: 48px;
-        border-radius: 999px;
-        padding: 0 28px;
-    }
-
-    html[dir="rtl"] .address-card {
-        text-align: right;
-    }
-
-    html[dir="rtl"] .row {
-        direction: rtl;
-    }
-
-    html[dir="rtl"] .form-control,
-    html[dir="rtl"] textarea {
-        text-align: right;
-    }
-</style>
+<link rel="stylesheet" href="{{ versioned_asset('css/site/site-shipping-addresses-create.css') }}">
 
 <section class="address-page">
     <div class="container">

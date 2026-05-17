@@ -1,0 +1,56 @@
+.address-page {
+        padding-top: 70px;
+        padding-bottom: 90px;
+    }
+
+    .address-card {
+        border: 1px solid var(--cs-border);
+        border-radius: 24px;
+        padding: 35px;
+        background: var(--cs-surface);
+        box-shadow: 0 12px 30px rgba(var(--cs-shadow-rgb),.05);
+    }
+
+    .address-title {
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 25px;
+    }
+
+    .address-input {
+        border-radius: 14px !important;
+        min-height: 48px;
+    }
+
+    .address-textarea {
+        border-radius: 14px !important;
+    }
+
+    .map-box {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--cs-border);
+    }
+
+    .location-actions button {
+        border-radius: 999px;
+    }
+
+    .submit-btn {
+        min-height: 48px;
+        border-radius: 999px;
+        padding: 0 28px;
+    }
+
+    html[dir="rtl"] .address-card {
+        text-align: right;
+    }
+
+    html[dir="rtl"] .row {
+        direction: rtl;
+    }
+
+    html[dir="rtl"] .form-control,
+    html[dir="rtl"] textarea {
+        text-align: right;
+    }

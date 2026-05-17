@@ -1,0 +1,31 @@
+/* ===============================
+       RTL NAVBAR — الحل النهائي
+    =============================== */
+
+    /* عكس ترتيب العناصر الرئيسية */
+    html[dir="rtl"] .custom-navbar .navbar-inner {
+        flex-direction: row-reverse !important;
+    }
+
+    /* المنيو يبدأ من اليمين بدون عكس الأيتمز */
+    html[dir="rtl"] .custom-navbar .main-menu {
+        flex-direction: row !important;
+        direction: rtl !important;
+    }
+
+    /* الأيقونات تتعكس */
+    html[dir="rtl"] .custom-navbar .site-actions {
+        flex-direction: row-reverse !important;
+    }
+
+    /* اللوجو يتعكس */
+    html[dir="rtl"] .custom-navbar .site-brand {
+        flex-direction: row-reverse !important;
+    }
+
+    /* الـ badge على الشمال في RTL */
+    html[dir="rtl"] .custom-navbar .icon-header-noti::after,
+    html[dir="rtl"] .custom-mobile-header .icon-header-noti::after {
+        left: -4px !important;
+        right: auto !important;
+    }
