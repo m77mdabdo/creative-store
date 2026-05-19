@@ -243,7 +243,8 @@ Route::group([
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/checkout', fn () => view('site.checkout.index'))->name('checkout.index');
+    // Checkout starts at the delivery step; guests are asked to sign in first.
+    Route::get('/checkout', fn () => redirect()->route('shipping.index'))->name('checkout.index');
 
     /*
     |--------------------------------------------------------------------------
