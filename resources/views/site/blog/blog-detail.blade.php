@@ -35,7 +35,7 @@
                     <article class="blog-main-card">
                         <div class="blog-cover-wrap">
                             <div class="blog-cover-frame">
-                                <img src="{{ $blog->image_url }}" alt="{{ $blog->title }}">
+                                <img src="{{ $blog->image_url }}" alt="{{ $blog->title }}" loading="lazy" decoding="async">
                             </div>
 
                             <div class="blog-date-badge flex-col-c-m">
@@ -103,7 +103,7 @@
                                         <div class="related-post-card">
                                             <div class="related-post-image">
                                                 <a href="{{ route('blog.show', $item->slug) }}">
-                                                    <img src="{{ $item->image_url }}" alt="{{ $item->title }}">
+                                                    <img src="{{ $item->image_url }}" alt="{{ $item->title }}" loading="lazy" decoding="async">
                                                 </a>
                                             </div>
 

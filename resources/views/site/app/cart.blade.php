@@ -48,7 +48,7 @@
 
                     <li class="header-cart-item flex-w flex-t m-b-12">
                         <div class="header-cart-item-img">
-                            <img src="{{ $imgUrl }}" alt="{{ $name }}">
+                            <img src="{{ $imgUrl }}" alt="{{ $name }}" loading="lazy" decoding="async">
                         </div>
 
                         <div class="header-cart-item-txt p-t-8">

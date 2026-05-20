@@ -118,7 +118,7 @@
                                     <tr class="table_row">
                                         <td class="column-1">
                                             <div class="how-itemcart1">
-                                                <img src="{{ $imgUrl }}" alt="{{ $name }}">
+                                                <img src="{{ $imgUrl }}" alt="{{ $name }}" loading="lazy" decoding="async">
                                             </div>
                                         </td>
 

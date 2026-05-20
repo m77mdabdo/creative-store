@@ -47,7 +47,7 @@
                                 @foreach($generalGallery as $img)
                                     <div class="item-slick3" data-thumb="{{ $img['thumb'] }}">
                                         <div class="product-image-frame">
-                                            <img src="{{ $img['url'] }}" alt="{{ $img['alt'] }}">
+                                            <img src="{{ $img['url'] }}" alt="{{ $img['alt'] }}" loading="lazy" decoding="async">
 
                                             <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04"
                                                href="{{ $img['url'] }}">
@@ -293,15 +293,15 @@
 
                                     <button type="submit" class="wishlist-circle-btn">
                                         @if($wishlistExists)
-                                            <img src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}" alt="wishlist">
+                                            <img src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}" alt="wishlist" loading="lazy" decoding="async">
                                         @else
-                                            <img src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" alt="wishlist">
+                                            <img src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" alt="wishlist" loading="lazy" decoding="async">
                                         @endif
                                     </button>
                                 </form>
                             @else
                                 <a href="{{ route('login') }}" class="wishlist-circle-btn">
-                                    <img src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" alt="wishlist">
+                                    <img src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" alt="wishlist" loading="lazy" decoding="async">
                                 </a>
                             @endauth
 
@@ -544,7 +544,7 @@
                     <div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15">
                         <div class="block2">
                             <div class="block2-pic hov-img0">
-                                <img src="{{ $rp['image'] }}" alt="{{ $rp['name'] }}">
+                                <img src="{{ $rp['image'] }}" alt="{{ $rp['name'] }}" loading="lazy" decoding="async">
 
                                 <a href="{{ route('products.show', $rp['slug']) }}"
                                    class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
@@ -567,9 +567,9 @@
                                 <div class="block2-txt-child2 flex-r p-t-3">
                                     <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
                                         <img class="icon-heart1 dis-block trans-04"
-                                             src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" alt="ICON">
+                                             src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" alt="ICON" loading="lazy" decoding="async">
                                         <img class="icon-heart2 dis-block trans-04 ab-t-l"
-                                             src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}" alt="ICON">
+                                             src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}" alt="ICON" loading="lazy" decoding="async">
                                     </a>
                                 </div>
                             </div>
@@ -693,7 +693,7 @@
                     dotsClass:    'slick3-dots',
                     customPaging: function (slick, index) {
                         const portrait = $(slick.$slides[index]).data('thumb');
-                        return '<img src="' + portrait + '"/><div class="slick3-dot-overlay"></div>';
+                        return '<img src="' + portrait + '" loading="lazy" decoding="async" /><div class="slick3-dot-overlay"></div>';
                     }
                 });
             });
@@ -717,7 +717,7 @@
                 return `
                     <div class="item-slick3" data-thumb="${thumb}">
                         <div class="product-image-frame">
-                            <img src="${url}" alt="${alt}">
+                            <img src="${url}" alt="${alt}" loading="lazy" decoding="async">
                             <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="${url}">
                                 <i class="fa fa-expand"></i>
                             </a>

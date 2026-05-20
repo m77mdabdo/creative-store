@@ -26,7 +26,7 @@
 
     <a href="{{ route('home') }}" class="cs-brand">
         <div class="cs-brand-logo">
-            <img src="{{ asset('cozastore/images/icons/creative-store-logo.png') }}" alt="Logo">
+            <img src="{{ asset('cozastore/images/icons/creative-store-logo.png') }}" alt="Creative Store" decoding="async">
         </div>
         <div class="cs-brand-text">
             <div class="cs-brand-name">Creative Store</div>

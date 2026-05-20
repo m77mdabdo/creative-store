@@ -165,7 +165,7 @@
                 <div class="col-sm-6 col-md-4 col-lg-3 p-b-30">
                     <div class="product-card">
                         <div class="product-card-media">
-                            <img src="{{ $img }}" alt="{{ $product->name }}">
+                            <img src="{{ $img }}" alt="{{ $product->name }}" loading="lazy" decoding="async">
 
                             <a href="{{ route('products.show', $product->slug) }}"
                                class="product-card-btn flex-c-m">

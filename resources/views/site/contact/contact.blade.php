@@ -60,7 +60,7 @@
 
                             <img class="how-pos4 pointer-none"
                                 src="{{ asset('cozastore/images/icons/icon-email.png') }}"
-                                alt="ICON">
+                                alt="ICON" loading="lazy" decoding="async">
                         </div>
 
                         <div class="bor8 m-b-20">

@@ -5,7 +5,7 @@
 
         <div class="footer-logo">
             <a href="{{ url('/') }}">
-                <img src="{{ asset('cozastore/images/icons/logo-01.png') }}" alt="LOGO">
+                <img src="{{ asset('cozastore/images/icons/logo-01.png') }}" alt="Creative Store" decoding="async">
             </a>
         </div>
 

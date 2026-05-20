@@ -70,7 +70,7 @@
                         <tr class="table_row">
                             <td class="column-1">
                                 <div class="how-itemcart1">
-                                    <img src="{{ $image }}" alt="{{ $productName }}">
+                                    <img src="{{ $image }}" alt="{{ $productName }}" loading="lazy" decoding="async">
                                 </div>
                             </td>
 

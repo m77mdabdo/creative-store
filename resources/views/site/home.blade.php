@@ -63,7 +63,7 @@
                                     @method('DELETE')
 
                                     <button type="submit" style="all:unset;cursor:pointer;">
-                                        <img src="{{ $imgUrl }}" alt="{{ $name }}">
+                                        <img src="{{ $imgUrl }}" alt="{{ $name }}" loading="lazy" decoding="async">
                                     </button>
                                 </form>
                             </div>
@@ -180,7 +180,7 @@
             <div class="row">
                 <div class="col-md-6 col-xl-4 p-b-30 m-lr-auto">
                     <div class="block1 wrap-pic-w">
-                        <img src="{{ asset('cozastore/images/banner-01.jpg') }}" alt="{{ __('site.women') }}">
+                        <img src="{{ asset('cozastore/images/banner-01.jpg') }}" alt="{{ __('site.women') }}" loading="lazy" decoding="async">
 
                         <a href="{{ route('products.index') }}"
                            class="block1-txt ab-t-l s-full flex-col-l-sb p-lr-38 p-tb-34 trans-03 respon3">
@@ -205,7 +205,7 @@
 
                 <div class="col-md-6 col-xl-4 p-b-30 m-lr-auto">
                     <div class="block1 wrap-pic-w">
-                        <img src="{{ asset('cozastore/images/banner-02.jpg') }}" alt="{{ __('site.men') }}">
+                        <img src="{{ asset('cozastore/images/banner-02.jpg') }}" alt="{{ __('site.men') }}" loading="lazy" decoding="async">
 
                         <a href="{{ route('products.index') }}"
                            class="block1-txt ab-t-l s-full flex-col-l-sb p-lr-38 p-tb-34 trans-03 respon3">
@@ -230,7 +230,7 @@
 
                 <div class="col-md-6 col-xl-4 p-b-30 m-lr-auto">
                     <div class="block1 wrap-pic-w">
-                        <img src="{{ asset('cozastore/images/banner-03.jpg') }}" alt="{{ __('site.accessories') }}">
+                        <img src="{{ asset('cozastore/images/banner-03.jpg') }}" alt="{{ __('site.accessories') }}" loading="lazy" decoding="async">
 
                         <a href="{{ route('products.index') }}"
                            class="block1-txt ab-t-l s-full flex-col-l-sb p-lr-38 p-tb-34 trans-03 respon3">
@@ -471,15 +471,15 @@
 
                                                 <button type="submit" style="background:none;border:none;padding:0;cursor:pointer">
                                                     @if ($wishlistExists)
-                                                        <img src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}" style="width:20px" alt="wishlist">
+                                                        <img src="{{ asset('cozastore/images/icons/icon-heart-02.png') }}" style="width:20px" alt="wishlist" loading="lazy" decoding="async">
                                                     @else
-                                                        <img src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" style="width:20px" alt="wishlist">
+                                                        <img src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" style="width:20px" alt="wishlist" loading="lazy" decoding="async">
                                                     @endif
                                                 </button>
                                             </form>
                                         @else
                                             <a href="{{ route('login') }}">
-                                                <img src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" style="width:20px" alt="wishlist">
+                                                <img src="{{ asset('cozastore/images/icons/icon-heart-01.png') }}" style="width:20px" alt="wishlist" loading="lazy" decoding="async">
                                             </a>
                                         @endauth
                                     </div>
@@ -532,8 +532,7 @@
                                     <img
                                         src="{{ $blog->image_url }}"
                                         alt="{{ $blog->title }}"
-                                        class="blog-card-image"
-                                    >
+                                        class="blog-card-image" loading="lazy" decoding="async">
 
                                     <span class="blog-date-badge">
                                         {{ optional($blog->published_at ?? $blog->created_at)->format('d M') }}
@@ -639,7 +638,7 @@
             <div class="col-11 col-md-5 col-lg-4 m-lr-auto">
                 <div class="how-bor1">
                     <div class="hov-img0 about-image-box">
-    <img src="{{ $image1Url }}" alt="About Image 1" class="about-image">
+    <img src="{{ $image1Url }}" alt="About Image 1" class="about-image" loading="lazy" decoding="async">
 </div>
                 </div>
             </div>
@@ -675,7 +674,7 @@
             <div class="order-md-1 col-11 col-md-5 col-lg-4 m-lr-auto p-b-30">
                 <div class="how-bor2">
                    <div class="hov-img0 about-image-box">
-    <img src="{{ $image2Url }}" alt="About Image 2" class="about-image">
+    <img src="{{ $image2Url }}" alt="About Image 2" class="about-image" loading="lazy" decoding="async">
 </div>
                 </div>
             </div>
@@ -748,7 +747,7 @@
 
                         <img class="how-pos4 pointer-none"
                             src="{{ asset('cozastore/images/icons/icon-email.png') }}"
-                            alt="ICON">
+                            alt="ICON" loading="lazy" decoding="async">
                     </div>
 
                     <div class="bor8 m-b-20">
