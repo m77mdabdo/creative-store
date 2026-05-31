@@ -13,6 +13,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\ShippingRate;
 use App\Models\User;
+use App\Services\Coupons\CouponRedemptionService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -21,6 +22,11 @@ class CheckoutService
     private const CURRENCY = 'SAR';
 
     private const PRICE_TOLERANCE = 0.01;
+
+    public function __construct(
+        private readonly CouponRedemptionService $coupons,
+    ) {
+    }
 
     /**
      * Create a pending order from the session cart.
@@ -31,6 +37,7 @@ class CheckoutService
      *
      * @param  array<string, array<string, mixed>>  $cart
      * @param  array<string, float>  $totals
+     * @param  array<int, float>  $couponDiscounts  coupon id => discount applied in the cart
      */
     public function placeOrder(
         User $user,
@@ -40,12 +47,13 @@ class CheckoutService
         array $cart,
         array $totals,
         ?int $couponId,
+        array $couponDiscounts = [],
     ): Order {
         if ($cart === []) {
             throw new CheckoutException(__('Your cart is empty.'));
         }
 
-        return DB::transaction(function () use ($user, $address, $rate, $shippingMethodId, $cart, $totals, $couponId) {
+        return DB::transaction(function () use ($user, $address, $rate, $shippingMethodId, $cart, $totals, $couponId, $couponDiscounts) {
             $lines = $this->priceLines($cart);
 
             $subtotal = round(array_sum(array_column($lines, 'line_subtotal')), 2);
@@ -82,6 +90,8 @@ class CheckoutService
             ]);
 
             $this->snapshotAddress($order, $address);
+
+            $this->coupons->redeem($order, $couponDiscounts);
 
             foreach ($lines as $line) {
                 $line['variant']?->decrement('stock', $line['quantity']);
