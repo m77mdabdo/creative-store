@@ -7,6 +7,7 @@ use App\Jobs\SendOrderCancelledNotificationJob;
 use App\Models\Order;
 use App\Models\OrderStatusLog;
 use App\Models\ReturnRequest;
+use App\Services\Coupons\CouponRedemptionService;
 use App\Services\Payments\RefundService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
@@ -18,7 +19,8 @@ use RuntimeException;
 class OrderController extends Controller
 {
     public function __construct(
-        protected RefundService $refundService
+        protected RefundService $refundService,
+        protected CouponRedemptionService $coupons,
     ) {}
 
     public function index(): View
@@ -72,7 +74,14 @@ class OrderController extends Controller
         try {
             $wasPaidOnline = false;
 
-            DB::transaction(function () use ($order, &$wasPaidOnline) {
+            DB::transaction(function () use (&$order, &$wasPaidOnline) {
+                // Re-read under lock: two cancel clicks must not restore stock twice.
+                $order = Order::query()->lockForUpdate()->findOrFail($order->id);
+
+                if ($order->status === 'cancelled') {
+                    throw new RuntimeException('Order already cancelled.');
+                }
+
                 $order->loadMissing([
                     'items.variant',
                     'latestPayment',
@@ -115,6 +124,8 @@ class OrderController extends Controller
                         $item->variant->increment('stock', (int) $item->quantity);
                     }
                 }
+
+                $this->coupons->release($order);
 
                 OrderStatusLog::create([
                     'order_id'    => $order->id,

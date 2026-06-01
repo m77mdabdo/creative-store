@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Order;
 use App\Models\OrderStatusLog;
+use App\Services\Coupons\CouponRedemptionService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -16,8 +17,12 @@ class ExpireUnpaidOrdersCommand extends Command
 
     protected $description = 'Cancel unpaid online orders and release their stock';
 
-    public function handle(): int
+    private CouponRedemptionService $coupons;
+
+    public function handle(CouponRedemptionService $coupons): int
     {
+        $this->coupons = $coupons;
+
         $cutoff = now()->subMinutes(max(15, (int) $this->option('minutes')));
         $expired = 0;
 
@@ -49,6 +54,8 @@ class ExpireUnpaidOrdersCommand extends Command
             foreach ($order->items as $item) {
                 $item->variant?->increment('stock', (int) $item->quantity);
             }
+
+            $this->coupons->release($order);
 
             $order->update([
                 'status'              => 'cancelled',

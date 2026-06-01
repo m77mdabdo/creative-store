@@ -15,6 +15,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
+use App\Services\Coupons\CouponRedemptionService;
 use App\Services\Payments\RefundService;
 use RuntimeException;
 
@@ -355,11 +356,20 @@ public function cancel(CancelOrderRequest $request, Order $order): RedirectRespo
         : null;
 
     try {
-        DB::transaction(function () use ($order, $reason, $refundIfPaid, $refundAmount) {
-            $order->loadMissing([
+        DB::transaction(function () use (&$order, $reason, $refundIfPaid, $refundAmount) {
+            // Re-read under lock so a second click cannot cancel (and restock) twice.
+            $order = Order::query()->lockForUpdate()->findOrFail($order->id);
+
+            if ($order->status === 'cancelled') {
+                throw new RuntimeException('Order is already cancelled.');
+            }
+
+            $order->load([
                 'items',
                 'payments' => fn ($q) => $q->latest('id'),
             ]);
+
+            $previousStatus = $order->status;
 
             // 1) Cancel order
             $order->update([
@@ -372,13 +382,16 @@ public function cancel(CancelOrderRequest $request, Order $order): RedirectRespo
             // 2) Log status change
             OrderStatusLog::create([
                 'order_id' => $order->id,
-                'from_status' => $order->getOriginal('status') ?: 'unknown',
+                'from_status' => $previousStatus,
                 'to_status' => 'cancelled',
                 'changed_by' => auth()->id(),
                 'note' => 'Order cancelled from dashboard. Reason: ' . $reason,
             ]);
 
-            // 3) Create return request
+            // 3) Give back the coupon uses this order consumed (stock is restored in step 6)
+            app(CouponRedemptionService::class)->release($order);
+
+            // 4) Create return request
             $returnRequest = ReturnRequest::create([
                 'order_id' => $order->id,
                 'user_id' => $order->user_id,
