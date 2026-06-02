@@ -46,21 +46,26 @@ class ReviewController extends Controller
         }
 
 
-        Review::create([
+        try {
+            Review::create([
 
-            'product_id' => $product->id,
+                'product_id' => $product->id,
 
-            'user_id' => Auth::id(),
+                'user_id' => Auth::id(),
 
-            'rating' => $validated['rating'],
+                'rating' => $validated['rating'],
 
-            'title' => $validated['title'] ?? null,
+                'title' => $validated['title'] ?? null,
 
-            'comment' => $validated['comment'],
+                'comment' => $validated['comment'],
 
-            'is_approved' => true,
+                'is_approved' => true,
 
-        ]);
+            ]);
+        } catch (\Illuminate\Database\UniqueConstraintViolationException) {
+            // A second, simultaneous submit hit the (product_id, user_id) unique index.
+            return back()->with('error', 'You already submitted a review for this product.');
+        }
         app(\App\Services\Dashboard\DashboardStatsService::class)->clear();
 
 

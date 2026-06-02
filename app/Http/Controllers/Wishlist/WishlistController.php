@@ -7,6 +7,7 @@ use App\Models\Wishlist;
 use App\Models\WishlistItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class WishlistController extends Controller
 {
@@ -40,32 +41,37 @@ class WishlistController extends Controller
             'variant_id' => ['nullable', 'exists:product_variants,id'],
         ]);
 
-        $wishlist = Wishlist::firstOrCreate([
-            'user_id' => Auth::id()
-        ]);
+        $wishlist = Wishlist::createOrFirst(['user_id' => Auth::id()]);
+        $variantId = $request->filled('variant_id') ? (int) $request->variant_id : null;
 
-        $query = WishlistItem::where('wishlist_id', $wishlist->id)
-            ->where('product_id', $request->product_id);
+        // Lock the customer's wishlist row so a double click toggles once, not twice.
+        $added = DB::transaction(function () use ($wishlist, $request, $variantId) {
+            Wishlist::query()->whereKey($wishlist->id)->lockForUpdate()->first();
 
-        if ($request->filled('variant_id')) {
-            $query->where('variant_id', $request->variant_id);
-        } else {
-            $query->whereNull('variant_id');
-        }
+            $item = WishlistItem::query()
+                ->where('wishlist_id', $wishlist->id)
+                ->where('product_id', $request->product_id)
+                ->when($variantId, fn ($q) => $q->where('variant_id', $variantId), fn ($q) => $q->whereNull('variant_id'))
+                ->first();
 
-        $item = $query->first();
+            if ($item) {
+                $item->delete();
 
-        if ($item) {
-            $item->delete();
+                return false;
+            }
 
+            WishlistItem::create([
+                'wishlist_id' => $wishlist->id,
+                'product_id'  => $request->product_id,
+                'variant_id'  => $variantId,
+            ]);
+
+            return true;
+        });
+
+        if (! $added) {
             return back()->with('success', 'Removed from wishlist');
         }
-
-        WishlistItem::create([
-            'wishlist_id' => $wishlist->id,
-            'product_id' => $request->product_id,
-            'variant_id' => $request->filled('variant_id') ? $request->variant_id : null,
-        ]);
 
         return back()->with('success', 'Added to wishlist');
     }
