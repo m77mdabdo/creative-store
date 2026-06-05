@@ -6,83 +6,101 @@ use App\Mail\AbandonedCartRecoveryMail;
 use App\Models\AbandonedCartRecovery;
 use App\Models\Cart;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
+/**
+ * Emails customers about carts they left behind.
+ *
+ * Works in bounded batches so the run time and memory stay flat no matter
+ * how many carts exist: only carts abandoned in the recent window are
+ * scanned, those already contacted are excluded in SQL, and each run
+ * handles at most MAX_PER_RUN carts.
+ */
 class ProcessAbandonedCarts implements ShouldQueue
 {
     use Queueable;
 
+    private const ABANDONED_AFTER_HOURS = 24;
+
+    private const LOOKBACK_DAYS = 7;
+
+    private const BATCH_SIZE = 200;
+
+    private const MAX_PER_RUN = 1000;
+
     public function handle(): void
     {
-        $abandonedThreshold = now()->subHours(24);
+        $this->expireOldRecoveries();
 
-        $carts = Cart::query()
-            ->with([
-                'user:id,name,email',
-                'items.product:id,status',
+        $processed = 0;
+
+        Cart::query()
+            ->select(['id', 'user_id', 'session_id', 'updated_at'])
+            ->whereNotNull('user_id')
+            ->whereBetween('updated_at', [
+                now()->subDays(self::LOOKBACK_DAYS),
+                now()->subHours(self::ABANDONED_AFTER_HOURS),
             ])
-            ->where('updated_at', '<', $abandonedThreshold)
             ->whereHas('items')
-            ->get();
+            ->whereNotExists(fn (QueryBuilder $q) => $q
+                ->selectRaw('1')
+                ->from('abandoned_cart_recoveries')
+                ->whereColumn('abandoned_cart_recoveries.cart_id', 'carts.id')
+                ->whereIn('abandoned_cart_recoveries.status', ['pending', 'sent', 'recovered']))
+            ->with(['user:id,name,email'])
+            ->withCount('items')
+            ->chunkById(self::BATCH_SIZE, function ($carts) use (&$processed) {
+                foreach ($carts as $cart) {
+                    $this->notify($cart);
 
-        foreach ($carts as $cart) {
-            $email = $cart->user?->email;
+                    if (++$processed >= self::MAX_PER_RUN) {
+                        return false;
+                    }
+                }
+            });
+    }
 
-            if (!$email) {
-                continue;
-            }
+    private function notify(Cart $cart): void
+    {
+        $email = $cart->user?->email;
 
-            $alreadyRecoveredOrSent = AbandonedCartRecovery::query()
-                ->where('cart_id', $cart->id)
-                ->whereIn('status', ['pending', 'sent', 'recovered'])
-                ->where(function ($q) {
-                    $q->whereNull('expires_at')
-                      ->orWhere('expires_at', '>=', now());
-                })
-                ->exists();
-
-            if ($alreadyRecoveredOrSent) {
-                continue;
-            }
-
-            $recovery = AbandonedCartRecovery::create([
-                'cart_id'            => $cart->id,
-                'user_id'            => $cart->user_id,
-                'email'              => $email,
-                'session_id'         => $cart->session_id,
-                'channel'            => 'email',
-                'status'             => 'pending',
-                'recovery_token'     => Str::uuid() . '-' . Str::random(2),
-                'cart_abandoned_at'  => $cart->updated_at,
-                'expires_at'         => now()->addDays(3),
-                'meta'               => [
-                    'items_count' => $cart->items->count(),
-                ],
-            ]);
-
-            try {
-                Mail::to($email)->send(new AbandonedCartRecoveryMail($recovery));
-
-                $recovery->update([
-                    'status'  => 'sent',
-                    'sent_at' => now(),
-                ]);
-            } catch (\Throwable $e) {
-                $recovery->update([
-                    'status' => 'failed',
-                    'note'   => $e->getMessage(),
-                ]);
-            }
+        if (! $email) {
+            return;
         }
 
+        $recovery = AbandonedCartRecovery::create([
+            'cart_id'           => $cart->id,
+            'user_id'           => $cart->user_id,
+            'email'             => $email,
+            'session_id'        => $cart->session_id,
+            'channel'           => 'email',
+            'status'            => 'pending',
+            'recovery_token'    => Str::random(64),
+            'cart_abandoned_at' => $cart->updated_at,
+            'expires_at'        => now()->addDays(3),
+            'meta'              => ['items_count' => $cart->items_count],
+        ]);
+
+        try {
+            Mail::to($email)->send(new AbandonedCartRecoveryMail($recovery));
+
+            $recovery->update(['status' => 'sent', 'sent_at' => now()]);
+        } catch (\Throwable $e) {
+            report($e);
+
+            $recovery->update(['status' => 'failed', 'note' => mb_substr($e->getMessage(), 0, 500)]);
+        }
+    }
+
+    private function expireOldRecoveries(): void
+    {
         AbandonedCartRecovery::query()
             ->whereIn('status', ['pending', 'sent'])
             ->whereNotNull('expires_at')
             ->where('expires_at', '<', now())
-            ->update([
-                'status' => 'expired',
-            ]);
+            ->update(['status' => 'expired']);
     }
 }
