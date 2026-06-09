@@ -51,13 +51,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
                 $trace = $e->getTraceAsString();
 
-                $duplicate = ErrorLog::query()
-                    ->where('message', $message)
-                    ->where('service', 'application')
-                    ->where('created_at', '>=', now()->subMinutes(2))
-                    ->first();
-
-                if ($duplicate) {
+                // Store each distinct error at most once every two minutes.
+                // Cache::add is atomic, so a burst of identical failures writes one row.
+                if (! \Illuminate\Support\Facades\Cache::add('error-log:' . sha1($message . '|' . $e->getFile() . ':' . $e->getLine()), true, 120)) {
                     return;
                 }
 
@@ -86,6 +82,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('carts:process-abandoned')->everyFiveMinutes()->withoutOverlapping();
 
         $schedule->command('orders:expire-unpaid')->everyFifteenMinutes()->withoutOverlapping();
+
+        $schedule->command('model:prune')->dailyAt('03:30')->withoutOverlapping();
 
         $schedule->command('backup:run scheduled --cleanup-days=' . (int) config('backup.retention_days', 30))
             ->cron('0 */12 * * *')

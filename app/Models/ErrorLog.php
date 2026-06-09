@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Traits\Auditable;
 
 
 class ErrorLog extends Model
 {
 
-      use HasFactory , Auditable ;
+      use HasFactory, MassPrunable;
 
     protected $fillable = [
         'level','service','message','context','trace','resolved_at'
@@ -20,4 +21,12 @@ class ErrorLog extends Model
         'context' => 'array',
         'resolved_at' => 'datetime',
     ];
+
+    /**
+     * Rows older than the retention window are deleted by `model:prune`.
+     */
+    public function prunable(): Builder
+    {
+        return static::query()->where('created_at', '<', now()->subDays(180));
+    }
 }
