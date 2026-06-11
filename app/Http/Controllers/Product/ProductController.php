@@ -14,6 +14,8 @@ use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
+    private const REVIEWS_ON_PAGE = 20;
+
     public function index(Request $request)
     {
         $request->validate([
@@ -262,13 +264,19 @@ class ProductController extends Controller
                                 ->orWhere('expires_at', '>=', now());
                         });
                 },
-                'reviews' => function ($q) {
-                    $q->where('is_approved', true)
-                        ->with('user:id,name')
-                        ->latest();
-                },
             ])
+            ->withCount(['reviews as approved_reviews_count' => fn ($q) => $q->where('is_approved', true)])
+            ->withAvg(['reviews as approved_reviews_avg' => fn ($q) => $q->where('is_approved', true)], 'rating')
             ->firstOrFail();
+
+        // Show the latest reviews only; totals come from the aggregate above,
+        // so a product with thousands of reviews stays a single small query.
+        $latestReviews = $product->reviews()
+            ->where('is_approved', true)
+            ->with('user:id,name')
+            ->latest('id')
+            ->limit(self::REVIEWS_ON_PAGE)
+            ->get();
 
         $fallbackMain    = asset('cozastore/images/product-detail-01.jpg');
         $fallbackThumb   = asset('cozastore/images/product-detail-02.jpg');
@@ -449,7 +457,7 @@ class ProductController extends Controller
             ->values()
             ->all();
 
-        $reviews = ($product->reviews ?? collect())
+        $reviews = $latestReviews
             ->map(function ($review) {
                 return [
                     'user_name' => $review->user->name ?? 'مستخدم',
@@ -461,8 +469,8 @@ class ProductController extends Controller
             ->values()
             ->all();
 
-        $reviewsCount  = count($reviews);
-        $averageRating = $reviewsCount > 0 ? round(collect($reviews)->avg('rating'), 1) : 0;
+        $reviewsCount  = (int) $product->approved_reviews_count;
+        $averageRating = $reviewsCount > 0 ? round((float) $product->approved_reviews_avg, 1) : 0;
 
         $wishlistExists = false;
         if (auth()->check()) {
