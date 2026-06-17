@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
+use App\Services\Catalog\ProductCatalogService;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
 use App\Models\Category;
@@ -104,10 +105,10 @@ class ProductController extends Controller
         $productsQuery->when($request->filled('q'), function ($q) use ($request, $locale, $fallback) {
             $term = trim($request->string('q')->toString());
 
-            $q->whereHas('translations', function ($t) use ($term, $locale, $fallback) {
-                $t->whereIn('locale', [$locale, $fallback])
-                    ->where('name', 'like', "%{$term}%");
-            });
+            $q->whereHas('translations', fn ($t) => ProductCatalogService::searchName(
+                $t->whereIn('locale', [$locale, $fallback]),
+                $term,
+            ));
         });
 
         $productsQuery->when(

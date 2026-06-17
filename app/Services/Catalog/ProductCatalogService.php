@@ -120,9 +120,10 @@ class ProductCatalogService
             ->when($filters['category'] ?? null, fn (Builder $q, $slug) => $q
                 ->whereHas('category', fn (Builder $c) => $c->where('slug', $slug)))
             ->when(filled($filters['q'] ?? null), fn (Builder $q) => $q
-                ->whereHas('translations', fn (Builder $t) => $t
-                    ->whereIn('locale', [$locale, $fallback])
-                    ->where('name', 'like', '%' . addcslashes(trim($filters['q']), '%_\\') . '%')))
+                ->whereHas('translations', fn (Builder $t) => self::searchName(
+                    $t->whereIn('locale', [$locale, $fallback]),
+                    $filters['q'],
+                )))
             ->when(isset($filters['min']), fn (Builder $q) => $q->where('base_price', '>=', (float) $filters['min']))
             ->when(isset($filters['max']), fn (Builder $q) => $q->where('base_price', '<=', (float) $filters['max']));
 
@@ -141,6 +142,25 @@ class ProductCatalogService
             'price_desc' => $query->orderByDesc('base_price')->latest(),
             default      => $query->latest(),
         };
+    }
+
+    /**
+     * Match product names using the FULLTEXT index on MySQL (fast at any
+     * catalogue size) and fall back to LIKE for short terms or other drivers.
+     */
+    public static function searchName(Builder $translations, string $term): Builder
+    {
+        $term = trim($term);
+        $words = array_filter(preg_split('/\s+/u', preg_replace('/[+\-<>()~*"@]+/u', ' ', $term)));
+        $longEnough = $words !== [] && min(array_map('mb_strlen', $words)) >= 3;
+
+        if ($longEnough && $translations->getConnection()->getDriverName() === 'mysql') {
+            $query = implode(' ', array_map(fn ($w) => '+' . $w . '*', $words));
+
+            return $translations->whereFullText('name', $query, ['mode' => 'boolean']);
+        }
+
+        return $translations->where('name', 'like', '%' . addcslashes($term, '%_\\') . '%');
     }
 
     public static function translated($translations, string $field, string $locale, string $fallback, ?string $default = null): ?string
