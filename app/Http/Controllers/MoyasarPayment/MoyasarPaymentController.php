@@ -78,13 +78,17 @@ class MoyasarPaymentController extends Controller
 
         $payload = $request->except('secret_token');
 
-        $log = PaymentWebhookLog::create([
-            'gateway'    => 'moyasar',
-            'event_id'   => data_get($payload, 'id'),
-            'event_type' => data_get($payload, 'type'),
-            'payload'    => $payload,
-            'processed'  => false,
-        ]);
+        // Moyasar retries a webhook until it gets a 2xx. The (gateway, event_id)
+        // unique index makes redelivery idempotent: a processed event is acknowledged
+        // without running again, an unprocessed one is retried.
+        $log = PaymentWebhookLog::query()->createOrFirst(
+            ['gateway' => 'moyasar', 'event_id' => data_get($payload, 'id')],
+            ['event_type' => data_get($payload, 'type'), 'payload' => $payload, 'processed' => false],
+        );
+
+        if ($log->processed) {
+            return response()->json(['message' => 'already processed']);
+        }
 
         $remote = MoyasarPayment::fromArray((array) data_get($payload, 'data', []));
 
