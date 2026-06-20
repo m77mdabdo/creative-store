@@ -40,7 +40,7 @@
                     <div class="row">
                         @forelse($generalImages as $image)
                             <div class="col-md-2 mb-3">
-                                <img src="{{ asset('storage/' . $image->path) }}" class="img-fluid rounded border mb-2" alt="">
+                                <img src="{{ media_url($image->path) }}" class="img-fluid rounded border mb-2" alt="">
                                 <div class="mb-2">
                                     <form action="{{ route('dashboard.products.images.set-primary', [$product, $image]) }}" method="POST" class="d-inline">
                                         @csrf
@@ -94,7 +94,7 @@
                                     <div class="col-md-2 mb-3">
                                         @php
     $img = $image->path
-        ? Storage::url($image->path)
+        ? media_url($image->path)
         : asset('cozastore/images/product-01.jpg');
 @endphp
 

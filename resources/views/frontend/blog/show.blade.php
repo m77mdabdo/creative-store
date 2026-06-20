@@ -11,7 +11,7 @@
 
     @if($blog->image)
         <div class="mb-4">
-            <img src="{{ asset('storage/' . $blog->image) }}"
+            <img src="{{ media_url($blog->image) }}"
                  style="width:100%; max-height:400px; object-fit:cover;" loading="lazy" decoding="async">
         </div>
     @endif

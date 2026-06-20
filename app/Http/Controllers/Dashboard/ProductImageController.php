@@ -9,7 +9,6 @@ use App\Models\ProductImage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProductImageController extends Controller
@@ -37,7 +36,7 @@ class ProductImageController extends Controller
             $sortOrder = (int) $product->images()->whereNull('variant_id')->max('sort_order');
 
             foreach ($request->file('images', []) as $index => $file) {
-                $path = $file->store('products/general');
+                $path = $file->store('products/general', config('filesystems.media_disk'));
 
                 $product->images()->create([
                     'variant_id' => null,
@@ -83,8 +82,8 @@ class ProductImageController extends Controller
     {
         abort_unless($image->product_id === $product->id, 404);
 
-        if ($image->path && Storage::exists($image->path)) {
-            Storage::delete($image->path);
+        if ($image->path && media_disk()->exists($image->path)) {
+            media_disk()->delete($image->path);
         }
 
         $image->delete();

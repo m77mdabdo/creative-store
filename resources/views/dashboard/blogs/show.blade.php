@@ -32,7 +32,7 @@
                         <div class="mb-4">
                            @php
     $img = $blog->image
-        ? Storage::url($blog->image)
+        ? media_url($blog->image)
         : asset('cozastore/images/product-01.jpg');
 @endphp
 

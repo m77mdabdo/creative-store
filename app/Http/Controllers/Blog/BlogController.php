@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use App\Models\BlogCategory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
@@ -141,6 +140,6 @@ class BlogController extends Controller
             return asset($path);
         }
 
-        return Storage::url($path);
+        return media_url($path);
     }
 }

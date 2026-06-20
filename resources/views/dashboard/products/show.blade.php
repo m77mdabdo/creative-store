@@ -100,7 +100,7 @@
                                         <div class="col-6 mb-3">
                                           @php
     $img = $image->path
-        ? Storage::url($image->path)
+        ? media_url($image->path)
         : asset('cozastore/images/product-01.jpg');
 @endphp
 

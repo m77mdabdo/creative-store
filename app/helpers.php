@@ -36,3 +36,37 @@ if (! function_exists('versioned_asset')) {
         return asset($path) . ($versions[$path] ? '?v=' . $versions[$path] : '');
     }
 }
+
+if (! function_exists('media_disk')) {
+    /**
+     * The filesystem disk that stores publicly served media.
+     */
+    function media_disk(): \Illuminate\Contracts\Filesystem\Filesystem
+    {
+        return \Illuminate\Support\Facades\Storage::disk(config('filesystems.media_disk', 'public'));
+    }
+}
+
+if (! function_exists('media_url')) {
+    /**
+     * Public URL for a stored media path; absolute URLs are returned as-is.
+     */
+    function media_url(?string $path, ?string $fallback = null): ?string
+    {
+        $path = trim((string) $path);
+
+        if ($path === '') {
+            return $fallback;
+        }
+
+        if (preg_match('#^https?://#i', $path)) {
+            return $path;
+        }
+
+        if (str_starts_with($path, 'storage/')) {
+            return asset($path);
+        }
+
+        return media_disk()->url($path);
+    }
+}

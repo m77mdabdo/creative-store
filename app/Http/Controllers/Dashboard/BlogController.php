@@ -10,7 +10,6 @@ use App\Models\Blog;
 use App\Models\BlogCategory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class BlogController extends Controller
@@ -91,7 +90,7 @@ class BlogController extends Controller
         $data['views'] = 0;
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('blogs');
+            $data['image'] = $request->file('image')->store('blogs', config('filesystems.media_disk'));
         }
 
         $blog = Blog::create($data);
@@ -130,11 +129,11 @@ class BlogController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
-            if ($blog->image && Storage::exists($blog->image)) {
-                Storage::delete($blog->image);
+            if ($blog->image && media_disk()->exists($blog->image)) {
+                media_disk()->delete($blog->image);
             }
 
-            $data['image'] = $request->file('image')->store('blogs');
+            $data['image'] = $request->file('image')->store('blogs', config('filesystems.media_disk'));
         }
 
         $blog->update($data);
@@ -174,8 +173,8 @@ class BlogController extends Controller
                 ->with('error', 'Cannot delete this blog because it has comments.');
         }
 
-        if ($blog->image && Storage::exists($blog->image)) {
-            Storage::delete($blog->image);
+        if ($blog->image && media_disk()->exists($blog->image)) {
+            media_disk()->delete($blog->image);
         }
 
         $title = $blog->title;

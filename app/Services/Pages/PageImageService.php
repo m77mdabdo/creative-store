@@ -3,7 +3,6 @@
 namespace App\Services\Pages;
 
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 
 class PageImageService
 {
@@ -13,15 +12,15 @@ class PageImageService
             return $oldPath;
         }
 
-        $newPath = $file->store($directory);
+        $newPath = $file->store($directory, config('filesystems.media_disk'));
 
         if (
             $oldPath &&
             ! $this->isExternalUrl($oldPath) &&
             ! $this->isAssetPath($oldPath) &&
-            Storage::exists($oldPath)
+            media_disk()->exists($oldPath)
         ) {
-            Storage::delete($oldPath);
+            media_disk()->delete($oldPath);
         }
 
         return $newPath;
@@ -33,9 +32,9 @@ class PageImageService
             $path &&
             ! $this->isExternalUrl($path) &&
             ! $this->isAssetPath($path) &&
-            Storage::exists($path)
+            media_disk()->exists($path)
         ) {
-            Storage::delete($path);
+            media_disk()->delete($path);
         }
     }
 
@@ -53,7 +52,7 @@ class PageImageService
             return asset($path);
         }
 
-        return Storage::url($path);
+        return media_url($path);
     }
 
     private function isExternalUrl(string $path): bool

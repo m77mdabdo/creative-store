@@ -52,7 +52,7 @@
                             } elseif (str_starts_with($image, 'http')) {
                                 $imgUrl = $image;
                             } else {
-                                $imgUrl = Storage::url($image);
+                                $imgUrl = media_url($image);
                             }
                         @endphp
 
@@ -433,7 +433,7 @@
                     @foreach ($products as $product)
                         @php
                             $img = $product->primaryImage?->path
-                                ? Storage::url($product->primaryImage->path)
+                                ? media_url($product->primaryImage->path)
                                 : asset('cozastore/images/product-01.jpg');
 
                             $wishlistExists = isset($wishlistedProducts[$product->id]);
@@ -593,11 +593,11 @@
 
    $image1Url = str_starts_with($image1, 'images/')
     ? asset($image1)
-    : Storage::url($image1);
+    : media_url($image1);
 
    $image2Url = str_starts_with($image2, 'images/')
     ? asset($image2)
-    : Storage::url($image2);
+    : media_url($image2);
 @endphp
 
 <section class="bg0 p-t-90 p-b-30">

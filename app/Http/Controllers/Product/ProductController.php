@@ -10,7 +10,6 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\WishlistItem;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
@@ -598,7 +597,7 @@ class ProductController extends Controller
             return $path;
         }
 
-        return Storage::url($path);
+        return media_url($path);
     }
 
     protected function extractVariantOptionData($variant): array

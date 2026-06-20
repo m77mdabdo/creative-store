@@ -88,7 +88,7 @@
                                         } elseif (str_starts_with($image, '/')) {
                                             $imgUrl = $image;
                                         } else {
-                                            $imgUrl = Storage::url($image);
+                                            $imgUrl = media_url($image);
                                         }
 
                                         $safeKey = md5((string) $key);

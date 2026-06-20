@@ -7,7 +7,6 @@ use App\Models\Blog;
 use App\Services\Catalog\ProductCatalogService;
 use App\Services\Content\PageContentService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class HomeController extends Controller
@@ -75,7 +74,7 @@ class HomeController extends Controller
             $path === ''                       => $fallback,
             str_starts_with($path, 'http')     => $path,
             str_starts_with($path, 'storage/') => asset($path),
-            default                            => Storage::url($path),
+            default                            => media_url($path),
         };
     }
 

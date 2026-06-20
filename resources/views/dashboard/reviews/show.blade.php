@@ -75,7 +75,7 @@
                         <div class="card-body">
                             @if($review->product?->primaryImage)
                                 <div class="mb-3">
-                                    <img src="{{ asset('storage/' . $review->product->primaryImage->path) }}" class="img-fluid rounded border" alt="">
+                                    <img src="{{ media_url($review->product->primaryImage->path) }}" class="img-fluid rounded border" alt="">
                                 </div>
                             @endif
 

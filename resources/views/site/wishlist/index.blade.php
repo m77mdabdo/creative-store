@@ -57,9 +57,9 @@
                             $productName = $translation->name ?? $product->name ?? ('Product #' . $product->id);
 
                             $image = ($variant && !empty($variant->image))
-                                ? asset('storage/' . $variant->image)
+                                ? media_url($variant->image)
                                 : (($product?->primaryImage?->path)
-                                    ? \Illuminate\Support\Facades\Storage::url($product->primaryImage->path)
+                                    ? media_url($product->primaryImage->path)
                                     : asset('cozastore/images/product-01.jpg'));
 
                             $price = $variant?->price ?? $product?->base_price ?? 0;

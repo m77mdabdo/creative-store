@@ -158,7 +158,7 @@
             @forelse($products as $product)
                 @php
                     $img = $product->primaryImage?->path
-                        ? Storage::url($product->primaryImage->path)
+                        ? media_url($product->primaryImage->path)
                         : asset('cozastore/images/product-01.jpg');
                 @endphp
 
