@@ -54,7 +54,7 @@ class HomeController extends Controller
 
     private function latestBlogs()
     {
-        $fallback = asset('images/default-blog.jpg');
+        $fallback = asset('cozastore/images/blog-01.jpg');
 
         return Blog::query()
             ->published()
@@ -68,14 +68,7 @@ class HomeController extends Controller
 
     private function imageUrl(?string $path, string $fallback): string
     {
-        $path = trim((string) $path);
-
-        return match (true) {
-            $path === ''                       => $fallback,
-            str_starts_with($path, 'http')     => $path,
-            str_starts_with($path, 'storage/') => asset($path),
-            default                            => media_url($path),
-        };
+        return media_url($path, $fallback);
     }
 
     /**

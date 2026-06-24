@@ -63,8 +63,17 @@ if (! function_exists('media_url')) {
             return $path;
         }
 
-        if (str_starts_with($path, 'storage/')) {
+        // Bundled theme assets (e.g. cozastore/images/...) live in public/.
+        if (str_starts_with($path, 'storage/') || is_file(public_path($path))) {
             return asset($path);
+        }
+
+        $disk = config('filesystems.media_disk', 'public');
+
+        // Local public disk: build the URL from the current request so images
+        // load on whatever host and port serves the site, not only APP_URL.
+        if (config("filesystems.disks.{$disk}.driver") === 'local') {
+            return asset('storage/' . ltrim($path, '/'));
         }
 
         return media_disk()->url($path);
