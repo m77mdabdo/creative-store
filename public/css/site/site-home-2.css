@@ -313,6 +313,31 @@
     .product-card-side {
         flex: 0 0 auto;
         padding-top: 3px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .product-card-side a,
+    .product-card-side button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--cs-radius-pill);
+    }
+
+    .product-card-side a:hover,
+    .product-card-side button:hover {
+        background: var(--cs-surface-alt);
+    }
+
+    /* Fixed icon size: a percentage max-width here made the column take the
+       icon's natural width and squeezed the product name to zero. */
+    .product-card-side img {
+        width: 20px;
+        height: 20px;
+        max-width: none;
     }
 
     .product-card-title {
@@ -1967,4 +1992,41 @@ html[dir="rtl"] .products-action-btn {
 
 html[dir="rtl"] .products-pagination nav > div {
     direction: rtl;
+}
+
+/* ── Hero readability ───────────────────────────────────────────
+   Slide photos mix light and dark areas, so dark text disappeared on
+   the darker side. A soft scrim plus light text keeps the headline
+   legible on every slide, in both directions. */
+.section-slide .item-slick1 {
+    position: relative;
+}
+
+.section-slide .item-slick1::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(180deg,
+        rgba(var(--cs-shadow-rgb), 0.05) 0%,
+        rgba(var(--cs-shadow-rgb), 0.35) 55%,
+        rgba(var(--cs-shadow-rgb), 0.55) 100%);
+}
+
+.section-slide .item-slick1 > .container {
+    position: relative;
+    z-index: 2;
+}
+
+.section-slide .ltext-101,
+.section-slide .ltext-201 {
+    color: var(--cs-surface) !important;
+    text-shadow: 0 2px 12px rgba(var(--cs-shadow-rgb), 0.35);
+}
+
+.section-slide .ltext-201 {
+    font-size: var(--cs-text-3xl);
+    line-height: var(--cs-leading-tight);
+    overflow-wrap: anywhere;
 }
