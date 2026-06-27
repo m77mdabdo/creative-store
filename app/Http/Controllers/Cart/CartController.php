@@ -75,6 +75,16 @@ public function add(Request $request)
 
     $product = Product::with('primaryImage')->findOrFail($validated['product_id']);
 
+    if ($product->status !== 'active') {
+        return back()->with('error', __('This product is no longer available.'));
+    }
+
+    // A product sold in options must be bought as one of them, otherwise it
+    // would skip variant stock and pricing entirely.
+    if ($product->has_variants && empty($validated['variant_id'])) {
+        return back()->with('error', __('Please choose the product options first.'));
+    }
+
     $variant = null;
     $price = (float) $product->base_price;
     $image = $product->primaryImage?->path ?? null;
@@ -723,7 +733,7 @@ public function add(Request $request)
         foreach ($cart as $key => $item) {
             $product = Product::with('primaryImage')->find($item['product_id'] ?? null);
 
-            if (!$product) {
+            if (!$product || $product->status !== 'active') {
                 unset($cart[$key]);
                 continue;
             }
