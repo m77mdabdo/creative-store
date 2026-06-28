@@ -512,7 +512,8 @@ return [
 'ACCOUNT' => 'ACCOUNT',
 'No menu available' => 'No menu available',
 
-
-
+    'no_description_yet' => 'No description has been added for this product yet.',
+    'status_unpaid' => 'Unpaid',
+    'status_confirmed' => 'Confirmed',
 
 ];

@@ -499,4 +499,21 @@ return [
 'ACCOUNT' => 'الحساب',
 'No menu available' => 'لا توجد قائمة متاحة',
 
+    'fetching_address_details' => 'جارٍ جلب تفاصيل العنوان...',
+    'location_selected_success' => 'تم تحديد الموقع بنجاح.',
+    'location_selected_no_address' => 'تم تحديد الموقع، لكن لم نجد تفاصيل عنوان له.',
+    'location_load_failed' => 'تعذر تحميل تفاصيل العنوان من الخريطة.',
+    'searching_for_location' => 'جارٍ البحث عن الموقع...',
+    'no_matching_location' => 'لم نجد موقعًا مطابقًا.',
+    'location_search_failed' => 'فشل البحث، حاول مرة أخرى.',
+    'geolocation_not_supported' => 'متصفحك لا يدعم تحديد الموقع.',
+    'detecting_current_location' => 'جارٍ تحديد موقعك الحالي...',
+    'unable_get_current_location' => 'تعذر تحديد موقعك الحالي.',
+    'location_permission_denied' => 'تم رفض إذن الوصول للموقع.',
+    'location_information_unavailable' => 'معلومات الموقع غير متاحة.',
+    'location_request_timeout' => 'انتهت مهلة طلب الموقع.',
+    'no_description_yet' => 'لا يوجد وصف لهذا المنتج بعد.',
+    'status_unpaid' => 'غير مدفوع',
+    'status_confirmed' => 'مؤكد',
+
 ];
