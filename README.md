@@ -123,6 +123,7 @@ app/
 - **Snapshots, not references, for history.** An order stores the address, product name, SKU and unit price it was bought at (`order_address_snapshots`, `order_items.*_snapshot`). Editing a product or an address never rewrites past invoices.
 - **Money** is `DECIMAL(12,2)`. Floats are never used for amounts; gateway amounts are compared in halalas (integers).
 - **Uniqueness lives in the database:** order numbers, SKUs, slugs, coupon codes, one review per user per product, one wishlist per user, one usage row per coupon per order, one payment per gateway transaction.
+- **CHECK constraints** stop invalid data at the database level: stock and quantities can't go negative, ratings stay 1 to 5, money columns on orders, payments, refunds and shipping rates can't be negative, and percentage coupons can't exceed 100.
 - **Foreign keys everywhere** with explicit `restrict`, `cascade` or `null on delete` per relationship. For example, a product with orders cannot be deleted.
 - **Audit trail:** `order_status_logs` records every status transition; `audit_logs` records who changed which model and what changed.
 
@@ -167,6 +168,7 @@ Every place where two requests can race has an explicit guard:
 | Customer or admin clicks "Cancel" twice | The order is re-read under lock; the second request sees `cancelled` and stops, so stock is restored once. |
 | Wishlist heart clicked twice quickly | The customer's wishlist row is locked; the toggle runs once. |
 | Same review submitted twice | The `(product_id, user_id)` unique index rejects the second; the user gets a friendly message. |
+| Moyasar redelivers the same webhook | The `(gateway, event_id)` unique index plus `createOrFirst` makes redelivery idempotent: processed events are acknowledged without running again. |
 | Burst of identical errors | An atomic `Cache::add` key lets one log row through per error per two minutes. |
 
 ---
@@ -193,6 +195,8 @@ The goal is that request time depends on the page size, not on how big the table
 | `carts` | `(updated_at)` | abandoned-cart scan |
 | `coupon_usages` | `(coupon_id, user_id)` | per-user coupon limit |
 | `audit_logs` | `(auditable_type, auditable_id)`, `(created_at)` | audit lookups, pruning |
+| `shipments` | `(tracking_number)` | public order tracking |
+| `product_translations` | `FULLTEXT(name)` | product search |
 
 **Caching**
 - CMS pages: 30 minutes, invalidated when a page is saved.
@@ -206,7 +210,7 @@ The goal is that request time depends on the page size, not on how big the table
 **When traffic grows further**
 - Switch `CACHE_STORE`, `SESSION_DRIVER` and `QUEUE_CONNECTION` to `redis` so several app servers share state.
 - Route read-heavy listing queries to a MySQL read replica (`DB_READ_HOST`).
-- Move product search to MySQL FULLTEXT or Meilisearch; `LIKE '%term%'` cannot use an index.
+- Product search already uses a MySQL FULLTEXT index; move to Meilisearch or OpenSearch for typo tolerance and facets.
 - Use cursor pagination on very deep dashboard lists.
 - Serve `storage` and `public/css` through a CDN (S3 support is already wired in `MoveImagesToS3`).
 
@@ -275,7 +279,15 @@ php artisan storage:link
 php artisan serve
 ```
 
-The seeders create roles, permissions, a demo catalogue, Saudi shipping zones and rates.
+The seeders create roles, permissions, Saudi shipping zones and rates.
+
+Load the full demo catalogue (90 products in 9 categories, Arabic and English, colour/size variants with stock and real product photography):
+
+```bash
+php artisan db:seed --class=DemoCatalogSeeder
+```
+
+Photos are from [Unsplash](https://unsplash.com/license) (free for commercial use). The seeder downloads them once to the media disk, can be re-run safely and archives the old placeholder products.
 
 ---
 
@@ -331,7 +343,6 @@ php artisan event:cache
 ## Roadmap
 
 - Feature tests for checkout and payment against a MySQL test database
-- Full-text product search
 - Redis for cache, sessions and queue
 - Move the remaining dashboard controllers onto services the way checkout and payments are
 - Build storefront CSS through Vite for minification
@@ -378,6 +389,29 @@ php artisan event:cache
 - Design tokens and base styles.
 - Inline CSS extracted into cached, versioned stylesheets.
 - Unified breakpoints, lazy-loaded images, language and direction on every page.
+
+### Second pass
+
+**Database**
+- Full schema review; added CHECK constraints on money columns and coupon values (existing bad rows are reported, not silently rejected).
+- FULLTEXT index on product names, used by both storefront searches with an escaped `LIKE` fallback for short terms.
+- Index for public shipment tracking.
+- Redelivered webhooks no longer fail on the unique event id.
+
+**Media**
+- Dashboard uploads were saved on the private disk and never appeared on the site; all media now goes through one public media disk (`media_disk()` / `media_url()`).
+- Image URLs follow the current host instead of `APP_URL`, so they work on any port or domain.
+
+**Catalogue**
+- `DemoCatalogSeeder`: 90 bilingual products, variants with stock, real photography.
+
+**Cart**
+- Archived products can't be added; products sold in variants require a chosen variant.
+
+**Frontend**
+- Product cards on phones showed no product name (the wishlist icon took the full width).
+- Hero slides got a scrim and light text for readable headlines.
+- Missing Arabic messages for the map picker and order statuses added.
 
 ---
 
