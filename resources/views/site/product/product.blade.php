@@ -123,7 +123,7 @@
                             @foreach($colorValues as $val)
                                 <li>
                                     <a href="{{ request()->fullUrlWithQuery(['color'=>$val->id]) }}">
-                                        {{ $val->value }}
+                                        {{ $val->label }}
                                     </a>
                                 </li>
                             @endforeach
@@ -140,7 +140,7 @@
 
                             @foreach($tagValues as $val)
                                 <a href="{{ request()->fullUrlWithQuery(['tag'=>$val->id]) }}" class="tag">
-                                    {{ $val->value }}
+                                    {{ $val->label }}
                                 </a>
                             @endforeach
                         </div>

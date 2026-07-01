@@ -57,6 +57,7 @@ class ProductController extends Controller
                 ->select(['id', 'attribute_id', 'value', 'slug', 'sort_order'])
                 ->where('attribute_id', $colorAttr->id)
                 ->where('is_active', true)
+                ->whereExists(fn ($q) => ProductCatalogService::onSaleValueQuery($q))
                 ->orderBy('sort_order')
                 ->orderBy('id')
                 ->get()
@@ -67,6 +68,7 @@ class ProductController extends Controller
                 ->select(['id', 'attribute_id', 'value', 'slug', 'sort_order'])
                 ->where('attribute_id', $tagAttr->id)
                 ->where('is_active', true)
+                ->whereExists(fn ($q) => ProductCatalogService::onSaleValueQuery($q))
                 ->orderBy('sort_order')
                 ->orderBy('id')
                 ->get()
@@ -360,7 +362,7 @@ class ProductController extends Controller
 
                 $optionAttributes[$attrSlug]['values'][$value->id] = [
                     'id'         => (int) $value->id,
-                    'value'      => $value->value,
+                    'value'      => $value->label,
                     'slug'       => $value->slug,
                     'sort_order' => (int) ($value->sort_order ?? 0),
                 ];
@@ -372,7 +374,7 @@ class ProductController extends Controller
                     'values' => [],
                 ];
 
-                $specifications[$attrSlug]['values'][$value->id] = $value->value;
+                $specifications[$attrSlug]['values'][$value->id] = $value->label;
             }
 
             ksort($selectedAttributes);
@@ -623,7 +625,7 @@ class ProductController extends Controller
             if ($this->isSizeAttribute($attrSlug, $attrName)) {
                 $size = [
                     'id'         => (int) $value->id,
-                    'value'      => $value->value,
+                    'value'      => $value->label,
                     'slug'       => $value->slug,
                     'sort_order' => (int) ($value->sort_order ?? 0),
                 ];
@@ -634,13 +636,13 @@ class ProductController extends Controller
             if ($this->isColorAttribute($attrSlug, $attrName, $attribute->name)) {
                 $color = [
                     'id'         => (int) $value->id,
-                    'value'      => $value->value,
+                    'value'      => $value->label,
                     'slug'       => $value->slug,
                     'sort_order' => (int) ($value->sort_order ?? 0),
                 ];
 
                 $colorId   = (int) $row->attribute_value_id;
-                $colorName = $value->value;
+                $colorName = $value->label;
                 $colorSlug = $value->slug;
             }
         }

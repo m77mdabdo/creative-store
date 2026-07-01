@@ -61,7 +61,9 @@ class ProductCatalogService
             ->select(['id', 'attribute_id', 'value', 'slug', 'sort_order'])
             ->where('attribute_id', $attributeId)
             ->where('is_active', true)
+            ->whereExists(fn ($q) => self::onSaleValueQuery($q))
             ->orderBy('sort_order')
+            ->orderBy('id')
             ->get();
     }
 
@@ -142,6 +144,22 @@ class ProductCatalogService
             'price_desc' => $query->orderByDesc('base_price')->latest(),
             default      => $query->latest(),
         };
+    }
+
+    /**
+     * Restricts attribute values to those used by an active variant of an
+     * active product, so filters never offer options that return nothing.
+     */
+    public static function onSaleValueQuery($query): void
+    {
+        $query->selectRaw('1')
+            ->from('product_variant_values as pvv')
+            ->join('product_variants as pv', 'pv.id', '=', 'pvv.product_variant_id')
+            ->join('products as p', 'p.id', '=', 'pv.product_id')
+            ->whereColumn('pvv.attribute_value_id', 'attribute_values.id')
+            ->where('pv.is_active', true)
+            ->where('p.status', 'active')
+            ->whereNull('p.deleted_at');
     }
 
     /**
