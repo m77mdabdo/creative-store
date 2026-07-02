@@ -74,7 +74,10 @@ textarea {
         overflow-x: hidden;
     }
 
-    .container {
-        padding-inline: var(--cs-space-4);
+    /* Match the Bootstrap 4 row gutter (-15px) so rows never poke past
+       the screen edge; page styles had shrunk this to 12px. */
+    body .container {
+        padding-left: 15px;
+        padding-right: 15px;
     }
 }

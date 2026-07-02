@@ -394,7 +394,7 @@
                                 <li>
                                     <a href="{{ request()->fullUrlWithQuery(['color' => $val->id, 'page' => 1]) }}"
                                        class="filter-link {{ (string) request('color') === (string) $val->id ? 'filter-link-active' : '' }}">
-                                        {{ $val->value }}
+                                        {{ $val->label }}
                                     </a>
                                 </li>
                             @endforeach
@@ -413,7 +413,7 @@
                             @foreach ($tagValues as $val)
                                 <a href="{{ request()->fullUrlWithQuery(['tag' => $val->id, 'page' => 1]) }}"
                                    class="tag {{ (string) request('tag') === (string) $val->id ? 'filter-link-active' : '' }}">
-                                    {{ $val->value }}
+                                    {{ $val->label }}
                                 </a>
                             @endforeach
                         </div>
@@ -531,7 +531,7 @@
                                 <a href="{{ route('blog.show', $blog->slug) }}" class="blog-card-image-link">
                                     <img
                                         src="{{ $blog->image_url }}"
-                                        alt="{{ $blog->title }}"
+                                        alt="{{ $blog->localized_title }}"
                                         class="blog-card-image" loading="lazy" decoding="async">
 
                                     <span class="blog-date-badge">
@@ -550,12 +550,12 @@
 
                                     <h4 class="blog-title">
                                         <a href="{{ route('blog.show', $blog->slug) }}">
-                                            {{ $blog->title }}
+                                            {{ $blog->localized_title }}
                                         </a>
                                     </h4>
 
                                     <p class="blog-excerpt">
-                                        {{ \Illuminate\Support\Str::limit(strip_tags($blog->excerpt ?? $blog->content ?? ''), 110) }}
+                                        {{ \Illuminate\Support\Str::limit(strip_tags($blog->localized_excerpt ?? $blog->content ?? ''), 110) }}
                                     </p>
 
                                     <a href="{{ route('blog.show', $blog->slug) }}" class="blog-read-more">
