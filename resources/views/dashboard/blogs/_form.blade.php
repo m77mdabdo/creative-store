@@ -33,6 +33,15 @@
                 </div>
 
                 <div class="form-group mb-3">
+                    <label for="title_ar">العنوان بالعربي</label>
+                    <input type="text" name="title_ar" id="title_ar" dir="rtl" class="form-control @error('title_ar') is-invalid @enderror"
+                           value="{{ old('title_ar', $blog->title_ar ?? '') }}" maxlength="255">
+                    @error('title_ar')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group mb-3">
                     <label for="slug">Slug <span class="text-danger">*</span></label>
                     <input type="text" name="slug" id="slug" class="form-control @error('slug') is-invalid @enderror"
                            value="{{ old('slug', $blog->slug ?? '') }}" maxlength="255" required>
@@ -70,11 +79,29 @@
                 </div>
 
                 <div class="form-group mb-3">
+                    <label for="excerpt_ar">المقتطف بالعربي</label>
+                    <textarea name="excerpt_ar" id="excerpt_ar" rows="4" maxlength="1000" dir="rtl"
+                              class="form-control @error('excerpt_ar') is-invalid @enderror">{{ old('excerpt_ar', $blog->excerpt_ar ?? '') }}</textarea>
+                    @error('excerpt_ar')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group mb-3">
                     <label for="content">Content <span class="text-danger">*</span></label>
                     <textarea name="content" id="content" rows="10"
                               class="form-control @error('content') is-invalid @enderror"
                               required>{{ old('content', $blog->content ?? '') }}</textarea>
                     @error('content')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="content_ar">المحتوى بالعربي</label>
+                    <textarea name="content_ar" id="content_ar" rows="10" dir="rtl"
+                              class="form-control @error('content_ar') is-invalid @enderror">{{ old('content_ar', $blog->content_ar ?? '') }}</textarea>
+                    @error('content_ar')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>

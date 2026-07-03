@@ -53,7 +53,7 @@
 
                             <a href="{{ route('blog.show', $blog->slug) }}" class="blog-post-link hov-img0 how-pos5-parent">
                                 <div class="blog-post-image-frame">
-                                    <img src="{{ $blog->image_url }}" alt="{{ $blog->title }}" loading="lazy" decoding="async">
+                                    <img src="{{ $blog->image_url }}" alt="{{ $blog->localized_title }}" loading="lazy" decoding="async">
                                 </div>
 
                                 <div class="blog-post-date-badge flex-col-c-m">
@@ -69,12 +69,12 @@
 
                             <h3 class="blog-post-title">
                                 <a href="{{ route('blog.show', $blog->slug) }}">
-                                    {{ $blog->title }}
+                                    {{ $blog->localized_title }}
                                 </a>
                             </h3>
 
                             <p class="blog-post-excerpt">
-                                {{ $blog->excerpt ?? \Illuminate\Support\Str::limit(strip_tags($blog->content), 160) }}
+                                {{ $blog->localized_excerpt ?? \Illuminate\Support\Str::limit(strip_tags($blog->content), 160) }}
                             </p>
 
                             <div class="blog-post-meta">

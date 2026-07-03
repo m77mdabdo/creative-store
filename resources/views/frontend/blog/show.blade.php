@@ -3,7 +3,7 @@
 @section('content')
 <div class="container py-5">
 
-    <h1 class="mb-3">{{ $blog->title }}</h1>
+    <h1 class="mb-3">{{ $blog->localized_title }}</h1>
 
     <div class="mb-3 text-muted">
         By {{ $blog->author }} | {{ $blog->published_at?->format('Y-m-d') }}

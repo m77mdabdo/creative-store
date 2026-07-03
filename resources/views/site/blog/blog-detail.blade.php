@@ -20,7 +20,7 @@
                 </a>
 
                 <span class="stext-109 cl4">
-                    {{ $blog->title }}
+                    {{ $blog->localized_title }}
                 </span>
             </div>
         </div>
@@ -35,7 +35,7 @@
                     <article class="blog-main-card">
                         <div class="blog-cover-wrap">
                             <div class="blog-cover-frame">
-                                <img src="{{ $blog->image_url }}" alt="{{ $blog->title }}" loading="lazy" decoding="async">
+                                <img src="{{ $blog->image_url }}" alt="{{ $blog->localized_title }}" loading="lazy" decoding="async">
                             </div>
 
                             <div class="blog-date-badge flex-col-c-m">
@@ -76,12 +76,12 @@
                             </div>
 
                             <h1 class="blog-details-title">
-                                {{ $blog->title }}
+                                {{ $blog->localized_title }}
                             </h1>
 
-                            @if($blog->excerpt)
+                            @if($blog->localized_excerpt)
                                 <div class="blog-excerpt-box">
-                                    <p>{{ $blog->excerpt }}</p>
+                                    <p>{{ $blog->localized_excerpt }}</p>
                                 </div>
                             @endif
 
@@ -103,13 +103,13 @@
                                         <div class="related-post-card">
                                             <div class="related-post-image">
                                                 <a href="{{ route('blog.show', $item->slug) }}">
-                                                    <img src="{{ $item->image_url }}" alt="{{ $item->title }}" loading="lazy" decoding="async">
+                                                    <img src="{{ $item->image_url }}" alt="{{ $item->localized_title }}" loading="lazy" decoding="async">
                                                 </a>
                                             </div>
 
                                             <div class="related-post-body">
                                                 <a href="{{ route('blog.show', $item->slug) }}" class="related-post-title">
-                                                    {{ \Illuminate\Support\Str::limit($item->title, 45) }}
+                                                    {{ \Illuminate\Support\Str::limit($item->localized_title, 45) }}
                                                 </a>
 
                                                 <span class="related-post-date">
