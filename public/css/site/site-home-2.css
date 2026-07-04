@@ -1946,17 +1946,10 @@ video {
         width: 100%;
     }
 
-    .product-card-body {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    html[dir="rtl"] .product-card-body {
-        align-items: flex-end;
-    }
-
-    .product-card-side {
-        width: 100%;
+    /* Keep name/price and the wishlist icon on one row: the column layout
+       collided with the RTL row-reverse rule and collapsed the name to 0px. */
+    .product-card-content {
+        flex: 1 1 0;
     }
 
     .product-card-price {
@@ -2027,4 +2020,11 @@ html[dir="rtl"] .products-pagination nav > div {
     font-size: var(--cs-text-3xl);
     line-height: var(--cs-leading-tight);
     overflow-wrap: anywhere;
+}
+
+/* One dot per product does not fit a phone; arrows and swipe are enough. */
+@media (max-width: 575.98px) {
+    .wrap-slick2-dots {
+        display: none;
+    }
 }
