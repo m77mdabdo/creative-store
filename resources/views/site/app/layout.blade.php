@@ -3,7 +3,7 @@
 <head>
     @include('site.app.head')
 </head>
-<body class="animsition site-body {{ app()->getLocale() === 'ar' ? 'rtl-site' : 'ltr-site' }}">
+<body class="site-body {{ app()->getLocale() === 'ar' ? 'rtl-site' : 'ltr-site' }}">
 
     @auth
         <script>
