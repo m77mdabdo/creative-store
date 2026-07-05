@@ -109,7 +109,7 @@ final class DemoCatalogData
             ['fragrances', 'photo-1585218334450-afcf929da36e', 'Golden Saffron Parfum', 'عطر زعفران ذهبي', 499, []],
             ['fragrances', 'photo-1760920250029-36af9369a0bb', 'Cedar and Vetiver', 'عطر أرز وفيتيفر', 359, []],
             ['fragrances', 'photo-1543422655-ac1c6ca993ed', 'Citrus Bloom', 'عطر زهر الحمضيات', 269, []],
-            ['fragrances', 'photo-1595425959632-34f2822322ce', 'Rose Petal Eau de Parfum', 'عطر بتلات الورد', 329, []],
+            ['fragrances', 'photo-1622618991746-fe6004db3a47', 'Rose Petal Eau de Parfum', 'عطر بتلات الورد', 329, []],
             ['fragrances', 'photo-1761659760494-32b921a2449f', 'Silver Mist', 'عطر الضباب الفضي', 289, []],
         ];
     }
