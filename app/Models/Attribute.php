@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\Auditable;
+use Illuminate\Database\Eloquent\Casts\Attribute as CastAttribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Lang;
+
 class Attribute extends Model
 {
-
-      use HasFactory,Auditable;
+    use HasFactory, Auditable;
 
     protected $fillable = ['name','slug','is_active'];
 
@@ -31,4 +33,15 @@ class Attribute extends Model
         return $this->hasMany(AttributeValue::class)->where('is_active', true);
     }
 
+    /**
+     * Option name in the current language, e.g. "Color" → "اللون".
+     */
+    protected function label(): CastAttribute
+    {
+        return CastAttribute::get(function () {
+            $key = 'attributes.names.' . $this->slug;
+
+            return Lang::has($key) ? __($key) : $this->name;
+        });
+    }
 }

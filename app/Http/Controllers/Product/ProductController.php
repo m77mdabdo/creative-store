@@ -352,7 +352,7 @@ class ProductController extends Controller
                 }
 
                 $attrSlug = Str::slug($attribute->slug ?: $attribute->name);
-                $attrName = $attribute->name ?: ucfirst(str_replace('-', ' ', $attrSlug));
+                $attrName = $attribute->label ?: ucfirst(str_replace('-', ' ', $attrSlug));
 
                 $optionAttributes[$attrSlug] ??= [
                     'name'   => $attrName,
