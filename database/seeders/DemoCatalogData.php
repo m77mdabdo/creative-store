@@ -106,7 +106,7 @@ final class DemoCatalogData
             ['fragrances', 'photo-1587017539504-67cfbddac569', 'Aqua Marine Cologne', 'كولونيا أكوا مارين', 299, []],
             ['fragrances', 'photo-1458538977777-0549b2370168', 'Pure Musk Eau de Toilette', 'عطر مسك صافي', 249, []],
             ['fragrances', 'photo-1615634260167-c8cdede054de', 'White Amber Parfum', 'عطر عنبر أبيض', 389, []],
-            ['fragrances', 'photo-1585218334450-afcf929da36e', 'Golden Saffron Parfum', 'عطر زعفران ذهبي', 499, []],
+            ['fragrances', 'photo-1784183972601-17a1b00ea05e', 'Golden Saffron Parfum', 'عطر زعفران ذهبي', 499, []],
             ['fragrances', 'photo-1760920250029-36af9369a0bb', 'Cedar and Vetiver', 'عطر أرز وفيتيفر', 359, []],
             ['fragrances', 'photo-1543422655-ac1c6ca993ed', 'Citrus Bloom', 'عطر زهر الحمضيات', 269, []],
             ['fragrances', 'photo-1622618991746-fe6004db3a47', 'Rose Petal Eau de Parfum', 'عطر بتلات الورد', 329, []],
