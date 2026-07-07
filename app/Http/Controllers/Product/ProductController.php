@@ -152,7 +152,7 @@ class ProductController extends Controller
             $productsQuery->orderBy('created_at', 'desc');
         }
 
-        $products = $productsQuery->paginate(10)->withQueryString();
+        $products = $productsQuery->paginate(12)->withQueryString();
 
         $wishlistProductIds = [];
         if (auth()->check()) {
