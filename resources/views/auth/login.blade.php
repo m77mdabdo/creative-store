@@ -55,8 +55,8 @@
                                     <p class="login-box-msg mb-4">{{ __('site.sign_in_start_session') }}</p>
 
                                     @if ($errors->any())
-                                        <div class="alert alert-danger">
-                                            {{ __('site.invalid_email_or_password') }}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ $errors->first() }}
                                         </div>
                                     @endif
 
@@ -75,11 +75,6 @@
                                             </div>
                                         </div>
 
-                                        @error('email')
-                                            <div class="invalid-feedback d-block mb-2">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
 
                                         <div class="input-group mb-3">
                                             <input name="password" type="password"

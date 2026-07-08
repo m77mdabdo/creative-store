@@ -21,7 +21,7 @@ class LoginController extends Controller
 
         if (! $authenticated) {
             return back()
-                ->withErrors(['email' => __('Invalid email or password.')])
+                ->withErrors(['email' => __('site.invalid_email_or_password')])
                 ->onlyInput('email');
         }
 
@@ -31,7 +31,7 @@ class LoginController extends Controller
             $this->endSession($request);
 
             return back()
-                ->withErrors(['email' => __('Your account is disabled. Please contact support.')])
+                ->withErrors(['email' => __('site.account_disabled')])
                 ->onlyInput('email');
         }
 
