@@ -515,5 +515,12 @@ return [
     'no_description_yet' => 'لا يوجد وصف لهذا المنتج بعد.',
     'status_unpaid' => 'غير مدفوع',
     'status_confirmed' => 'مؤكد',
+    'account_disabled' => 'تم إيقاف حسابك. تواصل مع الدعم.',
+    'verify_email_title' => 'تأكيد البريد الإلكتروني',
+    'verify_email_heading' => 'أدخل كود التحقق',
+    'verify_email_hint' => 'أرسلنا كودًا من 6 أرقام إلى :email',
+    'verify_email_submit' => 'تأكيد',
+    'verify_email_expires' => 'الكود صالح لمدة 10 دقائق.',
+    'verify_email_wrong_address' => 'البريد غير صحيح؟ سجّل من جديد',
 
 ];

@@ -515,5 +515,12 @@ return [
     'no_description_yet' => 'No description has been added for this product yet.',
     'status_unpaid' => 'Unpaid',
     'status_confirmed' => 'Confirmed',
+    'account_disabled' => 'Your account is disabled. Please contact support.',
+    'verify_email_title' => 'Verify your email',
+    'verify_email_heading' => 'Enter your verification code',
+    'verify_email_hint' => 'We sent a 6-digit code to :email',
+    'verify_email_submit' => 'Verify',
+    'verify_email_expires' => 'The code is valid for 10 minutes.',
+    'verify_email_wrong_address' => 'Wrong email? Register again',
 
 ];
