@@ -33,8 +33,7 @@
 
             <div class="otp-inputs" dir="ltr">
                 @for ($i = 0; $i < 6; $i++)
-                    <input type="text" name="otp[]" class="otp-input" inputmode="numeric" maxlength="1"
-                           pattern="[0-9]" autocomplete="{{ $i === 0 ? 'one-time-code' : 'off' }}"
+                    <input type="text" name="otp[]" class="otp-input" inputmode="numeric" autocomplete="{{ $i === 0 ? 'one-time-code' : 'off' }}"
                            aria-label="{{ $i + 1 }}" required @if ($i === 0) autofocus @endif>
                 @endfor
             </div>
@@ -51,6 +50,13 @@
             const inputs = Array.from(document.querySelectorAll('.otp-input'));
             const form = document.getElementById('otpForm');
 
+            // Accept Arabic-Indic (٠-٩) and Persian (۰-۹) digits as well as 0-9,
+            // and whole codes pasted or autofilled into a single box.
+            const toLatin = (value) => (value || '')
+                .replace(/[\u0660-\u0669]/g, (d) => d.charCodeAt(0) - 0x0660)
+                .replace(/[\u06F0-\u06F9]/g, (d) => d.charCodeAt(0) - 0x06F0)
+                .replace(/\D/g, '');
+
             const fill = (digits, start) => {
                 digits.split('').forEach((digit, offset) => {
                     if (inputs[start + offset]) inputs[start + offset].value = digit;
@@ -62,7 +68,7 @@
 
             inputs.forEach((input, index) => {
                 input.addEventListener('input', () => {
-                    const digits = input.value.replace(/\D/g, '');
+                    const digits = toLatin(input.value);
                     input.value = '';
                     if (digits) fill(digits, index);
                 });
@@ -75,7 +81,7 @@
 
                 input.addEventListener('paste', (event) => {
                     event.preventDefault();
-                    const digits = (event.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+                    const digits = toLatin(event.clipboardData.getData('text')).slice(0, 6);
                     if (digits) fill(digits, index);
                 });
             });
