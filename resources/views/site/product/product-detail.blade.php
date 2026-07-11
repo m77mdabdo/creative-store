@@ -776,30 +776,22 @@
          * Find the best matching variant for the currently selected options.
          * Tries exact key first, then partial matching.
          */
+        function requiredOptionCount() {
+            return document.querySelectorAll('.variant-option-select').length +
+                document.querySelectorAll('.variant-option-buttons').length;
+        }
+
+        /**
+         * Return the variant for the selected options, or null until every
+         * option group has a value. A partial choice (colour without size)
+         * must never resolve to an arbitrary variant.
+         */
         function findMatchingVariant(selected) {
-            const selectedKeys = Object.keys(selected);
-
-            if (!selectedKeys.length) return null;
-
-            // Exact match
-            const exactKey = buildVariantKey(selected);
-            if (variantMatrix[exactKey]) {
-                return variantMatrix[exactKey];
+            if (Object.keys(selected).length < requiredOptionCount()) {
+                return null;
             }
 
-            // Partial match: variant must satisfy all selected attributes
-            for (const key in variantMatrix) {
-                const variant = variantMatrix[key];
-                const attrs   = variant.attributes || {};
-
-                const matches = selectedKeys.every(
-                    slug => String(attrs[slug]) === String(selected[slug])
-                );
-
-                if (matches) return variant;
-            }
-
-            return null;
+            return variantMatrix[buildVariantKey(selected)] || null;
         }
 
         /**
@@ -846,9 +838,10 @@
 
             if (!variant) {
                 resetBaseUI();
+                const complete = selectedCount >= requiredOptionCount();
                 if (variantError) {
                     variantError.textContent = i18n.combinationUnavailable;
-                    variantError.style.display = 'block';
+                    variantError.style.display = complete ? 'block' : 'none';
                 }
                 return;
             }
@@ -882,14 +875,16 @@
             const selected = getSelectedOptions();
             const variant  = findMatchingVariant(selected);
 
-            if (!variant) {
+            if (!variant || Number(variant.stock) < 1) {
                 e.preventDefault();
                 if (variantError) {
-                    variantError.textContent   = i18n.selectRequired;
+                    variantError.textContent   = variant ? i18n.outOfStock : i18n.selectRequired;
                     variantError.style.display = 'block';
                 }
                 return false;
             }
+
+            if (variantInput) variantInput.value = variant.id;
 
             return true;
         }
@@ -957,11 +952,18 @@
         }
 
         // Select dropdowns
+        // Select2 dispatches jQuery events, which native listeners never see.
+        const onOptionChange = function () {
+            updateVariantUI();
+            setTimeout(runCouponPreview, 80);
+        };
+
         optionSelects.forEach(select => {
-            select.addEventListener('change', function () {
-                updateVariantUI();
-                setTimeout(runCouponPreview, 80);
-            });
+            if (window.jQuery) {
+                window.jQuery(select).on('change', onOptionChange);
+            } else {
+                select.addEventListener('change', onOptionChange);
+            }
         });
 
         // Toggle buttons (color, etc.)
