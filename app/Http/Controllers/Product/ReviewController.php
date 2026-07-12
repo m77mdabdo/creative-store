@@ -39,7 +39,7 @@ class ReviewController extends Controller
 
             if($alreadyReviewed){
 
-                return back()->with('error','You already submitted a review for this product.');
+                return back()->with('error',__('You already submitted a review for this product.'));
 
             }
 
@@ -64,12 +64,12 @@ class ReviewController extends Controller
             ]);
         } catch (\Illuminate\Database\UniqueConstraintViolationException) {
             // A second, simultaneous submit hit the (product_id, user_id) unique index.
-            return back()->with('error', 'You already submitted a review for this product.');
+            return back()->with('error', __('You already submitted a review for this product.'));
         }
         app(\App\Services\Dashboard\DashboardStatsService::class)->clear();
 
 
-        return back()->with('success','Your review has been submitted successfully.');
+        return back()->with('success',__('Your review has been submitted successfully.'));
 
     }
 

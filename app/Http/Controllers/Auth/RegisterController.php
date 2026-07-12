@@ -31,7 +31,7 @@ class RegisterController extends Controller
         );
 
         return redirect()->route('email.verify', $request->email)
-            ->with('success', 'We sent a verification code to your email.');
+            ->with('success', __('We sent a verification code to your email.'));
     }
     
 

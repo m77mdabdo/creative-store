@@ -25,6 +25,6 @@ class BlogCommentController extends Controller
             'comment' => $request->comment
         ]);
 
-        return back()->with('success','Comment added successfully');
+        return back()->with('success',__('Comment added successfully'));
     }
 }

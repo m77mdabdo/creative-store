@@ -18,7 +18,7 @@ class ResetPasswordController extends Controller
             ->first();
 
         if (! $record) {
-            return back()->with('error', 'Invalid Token or email address');
+            return back()->with('error', __('Invalid Token or email address'));
         }
 
         DB::table('password_reset_tokens')
@@ -30,6 +30,6 @@ class ResetPasswordController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('login')->with('success', 'Password reset successfully, you can login now');
+        return redirect()->route('login')->with('success', __('Password reset successfully, you can login now'));
     }
 }

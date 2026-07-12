@@ -64,6 +64,6 @@ class ContactController extends Controller
 
         SendContactNotificationsJob::dispatch($contactMessage->id);
 
-        return back()->with('success', 'Your message has been sent successfully.');
+        return back()->with('success', __('Your message has been sent successfully.'));
     }
 }

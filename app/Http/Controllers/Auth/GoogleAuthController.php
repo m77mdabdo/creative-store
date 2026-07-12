@@ -27,7 +27,7 @@ public function handleGoogleCallback()
 
     $email = $googleUser->getEmail();
     if (!$email) {
-        return redirect('/login')->with('error', 'Google did not return an email address.');
+        return redirect('/login')->with('error', __('Google did not return an email address.'));
     }
 
     $user = User::updateOrCreate(
@@ -47,7 +47,7 @@ public function handleGoogleCallback()
 
     Auth::login($user);
 
-    return redirect()->intended('/')->with('success', 'You are in');
+    return redirect()->intended('/')->with('success', __('You are in'));
 }
 
 }

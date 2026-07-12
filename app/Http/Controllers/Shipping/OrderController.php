@@ -60,15 +60,15 @@ class OrderController extends Controller
         abort_unless($order->user_id === auth()->id(), 403);
 
         if ($order->status === 'cancelled') {
-            return back()->with('error', 'Order already cancelled.');
+            return back()->with('error', __('Order already cancelled.'));
         }
 
         if (! in_array($order->shipping_status, ['pending', 'processing', null], true)) {
-            return back()->with('error', 'This order cannot be cancelled after shipping has started.');
+            return back()->with('error', __('This order cannot be cancelled after shipping has started.'));
         }
 
         if (! $order->created_at || $order->created_at->diffInHours(now()) >= 3) {
-            return back()->with('error', 'Order can no longer be cancelled after 3 hours.');
+            return back()->with('error', __('Order can no longer be cancelled after 3 hours.'));
         }
 
         try {
@@ -205,10 +205,10 @@ class OrderController extends Controller
         } catch (\Throwable $e) {
             report($e);
 
-            return back()->with('error', 'Unable to cancel order right now. Please try again.');
+            return back()->with('error', __('Unable to cancel order right now. Please try again.'));
         }
 
-        return back()->with('success', 'Order cancelled successfully.');
+        return back()->with('success', __('Order cancelled successfully.'));
     }
 
     public function invoice(Order $order)

@@ -22,7 +22,7 @@ class ShippingController extends Controller
         $cart = session()->get('cart', []);
 
         if (empty($cart)) {
-            return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
+            return redirect()->route('cart.index')->with('error', __('Your cart is empty.'));
         }
 
         $addresses = Address::where('user_id', auth()->id())->latest()->get();
@@ -55,7 +55,7 @@ class ShippingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Address selected successfully.',
+            'message' => __('Address selected successfully.'),
         ]);
     }
 
@@ -122,7 +122,7 @@ public function selectMethod(SelectShippingMethodRequest $request): JsonResponse
 
     return response()->json([
         'success' => true,
-        'message' => 'Shipping method selected successfully.',
+        'message' => __('Shipping method selected successfully.'),
         'totals' => $totals,
     ]);
 }

@@ -70,10 +70,10 @@ class WishlistController extends Controller
         });
 
         if (! $added) {
-            return back()->with('success', 'Removed from wishlist');
+            return back()->with('success', __('Removed from wishlist'));
         }
 
-        return back()->with('success', 'Added to wishlist');
+        return back()->with('success', __('Added to wishlist'));
     }
 
     public function destroy($id)
@@ -86,6 +86,6 @@ class WishlistController extends Controller
 
         $item->delete();
 
-        return back()->with('success', 'Item removed');
+        return back()->with('success', __('Item removed'));
     }
 }

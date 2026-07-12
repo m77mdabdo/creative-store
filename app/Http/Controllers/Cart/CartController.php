@@ -108,11 +108,11 @@ public function add(Request $request)
             ->firstOrFail();
 
         if ((int) $variant->stock < 1) {
-            return back()->with('error', 'Selected variant is out of stock.');
+            return back()->with('error', __('Selected variant is out of stock.'));
         }
 
         if ((int) $validated['quantity'] > (int) $variant->stock) {
-            return back()->with('error', 'Requested quantity exceeds available stock.');
+            return back()->with('error', __('Requested quantity exceeds available stock.'));
         }
 
         if (!is_null($variant->price)) {
@@ -148,7 +148,7 @@ public function add(Request $request)
     $newQuantity = min($newQuantity, self::MAX_QTY_PER_ITEM);
 
     if ($variant && $newQuantity > (int) $variant->stock) {
-        return back()->with('error', 'Requested quantity exceeds available stock.');
+        return back()->with('error', __('Requested quantity exceeds available stock.'));
     }
 
     $cart[$cartKey] = [
@@ -176,7 +176,7 @@ public function add(Request $request)
 
         if (!$coupon) {
             $this->refreshCoupons();
-            return back()->with('error', 'Invalid coupon code.');
+            return back()->with('error', __('Invalid coupon code.'));
         }
 
         $subtotal = $this->getCartSubtotal($cart);
@@ -187,13 +187,13 @@ public function add(Request $request)
 
         if (!is_null($coupon->product_id)) {
             if ((int) $coupon->product_id !== (int) $product->id) {
-                return back()->with('error', 'This coupon is not valid for this product.');
+                return back()->with('error', __('This coupon is not valid for this product.'));
             }
 
             $this->storeProductCoupon($coupon, $cart);
             $this->refreshCoupons();
 
-            return back()->with('success', 'Product added to cart and product coupon applied successfully.');
+            return back()->with('success', __('Product added to cart and product coupon applied successfully.'));
         }
 
         $discount = $this->calculateCouponDiscount($coupon, $subtotal);
@@ -208,12 +208,12 @@ public function add(Request $request)
 
         $this->refreshCoupons();
 
-        return back()->with('success', 'Product added to cart and cart coupon applied successfully.');
+        return back()->with('success', __('Product added to cart and cart coupon applied successfully.'));
     }
 
     $this->refreshCoupons();
 
-    return back()->with('success', 'Product added to cart successfully.');
+    return back()->with('success', __('Product added to cart successfully.'));
 }
 
     public function remove(string $key)
@@ -222,7 +222,7 @@ public function add(Request $request)
         $cart = session()->get('cart', []);
 
         if (!array_key_exists($key, $cart)) {
-            return back()->with('error', 'Cart item not found.');
+            return back()->with('error', __('Cart item not found.'));
         }
 
         unset($cart[$key]);
@@ -237,7 +237,7 @@ public function add(Request $request)
 
         $this->refreshCoupons();
 
-        return back()->with('success', 'Item removed from cart successfully.');
+        return back()->with('success', __('Item removed from cart successfully.'));
     }
 
   public function update(Request $request)
@@ -250,7 +250,7 @@ public function add(Request $request)
     $cart = session()->get('cart', []);
 
     if (!array_key_exists($validated['key'], $cart)) {
-        return back()->with('error', 'Cart item not found.');
+        return back()->with('error', __('Cart item not found.'));
     }
 
     $item = $cart[$validated['key']];
@@ -261,7 +261,7 @@ public function add(Request $request)
         session()->put('cart', $cart);
         $this->refreshCoupons();
 
-        return back()->with('error', 'Product no longer exists and was removed from cart.');
+        return back()->with('error', __('Product no longer exists and was removed from cart.'));
     }
 
     $variant = null;
@@ -291,7 +291,7 @@ public function add(Request $request)
             session()->put('cart', $cart);
             $this->refreshCoupons();
 
-            return back()->with('error', 'Variant no longer exists and was removed from cart.');
+            return back()->with('error', __('Variant no longer exists and was removed from cart.'));
         }
 
         if ((int) $variant->stock < 1) {
@@ -299,7 +299,7 @@ public function add(Request $request)
             session()->put('cart', $cart);
             $this->refreshCoupons();
 
-            return back()->with('error', 'Selected variant is out of stock and was removed from cart.');
+            return back()->with('error', __('Selected variant is out of stock and was removed from cart.'));
         }
 
         if (!is_null($variant->price)) {
@@ -324,7 +324,7 @@ public function add(Request $request)
     $quantity = max(1, min((int) $validated['quantity'], self::MAX_QTY_PER_ITEM));
 
     if ($variant && $quantity > (int) $variant->stock) {
-        return back()->with('error', 'Requested quantity exceeds available stock.');
+        return back()->with('error', __('Requested quantity exceeds available stock.'));
     }
 
     $cart[$validated['key']]['price'] = $price;
@@ -339,7 +339,7 @@ public function add(Request $request)
     session()->put('cart', $cart);
     $this->refreshCoupons();
 
-    return back()->with('success', 'Cart updated successfully.');
+    return back()->with('success', __('Cart updated successfully.'));
 }
 
     public function clear()
@@ -348,7 +348,7 @@ public function add(Request $request)
         session()->forget('cart_coupon');
         session()->forget('cart_product_coupons');
 
-        return back()->with('success', 'Cart cleared successfully.');
+        return back()->with('success', __('Cart cleared successfully.'));
     }
 
     public function applyCoupon(Request $request)
@@ -362,13 +362,13 @@ public function add(Request $request)
         $subtotal = $this->getCartSubtotal($cart);
 
         if ($subtotal <= 0) {
-            return back()->with('error', 'Cart is empty.');
+            return back()->with('error', __('Cart is empty.'));
         }
 
         $coupon = Coupon::query()->where('code', $code)->first();
 
         if (!$coupon) {
-            return back()->with('error', 'Invalid coupon code.');
+            return back()->with('error', __('Invalid coupon code.'));
         }
 
         if (!$this->isCouponValid($coupon, $subtotal)) {
@@ -379,13 +379,13 @@ public function add(Request $request)
             $targetSubtotal = $this->getTargetSubtotalForProduct($cart, (int) $coupon->product_id);
 
             if ($targetSubtotal <= 0) {
-                return back()->with('error', 'This coupon is valid only for a specific product that is not in your cart.');
+                return back()->with('error', __('This coupon is valid only for a specific product that is not in your cart.'));
             }
 
             $this->storeProductCoupon($coupon, $cart);
             $this->refreshCoupons();
 
-            return back()->with('success', 'Product coupon applied successfully.');
+            return back()->with('success', __('Product coupon applied successfully.'));
         }
 
         $discount = $this->calculateCouponDiscount($coupon, $subtotal);
@@ -400,13 +400,13 @@ public function add(Request $request)
 
         $this->refreshCoupons();
 
-        return back()->with('success', 'Cart coupon applied successfully.');
+        return back()->with('success', __('Cart coupon applied successfully.'));
     }
 
     public function removeCoupon()
     {
         session()->forget('cart_coupon');
-        return back()->with('success', 'Cart coupon removed successfully.');
+        return back()->with('success', __('Cart coupon removed successfully.'));
     }
 
     public function removeProductCoupon(int $productId)
@@ -418,7 +418,7 @@ public function add(Request $request)
             session()->put('cart_product_coupons', $productCoupons);
         }
 
-        return back()->with('success', 'Product coupon removed successfully.');
+        return back()->with('success', __('Product coupon removed successfully.'));
     }
 
     public function previewCoupon(Request $request)
@@ -450,27 +450,27 @@ public function add(Request $request)
         if (!$coupon) {
             return response()->json([
                 'ok' => false,
-                'message' => 'Invalid coupon code.',
+                'message' => __('Invalid coupon code.'),
             ]);
         }
 
         if (!is_null($coupon->product_id) && (int) $coupon->product_id !== (int) $product->id) {
             return response()->json([
                 'ok' => false,
-                'message' => 'This coupon is not valid for this product.',
+                'message' => __('This coupon is not valid for this product.'),
             ]);
         }
 
         if (!$coupon->is_active) {
-            return response()->json(['ok' => false, 'message' => 'This coupon is not active.']);
+            return response()->json(['ok' => false, 'message' => __('This coupon is not active.')]);
         }
 
         if ($coupon->starts_at && now()->lt($coupon->starts_at)) {
-            return response()->json(['ok' => false, 'message' => 'This coupon is not available yet.']);
+            return response()->json(['ok' => false, 'message' => __('This coupon is not available yet.')]);
         }
 
         if ($coupon->expires_at && now()->gt($coupon->expires_at)) {
-            return response()->json(['ok' => false, 'message' => 'This coupon has expired.']);
+            return response()->json(['ok' => false, 'message' => __('This coupon has expired.')]);
         }
 
         $discount = 0;
@@ -490,7 +490,7 @@ public function add(Request $request)
 
         return response()->json([
             'ok' => true,
-            'message' => 'Coupon applied successfully.',
+            'message' => __('Coupon applied successfully.'),
             'original' => round($price, 2),
             'discount' => round($discount, 2),
             'final' => round($final, 2),
@@ -833,7 +833,7 @@ public function add(Request $request)
 
             $attributeName = trim((string) ($attribute->name ?? $attribute->slug ?? 'Option'));
             $attributeSlug = strtolower(trim((string) ($attribute->slug ?? '')));
-            $valueText = trim((string) ($value->value ?? ''));
+            $valueText = trim((string) ($value->label ?? $value->value ?? ''));
 
             if ($valueText === '') {
                 continue;

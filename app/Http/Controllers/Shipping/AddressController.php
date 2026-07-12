@@ -41,7 +41,7 @@ class AddressController extends Controller
 
         Address::create($data);
 
-        return redirect()->route('shipping.addresses.index')->with('success', 'Address added successfully.');
+        return redirect()->route('shipping.addresses.index')->with('success', __('Address added successfully.'));
     }
 
     public function edit(Address $address): View
@@ -64,7 +64,7 @@ class AddressController extends Controller
 
         $address->update($data);
 
-        return redirect()->route('shipping.addresses.index')->with('success', 'Address updated successfully.');
+        return redirect()->route('shipping.addresses.index')->with('success', __('Address updated successfully.'));
     }
 
     public function destroy(Address $address): RedirectResponse
@@ -81,7 +81,7 @@ class AddressController extends Controller
             }
         }
 
-        return back()->with('success', 'Address deleted successfully.');
+        return back()->with('success', __('Address deleted successfully.'));
     }
 
     public function setDefault(Address $address): RedirectResponse
@@ -91,6 +91,6 @@ class AddressController extends Controller
         Address::where('user_id', auth()->id())->update(['is_default' => false]);
         $address->update(['is_default' => true]);
 
-        return back()->with('success', 'Default address updated.');
+        return back()->with('success', __('Default address updated.'));
     }
 }

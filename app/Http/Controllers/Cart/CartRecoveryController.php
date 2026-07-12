@@ -18,24 +18,24 @@ class CartRecoveryController extends Controller
 
         if (!$recovery->isRecoverable()) {
             return redirect('/')
-                ->with('error', 'This recovery link is no longer valid.');
+                ->with('error', __('This recovery link is no longer valid.'));
         }
 
         $cart = $recovery->cart;
 
         if (!$cart || !$cart->items()->exists()) {
             return redirect('/')
-                ->with('error', 'This cart is no longer available.');
+                ->with('error', __('This cart is no longer available.'));
         }
 
         if ($cart->user_id && Auth::check() && Auth::id() !== $cart->user_id) {
             return redirect('/')
-                ->with('error', 'This cart belongs to another user.');
+                ->with('error', __('This cart belongs to another user.'));
         }
 
         if ($cart->user_id && !Auth::check()) {
             return redirect()->route('login')
-                ->with('info', 'Please log in to restore your cart.');
+                ->with('info', __('Please log in to restore your cart.'));
         }
 
         $cart->touch();
@@ -45,6 +45,6 @@ class CartRecoveryController extends Controller
             'recovered_at' => now(),
         ]);
 
-        return redirect('/cart')->with('success', 'Your cart has been recovered successfully.');
+        return redirect('/cart')->with('success', __('Your cart has been recovered successfully.'));
     }
 }
