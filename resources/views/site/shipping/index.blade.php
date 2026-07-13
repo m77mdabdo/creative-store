@@ -4,6 +4,7 @@
 <section class="bg0 p-t-75 p-b-85">
     <div class="container">
 
+
         <h3 class="mtext-111 cl2 p-b-16">
             {{ __('site.shipping') }}
         </h3>
@@ -201,7 +202,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const shippingOptionsBox = document.getElementById('shipping-options');
     const placeOrderForm = document.getElementById('place-order-form');
 
+    const submitButton = placeOrderForm.querySelector('button[type="submit"]');
+    let latestSelection = 0;
+
+    // Only the most recent selection may update the form. Without this an
+    // older response (the auto-selected first option) could arrive last and
+    // leave the form and the session pointing at different methods.
     function applySelectedShipping(input) {
+        const selection = ++latestSelection;
+        submitButton.disabled = true;
+
         fetch("{{ route('shipping.select-method') }}", {
             method: "POST",
             headers: {
@@ -215,6 +225,10 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(res => res.json())
         .then(response => {
+            if (selection !== latestSelection) {
+                return;
+            }
+
             if (response.success) {
                 document.getElementById('place-order-shipping-method-id').value = input.dataset.methodId;
                 document.getElementById('place-order-shipping-rate-id').value = input.dataset.rateId;
@@ -222,6 +236,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('summary-shipping').innerText = response.totals.shipping_fee.toFixed(2) + ' SAR';
                 document.getElementById('summary-tax').innerText = response.totals.tax_total.toFixed(2) + ' SAR';
                 document.getElementById('summary-total').innerText = response.totals.total.toFixed(2) + ' SAR';
+            }
+        })
+        .finally(() => {
+            if (selection === latestSelection) {
+                submitButton.disabled = false;
             }
         });
     }
