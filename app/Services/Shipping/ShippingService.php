@@ -14,11 +14,30 @@ class ShippingService
         });
     }
 
+    /**
+     * Total cart weight in kg. Items stored before weights were kept in the
+     * session are looked up in two queries instead of being counted as 0.
+     */
     public function cartWeight(array $cart): float
     {
-        return (float) collect($cart)->sum(function ($item) {
-            return ((float) ($item['weight'] ?? 0)) * ((int) ($item['quantity'] ?? 1));
-        });
+        $missing = collect($cart)->filter(fn ($item) => ! array_key_exists('weight', $item));
+
+        $variantWeights = \App\Models\ProductVariant::query()
+            ->whereIn('id', $missing->pluck('variant_id')->filter()->unique())
+            ->pluck('weight', 'id');
+
+        $productWeights = \App\Models\Product::query()
+            ->whereIn('id', $missing->pluck('product_id')->filter()->unique())
+            ->pluck('weight', 'id');
+
+        return round((float) collect($cart)->sum(function ($item) use ($variantWeights, $productWeights) {
+            $weight = $item['weight']
+                ?? $variantWeights[$item['variant_id'] ?? 0]
+                ?? $productWeights[$item['product_id'] ?? 0]
+                ?? 0;
+
+            return (float) $weight * max(1, (int) ($item['quantity'] ?? 1));
+        }), 3);
     }
 
 public function availableOptions(Address $address, array $cart): array
@@ -53,8 +72,10 @@ public function availableOptions(Address $address, array $cart): array
                   }
               });
         })
-        ->where('min_weight', '<=', $weight)
-        ->where('max_weight', '>=', $weight)
+        // An empty bound means "no limit"; plain comparisons would drop those
+        // rates because NULL <= x is never true in SQL.
+        ->where(fn ($q) => $q->whereNull('min_weight')->orWhere('min_weight', '<=', $weight))
+        ->where(fn ($q) => $q->whereNull('max_weight')->orWhere('max_weight', '>=', $weight))
         ->where(function ($q) use ($cityAliases) {
             $q->whereNull('city');
 

@@ -165,6 +165,7 @@ public function add(Request $request)
         'size' => $selectedOptions['size'],
         'variant_options' => $selectedOptions['options'],
         'tax_rate' => 0,
+        'weight' => (float) ($variant?->weight ?? $product->weight ?? 0),
         'total_price' => $price * $newQuantity,
     ];
 
@@ -810,6 +811,7 @@ public function add(Request $request)
                 'size' => $selectedOptions['size'],
                 'variant_options' => $selectedOptions['options'],
                 'tax_rate' => (float) ($item['tax_rate'] ?? 0),
+                'weight' => (float) ($variant?->weight ?? $product->weight ?? 0),
                 'total_price' => $price * $quantity,
             ];
         }
