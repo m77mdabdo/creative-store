@@ -5,13 +5,18 @@
 
     $orderStatusMap = [
         'pending' => ['label' => __('site.status_pending'), 'class' => 'warning', 'row_class' => ''],
+        'confirmed' => ['label' => __('site.status_confirmed'), 'class' => 'info', 'row_class' => ''],
         'processing' => ['label' => __('site.status_processing'), 'class' => 'info', 'row_class' => ''],
+        'shipped' => ['label' => __('site.status_shipped'), 'class' => 'info', 'row_class' => ''],
+        'delivered' => ['label' => __('site.status_delivered'), 'class' => 'success', 'row_class' => ''],
         'completed' => ['label' => __('site.status_completed'), 'class' => 'success', 'row_class' => ''],
         'cancelled' => ['label' => __('site.status_cancelled'), 'class' => 'danger', 'row_class' => 'danger-row'],
     ];
 
     $paymentStatusMap = [
         'pending' => ['label' => __('site.status_pending'), 'class' => 'secondary', 'row_class' => ''],
+        'unpaid' => ['label' => __('site.status_unpaid'), 'class' => 'secondary', 'row_class' => ''],
+        'cancelled' => ['label' => __('site.status_cancelled'), 'class' => 'secondary', 'row_class' => ''],
         'paid' => ['label' => __('site.status_paid'), 'class' => 'success', 'row_class' => ''],
         'failed' => ['label' => __('site.status_failed'), 'class' => 'danger', 'row_class' => 'danger-row'],
         'refund_pending' => ['label' => __('site.status_refund_pending'), 'class' => 'danger', 'row_class' => 'danger-row'],

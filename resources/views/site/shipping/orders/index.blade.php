@@ -21,11 +21,11 @@
                     </h5>
 
                     <p class="order-meta">
-                        <strong>{{ __('site.status') }}:</strong> {{ $order->status }}
+                        <strong>{{ __('site.status') }}:</strong> {{ \Illuminate\Support\Facades\Lang::has('site.status_' . $order->status) ? __('site.status_' . $order->status) : $order->status }}
                     </p>
 
                     <p class="order-meta">
-                        <strong>{{ __('site.shipping_status') }}:</strong> {{ $order->shipping_status }}
+                        <strong>{{ __('site.shipping_status') }}:</strong> {{ \Illuminate\Support\Facades\Lang::has('site.status_' . $order->shipping_status) ? __('site.status_' . $order->shipping_status) : $order->shipping_status }}
                     </p>
 
                     <p class="order-meta">
