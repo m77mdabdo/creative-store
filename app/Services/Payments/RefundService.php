@@ -102,7 +102,7 @@ class RefundService
         $response = Http::withBasicAuth(
             config('services.moyasar.secret_key'),
             ''
-        )->post(
+        )->acceptJson()->timeout(20)->post(
             "https://api.moyasar.com/v1/payments/{$payment->transaction_id}/refund",
             $payload
         );
@@ -135,7 +135,15 @@ class RefundService
                 'status' => Refund::STATUS_FAILED,
             ]);
 
-            throw new RuntimeException('Refund request failed: ' . $response->body());
+            // Keep gateway details in the log; the message may reach a customer.
+            \Illuminate\Support\Facades\Log::error('Moyasar refund failed', [
+                'order_id'   => $order->id,
+                'payment_id' => $payment->id,
+                'status'     => $response->status(),
+                'body'       => $response->json(),
+            ]);
+
+            throw new RuntimeException(__('The refund could not be processed right now. Our team has been notified.'));
         }
 
         $body = $response->json();
