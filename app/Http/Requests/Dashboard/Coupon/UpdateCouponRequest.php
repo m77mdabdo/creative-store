@@ -25,7 +25,7 @@ class UpdateCouponRequest extends FormRequest
                 Rule::unique('coupons', 'code')->ignore($coupon?->id),
             ],
             'type' => ['required', 'in:fixed,percent'],
-            'value' => ['required', 'numeric', 'min:0.01'],
+            'value' => array_filter(['required', 'numeric', 'min:0.01', $this->input('type') === 'percent' ? 'max:100' : null]),
             'min_order_amount' => ['nullable', 'numeric', 'min:0'],
             'max_discount_amount' => ['nullable', 'numeric', 'min:0'],
             'usage_limit' => ['nullable', 'integer', 'min:1'],
