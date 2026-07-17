@@ -35,11 +35,14 @@ class CartController extends Controller
 
         $productDiscount = $this->calculateAllProductCouponsDiscount($cart, $productCouponsData);
         $cartDiscount = (float) ($cartCouponData['discount'] ?? 0);
-        $discount = $productDiscount + $cartDiscount;
+        // Round each money step to halalas so the displayed lines always add
+        // up to the displayed total (no 656.995 → 656.99 float drift).
+        $subtotal = round($subtotal, 2);
+        $discount = round(min($productDiscount + $cartDiscount, $subtotal), 2);
 
-        $netTotal = max($subtotal - $discount, 0);
-        $vatValue = $netTotal * self::VAT_RATE;
-        $grandTotal = $netTotal + $vatValue;
+        $netTotal = round($subtotal - $discount, 2);
+        $vatValue = round($netTotal * self::VAT_RATE, 2);
+        $grandTotal = round($netTotal + $vatValue, 2);
 
         session([
             'cart_summary' => [

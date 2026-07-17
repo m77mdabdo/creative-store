@@ -174,21 +174,24 @@ private function normalizeCity(?string $city): ?string
     };
 }
 
+    /**
+     * Order totals for the checkout summary. Built from the same rounded
+     * parts CheckoutService uses, so the page, the order and the amount
+     * sent to the payment gateway always match.
+     */
     public function orderTotalsFromCartSummary(array $cartSummary, float $shippingFee): array
     {
-        $subtotal = (float) ($cartSummary['subtotal'] ?? 0);
-        $discount = (float) ($cartSummary['discount'] ?? 0);
-        $taxTotal = (float) ($cartSummary['tax_total'] ?? 0);
-
-        // ده الرقم النهائي القادم من الكارت قبل الشحن
-        $cartFinalTotal = (float) ($cartSummary['total'] ?? 0);
+        $subtotal = round((float) ($cartSummary['subtotal'] ?? 0), 2);
+        $discount = round(min((float) ($cartSummary['discount'] ?? 0), $subtotal), 2);
+        $taxTotal = round((float) ($cartSummary['tax_total'] ?? 0), 2);
+        $shippingFee = round($shippingFee, 2);
 
         return [
-            'subtotal' => round($subtotal, 2),
-            'discount' => round($discount, 2),
-            'shipping_fee' => round($shippingFee, 2),
-            'tax_total' => round($taxTotal, 2),
-            'total' => round($cartFinalTotal + $shippingFee, 2),
+            'subtotal'     => $subtotal,
+            'discount'     => $discount,
+            'shipping_fee' => $shippingFee,
+            'tax_total'    => $taxTotal,
+            'total'        => round($subtotal - $discount + $taxTotal + $shippingFee, 2),
         ];
     }
 }
