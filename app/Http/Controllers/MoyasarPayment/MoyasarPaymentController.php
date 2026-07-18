@@ -23,9 +23,16 @@ class MoyasarPaymentController extends Controller
     ) {
     }
 
-    public function show(Request $request, Order $order): View
+    public function show(Request $request, Order $order): View|RedirectResponse
     {
         $this->authorizeOwner($request, $order);
+
+        // Only an open, unpaid order can be paid; anything else would take
+        // money for an order that is already settled or cancelled.
+        if ($order->status !== 'pending' || $order->payment_status === 'paid') {
+            return redirect()->route('shipping.orders.show', $order)
+                ->with('error', __('This order can no longer be paid.'));
+        }
 
         $payment = $order->payments()
             ->where('gateway', 'moyasar')

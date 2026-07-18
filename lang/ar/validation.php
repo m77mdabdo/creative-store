@@ -123,5 +123,10 @@ return [
         'tracking_number' => 'رقم الشحنة',
         'order_number' => 'رقم الطلب',
         'title' => 'العنوان',
+        'value' => 'القيمة',
+        'code' => 'الكود',
+        'type' => 'النوع',
+        'usage_limit' => 'حد الاستخدام',
+        'per_user_limit' => 'حد الاستخدام لكل عميل',
     ],
 ];

@@ -107,7 +107,7 @@ class OrderController extends Controller
                 } elseif ($wasPaid) {
                     $nextPaymentStatus = 'paid';
                 } else {
-                    $nextPaymentStatus = $order->payment_status ?: 'unpaid';
+                    $nextPaymentStatus = 'cancelled';
                 }
 
                 $order->update([

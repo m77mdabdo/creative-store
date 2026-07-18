@@ -76,5 +76,6 @@
     "Your cart has been recovered successfully.": "تم استرجاع سلتك.",
     "Your message has been sent successfully.": "تم إرسال رسالتك.",
     "Your review has been submitted successfully.": "تم إرسال تقييمك.",
-    "The refund could not be processed right now. Our team has been notified.": "تعذر تنفيذ الاسترداد الآن، وتم إبلاغ فريقنا."
+    "The refund could not be processed right now. Our team has been notified.": "تعذر تنفيذ الاسترداد الآن، وتم إبلاغ فريقنا.",
+    "This order can no longer be paid.": "لم يعد بالإمكان دفع هذا الطلب."
 }
