@@ -124,7 +124,7 @@
                 <img src="{{ asset('cozastore/images/icons/icon-close2.png') }}" alt="Close">
             </button>
 
-            <form class="wrap-search-header flex-w p-l-15" method="GET" action="{{ url()->current() }}">
+            <form class="wrap-search-header flex-w p-l-15" method="GET" action="{{ route('products.index') }}" role="search">
                 @foreach(request()->except(['q', 'page']) as $k => $v)
                     <input type="hidden" name="{{ $k }}" value="{{ $v }}">
                 @endforeach
