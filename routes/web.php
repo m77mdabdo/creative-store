@@ -21,6 +21,7 @@ use App\Http\Controllers\Frontend\BlogController as FrontBlogController;
 use App\Http\Controllers\Frontend\PageController as FrontPageController;
 use App\Http\Controllers\Home\HomeController;
 use App\Http\Controllers\MoyasarPayment\MoyasarPaymentController;
+use App\Http\Controllers\Newsletter\NewsletterController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Product\ReviewController;
 use App\Http\Controllers\Shipping\AddressController;
@@ -169,6 +170,10 @@ Route::group([
     Route::get('/about', [AboutController::class, 'index'])->name('about.index');
 
     Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+    Route::post('/newsletter', [NewsletterController::class, 'store'])
+        ->middleware('throttle:forms')
+        ->name('newsletter.store');
+
     Route::post('/contact', [ContactController::class, 'store'])
         ->middleware('throttle:forms')
         ->name('contact.store');

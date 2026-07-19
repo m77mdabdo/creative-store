@@ -522,5 +522,6 @@ return [
     'verify_email_submit' => 'تأكيد',
     'verify_email_expires' => 'الكود صالح لمدة 10 دقائق.',
     'verify_email_wrong_address' => 'البريد غير صحيح؟ سجّل من جديد',
+    'newsletter_subscribed' => 'تم اشتراكك في النشرة البريدية.',
 
 ];

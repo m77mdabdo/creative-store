@@ -522,5 +522,6 @@ return [
     'verify_email_submit' => 'Verify',
     'verify_email_expires' => 'The code is valid for 10 minutes.',
     'verify_email_wrong_address' => 'Wrong email? Register again',
+    'newsletter_subscribed' => 'You are subscribed to our newsletter.',
 
 ];
