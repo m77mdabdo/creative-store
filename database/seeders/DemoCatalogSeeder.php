@@ -266,10 +266,30 @@ class DemoCatalogSeeder extends Seeder
     {
         $slug = Str::slug($label);
 
-        return $this->valueCache["{$attribute->id}:{$slug}"] ??= AttributeValue::query()->firstOrCreate(
-            ['attribute_id' => $attribute->id, 'slug' => $slug],
-            ['value' => $label, 'sort_order' => 0, 'is_active' => true],
+        return $this->valueCache["{$attribute->id}:{$slug}"] ??= tap(
+            AttributeValue::query()->firstOrCreate(
+                ['attribute_id' => $attribute->id, 'slug' => $slug],
+                ['value' => $label, 'is_active' => true],
+            ),
+            fn (AttributeValue $value) => $value->update(['sort_order' => $this->sortOrder($label)]),
         );
+    }
+
+    /**
+     * Sizes follow their natural order (XS, S, M... / 37, 38...); other
+     * values keep the order they appear in.
+     */
+    private function sortOrder(string $label): int
+    {
+        foreach (self::SIZE_SETS as $set) {
+            $position = array_search($label, $set, true);
+
+            if ($position !== false) {
+                return $position + 1;
+            }
+        }
+
+        return 0;
     }
 
     /**
