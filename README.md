@@ -413,6 +413,34 @@ php artisan event:cache
 - Hero slides got a scrim and light text for readable headlines.
 - Missing Arabic messages for the map picker and order statuses added.
 
+### End-to-end test run
+
+The full purchase path was exercised on a local install against Moyasar's test mode:
+
+| Step | Result |
+| --- | --- |
+| Register, email OTP (typed in Arabic digits), login | Pass |
+| Choose colour + size, add to cart, update, remove, stock and quantity limits | Pass after fixing variant selection |
+| Cart and product coupons, totals and VAT | Pass after fixing rounding |
+| Single-use coupon reused on a second order | Rejected |
+| Address, shipping options, place order, stock reserved | Pass |
+| Card payment with 3-D Secure, server verification, success page | Pass |
+| Callback replayed, forged payment id, path injection in id | Handled |
+| Webhook without / with wrong secret, valid event, redelivery, tampered amount | Handled |
+| Customer cancels a paid order twice at once | One cancellation, one refund through Moyasar, stock restored once |
+| Admin cancels an order twice at once | Stock restored once |
+| Cancelled order's payment page | Refused |
+
+**Bugs found and fixed during the run**
+- Product page ignored the selected size (Select2 events) and picked an arbitrary variant from a colour alone.
+- Verification code autofill was cut to one digit, and Arabic-Indic digits were dropped.
+- Cart totals could be off by a halala (656.99 instead of 657.00).
+- Shipping ignored cart weight entirely and dropped rates with open weight ranges.
+- A cancelled order could still be paid.
+- Refund errors could show the gateway's raw response to customers.
+- Percentage coupons above 100% crashed the dashboard instead of failing validation.
+- The footer newsletter form and header search had no working target.
+
 ---
 
 ## License
