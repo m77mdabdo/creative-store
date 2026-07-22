@@ -53,4 +53,14 @@ class ShippingMethod extends Model
     {
         return $query->where('is_active', true);
     }
+
+    /**
+     * Method name in the current language, falling back to the stored name.
+     */
+    public function getLabelAttribute(): string
+    {
+        $key = 'shipping.methods.' . $this->code;
+
+        return \Illuminate\Support\Facades\Lang::has($key) ? __($key) : (string) $this->name;
+    }
 }

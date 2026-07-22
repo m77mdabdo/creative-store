@@ -120,15 +120,19 @@ public function availableOptions(Address $address, array $cart): array
             $shippingFee = 0;
         }
 
+        $methodName = \Illuminate\Support\Facades\Lang::has('shipping.methods.' . $rate->method->code)
+            ? __('shipping.methods.' . $rate->method->code)
+            : $rate->method->name;
+
         return [
             'rate_id' => $rate->id,
             'shipping_method_id' => $rate->shipping_method_id,
-            'method_name' => $rate->method->name,
+            'method_name' => $methodName,
             'method_code' => $rate->method->code,
             'price' => $shippingFee,
             'eta_min_days' => $rate->eta_min_days,
             'eta_max_days' => $rate->eta_max_days,
-            'label' => $rate->method->name . ' - ' . number_format($shippingFee, 2) . ' SAR',
+            'label' => $methodName . ' - ' . number_format($shippingFee, 2) . ' ' . __('SAR'),
         ];
     })->values()->toArray();
 }

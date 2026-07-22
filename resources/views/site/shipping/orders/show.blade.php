@@ -105,7 +105,7 @@
                                     <th>{{ __('site.payment_method') }}</th>
                                     <td>{{ strtoupper($order->payment_method ?? '-') }}</td>
                                     <th>{{ __('site.shipping_method') }}</th>
-                                    <td>{{ optional($order->shippingMethod)->name ?? '-' }}</td>
+                                    <td>{{ $order->shippingMethod?->label ?? '-' }}</td>
                                 </tr>
                                 <tr>
                                     <th>{{ __('site.currency') }}</th>
