@@ -105,8 +105,9 @@
                     <label>Status</label>
                     <select name="status" class="form-control">
                         <option value="active" {{ $form['status'] === 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="inactive" {{ $form['status'] === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                        
                         <option value="draft" {{ $form['status'] === 'draft' ? 'selected' : '' }}>Draft</option>
+                        <option value="archived" {{ $form['status'] === 'archived' ? 'selected' : '' }}>Archived</option>
                     </select>
                 </div>
 

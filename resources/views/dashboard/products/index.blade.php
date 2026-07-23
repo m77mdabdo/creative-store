@@ -58,8 +58,9 @@
                                 <select name="status" class="form-control">
                                     <option value="">All</option>
                                     <option value="active" {{ $filters['status'] === 'active' ? 'selected' : '' }}>Active</option>
-                                    <option value="inactive" {{ $filters['status'] === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                    
                                     <option value="draft" {{ $filters['status'] === 'draft' ? 'selected' : '' }}>Draft</option>
+                        <option value="archived" {{ $filters['status'] === 'archived' ? 'selected' : '' }}>Archived</option>
                                 </select>
                             </div>
 

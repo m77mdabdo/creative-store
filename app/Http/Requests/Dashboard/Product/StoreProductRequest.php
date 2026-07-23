@@ -23,7 +23,7 @@ public function rules(): array
         'sku' => ['required', 'string', 'max:255', 'unique:products,sku'],
         'base_price' => ['required', 'numeric', 'min:0'],
         'currency' => ['required', 'string', 'max:10'],
-        'status' => ['required', 'string', 'in:active,inactive,draft'],
+        'status' => ['required', 'string', 'in:active,draft,archived'],
         'has_variants' => ['nullable', 'boolean'],
         'tax_rate' => ['nullable', 'numeric', 'min:0'],
         'weight' => ['nullable', 'numeric', 'min:0'],

@@ -274,15 +274,12 @@ class ProductController extends Controller
 
     public function toggleStatus(Product $product): RedirectResponse
     {
-        $newStatus = $product->status === 'active' ? 'inactive' : 'active';
-
+        // products.status is draft|active|archived; "inactive" was rejected by
+        // the column. Variants are left alone: the product status already hides
+        // it everywhere, and re-enabling must not leave every variant switched off.
         $product->update([
-            'status' => $newStatus,
+            'status' => $product->status === 'active' ? 'draft' : 'active',
         ]);
-
-        if ($newStatus !== 'active') {
-            $product->variants()->update(['is_active' => false]);
-        }
 
         return back()->with('success', 'Product status updated successfully.');
     }
@@ -309,7 +306,7 @@ class ProductController extends Controller
         foreach ($products as $product) {
             match ($request->action) {
                 'activate' => $product->update(['status' => 'active']),
-                'deactivate' => $product->update(['status' => 'inactive']),
+                'deactivate' => $product->update(['status' => 'draft']),
                 'feature' => $product->update(['is_featured' => true]),
                 'unfeature' => $product->update(['is_featured' => false]),
                 'delete' => $product->delete(),
