@@ -1,5 +1,10 @@
 @extends('site.app.layout')
 
+@section('title', $blog->localized_title)
+@section('meta_description', $blog->localized_excerpt ?: \Illuminate\Support\Str::limit(strip_tags((string) $blog->safe_content), 160))
+@section('og_image', $blog->image_url ?? '')
+@section('og_type', 'article')
+
 @section('content')
 
 <link rel="stylesheet" href="{{ versioned_asset('css/site/site-blog-blog-detail.css') }}">

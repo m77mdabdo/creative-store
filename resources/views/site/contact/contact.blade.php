@@ -1,5 +1,7 @@
 @extends('site.app.layout')
 
+@section('title', __('site.contact'))
+
 @section('content')
     @php
         $content = $content ?? [];

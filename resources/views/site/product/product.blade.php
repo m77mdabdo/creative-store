@@ -1,5 +1,8 @@
 @extends('site.app.layout')
 
+@section('title', __('site.shop'))
+@section('meta_description', __('site.seo_description'))
+
 @section('content')
 
 @php

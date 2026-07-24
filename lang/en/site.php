@@ -523,5 +523,7 @@ return [
     'verify_email_expires' => 'The code is valid for 10 minutes.',
     'verify_email_wrong_address' => 'Wrong email? Register again',
     'newsletter_subscribed' => 'You are subscribed to our newsletter.',
+    'seo_tagline' => 'Fashion and accessories delivered across Saudi Arabia',
+    'seo_description' => 'Shop the latest women’s and men’s fashion, shoes, bags, watches and fragrances at Creative Store, with secure payment and fast delivery across Saudi Arabia.',
 
 ];

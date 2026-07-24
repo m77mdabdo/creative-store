@@ -1,5 +1,7 @@
 @extends('site.app.layout')
 
+@section('title', $pageTitle ?? __('site.about'))
+
 @section('content')
 @php
     use Illuminate\Support\Facades\Storage;

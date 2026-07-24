@@ -2,6 +2,7 @@
 <html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     @include('site.app.head')
+    @stack('head')
 </head>
 <body class="site-body {{ app()->getLocale() === 'ar' ? 'rtl-site' : 'ltr-site' }}">
 

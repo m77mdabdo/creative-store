@@ -1,4 +1,28 @@
-<title>@yield('title', config('app.name', 'Creative Store'))</title>
+@php
+    $seoSiteName = config('app.name', 'Creative Store');
+    $seoTitle = trim($__env->yieldContent('title'));
+    $seoTitle = $seoTitle !== '' ? $seoTitle . ' | ' . $seoSiteName : $seoSiteName . ' | ' . __('site.seo_tagline');
+    $seoDescription = \Illuminate\Support\Str::limit(trim(strip_tags($__env->yieldContent('meta_description'))) ?: __('site.seo_description'), 160);
+    $seoImage = trim($__env->yieldContent('og_image')) ?: asset('cozastore/images/slide-01.jpg');
+    $seoType = trim($__env->yieldContent('og_type')) ?: 'website';
+    $seoLocales = array_keys(config('laravellocalization.supportedLocales', ['ar' => [], 'en' => []]));
+@endphp
+<title>{{ $seoTitle }}</title>
+<meta name="description" content="{{ $seoDescription }}">
+<link rel="canonical" href="{{ url()->current() }}">
+@foreach ($seoLocales as $seoLocale)
+<link rel="alternate" hreflang="{{ $seoLocale }}" href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL($seoLocale, null, [], true) }}">
+@endforeach
+<link rel="alternate" hreflang="x-default" href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::getLocalizedURL('ar', null, [], true) }}">
+<meta property="og:site_name" content="{{ $seoSiteName }}">
+<meta property="og:type" content="{{ $seoType }}">
+<meta property="og:title" content="{{ $seoTitle }}">
+<meta property="og:description" content="{{ $seoDescription }}">
+<meta property="og:url" content="{{ url()->current() }}">
+<meta property="og:image" content="{{ $seoImage }}">
+<meta property="og:locale" content="{{ app()->getLocale() === 'ar' ? 'ar_SA' : 'en_US' }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#111111">
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

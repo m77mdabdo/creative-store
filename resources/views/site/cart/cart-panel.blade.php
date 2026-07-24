@@ -1,5 +1,7 @@
 @extends('site.app.layout')
 
+@section('title', __('site.your_cart'))
+
 @section('content')
 
 <link rel="stylesheet" href="{{ versioned_asset('css/site/site-cart-cart-panel.css') }}">

@@ -1,5 +1,7 @@
 @extends('site.app.layout')
 
+@section('title', __('site.blog'))
+
 @section('content')
 
 <link rel="stylesheet" href="{{ versioned_asset('css/site/site-blog-blog.css') }}">

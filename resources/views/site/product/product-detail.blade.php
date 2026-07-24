@@ -1,5 +1,40 @@
 @extends('site.app.layout')
 
+@section('title', $productName)
+@section('meta_description', $productDescription ?: $productName)
+@section('og_image', $generalGallery[0]['url'] ?? '')
+@section('og_type', 'product')
+
+@push('head')
+@php
+    $variantStocks = collect($variantMatrix);
+    $structuredProduct = array_filter([
+        '@context'    => 'https://schema.org',
+        '@type'       => 'Product',
+        'name'        => $productName,
+        'description' => \Illuminate\Support\Str::limit(strip_tags((string) $productDescription), 300),
+        'sku'         => $productSku,
+        'image'       => collect($generalGallery)->pluck('url')->filter()->values()->all(),
+        'category'    => $categoryName,
+        'offers'      => [
+            '@type'         => 'Offer',
+            'url'           => url()->current(),
+            'priceCurrency' => $productCurrency,
+            'price'         => number_format((float) $productPrice, 2, '.', ''),
+            'availability'  => $variantStocks->isEmpty() || $variantStocks->sum('stock') > 0
+                ? 'https://schema.org/InStock'
+                : 'https://schema.org/OutOfStock',
+        ],
+        'aggregateRating' => $reviewsCount > 0 ? [
+            '@type'       => 'AggregateRating',
+            'ratingValue' => $averageRating,
+            'reviewCount' => $reviewsCount,
+        ] : null,
+    ]);
+@endphp
+<script type="application/ld+json">{!! json_encode($structuredProduct, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) !!}</script>
+@endpush
+
 @section('content')
 
 @php
