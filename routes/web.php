@@ -22,6 +22,7 @@ use App\Http\Controllers\Frontend\PageController as FrontPageController;
 use App\Http\Controllers\Home\HomeController;
 use App\Http\Controllers\MoyasarPayment\MoyasarPaymentController;
 use App\Http\Controllers\Newsletter\NewsletterController;
+use App\Http\Controllers\Seo\SitemapController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Product\ReviewController;
 use App\Http\Controllers\Shipping\AddressController;
@@ -331,3 +332,20 @@ Route::group([
 Route::post('/webhooks/moyasar', [MoyasarPaymentController::class, 'webhook'])
     ->middleware('throttle:webhooks')
     ->name('webhooks.moyasar');
+
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+
+// Generated so the Sitemap line always carries the real domain.
+Route::get('/robots.txt', function () {
+    $disallow = collect(['dashboard', 'cart', 'checkout', 'shipping', 'myaccount', 'order'])
+        ->crossJoin(array_keys(\Mcamara\LaravelLocalization\Facades\LaravelLocalization::getSupportedLocales()))
+        ->map(fn ($pair) => "Disallow: /{$pair[1]}/{$pair[0]}")
+        ->push('Disallow: /webhooks/')
+        ->implode("\n");
+
+    $body = app()->environment('production')
+        ? "User-agent: *\n{$disallow}\n\nSitemap: " . route('sitemap') . "\n"
+        : "User-agent: *\nDisallow: /\n";
+
+    return response($body, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+})->name('robots');
