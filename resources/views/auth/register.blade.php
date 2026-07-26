@@ -140,7 +140,7 @@
                                                         required>
                                                     <label for="agreeTerms">
                                                         {{ __('site.i_agree_to') }}
-                                                        <a href="#">{{ __('site.terms') }}</a>
+                                                        <a href="{{ route('frontend.pages.show', 'terms') }}" target="_blank" rel="noopener">{{ __('site.terms') }}</a>
                                                     </label>
                                                 </div>
                                             </div>

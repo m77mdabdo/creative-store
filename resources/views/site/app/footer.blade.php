@@ -55,19 +55,19 @@
                     </li>
 
                     <li class="p-b-10">
-                        <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+                        <a href="{{ route('frontend.pages.show', 'returns') }}" class="stext-107 cl7 hov-cl1 trans-04">
                             {{ __('site.returns') }}
                         </a>
                     </li>
 
                     <li class="p-b-10">
-                        <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+                        <a href="{{ route('frontend.pages.show', 'shipping-policy') }}" class="stext-107 cl7 hov-cl1 trans-04">
                             {{ __('site.shipping') }}
                         </a>
                     </li>
 
                     <li class="p-b-10">
-                        <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+                        <a href="{{ route('frontend.pages.show', 'faq') }}" class="stext-107 cl7 hov-cl1 trans-04">
                             {{ __('site.faqs') }}
                         </a>
                     </li>
@@ -86,9 +86,10 @@
                 </p>
 
                 <div class="footer-social p-t-20">
-                    <a href="#"><i class="fa fa-facebook"></i></a>
-                    <a href="#"><i class="fa fa-instagram"></i></a>
-                    <a href="#"><i class="fa fa-pinterest-p"></i></a>
+                    @php($socialIcons = ['instagram' => 'fa-instagram', 'tiktok' => 'fa-music', 'x' => 'fa-twitter', 'facebook' => 'fa-facebook', 'snapchat' => 'fa-snapchat-ghost'])
+                    @foreach (config('store.social', []) as $network => $url)
+                        <a href="{{ $url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ ucfirst($network) }}"><i class="fa {{ $socialIcons[$network] ?? 'fa-link' }}"></i></a>
+                    @endforeach
                 </div>
 
                 <div class="footer-payments">
@@ -131,8 +132,8 @@
                 </div>
 
                 <div class="footer-bottom-links">
-                    <a href="#">{{ app()->getLocale() === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy' }}</a>
-                    <a href="#">{{ app()->getLocale() === 'ar' ? 'الشروط والأحكام' : 'Terms & Conditions' }}</a>
+                    <a href="{{ route('frontend.pages.show', 'privacy') }}">{{ app()->getLocale() === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy' }}</a>
+                    <a href="{{ route('frontend.pages.show', 'terms') }}">{{ app()->getLocale() === 'ar' ? 'الشروط والأحكام' : 'Terms & Conditions' }}</a>
                     <a href="{{ route('contact.index') }}">{{ app()->getLocale() === 'ar' ? 'تواصل معنا' : 'Contact Us' }}</a>
                 </div>
             </div>
