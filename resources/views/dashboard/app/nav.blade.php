@@ -221,7 +221,7 @@
         </li>
 
         {{-- Fullscreen --}}
-        <li class="nav-item">
+        <li class="nav-item d-none d-md-block">
             <a class="nav-link" data-widget="fullscreen" href="#" role="button">
                 <i class="fas fa-expand-arrows-alt"></i>
             </a>
@@ -240,7 +240,7 @@
                 </a>
                 <a href="{{ LaravelLocalization::getLocalizedURL('en') }}"
                    class="dropdown-item {{ app()->getLocale() === 'en' ? 'active' : '' }}">
-                    🇬🇧 English
+                    {{ __('🇬🇧 English') }}
                 </a>
             </div>
         </li>
@@ -249,7 +249,7 @@
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
                 <i class="fas fa-user-circle"></i>
-                <span class="ml-1">{{ auth()->user()->name ?? __('site.Guest') }}</span>
+                <span class="ml-1 d-none d-md-inline">{{ auth()->user()->name ?? __('site.Guest') }}</span>
             </a>
 
             <div class="dropdown-menu dropdown-menu-right">

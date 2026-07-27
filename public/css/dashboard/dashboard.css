@@ -1,0 +1,88 @@
+/* Dashboard base styles (both directions). */
+:root {
+    --sidebar-width: 250px;
+    --radius-md: 0.75rem;
+}
+
+html, body { min-height: 100%; }
+
+html[lang="en"] body { font-family: 'Source Sans Pro', sans-serif; }
+html[lang="ar"] body { font-family: 'Cairo', 'Source Sans Pro', sans-serif; }
+
+body {
+    font-size: 14px;
+    text-align: start;
+    overflow-x: hidden;
+}
+
+.content-wrapper > .content { padding: 0 0.75rem; }
+.content-header { padding: 12px 0.75rem; }
+.card-body { padding: 1rem; }
+
+.table td,
+.table th {
+    vertical-align: middle;
+    padding: 0.65rem;
+}
+
+.btn { border-radius: 0.35rem; }
+
+.main-sidebar { width: var(--sidebar-width); }
+
+/* Top bar items never wrap onto two lines */
+.main-header .nav-link,
+.main-header .navbar-nav .nav-item {
+    white-space: nowrap;
+}
+
+/* Small boxes: long Arabic labels must not run under the icon */
+.small-box .inner { position: relative; z-index: 1; }
+.small-box .inner p { margin-bottom: 0; }
+
+/* Wide tables scroll inside their card instead of stretching the page */
+.card-body > .table,
+.card > .table { margin-bottom: 0; }
+
+.table-responsive { -webkit-overflow-scrolling: touch; }
+
+/* Numbers, emails, SKUs and order numbers always read left-to-right */
+.ltr-value,
+td a[href^="mailto:"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="url"] {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
+html[lang="ar"] .nav-header,
+html[lang="ar"] .small-box-footer,
+html[lang="ar"] .btn,
+html[lang="ar"] .card-title,
+html[lang="ar"] .table th {
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+@media (max-width: 991.98px) {
+    .content-wrapper,
+    .main-footer,
+    .main-header {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+}
+
+/* Phones: tighter icon spacing so the top bar fits the screen. */
+@media (max-width: 767.98px) {
+    .main-header .navbar-nav .nav-link {
+        padding-left: .45rem;
+        padding-right: .45rem;
+    }
+
+    .main-header .dropdown-menu-lg {
+        max-width: calc(100vw - 1rem);
+        min-width: 0;
+    }
+}
