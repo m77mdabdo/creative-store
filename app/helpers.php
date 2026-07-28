@@ -79,3 +79,18 @@ if (! function_exists('media_url')) {
         return media_disk()->url($path);
     }
 }
+
+if (! function_exists('status_label')) {
+    /**
+     * Human label for an enum-like value (status, type, role, channel) in the
+     * current language: "partially_refunded" → "Partially Refunded" → "مسترد جزئيًا".
+     */
+    function status_label(?string $value): string
+    {
+        if ($value === null || $value === '') {
+            return '—';
+        }
+
+        return __(\Illuminate\Support\Str::headline($value));
+    }
+}
