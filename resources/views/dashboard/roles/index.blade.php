@@ -6,10 +6,10 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center">
-            <h1>Roles</h1>
+            <h1>{{ __('Roles') }}</h1>
             @if(auth()->user()->hasPermission('roles.create'))
                 <a href="{{ route('dashboard.roles.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Add Role
+                    <i class="fas fa-plus"></i> {{ __('Add Role') }}
                 </a>
             @endif
         </div>
@@ -41,7 +41,7 @@
                     <div class="small-box bg-info">
                         <div class="inner">
                             <h3>{{ $stats['total_roles'] }}</h3>
-                            <p>Total Roles</p>
+                            <p>{{ __('Total Roles') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-user-tag"></i></div>
                     </div>
@@ -51,7 +51,7 @@
                     <div class="small-box bg-dark">
                         <div class="inner">
                             <h3>{{ $stats['system_roles'] }}</h3>
-                            <p>System Roles</p>
+                            <p>{{ __('System Roles') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-shield-alt"></i></div>
                     </div>
@@ -61,7 +61,7 @@
                     <div class="small-box bg-success">
                         <div class="inner">
                             <h3>{{ $stats['custom_roles'] }}</h3>
-                            <p>Custom Roles</p>
+                            <p>{{ __('Custom Roles') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-layer-group"></i></div>
                     </div>
@@ -77,19 +77,19 @@
                                     type="text"
                                     name="q"
                                     class="form-control"
-                                    placeholder="Search role..."
+                                    placeholder="{{ __('Search role...') }}"
                                     value="{{ $filters['q'] ?? '' }}"
                                 >
                             </div>
 
                             <div class="col-md-3 mb-2">
                                 <select name="sort" class="form-control">
-                                    <option value="name_asc" @selected(($filters['sort'] ?? 'name_asc') === 'name_asc')>Name ASC</option>
-                                    <option value="name_desc" @selected(($filters['sort'] ?? '') === 'name_desc')>Name DESC</option>
-                                    <option value="users_count_desc" @selected(($filters['sort'] ?? '') === 'users_count_desc')>Users Count DESC</option>
-                                    <option value="users_count_asc" @selected(($filters['sort'] ?? '') === 'users_count_asc')>Users Count ASC</option>
-                                    <option value="latest" @selected(($filters['sort'] ?? '') === 'latest')>Latest</option>
-                                    <option value="oldest" @selected(($filters['sort'] ?? '') === 'oldest')>Oldest</option>
+                                    <option value="name_asc" @selected(($filters['sort'] ?? 'name_asc') === 'name_asc')>{{ __('Name ASC') }}</option>
+                                    <option value="name_desc" @selected(($filters['sort'] ?? '') === 'name_desc')>{{ __('Name DESC') }}</option>
+                                    <option value="users_count_desc" @selected(($filters['sort'] ?? '') === 'users_count_desc')>{{ __('Users Count DESC') }}</option>
+                                    <option value="users_count_asc" @selected(($filters['sort'] ?? '') === 'users_count_asc')>{{ __('Users Count ASC') }}</option>
+                                    <option value="latest" @selected(($filters['sort'] ?? '') === 'latest')>{{ __('Latest') }}</option>
+                                    <option value="oldest" @selected(($filters['sort'] ?? '') === 'oldest')>{{ __('Oldest') }}</option>
                                 </select>
                             </div>
 
@@ -104,11 +104,11 @@
                             </div>
 
                             <div class="col-md-1 mb-2">
-                                <button class="btn btn-primary btn-block">Filter</button>
+                                <button class="btn btn-primary btn-block">{{ __('Filter') }}</button>
                             </div>
 
                             <div class="col-md-2 mb-2">
-                                <a href="{{ route('dashboard.roles.index') }}" class="btn btn-light btn-block">Reset</a>
+                                <a href="{{ route('dashboard.roles.index') }}" class="btn btn-light btn-block">{{ __('Reset') }}</a>
                             </div>
                         </div>
                     </form>
@@ -121,11 +121,11 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Name</th>
-                                <th>Permissions</th>
-                                <th>Users</th>
-                                <th>Type</th>
-                                <th>Actions</th>
+                                <th>{{ __('Name') }}</th>
+                                <th>{{ __('Permissions') }}</th>
+                                <th>{{ __('Users') }}</th>
+                                <th>{{ __('Type') }}</th>
+                                <th>{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -136,21 +136,21 @@
 
                                 <tr>
                                     <td>{{ $role->id }}</td>
-                                    <td>{{ $role->name }}</td>
+                                    <td>{{ status_label($role->name) }}</td>
                                     <td>{{ $role->permissions_count }}</td>
                                     <td>{{ $role->users_count }}</td>
                                     <td>
                                         @if($isSystem)
-                                            <span class="badge badge-dark">System</span>
+                                            <span class="badge badge-dark">{{ __('System') }}</span>
                                         @else
-                                            <span class="badge badge-success">Custom</span>
+                                            <span class="badge badge-success">{{ __('Custom') }}</span>
                                         @endif
                                     </td>
                                     <td>
-                                        <a href="{{ route('dashboard.roles.show', $role) }}" class="btn btn-sm btn-info">View</a>
+                                        <a href="{{ route('dashboard.roles.show', $role) }}" class="btn btn-sm btn-info">{{ __('View') }}</a>
 
                                         @if(auth()->user()->hasPermission('roles.edit'))
-                                            <a href="{{ route('dashboard.roles.edit', $role) }}" class="btn btn-sm btn-primary">Edit</a>
+                                            <a href="{{ route('dashboard.roles.edit', $role) }}" class="btn btn-sm btn-primary">{{ __('Edit') }}</a>
                                         @endif
 
                                         @if(auth()->user()->hasPermission('roles.delete') && ! $isSystem)
@@ -160,9 +160,9 @@
                                                 <button
                                                     type="submit"
                                                     class="btn btn-sm btn-danger"
-                                                    onclick="return confirm('Delete this role?')"
+                                                    onclick="return confirm(@js(__('Delete this role?')))"
                                                 >
-                                                    Delete
+                                                    {{ __('Delete') }}
                                                 </button>
                                             </form>
                                         @endif
@@ -170,7 +170,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center py-4">No roles found.</td>
+                                    <td colspan="6" class="text-center py-4">{{ __('No roles found.') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>

@@ -6,11 +6,11 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap">
-            <h1 class="mb-2">Attributes</h1>
+            <h1 class="mb-2">{{ __('Attributes') }}</h1>
 
             @if($canCreate)
                 <a href="{{ route('dashboard.attributes.create') }}" class="btn btn-primary mb-2">
-                    <i class="fas fa-plus mr-1"></i> Add Attribute
+                    <i class="fas fa-plus mr-1"></i> {{ __('Add Attribute') }}
                 </a>
             @endif
         </div>
@@ -22,28 +22,28 @@
 
             <div class="card card-outline card-primary">
                 <div class="card-header">
-                    <h3 class="card-title">Filter Attributes</h3>
+                    <h3 class="card-title">{{ __('Filter Attributes') }}</h3>
                 </div>
 
                 <div class="card-body">
                     <form method="GET" action="{{ route('dashboard.attributes.index') }}">
                         <div class="row">
                             <div class="col-md-4">
-                                <label>Search</label>
-                                <input type="text" name="search" class="form-control" value="{{ $filters['search'] }}" placeholder="Name or slug">
+                                <label>{{ __('Search') }}</label>
+                                <input type="text" name="search" class="form-control" value="{{ $filters['search'] }}" placeholder="{{ __('Name or slug') }}">
                             </div>
 
                             <div class="col-md-3">
-                                <label>Status</label>
+                                <label>{{ __('Status') }}</label>
                                 <select name="status" class="form-control">
-                                    <option value="">All</option>
-                                    <option value="active" {{ $filters['status'] === 'active' ? 'selected' : '' }}>Active</option>
-                                    <option value="inactive" {{ $filters['status'] === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                    <option value="">{{ __('All') }}</option>
+                                    <option value="active" {{ $filters['status'] === 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
+                                    <option value="inactive" {{ $filters['status'] === 'inactive' ? 'selected' : '' }}>{{ __('Inactive') }}</option>
                                 </select>
                             </div>
 
                             <div class="col-md-2 d-flex align-items-end">
-                                <button class="btn btn-info" type="submit">Filter</button>
+                                <button class="btn btn-info" type="submit">{{ __('Filter') }}</button>
                             </div>
                         </div>
                     </form>
@@ -56,12 +56,12 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Name</th>
-                                <th>Slug</th>
-                                <th>Status</th>
-                                <th>Values</th>
-                                <th>Products</th>
-                                <th width="260">Actions</th>
+                                <th>{{ __('Name') }}</th>
+                                <th>{{ __('Slug') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th>{{ __('Values') }}</th>
+                                <th>{{ __('Products') }}</th>
+                                <th width="260">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -72,9 +72,9 @@
                                     <td>{{ $attribute->slug }}</td>
                                     <td>
                                         @if($attribute->is_active)
-                                            <span class="badge badge-success">Active</span>
+                                            <span class="badge badge-success">{{ __('Active') }}</span>
                                         @else
-                                            <span class="badge badge-secondary">Inactive</span>
+                                            <span class="badge badge-secondary">{{ __('Inactive') }}</span>
                                         @endif
                                     </td>
                                     <td>{{ $attribute->values_count }}</td>
@@ -99,7 +99,7 @@
                                         @endif
 
                                         @if($canDelete)
-                                            <form action="{{ route('dashboard.attributes.destroy', $attribute) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this attribute?');">
+                                            <form action="{{ route('dashboard.attributes.destroy', $attribute) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Delete this attribute?')));">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">
@@ -111,7 +111,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-4">No attributes found.</td>
+                                    <td colspan="7" class="text-center py-4">{{ __('No attributes found.') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>

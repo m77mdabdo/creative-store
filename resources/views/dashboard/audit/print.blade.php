@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Audit Logs Print</title>
+    <title>{{ __('Audit Logs Print') }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -43,10 +43,10 @@
 </head>
 <body>
     <div class="no-print" style="margin-bottom:20px;">
-        <button onclick="window.print()">Print</button>
+        <button onclick="window.print()">{{ __('Print') }}</button>
     </div>
 
-    <h1>Audit Logs</h1>
+    <h1>{{ __('Audit Logs') }}</h1>
     <div class="meta">
         Generated at: {{ now()->format('Y-m-d h:i A') }}
     </div>
@@ -55,12 +55,12 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>User</th>
-                <th>Action</th>
-                <th>Auditable Type</th>
-                <th>Auditable ID</th>
-                <th>IP Address</th>
-                <th>Created At</th>
+                <th>{{ __('User') }}</th>
+                <th>{{ __('Action') }}</th>
+                <th>{{ __('Auditable Type') }}</th>
+                <th>{{ __('Auditable ID') }}</th>
+                <th>{{ __('IP Address') }}</th>
+                <th>{{ __('Created At') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -68,7 +68,7 @@
                 <tr>
                     <td>{{ $auditLog->id }}</td>
                     <td>
-                        {{ $auditLog->user?->name ?? 'System / Unknown' }}
+                        {{ $auditLog->user?->name ?? __('System / Unknown') }}
                         @if($auditLog->user?->email)
                             <div class="muted">{{ $auditLog->user->email }}</div>
                         @endif

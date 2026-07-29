@@ -6,15 +6,15 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center">
-            <h1>View Page</h1>
+            <h1>{{ __('View Page') }}</h1>
 
             <div>
                 <a href="{{ route('dashboard.pages.edit', $page) }}" class="btn btn-warning">
-                    <i class="fas fa-edit"></i> Edit
+                    <i class="fas fa-edit"></i> {{ __('Edit') }}
                 </a>
 
                 <a href="{{ route('dashboard.pages.index') }}" class="btn btn-default">
-                    <i class="fas fa-arrow-left"></i> Back
+                    <i class="fas fa-arrow-left"></i> {{ __('Back') }}
                 </a>
             </div>
         </div>
@@ -26,7 +26,7 @@
 
             <div class="card card-outline card-primary">
                 <div class="card-header">
-                    <h3 class="card-title">Page Details</h3>
+                    <h3 class="card-title">{{ __('Page Details') }}</h3>
                 </div>
 
                 <div class="card-body">
@@ -37,23 +37,23 @@
                         </div>
 
                         <div class="col-md-3">
-                            <strong>Slug</strong>
+                            <strong>{{ __('Slug') }}</strong>
                             <div>{{ $page->slug }}</div>
                         </div>
 
                         <div class="col-md-3">
-                            <strong>Status</strong>
+                            <strong>{{ __('Status') }}</strong>
                             <div>
                                 @if($page->is_active)
-                                    <span class="badge badge-success">Active</span>
+                                    <span class="badge badge-success">{{ __('Active') }}</span>
                                 @else
-                                    <span class="badge badge-secondary">Inactive</span>
+                                    <span class="badge badge-secondary">{{ __('Inactive') }}</span>
                                 @endif
                             </div>
                         </div>
 
                         <div class="col-md-3">
-                            <strong>Updated At</strong>
+                            <strong>{{ __('Updated At') }}</strong>
                             <div>{{ $page->updated_at?->format('Y-m-d h:i A') }}</div>
                         </div>
                     </div>
@@ -98,99 +98,99 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="mb-3">Arabic</h4>
+                            <h4 class="mb-3">{{ __('Arabic') }}</h4>
 
-                            <p><strong>Title:</strong> {{ $translationAr?->title ?? '-' }}</p>
+                            <p><strong>{{ __('Title:') }}</strong> {{ $translationAr?->title ?? '-' }}</p>
 
                             @if($page->slug === 'about')
-                                <p><strong>Hero Title:</strong> {{ $aboutAr['hero_title'] ?? '-' }}</p>
-                                <p><strong>Story Title:</strong> {{ $aboutAr['story_title'] ?? '-' }}</p>
-                                <p><strong>Story Text 1:</strong><br>{{ $aboutAr['story_text_1'] ?? '-' }}</p>
-                                <p><strong>Story Text 2:</strong><br>{{ $aboutAr['story_text_2'] ?? '-' }}</p>
-                                <p><strong>Story Text 3:</strong><br>{{ $aboutAr['story_text_3'] ?? '-' }}</p>
-                                <p><strong>Mission Title:</strong> {{ $aboutAr['mission_title'] ?? '-' }}</p>
-                                <p><strong>Mission Text:</strong><br>{{ $aboutAr['mission_text'] ?? '-' }}</p>
-                                <p><strong>Quote Text:</strong><br>{{ $aboutAr['quote_text'] ?? '-' }}</p>
-                                <p><strong>Quote Author:</strong> {{ $aboutAr['quote_author'] ?? '-' }}</p>
+                                <p><strong>{{ __('Hero Title:') }}</strong> {{ $aboutAr['hero_title'] ?? '-' }}</p>
+                                <p><strong>{{ __('Story Title:') }}</strong> {{ $aboutAr['story_title'] ?? '-' }}</p>
+                                <p><strong>{{ __('Story Text 1:') }}</strong><br>{{ $aboutAr['story_text_1'] ?? '-' }}</p>
+                                <p><strong>{{ __('Story Text 2:') }}</strong><br>{{ $aboutAr['story_text_2'] ?? '-' }}</p>
+                                <p><strong>{{ __('Story Text 3:') }}</strong><br>{{ $aboutAr['story_text_3'] ?? '-' }}</p>
+                                <p><strong>{{ __('Mission Title:') }}</strong> {{ $aboutAr['mission_title'] ?? '-' }}</p>
+                                <p><strong>{{ __('Mission Text:') }}</strong><br>{{ $aboutAr['mission_text'] ?? '-' }}</p>
+                                <p><strong>{{ __('Quote Text:') }}</strong><br>{{ $aboutAr['quote_text'] ?? '-' }}</p>
+                                <p><strong>{{ __('Quote Author:') }}</strong> {{ $aboutAr['quote_author'] ?? '-' }}</p>
 
                                 @if($arImage1Url)
                                     <div class="mb-3">
-                                        <strong>Image 1:</strong><br>
+                                        <strong>{{ __('Image 1:') }}</strong><br>
                                         <img src="{{ $arImage1Url }}" alt="Arabic Image 1" style="max-width: 180px; border-radius: 8px;">
                                     </div>
                                 @endif
 
                                 @if($arImage2Url)
                                     <div class="mb-3">
-                                        <strong>Image 2:</strong><br>
+                                        <strong>{{ __('Image 2:') }}</strong><br>
                                         <img src="{{ $arImage2Url }}" alt="Arabic Image 2" style="max-width: 180px; border-radius: 8px;">
                                     </div>
                                 @endif
 
                             @elseif($page->slug === 'contact')
-                                <p><strong>Hero Title:</strong> {{ $contactAr['hero_title'] ?? '-' }}</p>
-                                <p><strong>Form Title:</strong> {{ $contactAr['form_title'] ?? '-' }}</p>
-                                <p><strong>Address Title:</strong> {{ $contactAr['address_title'] ?? '-' }}</p>
-                                <p><strong>Address Text:</strong><br>{{ $contactAr['address_text'] ?? '-' }}</p>
-                                <p><strong>Phone Title:</strong> {{ $contactAr['phone_title'] ?? '-' }}</p>
-                                <p><strong>Phone Text:</strong> {{ $contactAr['phone_text'] ?? '-' }}</p>
-                                <p><strong>Email Title:</strong> {{ $contactAr['email_title'] ?? '-' }}</p>
-                                <p><strong>Email Text:</strong> {{ $contactAr['email_text'] ?? '-' }}</p>
-                                <p><strong>Map X:</strong> {{ $contactAr['map_x'] ?? '-' }}</p>
-                                <p><strong>Map Y:</strong> {{ $contactAr['map_y'] ?? '-' }}</p>
-                                <p><strong>Map Zoom:</strong> {{ $contactAr['map_zoom'] ?? '-' }}</p>
+                                <p><strong>{{ __('Hero Title:') }}</strong> {{ $contactAr['hero_title'] ?? '-' }}</p>
+                                <p><strong>{{ __('Form Title:') }}</strong> {{ $contactAr['form_title'] ?? '-' }}</p>
+                                <p><strong>{{ __('Address Title:') }}</strong> {{ $contactAr['address_title'] ?? '-' }}</p>
+                                <p><strong>{{ __('Address Text:') }}</strong><br>{{ $contactAr['address_text'] ?? '-' }}</p>
+                                <p><strong>{{ __('Phone Title:') }}</strong> {{ $contactAr['phone_title'] ?? '-' }}</p>
+                                <p><strong>{{ __('Phone Text:') }}</strong> {{ $contactAr['phone_text'] ?? '-' }}</p>
+                                <p><strong>{{ __('Email Title:') }}</strong> {{ $contactAr['email_title'] ?? '-' }}</p>
+                                <p><strong>{{ __('Email Text:') }}</strong> {{ $contactAr['email_text'] ?? '-' }}</p>
+                                <p><strong>{{ __('Map X:') }}</strong> {{ $contactAr['map_x'] ?? '-' }}</p>
+                                <p><strong>{{ __('Map Y:') }}</strong> {{ $contactAr['map_y'] ?? '-' }}</p>
+                                <p><strong>{{ __('Map Zoom:') }}</strong> {{ $contactAr['map_zoom'] ?? '-' }}</p>
 
                             @else
-                                <p><strong>Content:</strong></p>
+                                <p><strong>{{ __('Content:') }}</strong></p>
                                 <div>{!! nl2br(e($translationAr?->content ?? '-')) !!}</div>
                             @endif
                         </div>
 
                         <div class="col-md-6">
-                            <h4 class="mb-3">English</h4>
+                            <h4 class="mb-3">{{ __('English') }}</h4>
 
-                            <p><strong>Title:</strong> {{ $translationEn?->title ?? '-' }}</p>
+                            <p><strong>{{ __('Title:') }}</strong> {{ $translationEn?->title ?? '-' }}</p>
 
                             @if($page->slug === 'about')
-                                <p><strong>Hero Title:</strong> {{ $aboutEn['hero_title'] ?? '-' }}</p>
-                                <p><strong>Story Title:</strong> {{ $aboutEn['story_title'] ?? '-' }}</p>
-                                <p><strong>Story Text 1:</strong><br>{{ $aboutEn['story_text_1'] ?? '-' }}</p>
-                                <p><strong>Story Text 2:</strong><br>{{ $aboutEn['story_text_2'] ?? '-' }}</p>
-                                <p><strong>Story Text 3:</strong><br>{{ $aboutEn['story_text_3'] ?? '-' }}</p>
-                                <p><strong>Mission Title:</strong> {{ $aboutEn['mission_title'] ?? '-' }}</p>
-                                <p><strong>Mission Text:</strong><br>{{ $aboutEn['mission_text'] ?? '-' }}</p>
-                                <p><strong>Quote Text:</strong><br>{{ $aboutEn['quote_text'] ?? '-' }}</p>
-                                <p><strong>Quote Author:</strong> {{ $aboutEn['quote_author'] ?? '-' }}</p>
+                                <p><strong>{{ __('Hero Title:') }}</strong> {{ $aboutEn['hero_title'] ?? '-' }}</p>
+                                <p><strong>{{ __('Story Title:') }}</strong> {{ $aboutEn['story_title'] ?? '-' }}</p>
+                                <p><strong>{{ __('Story Text 1:') }}</strong><br>{{ $aboutEn['story_text_1'] ?? '-' }}</p>
+                                <p><strong>{{ __('Story Text 2:') }}</strong><br>{{ $aboutEn['story_text_2'] ?? '-' }}</p>
+                                <p><strong>{{ __('Story Text 3:') }}</strong><br>{{ $aboutEn['story_text_3'] ?? '-' }}</p>
+                                <p><strong>{{ __('Mission Title:') }}</strong> {{ $aboutEn['mission_title'] ?? '-' }}</p>
+                                <p><strong>{{ __('Mission Text:') }}</strong><br>{{ $aboutEn['mission_text'] ?? '-' }}</p>
+                                <p><strong>{{ __('Quote Text:') }}</strong><br>{{ $aboutEn['quote_text'] ?? '-' }}</p>
+                                <p><strong>{{ __('Quote Author:') }}</strong> {{ $aboutEn['quote_author'] ?? '-' }}</p>
 
                                 @if($enImage1Url)
                                     <div class="mb-3">
-                                        <strong>Image 1:</strong><br>
+                                        <strong>{{ __('Image 1:') }}</strong><br>
                                         <img src="{{ $enImage1Url }}" alt="English Image 1" style="max-width: 180px; border-radius: 8px;">
                                     </div>
                                 @endif
 
                                 @if($enImage2Url)
                                     <div class="mb-3">
-                                        <strong>Image 2:</strong><br>
+                                        <strong>{{ __('Image 2:') }}</strong><br>
                                         <img src="{{ $enImage2Url }}" alt="English Image 2" style="max-width: 180px; border-radius: 8px;">
                                     </div>
                                 @endif
 
                             @elseif($page->slug === 'contact')
-                                <p><strong>Hero Title:</strong> {{ $contactEn['hero_title'] ?? '-' }}</p>
-                                <p><strong>Form Title:</strong> {{ $contactEn['form_title'] ?? '-' }}</p>
-                                <p><strong>Address Title:</strong> {{ $contactEn['address_title'] ?? '-' }}</p>
-                                <p><strong>Address Text:</strong><br>{{ $contactEn['address_text'] ?? '-' }}</p>
-                                <p><strong>Phone Title:</strong> {{ $contactEn['phone_title'] ?? '-' }}</p>
-                                <p><strong>Phone Text:</strong> {{ $contactEn['phone_text'] ?? '-' }}</p>
-                                <p><strong>Email Title:</strong> {{ $contactEn['email_title'] ?? '-' }}</p>
-                                <p><strong>Email Text:</strong> {{ $contactEn['email_text'] ?? '-' }}</p>
-                                <p><strong>Map X:</strong> {{ $contactEn['map_x'] ?? '-' }}</p>
-                                <p><strong>Map Y:</strong> {{ $contactEn['map_y'] ?? '-' }}</p>
-                                <p><strong>Map Zoom:</strong> {{ $contactEn['map_zoom'] ?? '-' }}</p>
+                                <p><strong>{{ __('Hero Title:') }}</strong> {{ $contactEn['hero_title'] ?? '-' }}</p>
+                                <p><strong>{{ __('Form Title:') }}</strong> {{ $contactEn['form_title'] ?? '-' }}</p>
+                                <p><strong>{{ __('Address Title:') }}</strong> {{ $contactEn['address_title'] ?? '-' }}</p>
+                                <p><strong>{{ __('Address Text:') }}</strong><br>{{ $contactEn['address_text'] ?? '-' }}</p>
+                                <p><strong>{{ __('Phone Title:') }}</strong> {{ $contactEn['phone_title'] ?? '-' }}</p>
+                                <p><strong>{{ __('Phone Text:') }}</strong> {{ $contactEn['phone_text'] ?? '-' }}</p>
+                                <p><strong>{{ __('Email Title:') }}</strong> {{ $contactEn['email_title'] ?? '-' }}</p>
+                                <p><strong>{{ __('Email Text:') }}</strong> {{ $contactEn['email_text'] ?? '-' }}</p>
+                                <p><strong>{{ __('Map X:') }}</strong> {{ $contactEn['map_x'] ?? '-' }}</p>
+                                <p><strong>{{ __('Map Y:') }}</strong> {{ $contactEn['map_y'] ?? '-' }}</p>
+                                <p><strong>{{ __('Map Zoom:') }}</strong> {{ $contactEn['map_zoom'] ?? '-' }}</p>
 
                             @else
-                                <p><strong>Content:</strong></p>
+                                <p><strong>{{ __('Content:') }}</strong></p>
                                 <div>{!! nl2br(e($translationEn?->content ?? '-')) !!}</div>
                             @endif
                         </div>

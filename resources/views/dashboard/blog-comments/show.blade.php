@@ -6,9 +6,9 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center">
-            <h1>Comment Details</h1>
+            <h1>{{ __('Comment Details') }}</h1>
             <a href="{{ route('dashboard.blog-comments.index') }}" class="btn btn-default">
-                <i class="fas fa-arrow-left"></i> Back
+                <i class="fas fa-arrow-left"></i> {{ __('Back') }}
             </a>
         </div>
     </section>
@@ -20,15 +20,15 @@
             <div class="card card-outline card-primary">
                 <div class="card-body">
                     <div class="mb-3">
-                        <strong>Name:</strong> {{ $comment->name }}
+                        <strong>{{ __('Name:') }}</strong> {{ $comment->name }}
                     </div>
 
                     <div class="mb-3">
-                        <strong>Email:</strong> {{ $comment->email }}
+                        <strong>{{ __('Email:') }}</strong> {{ $comment->email }}
                     </div>
 
                     <div class="mb-3">
-                        <strong>Website:</strong>
+                        <strong>{{ __('Website:') }}</strong>
                         @if($comment->website)
                             <a href="{{ $comment->website }}" target="_blank" rel="noopener noreferrer">
                                 {{ $comment->website }}
@@ -39,7 +39,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <strong>Blog:</strong>
+                        <strong>{{ __('Blog:') }}</strong>
                         @if($comment->blog)
                             <a href="{{ route('dashboard.blogs.show', $comment->blog) }}"
                                class="text-primary font-weight-bold">
@@ -51,11 +51,11 @@
                     </div>
 
                     <div class="mb-3">
-                        <strong>Created At:</strong> {{ $comment->created_at?->format('Y-m-d h:i A') }}
+                        <strong>{{ __('Created At:') }}</strong> {{ $comment->created_at?->format('Y-m-d h:i A') }}
                     </div>
 
                     <div class="mb-3">
-                        <strong>Comment:</strong>
+                        <strong>{{ __('Comment:') }}</strong>
                         <div class="mt-2 p-3 bg-light rounded" style="white-space: pre-line;">
                             {{ $comment->comment }}
                         </div>

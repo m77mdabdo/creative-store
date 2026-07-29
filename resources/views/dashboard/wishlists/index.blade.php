@@ -6,7 +6,7 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
-            <h1>Wishlist Activity</h1>
+            <h1>{{ __('Wishlist Activity') }}</h1>
         </div>
     </section>
 
@@ -26,7 +26,7 @@
                     <div class="small-box bg-info">
                         <div class="inner">
                             <h3>{{ $stats['total_wishlists'] }}</h3>
-                            <p>Total Wishlists</p>
+                            <p>{{ __('Total Wishlists') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-heart"></i></div>
                     </div>
@@ -36,7 +36,7 @@
                     <div class="small-box bg-danger">
                         <div class="inner">
                             <h3>{{ $stats['total_wishlist_items'] }}</h3>
-                            <p>Total Wishlist Items</p>
+                            <p>{{ __('Total Wishlist Items') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-list"></i></div>
                     </div>
@@ -46,7 +46,7 @@
                     <div class="small-box bg-success">
                         <div class="inner">
                             <h3>{{ $stats['non_empty_wishlists'] }}</h3>
-                            <p>Non Empty Wishlists</p>
+                            <p>{{ __('Non Empty Wishlists') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-check-circle"></i></div>
                     </div>
@@ -56,7 +56,7 @@
                     <div class="small-box bg-warning">
                         <div class="inner">
                             <h3>{{ $stats['empty_wishlists'] }}</h3>
-                            <p>Empty Wishlists</p>
+                            <p>{{ __('Empty Wishlists') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-minus-circle"></i></div>
                     </div>
@@ -65,20 +65,20 @@
 
             <div class="card card-outline card-primary">
                 <div class="card-header">
-                    <h3 class="card-title">Advanced Filters</h3>
+                    <h3 class="card-title">{{ __('Advanced Filters') }}</h3>
                 </div>
                 <div class="card-body">
                     <form method="GET" action="{{ route('dashboard.wishlists.index') }}">
                         <div class="row">
                             <div class="col-md-3 mb-2">
                                 <input type="text" name="q" class="form-control"
-                                       placeholder="User name, email, phone"
+                                       placeholder="{{ __('User name, email, phone') }}"
                                        value="{{ $filters['q'] ?? '' }}">
                             </div>
 
                             <div class="col-md-2 mb-2">
                                 <select name="product_id" class="form-control">
-                                    <option value="">All Products</option>
+                                    <option value="">{{ __('All Products') }}</option>
                                     @foreach($productsFilter as $product)
                                         @php
                                             $translation = $product->translations->firstWhere('locale', app()->getLocale())
@@ -95,15 +95,15 @@
 
                             <div class="col-md-2 mb-2">
                                 <select name="product_status" class="form-control">
-                                    <option value="">All Product Status</option>
-                                    <option value="active" @selected(($filters['product_status'] ?? '') === 'active')>Active</option>
-                                    <option value="inactive" @selected(($filters['product_status'] ?? '') === 'inactive')>Inactive</option>
+                                    <option value="">{{ __('All Product Status') }}</option>
+                                    <option value="active" @selected(($filters['product_status'] ?? '') === 'active')>{{ __('Active') }}</option>
+                                    <option value="inactive" @selected(($filters['product_status'] ?? '') === 'inactive')>{{ __('Inactive') }}</option>
                                 </select>
                             </div>
 
                             <div class="col-md-1 mb-2">
                                 <input type="number" name="min_items" class="form-control"
-                                       placeholder="Min"
+                                       placeholder="{{ __('Min') }}"
                                        value="{{ $filters['min_items'] ?? '' }}">
                             </div>
 
@@ -119,12 +119,12 @@
 
                             <div class="col-md-2 mb-2">
                                 <select name="sort" class="form-control">
-                                    <option value="latest" @selected(($filters['sort'] ?? 'latest') === 'latest')>Latest</option>
-                                    <option value="oldest" @selected(($filters['sort'] ?? '') === 'oldest')>Oldest</option>
-                                    <option value="items_asc" @selected(($filters['sort'] ?? '') === 'items_asc')>Items ASC</option>
-                                    <option value="items_desc" @selected(($filters['sort'] ?? '') === 'items_desc')>Items DESC</option>
-                                    <option value="user_name_asc" @selected(($filters['sort'] ?? '') === 'user_name_asc')>User Name ASC</option>
-                                    <option value="user_name_desc" @selected(($filters['sort'] ?? '') === 'user_name_desc')>User Name DESC</option>
+                                    <option value="latest" @selected(($filters['sort'] ?? 'latest') === 'latest')>{{ __('Latest') }}</option>
+                                    <option value="oldest" @selected(($filters['sort'] ?? '') === 'oldest')>{{ __('Oldest') }}</option>
+                                    <option value="items_asc" @selected(($filters['sort'] ?? '') === 'items_asc')>{{ __('Items ASC') }}</option>
+                                    <option value="items_desc" @selected(($filters['sort'] ?? '') === 'items_desc')>{{ __('Items DESC') }}</option>
+                                    <option value="user_name_asc" @selected(($filters['sort'] ?? '') === 'user_name_asc')>{{ __('User Name ASC') }}</option>
+                                    <option value="user_name_desc" @selected(($filters['sort'] ?? '') === 'user_name_desc')>{{ __('User Name DESC') }}</option>
                                 </select>
                             </div>
 
@@ -138,7 +138,7 @@
                             </div>
 
                             <div class="col-md-2 mb-2">
-                                <button class="btn btn-primary btn-block">Filter</button>
+                                <button class="btn btn-primary btn-block">{{ __('Filter') }}</button>
                             </div>
                         </div>
                     </form>
@@ -149,16 +149,16 @@
                 <div class="col-md-6">
                     <div class="card card-danger">
                         <div class="card-header">
-                            <h3 class="card-title">Top Wishlisted Products</h3>
+                            <h3 class="card-title">{{ __('Top Wishlisted Products') }}</h3>
                         </div>
                         <div class="card-body p-0">
                             <table class="table table-hover">
                                 <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Product</th>
-                                    <th>Status</th>
-                                    <th>Count</th>
+                                    <th>{{ __('Product') }}</th>
+                                    <th>{{ __('Status') }}</th>
+                                    <th>{{ __('Count') }}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -179,16 +179,16 @@
                                         </td>
                                         <td>
                                             @if($product->status === 'active')
-                                                <span class="badge badge-success">Active</span>
+                                                <span class="badge badge-success">{{ __('Active') }}</span>
                                             @else
-                                                <span class="badge badge-secondary">{{ ucfirst($product->status) }}</span>
+                                                <span class="badge badge-secondary">{{ status_label($product->status) }}</span>
                                             @endif
                                         </td>
                                         <td><span class="badge badge-danger">{{ $row['count'] }}</span></td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="text-center">No data found.</td>
+                                        <td colspan="4" class="text-center">{{ __('No data found.') }}</td>
                                     </tr>
                                 @endforelse
                                 </tbody>
@@ -200,16 +200,16 @@
                 <div class="col-md-6">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title">Users With Highest Wishlist Count</h3>
+                            <h3 class="card-title">{{ __('Users With Highest Wishlist Count') }}</h3>
                         </div>
                         <div class="card-body p-0">
                             <table class="table table-hover">
                                 <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>User</th>
-                                    <th>Email</th>
-                                    <th>Items</th>
+                                    <th>{{ __('User') }}</th>
+                                    <th>{{ __('Email') }}</th>
+                                    <th>{{ __('Items') }}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -222,7 +222,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="text-center">No data found.</td>
+                                        <td colspan="4" class="text-center">{{ __('No data found.') }}</td>
                                     </tr>
                                 @endforelse
                                 </tbody>
@@ -234,14 +234,14 @@
 
             <div class="card card-outline card-secondary">
                 <div class="card-header">
-                    <h3 class="card-title">Wishlist Analytics By Date</h3>
+                    <h3 class="card-title">{{ __('Wishlist Analytics By Date') }}</h3>
                 </div>
                 <div class="card-body p-0">
                     <table class="table table-bordered mb-0">
                         <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Total Added Items</th>
+                            <th>{{ __('Date') }}</th>
+                            <th>{{ __('Total Added Items') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -252,7 +252,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="2" class="text-center">No analytics data available.</td>
+                                <td colspan="2" class="text-center">{{ __('No analytics data available.') }}</td>
                             </tr>
                         @endforelse
                         </tbody>
@@ -262,7 +262,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Wishlists</h3>
+                    <h3 class="card-title">{{ __('Wishlists') }}</h3>
                 </div>
 
                 <div class="card-body table-responsive p-0">
@@ -270,13 +270,13 @@
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>User</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Items Count</th>
-                            <th>Created</th>
-                            <th>Updated</th>
-                            <th>Actions</th>
+                            <th>{{ __('User') }}</th>
+                            <th>{{ __('Email') }}</th>
+                            <th>{{ __('Phone') }}</th>
+                            <th>{{ __('Items Count') }}</th>
+                            <th>{{ __('Created') }}</th>
+                            <th>{{ __('Updated') }}</th>
+                            <th>{{ __('Actions') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -290,23 +290,23 @@
                                 <td>{{ $wishlist->created_at?->format('Y-m-d') }}</td>
                                 <td>{{ $wishlist->updated_at?->format('Y-m-d H:i') }}</td>
                                 <td>
-                                    <a href="{{ route('dashboard.wishlists.show', $wishlist) }}" class="btn btn-sm btn-info">View</a>
+                                    <a href="{{ route('dashboard.wishlists.show', $wishlist) }}" class="btn btn-sm btn-info">{{ __('View') }}</a>
 
                                     <form action="{{ route('dashboard.wishlists.move-all-to-cart', $wishlist) }}" method="POST" style="display:inline-block;">
                                         @csrf
-                                        <button type="submit" class="btn btn-sm btn-success">Move All To Cart</button>
+                                        <button type="submit" class="btn btn-sm btn-success">{{ __('Move All To Cart') }}</button>
                                     </form>
 
                                     <form action="{{ route('dashboard.wishlists.destroy', $wishlist) }}" method="POST" style="display:inline-block;">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this wishlist?')">Delete</button>
+                                        <button class="btn btn-sm btn-danger" onclick="return confirm(@js(__('Delete this wishlist?')))">{{ __('Delete') }}</button>
                                     </form>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center py-4">No wishlist activity found.</td>
+                                <td colspan="8" class="text-center py-4">{{ __('No wishlist activity found.') }}</td>
                             </tr>
                         @endforelse
                         </tbody>

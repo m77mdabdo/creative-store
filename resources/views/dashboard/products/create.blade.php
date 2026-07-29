@@ -6,7 +6,7 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
-            <h1>Create Product</h1>
+            <h1>{{ __('Create Product') }}</h1>
         </div>
     </section>
 

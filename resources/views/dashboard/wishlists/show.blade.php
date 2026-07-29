@@ -6,13 +6,13 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center">
-            <h1>Wishlist Details</h1>
+            <h1>{{ __('Wishlist Details') }}</h1>
             <div>
-                <a href="{{ route('dashboard.wishlists.index') }}" class="btn btn-secondary">Back</a>
+                <a href="{{ route('dashboard.wishlists.index') }}" class="btn btn-secondary">{{ __('Back') }}</a>
 
                 <form action="{{ route('dashboard.wishlists.move-all-to-cart', $wishlist) }}" method="POST" style="display:inline-block;">
                     @csrf
-                    <button type="submit" class="btn btn-success">Move All To Cart</button>
+                    <button type="submit" class="btn btn-success">{{ __('Move All To Cart') }}</button>
                 </form>
             </div>
         </div>
@@ -34,34 +34,34 @@
                 <div class="card-body">
                     <table class="table table-bordered">
                         <tr>
-                            <th width="220">Wishlist ID</th>
+                            <th width="220">{{ __('Wishlist ID') }}</th>
                             <td>{{ $wishlist->id }}</td>
                         </tr>
                         <tr>
-                            <th>User</th>
+                            <th>{{ __('User') }}</th>
                             <td>{{ $wishlist->user->name ?? '-' }}</td>
                         </tr>
                         <tr>
-                            <th>Email</th>
+                            <th>{{ __('Email') }}</th>
                             <td>{{ $wishlist->user->email ?? '-' }}</td>
                         </tr>
 
                         <tr>
-                            <th>Phone</th>
+                            <th>{{ __('Phone') }}</th>
                             <td>{{ $wishlist->user->phone ?? '-' }}</td>
                         </tr>
 
                         <tr>
-                            <th>Items Count</th>
+                            <th>{{ __('Items Count') }}</th>
                             <td>{{ $wishlist->items->count() }}</td>
                         </tr>
 
                         <tr>
-                            <th>Created At</th>
+                            <th>{{ __('Created At') }}</th>
                             <td>{{ $wishlist->created_at?->format('Y-m-d H:i') }}</td>
                         </tr>
                         <tr>
-                            <th>Updated At</th>
+                            <th>{{ __('Updated At') }}</th>
                             <td>{{ $wishlist->updated_at?->format('Y-m-d H:i') }}</td>
                         </tr>
                     </table>
@@ -72,7 +72,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Wishlist Items</h3>
+                    <h3 class="card-title">{{ __('Wishlist Items') }}</h3>
                 </div>
 
                 <div class="card-body table-responsive p-0">
@@ -80,14 +80,14 @@
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>Product</th>
-                            <th>SKU</th>
-                            <th>Variant SKU</th>
-                            <th>Price</th>
-                            <th>Status</th>
-                            <th>Stock</th>
-                            <th>Added At</th>
-                            <th>Actions</th>
+                            <th>{{ __('Product') }}</th>
+                            <th>{{ __('SKU') }}</th>
+                            <th>{{ __('Variant SKU') }}</th>
+                            <th>{{ __('Price') }}</th>
+                            <th>{{ __('Status') }}</th>
+                            <th>{{ __('Stock') }}</th>
+                            <th>{{ __('Added At') }}</th>
+                            <th>{{ __('Actions') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -107,17 +107,17 @@
                                     @if($product)
                                         <a href="{{ route('dashboard.products.show', $product) }}">{{ $productName }}</a>
                                     @else
-                                        <span class="text-muted">Deleted Product</span>
+                                        <span class="text-muted">{{ __('Deleted Product') }}</span>
                                     @endif
                                 </td>
                                 <td>{{ $product->sku ?? '-' }}</td>
                                 <td>{{ $variant->sku ?? '-' }}</td>
-                                <td>{{ number_format((float)$price, 2) }} {{ $product->currency ?? 'SAR' }}</td>
+                                <td>{{ number_format((float)$price, 2) }} {{ $product->currency ?? __('SAR') }}</td>
                                 <td>
                                     @if(($variant && $variant->is_active) || (!$variant && $product && $product->status === 'active'))
-                                        <span class="badge badge-success">Active</span>
+                                        <span class="badge badge-success">{{ __('Active') }}</span>
                                     @else
-                                        <span class="badge badge-secondary">Inactive</span>
+                                        <span class="badge badge-secondary">{{ __('Inactive') }}</span>
                                     @endif
                                 </td>
                                 <td>{{ $variant->stock ?? '-' }}</td>
@@ -125,19 +125,19 @@
                                 <td>
                                     <form action="{{ route('dashboard.wishlists.items.move-to-cart', [$wishlist, $item]) }}" method="POST" style="display:inline-block;">
                                         @csrf
-                                        <button type="submit" class="btn btn-sm btn-success">Move To Cart</button>
+                                        <button type="submit" class="btn btn-sm btn-success">{{ __('Move To Cart') }}</button>
                                     </form>
 
                                     <form action="{{ route('dashboard.wishlists.items.destroy', [$wishlist, $item]) }}" method="POST" style="display:inline-block;">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this item?')">Delete</button>
+                                        <button class="btn btn-sm btn-danger" onclick="return confirm(@js(__('Delete this item?')))">{{ __('Delete') }}</button>
                                     </form>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center py-4">No items in this wishlist.</td>
+                                <td colspan="9" class="text-center py-4">{{ __('No items in this wishlist.') }}</td>
                             </tr>
                         @endforelse
                         </tbody>

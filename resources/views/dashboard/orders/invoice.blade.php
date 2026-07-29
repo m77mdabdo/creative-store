@@ -75,19 +75,19 @@
 </head>
 <body>
 
-    <h1>Invoice</h1>
+    <h1>{{ __('Invoice') }}</h1>
 
     <div class="meta">
-        <p><strong>Order:</strong> {{ $order->order_number }}</p>
-        <p><strong>Date:</strong> {{ $order->created_at?->format('d M Y') }}</p>
-        <p><strong>Status:</strong> {{ ucfirst($order->status) }}</p>
-        <p><strong>Payment Status:</strong> {{ ucfirst($order->payment_status) }}</p>
-        <p><strong>Shipping Method:</strong> {{ $order->shippingMethod->name ?? '-' }}</p>
-        <p><strong>Total:</strong> {{ number_format((float) $order->total, 2) }} {{ $order->currency ?? 'SAR' }}</p>
+        <p><strong>{{ __('Order:') }}</strong> {{ $order->order_number }}</p>
+        <p><strong>{{ __('Date:') }}</strong> {{ $order->created_at?->format('d M Y') }}</p>
+        <p><strong>{{ __('Status:') }}</strong> {{ status_label($order->status) }}</p>
+        <p><strong>{{ __('Payment Status:') }}</strong> {{ status_label($order->payment_status) }}</p>
+        <p><strong>{{ __('Shipping Method:') }}</strong> {{ $order->shippingMethod?->label ?? '-' }}</p>
+        <p><strong>{{ __('Total:') }}</strong> {{ number_format((float) $order->total, 2) }} {{ $order->currency ?? __('SAR') }}</p>
     </div>
 
     @if($order->addressSnapshot)
-        <h3>Shipping Address</h3>
+        <h3>{{ __('Shipping Address') }}</h3>
         <table class="no-border" style="width:100%;">
             <tr>
                 <td>
@@ -117,14 +117,14 @@
         </table>
     @endif
 
-    <h3>Items</h3>
+    <h3>{{ __('Items') }}</h3>
 
     <table>
         <tr>
-            <th style="width: 45%;">Product</th>
-            <th style="width: 15%;">Qty</th>
-            <th style="width: 20%;">Unit Price</th>
-            <th style="width: 20%;">Line Total</th>
+            <th style="width: 45%;">{{ __('Product') }}</th>
+            <th style="width: 15%;">{{ __('Qty') }}</th>
+            <th style="width: 20%;">{{ __('Unit Price') }}</th>
+            <th style="width: 20%;">{{ __('Line Total') }}</th>
         </tr>
 
         @foreach($order->items as $item)
@@ -133,21 +133,21 @@
                     <div class="product-name">{{ $item->product_name_snapshot }}</div>
 
                     @if($item->sku_snapshot)
-                        <div class="item-meta"><strong>SKU:</strong> {{ $item->sku_snapshot }}</div>
+                        <div class="item-meta"><strong>{{ __('SKU:') }}</strong> {{ $item->sku_snapshot }}</div>
                     @endif
 
                     @if($item->color)
-                        <div class="item-meta"><strong>Color:</strong> {{ $item->color }}</div>
+                        <div class="item-meta"><strong>{{ __('Color:') }}</strong> {{ $item->color }}</div>
                     @endif
 
                     @if($item->size)
-                        <div class="item-meta"><strong>Size:</strong> {{ $item->size }}</div>
+                        <div class="item-meta"><strong>{{ __('Size:') }}</strong> {{ $item->size }}</div>
                     @endif
 
                     @if(!empty($item->variant_options))
                         @foreach($item->variant_options as $option)
                             <div class="item-meta">
-                                <strong>{{ $option['name'] ?? 'Option' }}:</strong>
+                                <strong>{{ $option['name'] ?? __('Option') }}:</strong>
                                 {{ $option['value'] ?? '-' }}
                             </div>
                         @endforeach
@@ -158,12 +158,12 @@
 
                 <td>
                     {{ number_format((float) $item->unit_price, 2) }}
-                    {{ $order->currency ?? 'SAR' }}
+                    {{ $order->currency ?? __('SAR') }}
                 </td>
 
                 <td>
                     {{ number_format((float) $item->line_total, 2) }}
-                    {{ $order->currency ?? 'SAR' }}
+                    {{ $order->currency ?? __('SAR') }}
                 </td>
             </tr>
         @endforeach
@@ -171,39 +171,39 @@
 
     <table class="totals">
         <tr>
-            <th>Subtotal</th>
+            <th>{{ __('Subtotal') }}</th>
             <td class="text-right">
-                {{ number_format((float) $order->subtotal, 2) }} {{ $order->currency ?? 'SAR' }}
+                {{ number_format((float) $order->subtotal, 2) }} {{ $order->currency ?? __('SAR') }}
             </td>
         </tr>
 
         @if((float) $order->discount > 0)
             <tr>
-                <th>Discount</th>
+                <th>{{ __('Discount') }}</th>
                 <td class="text-right">
-                    - {{ number_format((float) $order->discount, 2) }} {{ $order->currency ?? 'SAR' }}
+                    - {{ number_format((float) $order->discount, 2) }} {{ $order->currency ?? __('SAR') }}
                 </td>
             </tr>
         @endif
 
         <tr>
-            <th>Shipping</th>
+            <th>{{ __('Shipping') }}</th>
             <td class="text-right">
-                {{ number_format((float) $order->shipping_fee, 2) }} {{ $order->currency ?? 'SAR' }}
+                {{ number_format((float) $order->shipping_fee, 2) }} {{ $order->currency ?? __('SAR') }}
             </td>
         </tr>
 
         <tr>
-            <th>VAT</th>
+            <th>{{ __('VAT') }}</th>
             <td class="text-right">
-                {{ number_format((float) $order->tax_total, 2) }} {{ $order->currency ?? 'SAR' }}
+                {{ number_format((float) $order->tax_total, 2) }} {{ $order->currency ?? __('SAR') }}
             </td>
         </tr>
 
         <tr>
-            <th>Total</th>
+            <th>{{ __('Total') }}</th>
             <td class="text-right">
-                <strong>{{ number_format((float) $order->total, 2) }} {{ $order->currency ?? 'SAR' }}</strong>
+                <strong>{{ number_format((float) $order->total, 2) }} {{ $order->currency ?? __('SAR') }}</strong>
             </td>
         </tr>
     </table>

@@ -9,7 +9,7 @@
             <h1>Images - {{ $product->name ?? $product->sku }}</h1>
 
             <a href="{{ route('dashboard.products.show', $product) }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left mr-1"></i> Back
+                <i class="fas fa-arrow-left mr-1"></i> {{ __('Back') }}
             </a>
         </div>
     </section>
@@ -20,19 +20,19 @@
             @include('dashboard.app.partials.alerts')
 
             <div class="card card-outline card-primary">
-                <div class="card-header"><h3 class="card-title">Upload General Images</h3></div>
+                <div class="card-header"><h3 class="card-title">{{ __('Upload General Images') }}</h3></div>
 
                 <div class="card-body">
                     <form action="{{ route('dashboard.products.images.store', $product) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <input type="file" name="images[]" class="form-control" multiple accept=".jpg,.jpeg,.png,.webp">
-                        <button type="submit" class="btn btn-primary mt-3">Upload</button>
+                        <button type="submit" class="btn btn-primary mt-3">{{ __('Upload') }}</button>
                     </form>
                 </div>
             </div>
 
             <div class="card">
-                <div class="card-header"><h3 class="card-title">General Images</h3></div>
+                <div class="card-header"><h3 class="card-title">{{ __('General Images') }}</h3></div>
 
                 <div class="card-body">
                     <div class="row">
@@ -54,7 +54,7 @@
                                         </button>
                                     </form>
 
-                                    <form action="{{ route('dashboard.products.images.destroy', [$product, $image]) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete image?');">
+                                    <form action="{{ route('dashboard.products.images.destroy', [$product, $image]) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Delete image?')));">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">
@@ -67,12 +67,12 @@
                                     @csrf
                                     @method('PATCH')
                                     <input type="number" name="sort_order" value="{{ $image->sort_order }}" class="form-control form-control-sm">
-                                    <button type="submit" class="btn btn-sm btn-outline-primary mt-1 btn-block">Save Order</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-primary mt-1 btn-block">{{ __('Save Order') }}</button>
                                 </form>
                             </div>
                         @empty
                             <div class="col-12">
-                                <p class="text-muted mb-0">No general images uploaded.</p>
+                                <p class="text-muted mb-0">{{ __('No general images uploaded.') }}</p>
                             </div>
                         @endforelse
                     </div>
@@ -80,7 +80,7 @@
             </div>
 
             <div class="card">
-                <div class="card-header"><h3 class="card-title">Variant Color Images</h3></div>
+                <div class="card-header"><h3 class="card-title">{{ __('Variant Color Images') }}</h3></div>
                 <div class="card-body">
                     @forelse($product->variants as $variant)
                         <div class="border rounded p-3 mb-3">
@@ -91,7 +91,7 @@
                             <form action="{{ route('dashboard.products.variants.images.store', [$product, $variant]) }}" method="POST" enctype="multipart/form-data" class="mb-3">
                                 @csrf
                                 <input type="file" name="images[]" class="form-control" multiple accept=".jpg,.jpeg,.png,.webp">
-                                <button type="submit" class="btn btn-info btn-sm mt-2">Upload Variant Images</button>
+                                <button type="submit" class="btn btn-info btn-sm mt-2">{{ __('Upload Variant Images') }}</button>
                             </form>
 
                             <div class="row">
@@ -113,7 +113,7 @@
                                             </button>
                                         </form>
 
-                                        <form action="{{ route('dashboard.products.variants.images.destroy', [$product, $variant, $image]) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete image?');">
+                                        <form action="{{ route('dashboard.products.variants.images.destroy', [$product, $variant, $image]) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Delete image?')));">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-danger btn-sm">
@@ -123,13 +123,13 @@
                                     </div>
                                 @empty
                                     <div class="col-12">
-                                        <p class="text-muted">No images for this variant yet.</p>
+                                        <p class="text-muted">{{ __('No images for this variant yet.') }}</p>
                                     </div>
                                 @endforelse
                             </div>
                         </div>
                     @empty
-                        <p class="text-muted mb-0">No variants available yet.</p>
+                        <p class="text-muted mb-0">{{ __('No variants available yet.') }}</p>
                     @endforelse
                 </div>
             </div>

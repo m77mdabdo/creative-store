@@ -6,10 +6,10 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center">
-            <h1>Trashed Categories</h1>
+            <h1>{{ __('Trashed Categories') }}</h1>
 
             <a href="{{ route('dashboard.categories.index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left mr-1"></i> Back to Categories
+                <i class="fas fa-arrow-left mr-1"></i> {{ __('Back to Categories') }}
             </a>
         </div>
     </section>
@@ -27,7 +27,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Trash</h3>
+                    <h3 class="card-title">{{ __('Trash') }}</h3>
                 </div>
 
                 <div class="card-body table-responsive p-0">
@@ -35,11 +35,11 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Name (AR)</th>
-                                <th>Name (EN)</th>
-                                <th>Slug</th>
-                                <th>Deleted At</th>
-                                <th width="180">Actions</th>
+                                <th>{{ __('Name (AR)') }}</th>
+                                <th>{{ __('Name (EN)') }}</th>
+                                <th>{{ __('Slug') }}</th>
+                                <th>{{ __('Deleted At') }}</th>
+                                <th width="180">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
 
@@ -66,7 +66,7 @@
                                                 action="{{ route('dashboard.categories.force-delete', $category->id) }}"
                                                 method="POST"
                                                 class="d-inline"
-                                                onsubmit="return confirm('Are you sure you want to permanently delete this category?');"
+                                                onsubmit="return confirm(@js(__('Are you sure you want to permanently delete this category?')));"
                                             >
                                                 @csrf
                                                 @method('DELETE')
@@ -79,7 +79,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center py-4">Trash is empty.</td>
+                                    <td colspan="6" class="text-center py-4">{{ __('Trash is empty.') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>

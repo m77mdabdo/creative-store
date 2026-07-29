@@ -3,32 +3,32 @@
 <div class="card-body">
     <div class="row">
         <div class="col-md-6 mb-3">
-            <label>Name</label>
+            <label>{{ __('Name') }}</label>
             <input type="text" name="name" class="form-control" value="{{ old('name', $user->name ?? '') }}" required>
             @error('name') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <div class="col-md-6 mb-3">
-            <label>Email</label>
+            <label>{{ __('Email') }}</label>
             <input type="email" name="email" class="form-control" value="{{ old('email', $user->email ?? '') }}" required>
             @error('email') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <div class="col-md-6 mb-3">
-            <label>Phone</label>
+            <label>{{ __('Phone') }}</label>
             <input type="text" name="phone" class="form-control" value="{{ old('phone', $user->phone ?? '') }}">
             @error('phone') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <div class="col-md-6 mb-3">
-            <label>Roles</label>
+            <label>{{ __('Roles') }}</label>
             <select name="roles[]" class="form-control" multiple>
                 @foreach($roles as $role)
                     @php
                         $selectedRoleIds = old('roles', isset($user) ? $user->roles->pluck('id')->toArray() : []);
                     @endphp
                     <option value="{{ $role->id }}" @selected(in_array($role->id, $selectedRoleIds))>
-                        {{ ucfirst($role->name) }}
+                        {{ status_label($role->name) }}
                     </option>
                 @endforeach
             </select>
@@ -42,7 +42,7 @@
         </div>
 
         <div class="col-md-6 mb-3">
-            <label>Confirm Password</label>
+            <label>{{ __('Confirm Password') }}</label>
             <input type="password" name="password_confirmation" class="form-control" {{ isset($user) ? '' : 'required' }}>
         </div>
 
@@ -57,7 +57,7 @@
                     id="email_verified"
                     @checked(old('email_verified', isset($user) && $user->email_verified_at ? 1 : 0))
                 >
-                <label for="email_verified" class="form-check-label">Email Verified</label>
+                <label for="email_verified" class="form-check-label">{{ __('Email Verified') }}</label>
             </div>
         </div>
 
@@ -72,14 +72,14 @@
                     id="is_active"
                     @checked(old('is_active', isset($user) ? (int) $user->is_active : 1))
                 >
-                <label for="is_active" class="form-check-label">Active Account</label>
+                <label for="is_active" class="form-check-label">{{ __('Active Account') }}</label>
             </div>
         </div>
     </div>
 
     <hr>
 
-    <h5 class="mb-3">Direct Permissions</h5>
+    <h5 class="mb-3">{{ __('Direct Permissions') }}</h5>
 
     @php
         $selectedAllowPermissions = old(
@@ -100,14 +100,14 @@
     @foreach($permissionsGrouped as $group => $permissions)
         <div class="card card-outline card-secondary mb-3">
             <div class="card-header">
-                <h3 class="card-title text-capitalize">{{ $group }}</h3>
+                <h3 class="card-title text-capitalize">{{ status_label($group) }}</h3>
             </div>
             <div class="card-body">
                 <div class="row">
                     @foreach($permissions as $permission)
                         <div class="col-md-6 col-lg-4 mb-3">
                             <div class="border rounded p-2 h-100">
-                                <div class="font-weight-bold">{{ $permission->name }}</div>
+                                <div class="font-weight-bold">{{ __($permission->name) }}</div>
                                 <small class="text-muted d-block mb-2">{{ $permission->code }}</small>
 
                                 <div class="form-check">
@@ -120,7 +120,7 @@
                                         @checked(in_array($permission->code, $selectedAllowPermissions, true))
                                     >
                                     <label class="form-check-label" for="allow_{{ $permission->id }}">
-                                        Allow
+                                        {{ __('Allow') }}
                                     </label>
                                 </div>
 
@@ -134,7 +134,7 @@
                                         @checked(in_array($permission->code, $selectedDeniedPermissions, true))
                                     >
                                     <label class="form-check-label text-danger" for="deny_{{ $permission->id }}">
-                                        Deny
+                                        {{ __('Deny') }}
                                     </label>
                                 </div>
                             </div>
@@ -147,6 +147,6 @@
 </div>
 
 <div class="card-footer">
-    <button class="btn btn-primary">Save</button>
-    <a href="{{ route('dashboard.users.index') }}" class="btn btn-secondary">Cancel</a>
+    <button class="btn btn-primary">{{ __('Save') }}</button>
+    <a href="{{ route('dashboard.users.index') }}" class="btn btn-secondary">{{ __('Cancel') }}</a>
 </div>

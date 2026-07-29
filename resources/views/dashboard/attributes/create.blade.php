@@ -6,10 +6,10 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center">
-            <h1>Create Attribute</h1>
+            <h1>{{ __('Create Attribute') }}</h1>
 
             <a href="{{ route('dashboard.attributes.index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left mr-1"></i> Back
+                <i class="fas fa-arrow-left mr-1"></i> {{ __('Back') }}
             </a>
         </div>
     </section>

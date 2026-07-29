@@ -46,12 +46,12 @@
                     <div class="col-md-6">
                         <div class="card card-outline card-info">
                             <div class="card-header">
-                                <h3 class="card-title">English</h3>
+                                <h3 class="card-title">{{ __('English') }}</h3>
                             </div>
 
                             <div class="card-body">
                                 <div class="form-group">
-                                    <label>English Name <span class="text-danger">*</span></label>
+                                    <label>{{ __('English Name') }} <span class="text-danger">*</span></label>
                                     <input
                                         type="text"
                                         name="en[name]"
@@ -65,7 +65,7 @@
                                 </div>
 
                                 <div class="form-group mb-0">
-                                    <label>English Description</label>
+                                    <label>{{ __('English Description') }}</label>
                                     <textarea
                                         name="en[description]"
                                         rows="5"
@@ -84,12 +84,12 @@
 
         <div class="card card-outline card-secondary">
             <div class="card-header">
-                <h3 class="card-title">SEO</h3>
+                <h3 class="card-title">{{ __('SEO') }}</h3>
             </div>
 
             <div class="card-body">
                 <div class="form-group">
-                    <label>Meta Title</label>
+                    <label>{{ __('Meta Title') }}</label>
                     <input
                         type="text"
                         name="meta_title"
@@ -102,7 +102,7 @@
                 </div>
 
                 <div class="form-group mb-0">
-                    <label>Meta Description</label>
+                    <label>{{ __('Meta Description') }}</label>
                     <textarea
                         name="meta_description"
                         rows="3"
@@ -119,18 +119,18 @@
     <div class="col-md-4">
         <div class="card card-outline card-warning">
             <div class="card-header">
-                <h3 class="card-title">Category Settings</h3>
+                <h3 class="card-title">{{ __('Category Settings') }}</h3>
             </div>
 
             <div class="card-body">
                 <div class="form-group">
-                    <label>Slug</label>
+                    <label>{{ __('Slug') }}</label>
                     <input
                         type="text"
                         name="slug"
                         class="form-control @error('slug') is-invalid @enderror"
                         value="{{ $form['slug'] }}"
-                        placeholder="Leave empty to auto-generate"
+                        placeholder="{{ __('Leave empty to auto-generate') }}"
                     >
                     @error('slug')
                         <small class="text-danger">{{ $message }}</small>
@@ -138,12 +138,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Parent Category</label>
+                    <label>{{ __('Parent Category') }}</label>
                     <select name="parent_id" class="form-control @error('parent_id') is-invalid @enderror">
-                        <option value="">Root Category</option>
+                        <option value="">{{ __('Root Category') }}</option>
                         @foreach($parents as $parent)
                             <option value="{{ $parent->id }}" {{ (string) $form['parent_id'] === (string) $parent->id ? 'selected' : '' }}>
-                                {{ $parent->name ?? 'No Name' }}
+                                {{ $parent->name ?? __('No Name') }}
                             </option>
                         @endforeach
                     </select>
@@ -153,7 +153,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Sort Order</label>
+                    <label>{{ __('Sort Order') }}</label>
                     <input
                         type="number"
                         min="0"
@@ -176,7 +176,7 @@
                             value="1"
                             {{ $form['is_active'] ? 'checked' : '' }}
                         >
-                        <label class="custom-control-label" for="is_active">Active</label>
+                        <label class="custom-control-label" for="is_active">{{ __('Active') }}</label>
                     </div>
                     @error('is_active')
                         <small class="text-danger d-block">{{ $message }}</small>

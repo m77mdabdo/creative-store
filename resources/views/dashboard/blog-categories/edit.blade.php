@@ -7,9 +7,9 @@
     <section class="content-header">
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center">
-                <h1>Edit Blog Category</h1>
+                <h1>{{ __('Edit Blog Category') }}</h1>
                 <a href="{{ route('dashboard.blog-categories.index') }}" class="btn btn-default">
-                    <i class="fas fa-arrow-left"></i> Back
+                    <i class="fas fa-arrow-left"></i> {{ __('Back') }}
                 </a>
             </div>
         </div>
@@ -24,7 +24,7 @@
 
                 @include('dashboard.blog-categories._form', [
                     'category' => $category,
-                    'formTitle' => 'Update Category',
+                    'formTitle' => __('Update Category'),
                     'submitLabel' => 'Update Category',
                 ])
             </form>

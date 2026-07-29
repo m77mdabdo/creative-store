@@ -6,7 +6,7 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap">
-            <h1 class="mb-2">Product Reviews</h1>
+            <h1 class="mb-2">{{ __('Product Reviews') }}</h1>
         </div>
     </section>
 
@@ -16,21 +16,21 @@
 
             <div class="card card-outline card-primary">
                 <div class="card-header">
-                    <h3 class="card-title">Filter Reviews</h3>
+                    <h3 class="card-title">{{ __('Filter Reviews') }}</h3>
                 </div>
 
                 <div class="card-body">
                     <form method="GET" action="{{ route('dashboard.reviews.index') }}">
                         <div class="row">
                             <div class="col-md-3">
-                                <label>Search</label>
-                                <input type="text" name="search" class="form-control" value="{{ $filters['search'] }}" placeholder="Title, comment, customer, product...">
+                                <label>{{ __('Search') }}</label>
+                                <input type="text" name="search" class="form-control" value="{{ $filters['search'] }}" placeholder="{{ __('Title, comment, customer, product...') }}">
                             </div>
 
                             <div class="col-md-3">
-                                <label>Product</label>
+                                <label>{{ __('Product') }}</label>
                                 <select name="product_id" class="form-control">
-                                    <option value="">All</option>
+                                    <option value="">{{ __('All') }}</option>
                                     @foreach($products as $product)
                                         <option value="{{ $product->id }}" {{ (string) $filters['product_id'] === (string) $product->id ? 'selected' : '' }}>
                                             {{ $product->name ?? $product->sku }}
@@ -40,9 +40,9 @@
                             </div>
 
                             <div class="col-md-2">
-                                <label>Rating</label>
+                                <label>{{ __('Rating') }}</label>
                                 <select name="rating" class="form-control">
-                                    <option value="">All</option>
+                                    <option value="">{{ __('All') }}</option>
                                     @for($i = 5; $i >= 1; $i--)
                                         <option value="{{ $i }}" {{ (string) $filters['rating'] === (string) $i ? 'selected' : '' }}>
                                             {{ $i }} Star
@@ -52,16 +52,16 @@
                             </div>
 
                             <div class="col-md-2">
-                                <label>Status</label>
+                                <label>{{ __('Status') }}</label>
                                 <select name="status" class="form-control">
-                                    <option value="">All</option>
-                                    <option value="approved" {{ $filters['status'] === 'approved' ? 'selected' : '' }}>Approved</option>
-                                    <option value="pending" {{ $filters['status'] === 'pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="">{{ __('All') }}</option>
+                                    <option value="approved" {{ $filters['status'] === 'approved' ? 'selected' : '' }}>{{ __('Approved') }}</option>
+                                    <option value="pending" {{ $filters['status'] === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
                                 </select>
                             </div>
 
                             <div class="col-md-2 d-flex align-items-end">
-                                <button class="btn btn-info btn-block" type="submit">Filter</button>
+                                <button class="btn btn-info btn-block" type="submit">{{ __('Filter') }}</button>
                             </div>
                         </div>
                     </form>
@@ -71,18 +71,18 @@
             @if($canEdit && $reviews->count())
                 <div class="card card-outline card-secondary">
                     <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-                        <h3 class="card-title mb-2">Bulk Actions</h3>
+                        <h3 class="card-title mb-2">{{ __('Bulk Actions') }}</h3>
 
                         <form id="bulkReviewsForm" action="{{ route('dashboard.reviews.bulk-action') }}" method="POST" class="d-flex align-items-center">
                             @csrf
                             <select name="action" class="form-control mr-2" required>
-                                <option value="">Select action</option>
-                                <option value="approve">Approve</option>
-                                <option value="unapprove">Unapprove</option>
-                                <option value="delete">Delete</option>
+                                <option value="">{{ __('Select action') }}</option>
+                                <option value="approve">{{ __('Approve') }}</option>
+                                <option value="unapprove">{{ __('Unapprove') }}</option>
+                                <option value="delete">{{ __('Delete') }}</option>
                             </select>
 
-                            <button type="submit" class="btn btn-warning">Apply</button>
+                            <button type="submit" class="btn btn-warning">{{ __('Apply') }}</button>
                         </form>
                     </div>
                 </div>
@@ -97,13 +97,13 @@
                                     <th><input type="checkbox" id="check-all-reviews"></th>
                                 @endif
                                 <th>#</th>
-                                <th>Product</th>
-                                <th>Customer</th>
-                                <th>Rating</th>
-                                <th>Title</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                                <th width="220">Actions</th>
+                                <th>{{ __('Product') }}</th>
+                                <th>{{ __('Customer') }}</th>
+                                <th>{{ __('Rating') }}</th>
+                                <th>{{ __('Title') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th>{{ __('Date') }}</th>
+                                <th width="220">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -116,16 +116,16 @@
                                     @endif
                                     <td>{{ $review->id }}</td>
                                     <td>{{ $review->product?->name ?? $review->product?->sku ?? '-' }}</td>
-                                    <td>{{ $review->user?->name ?? 'Guest / Deleted User' }}</td>
+                                    <td>{{ $review->user?->name ?? __('Guest / Deleted User') }}</td>
                                     <td>
                                         <span class="badge badge-warning">{{ $review->rating }}/5</span>
                                     </td>
                                     <td>{{ $review->title ?: '-' }}</td>
                                     <td>
                                         @if($review->is_approved)
-                                            <span class="badge badge-success">Approved</span>
+                                            <span class="badge badge-success">{{ __('Approved') }}</span>
                                         @else
-                                            <span class="badge badge-secondary">Pending</span>
+                                            <span class="badge badge-secondary">{{ __('Pending') }}</span>
                                         @endif
                                     </td>
                                     <td>{{ $review->created_at?->format('Y-m-d h:i A') }}</td>
@@ -145,7 +145,7 @@
                                         @endif
 
                                         @if($canDelete)
-                                            <form action="{{ route('dashboard.reviews.destroy', $review) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this review?');">
+                                            <form action="{{ route('dashboard.reviews.destroy', $review) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Delete this review?')));">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">
@@ -157,7 +157,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="{{ $canEdit ? 9 : 8 }}" class="text-center py-4">No reviews found.</td>
+                                    <td colspan="{{ $canEdit ? 9 : 8 }}" class="text-center py-4">{{ __('No reviews found.') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>

@@ -6,10 +6,10 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap">
-            <h1>Create Category</h1>
+            <h1>{{ __('Create Category') }}</h1>
 
             <a href="{{ route('dashboard.categories.index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left mr-1"></i> Back to Categories
+                <i class="fas fa-arrow-left mr-1"></i> {{ __('Back to Categories') }}
             </a>
         </div>
     </section>

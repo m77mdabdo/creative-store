@@ -10,12 +10,12 @@
 
             <div class="d-flex gap-2">
                 <a href="{{ route('dashboard.blogs.index') }}" class="btn btn-default">
-                    <i class="fas fa-arrow-left"></i> Back
+                    <i class="fas fa-arrow-left"></i> {{ __('Back') }}
                 </a>
 
                 @if(Route::has('frontend.blog.show'))
                     <a href="{{ route('frontend.blog.show', $blog->slug) }}" target="_blank" class="btn btn-success">
-                        <i class="fas fa-external-link-alt"></i> Open Frontend
+                        <i class="fas fa-external-link-alt"></i> {{ __('Open Frontend') }}
                     </a>
                 @endif
             </div>
@@ -43,49 +43,49 @@
                     @endif
 
                     <div class="mb-3">
-                        <strong>Category:</strong> {{ $blog->category?->name ?? '-' }}
+                        <strong>{{ __('Category:') }}</strong> {{ $blog->category?->name ?? '-' }}
                     </div>
 
                     <div class="mb-3">
-                        <strong>Slug:</strong> <code>{{ $blog->slug }}</code>
+                        <strong>{{ __('Slug:') }}</strong> <code>{{ $blog->slug }}</code>
                     </div>
 
                     <div class="mb-3">
-                        <strong>Author:</strong> {{ $blog->author ?? '-' }}
+                        <strong>{{ __('Author:') }}</strong> {{ $blog->author ?? '-' }}
                     </div>
 
                     <div class="mb-3">
-                        <strong>Views:</strong> {{ number_format((int) $blog->views) }}
+                        <strong>{{ __('Views:') }}</strong> {{ number_format((int) $blog->views) }}
                     </div>
 
                     <div class="mb-3">
-                        <strong>Featured:</strong>
+                        <strong>{{ __('Featured:') }}</strong>
                         <span class="badge {{ $blog->is_featured ? 'badge-success' : 'badge-secondary' }}">
-                            {{ $blog->is_featured ? 'Yes' : 'No' }}
+                            {{ $blog->is_featured ? __('Yes') : __('No') }}
                         </span>
                     </div>
 
                     <div class="mb-3">
-                        <strong>Status:</strong>
+                        <strong>{{ __('Status:') }}</strong>
                         <span class="badge {{ $blog->status ? 'badge-success' : 'badge-danger' }}">
-                            {{ $blog->status ? 'Active' : 'Inactive' }}
+                            {{ $blog->status ? __('Active') : __('Inactive') }}
                         </span>
                     </div>
 
                     <div class="mb-3">
-                        <strong>Published At:</strong>
+                        <strong>{{ __('Published At:') }}</strong>
                         {{ $blog->published_at?->format('Y-m-d h:i A') ?? '-' }}
                     </div>
 
                     @if($blog->excerpt)
                         <div class="mb-3">
-                            <strong>Excerpt:</strong>
+                            <strong>{{ __('Excerpt:') }}</strong>
                             <div class="mt-2 p-3 bg-light rounded">{{ $blog->excerpt }}</div>
                         </div>
                     @endif
 
                     <div class="mb-3">
-                        <strong>Content:</strong>
+                        <strong>{{ __('Content:') }}</strong>
                         <div class="mt-2 p-3 bg-light rounded" style="white-space: pre-line;">{{ $blog->content }}</div>
                     </div>
 
@@ -102,7 +102,7 @@
                             <div class="mt-2">{{ $comment->comment }}</div>
                         </div>
                     @empty
-                        <div class="text-muted">No comments found.</div>
+                        <div class="text-muted">{{ __('No comments found.') }}</div>
                     @endforelse
                 </div>
             </div>

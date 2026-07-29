@@ -397,7 +397,7 @@
                                         </div>
                                         <div class="flex-grow-1">
                                             <div class="font-weight-bold text-dark">
-                                                {{ $product->name ?? 'Unnamed Product' }}
+                                                {{ $product->name ?? __('Unnamed Product') }}
                                             </div>
                                             <small class="text-muted">
                                                 {{ __('site.SKU') }}: {{ $product->sku ?? '-' }}

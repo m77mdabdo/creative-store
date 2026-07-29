@@ -6,7 +6,7 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
-            <h1>Abandoned Cart Recovery Dashboard</h1>
+            <h1>{{ __('Abandoned Cart Recovery Dashboard') }}</h1>
         </div>
     </section>
 
@@ -18,7 +18,7 @@
                     <div class="small-box bg-info">
                         <div class="inner">
                             <h3>{{ $stats['total_recoveries'] }}</h3>
-                            <p>Total Recovery Logs</p>
+                            <p>{{ __('Total Recovery Logs') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-history"></i></div>
                     </div>
@@ -28,7 +28,7 @@
                     <div class="small-box bg-success">
                         <div class="inner">
                             <h3>{{ $stats['recovery_rate'] }}%</h3>
-                            <p>Recovery Rate</p>
+                            <p>{{ __('Recovery Rate') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-chart-line"></i></div>
                     </div>
@@ -38,7 +38,7 @@
                     <div class="small-box bg-primary">
                         <div class="inner">
                             <h3>{{ number_format((float) $stats['recovered_revenue'], 2) }}</h3>
-                            <p>Recovered Revenue (SAR)</p>
+                            <p>{{ __('Recovered Revenue (SAR)') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-money-bill-wave"></i></div>
                     </div>
@@ -48,7 +48,7 @@
                     <div class="small-box bg-warning">
                         <div class="inner">
                             <h3>{{ number_format((float) $stats['revenue_estimation'], 2) }}</h3>
-                            <p>Revenue Estimation (SAR)</p>
+                            <p>{{ __('Revenue Estimation (SAR)') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-calculator"></i></div>
                     </div>
@@ -60,7 +60,7 @@
                     <div class="small-box bg-secondary">
                         <div class="inner">
                             <h3>{{ $stats['pending_count'] }}</h3>
-                            <p>Pending</p>
+                            <p>{{ __('Pending') }}</p>
                         </div>
                     </div>
                 </div>
@@ -69,7 +69,7 @@
                     <div class="small-box bg-info">
                         <div class="inner">
                             <h3>{{ $stats['sent_count'] }}</h3>
-                            <p>Sent</p>
+                            <p>{{ __('Sent') }}</p>
                         </div>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                     <div class="small-box bg-danger">
                         <div class="inner">
                             <h3>{{ $stats['failed_count'] }}</h3>
-                            <p>Failed</p>
+                            <p>{{ __('Failed') }}</p>
                         </div>
                     </div>
                 </div>
@@ -87,7 +87,7 @@
                     <div class="small-box bg-success">
                         <div class="inner">
                             <h3>{{ $stats['recovered_count'] }}</h3>
-                            <p>Recovered</p>
+                            <p>{{ __('Recovered') }}</p>
                         </div>
                     </div>
                 </div>
@@ -96,7 +96,7 @@
                     <div class="small-box bg-warning">
                         <div class="inner">
                             <h3>{{ $stats['expired_count'] }}</h3>
-                            <p>Expired</p>
+                            <p>{{ __('Expired') }}</p>
                         </div>
                     </div>
                 </div>
@@ -104,23 +104,23 @@
 
             <div class="card card-outline card-primary">
                 <div class="card-header">
-                    <h3 class="card-title">Filters</h3>
+                    <h3 class="card-title">{{ __('Filters') }}</h3>
                 </div>
                 <div class="card-body">
                     <form method="GET" action="{{ route('dashboard.abandoned-cart-recoveries.index') }}">
                         <div class="row">
                             <div class="col-md-3 mb-2">
                                 <input type="text" name="q" class="form-control"
-                                       placeholder="Email, token, session, user..."
+                                       placeholder="{{ __('Email, token, session, user...') }}"
                                        value="{{ $filters['q'] ?? '' }}">
                             </div>
 
                             <div class="col-md-2 mb-2">
                                 <select name="status" class="form-control">
-                                    <option value="">All Status</option>
+                                    <option value="">{{ __('All Status') }}</option>
                                     @foreach(['pending','sent','failed','recovered','expired'] as $status)
                                         <option value="{{ $status }}" @selected(($filters['status'] ?? '') === $status)>
-                                            {{ ucfirst(str_replace('_', ' ', $status)) }}
+                                            {{ status_label($status) }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -128,8 +128,8 @@
 
                             <div class="col-md-2 mb-2">
                                 <select name="channel" class="form-control">
-                                    <option value="">All Channels</option>
-                                    <option value="email" @selected(($filters['channel'] ?? '') === 'email')>Email</option>
+                                    <option value="">{{ __('All Channels') }}</option>
+                                    <option value="email" @selected(($filters['channel'] ?? '') === 'email')>{{ __('Email') }}</option>
                                 </select>
                             </div>
 
@@ -145,10 +145,10 @@
 
                             <div class="col-md-2 mb-2">
                                 <select name="sort" class="form-control">
-                                    <option value="latest" @selected(($filters['sort'] ?? 'latest') === 'latest')>Latest</option>
-                                    <option value="oldest" @selected(($filters['sort'] ?? '') === 'oldest')>Oldest</option>
-                                    <option value="expires_asc" @selected(($filters['sort'] ?? '') === 'expires_asc')>Expires ASC</option>
-                                    <option value="expires_desc" @selected(($filters['sort'] ?? '') === 'expires_desc')>Expires DESC</option>
+                                    <option value="latest" @selected(($filters['sort'] ?? 'latest') === 'latest')>{{ __('Latest') }}</option>
+                                    <option value="oldest" @selected(($filters['sort'] ?? '') === 'oldest')>{{ __('Oldest') }}</option>
+                                    <option value="expires_asc" @selected(($filters['sort'] ?? '') === 'expires_asc')>{{ __('Expires ASC') }}</option>
+                                    <option value="expires_desc" @selected(($filters['sort'] ?? '') === 'expires_desc')>{{ __('Expires DESC') }}</option>
                                 </select>
                             </div>
 
@@ -162,7 +162,7 @@
                             </div>
 
                             <div class="col-md-2 mb-2">
-                                <button class="btn btn-primary btn-block">Filter</button>
+                                <button class="btn btn-primary btn-block">{{ __('Filter') }}</button>
                             </div>
                         </div>
                     </form>
@@ -171,29 +171,29 @@
 
             <div class="card card-outline card-secondary">
                 <div class="card-header">
-                    <h3 class="card-title">Sent / Failed / Recovered Breakdown</h3>
+                    <h3 class="card-title">{{ __('Sent / Failed / Recovered Breakdown') }}</h3>
                 </div>
                 <div class="card-body">
                     <div class="row text-center">
                         <div class="col-md-2">
                             <h4>{{ $statusBreakdown['pending'] }}</h4>
-                            <p>Pending</p>
+                            <p>{{ __('Pending') }}</p>
                         </div>
                         <div class="col-md-2">
                             <h4>{{ $statusBreakdown['sent'] }}</h4>
-                            <p>Sent</p>
+                            <p>{{ __('Sent') }}</p>
                         </div>
                         <div class="col-md-2">
                             <h4>{{ $statusBreakdown['failed'] }}</h4>
-                            <p>Failed</p>
+                            <p>{{ __('Failed') }}</p>
                         </div>
                         <div class="col-md-3">
                             <h4>{{ $statusBreakdown['recovered'] }}</h4>
-                            <p>Recovered</p>
+                            <p>{{ __('Recovered') }}</p>
                         </div>
                         <div class="col-md-3">
                             <h4>{{ $statusBreakdown['expired'] }}</h4>
-                            <p>Expired</p>
+                            <p>{{ __('Expired') }}</p>
                         </div>
                     </div>
                 </div>
@@ -201,7 +201,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Recovery Logs</h3>
+                    <h3 class="card-title">{{ __('Recovery Logs') }}</h3>
                 </div>
 
                 <div class="card-body table-responsive p-0">
@@ -209,16 +209,16 @@
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>User / Email</th>
-                            <th>Cart</th>
-                            <th>Channel</th>
-                            <th>Status</th>
-                            <th>Cart Value</th>
-                            <th>Abandoned At</th>
-                            <th>Sent At</th>
-                            <th>Recovered At</th>
-                            <th>Expires At</th>
-                            <th>Actions</th>
+                            <th>{{ __('User / Email') }}</th>
+                            <th>{{ __('Cart') }}</th>
+                            <th>{{ __('Channel') }}</th>
+                            <th>{{ __('Status') }}</th>
+                            <th>{{ __('Cart Value') }}</th>
+                            <th>{{ __('Abandoned At') }}</th>
+                            <th>{{ __('Sent At') }}</th>
+                            <th>{{ __('Recovered At') }}</th>
+                            <th>{{ __('Expires At') }}</th>
+                            <th>{{ __('Actions') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -244,10 +244,10 @@
                                             Cart #{{ $recovery->cart->id }}
                                         </a>
                                     @else
-                                        <span class="text-muted">Deleted Cart</span>
+                                        <span class="text-muted">{{ __('Deleted Cart') }}</span>
                                     @endif
                                 </td>
-                                <td>{{ ucfirst($recovery->channel) }}</td>
+                                <td>{{ status_label($recovery->channel) }}</td>
                                 <td>
                                     @php
                                         $badgeClass = match($recovery->status) {
@@ -259,7 +259,7 @@
                                             default => 'badge badge-light',
                                         };
                                     @endphp
-                                    <span class="{{ $badgeClass }}">{{ ucfirst($recovery->status) }}</span>
+                                    <span class="{{ $badgeClass }}">{{ status_label($recovery->status) }}</span>
                                 </td>
                                 <td>{{ number_format((float) $cartValue, 2) }} SAR</td>
                                 <td>{{ $recovery->cart_abandoned_at?->format('Y-m-d H:i') ?: '-' }}</td>
@@ -268,13 +268,13 @@
                                 <td>{{ $recovery->expires_at?->format('Y-m-d H:i') ?: '-' }}</td>
                                 <td>
                                     <a href="{{ route('dashboard.abandoned-cart-recoveries.show', $recovery) }}" class="btn btn-sm btn-info">
-                                        View
+                                        {{ __('View') }}
                                     </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="11" class="text-center py-4">No recovery logs found.</td>
+                                <td colspan="11" class="text-center py-4">{{ __('No recovery logs found.') }}</td>
                             </tr>
                         @endforelse
                         </tbody>

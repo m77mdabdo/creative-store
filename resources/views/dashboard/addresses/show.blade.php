@@ -6,8 +6,8 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center">
-            <h1>Address Details</h1>
-            <a href="{{ route('dashboard.addresses.edit', $address) }}" class="btn btn-primary">Edit</a>
+            <h1>{{ __('Address Details') }}</h1>
+            <a href="{{ route('dashboard.addresses.edit', $address) }}" class="btn btn-primary">{{ __('Edit') }}</a>
         </div>
     </section>
 
@@ -17,80 +17,80 @@
                 <div class="card-body">
                     <table class="table table-bordered">
                         <tr>
-                            <th width="220">Label</th>
+                            <th width="220">{{ __('Label') }}</th>
                             <td>{{ $address->label ?: '-' }}</td>
                         </tr>
                         <tr>
-                            <th>Full Name</th>
+                            <th>{{ __('Full Name') }}</th>
                             <td>{{ $address->full_name }}</td>
                         </tr>
                         <tr>
-                            <th>Phone</th>
+                            <th>{{ __('Phone') }}</th>
                             <td>{{ $address->phone }}</td>
                         </tr>
                         <tr>
-                            <th>User</th>
+                            <th>{{ __('User') }}</th>
                             <td>
                                 @if($address->user)
                                     {{ $address->user->name }} <br>
                                     <small>{{ $address->user->email }}</small>
                                 @else
-                                    <span class="badge badge-secondary">Guest</span>
+                                    <span class="badge badge-secondary">{{ __('Guest') }}</span>
                                 @endif
                             </td>
                         </tr>
                         <tr>
-                            <th>Country</th>
+                            <th>{{ __('Country') }}</th>
                             <td>{{ $address->country }}</td>
                         </tr>
                         <tr>
-                            <th>City</th>
+                            <th>{{ __('City') }}</th>
                             <td>{{ $address->city }}</td>
                         </tr>
                         <tr>
-                            <th>District</th>
+                            <th>{{ __('District') }}</th>
                             <td>{{ $address->district ?: '-' }}</td>
                         </tr>
                         <tr>
-                            <th>Street</th>
+                            <th>{{ __('Street') }}</th>
                             <td>{{ $address->street }}</td>
                         </tr>
                         <tr>
-                            <th>Building No</th>
+                            <th>{{ __('Building No') }}</th>
                             <td>{{ $address->building_no ?: '-' }}</td>
                         </tr>
                         <tr>
-                            <th>Apartment No</th>
+                            <th>{{ __('Apartment No') }}</th>
                             <td>{{ $address->apartment_no ?: '-' }}</td>
                         </tr>
                         <tr>
-                            <th>Postal Code</th>
+                            <th>{{ __('Postal Code') }}</th>
                             <td>{{ $address->postal_code ?: '-' }}</td>
                         </tr>
                         <tr>
-                            <th>Latitude</th>
+                            <th>{{ __('Latitude') }}</th>
                             <td>{{ $address->lat ?: '-' }}</td>
                         </tr>
                         <tr>
-                            <th>Longitude</th>
+                            <th>{{ __('Longitude') }}</th>
                             <td>{{ $address->lng ?: '-' }}</td>
                         </tr>
                         <tr>
-                            <th>Notes</th>
+                            <th>{{ __('Notes') }}</th>
                             <td>{{ $address->notes ?: '-' }}</td>
                         </tr>
                         <tr>
-                            <th>Default</th>
+                            <th>{{ __('Default') }}</th>
                             <td>
                                 @if($address->is_default)
-                                    <span class="badge badge-success">Default</span>
+                                    <span class="badge badge-success">{{ __('Default') }}</span>
                                 @else
-                                    <span class="badge badge-light">No</span>
+                                    <span class="badge badge-light">{{ __('No') }}</span>
                                 @endif
                             </td>
                         </tr>
                         <tr>
-                            <th>Created At</th>
+                            <th>{{ __('Created At') }}</th>
                             <td>{{ $address->created_at?->format('Y-m-d H:i') }}</td>
                         </tr>
                     </table>

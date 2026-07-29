@@ -8,14 +8,14 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>System Backups</h1>
+                    <h1>{{ __('System Backups') }}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item">
-                            <a href="{{ route('dashboard.home') }}">Dashboard</a>
+                            <a href="{{ route('dashboard.home') }}">{{ __('Dashboard') }}</a>
                         </li>
-                        <li class="breadcrumb-item active">System Backups</li>
+                        <li class="breadcrumb-item active">{{ __('System Backups') }}</li>
                     </ol>
                 </div>
             </div>
@@ -28,7 +28,7 @@
             @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="{{ __('Close') }}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -37,7 +37,7 @@
             @if(session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ session('error') }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="{{ __('Close') }}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -48,7 +48,7 @@
                     <div class="small-box bg-primary">
                         <div class="inner">
                             <h3>{{ number_format($stats['total'] ?? 0) }}</h3>
-                            <p>Total Backups</p>
+                            <p>{{ __('Total Backups') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-database"></i>
@@ -60,7 +60,7 @@
                     <div class="small-box bg-success">
                         <div class="inner">
                             <h3>{{ number_format($stats['success'] ?? 0) }}</h3>
-                            <p>Successful</p>
+                            <p>{{ __('Successful') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-check-circle"></i>
@@ -72,7 +72,7 @@
                     <div class="small-box bg-danger">
                         <div class="inner">
                             <h3>{{ number_format($stats['failed'] ?? 0) }}</h3>
-                            <p>Failed</p>
+                            <p>{{ __('Failed') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-times-circle"></i>
@@ -84,7 +84,7 @@
                     <div class="small-box bg-warning">
                         <div class="inner">
                             <h3>{{ number_format($stats['scheduled'] ?? 0) }}</h3>
-                            <p>Scheduled</p>
+                            <p>{{ __('Scheduled') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-clock"></i>
@@ -95,7 +95,7 @@
 
             <div class="card card-outline card-primary">
                 <div class="card-header">
-                    <h3 class="card-title">Filters</h3>
+                    <h3 class="card-title">{{ __('Filters') }}</h3>
 
                     <div class="card-tools">
                         @if(auth()->check())
@@ -103,7 +103,7 @@
                                 @csrf
                                 <button type="submit" class="btn btn-primary btn-sm">
                                     <i class="fas fa-plus mr-1"></i>
-                                    Create Manual Backup
+                                    {{ __('Create Manual Backup') }}
                                 </button>
                             </form>
                         @endif
@@ -115,43 +115,43 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="q">Search</label>
+                                    <label for="q">{{ __('Search') }}</label>
                                     <input
                                         type="text"
                                         name="q"
                                         id="q"
                                         class="form-control"
                                         value="{{ $filters['q'] ?? '' }}"
-                                        placeholder="ID, file path, type, status, note..."
+                                        placeholder="{{ __('ID, file path, type, status, note...') }}"
                                     >
                                 </div>
                             </div>
 
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="type">Type</label>
+                                    <label for="type">{{ __('Type') }}</label>
                                     <select name="type" id="type" class="form-control">
-                                        <option value="">All</option>
-                                        <option value="manual" @selected(($filters['type'] ?? '') === 'manual')>Manual</option>
-                                        <option value="scheduled" @selected(($filters['type'] ?? '') === 'scheduled')>Scheduled</option>
+                                        <option value="">{{ __('All') }}</option>
+                                        <option value="manual" @selected(($filters['type'] ?? '') === 'manual')>{{ __('Manual') }}</option>
+                                        <option value="scheduled" @selected(($filters['type'] ?? '') === 'scheduled')>{{ __('Scheduled') }}</option>
                                     </select>
                                 </div>
                             </div>
 
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="status">Status</label>
+                                    <label for="status">{{ __('Status') }}</label>
                                     <select name="status" id="status" class="form-control">
-                                        <option value="">All</option>
-                                        <option value="success" @selected(($filters['status'] ?? '') === 'success')>Success</option>
-                                        <option value="failed" @selected(($filters['status'] ?? '') === 'failed')>Failed</option>
+                                        <option value="">{{ __('All') }}</option>
+                                        <option value="success" @selected(($filters['status'] ?? '') === 'success')>{{ __('Success') }}</option>
+                                        <option value="failed" @selected(($filters['status'] ?? '') === 'failed')>{{ __('Failed') }}</option>
                                     </select>
                                 </div>
                             </div>
 
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="date_from">Date From</label>
+                                    <label for="date_from">{{ __('Date From') }}</label>
                                     <input
                                         type="date"
                                         name="date_from"
@@ -164,7 +164,7 @@
 
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="date_to">Date To</label>
+                                    <label for="date_to">{{ __('Date To') }}</label>
                                     <input
                                         type="date"
                                         name="date_to"
@@ -177,7 +177,7 @@
 
                             <div class="col-md-1">
                                 <div class="form-group">
-                                    <label for="per_page">Rows</label>
+                                    <label for="per_page">{{ __('Rows') }}</label>
                                     <select name="per_page" id="per_page" class="form-control">
                                         @foreach([10, 20, 30, 50, 100] as $size)
                                             <option value="{{ $size }}" @selected((int) ($filters['per_page'] ?? 20) === $size)>
@@ -192,12 +192,12 @@
                         <div class="d-flex flex-wrap align-items-center">
                             <button type="submit" class="btn btn-primary mr-2 mb-2">
                                 <i class="fas fa-search mr-1"></i>
-                                Filter
+                                {{ __('Filter') }}
                             </button>
 
                             <a href="{{ route('dashboard.backups.index') }}" class="btn btn-secondary mb-2">
                                 <i class="fas fa-undo mr-1"></i>
-                                Reset
+                                {{ __('Reset') }}
                             </a>
                         </div>
                     </form>
@@ -210,13 +210,13 @@
 
                 <div class="card card-outline card-secondary">
                     <div class="card-header">
-                        <h3 class="card-title">Backup History</h3>
+                        <h3 class="card-title">{{ __('Backup History') }}</h3>
 
                         <div class="card-tools">
                             @if(auth()->check())
                                 <button type="submit" class="btn btn-danger btn-sm" id="bulkDeleteBtn" disabled>
                                     <i class="fas fa-trash mr-1"></i>
-                                    Delete Selected
+                                    {{ __('Delete Selected') }}
                                 </button>
                             @endif
                         </div>
@@ -232,14 +232,14 @@
                                         </th>
                                     @endif
                                     <th>ID</th>
-                                    <th>Type</th>
-                                    <th>Status</th>
-                                    <th>File Path</th>
-                                    <th>Size</th>
-                                    <th>Started At</th>
-                                    <th>Finished At</th>
-                                    <th>Note</th>
-                                    <th style="width: 220px;">Actions</th>
+                                    <th>{{ __('Type') }}</th>
+                                    <th>{{ __('Status') }}</th>
+                                    <th>{{ __('File Path') }}</th>
+                                    <th>{{ __('Size') }}</th>
+                                    <th>{{ __('Started At') }}</th>
+                                    <th>{{ __('Finished At') }}</th>
+                                    <th>{{ __('Note') }}</th>
+                                    <th style="width: 220px;">{{ __('Actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -260,17 +260,17 @@
 
                                         <td>
                                             @if($backup->type === 'manual')
-                                                <span class="badge badge-info">Manual</span>
+                                                <span class="badge badge-info">{{ __('Manual') }}</span>
                                             @else
-                                                <span class="badge badge-warning">Scheduled</span>
+                                                <span class="badge badge-warning">{{ __('Scheduled') }}</span>
                                             @endif
                                         </td>
 
                                         <td>
                                             @if($backup->status === 'success')
-                                                <span class="badge badge-success">Success</span>
+                                                <span class="badge badge-success">{{ __('Success') }}</span>
                                             @else
-                                                <span class="badge badge-danger">Failed</span>
+                                                <span class="badge badge-danger">{{ __('Failed') }}</span>
                                             @endif
                                         </td>
 
@@ -296,7 +296,7 @@
                                                 <br>
                                                 <small class="text-muted">{{ $backup->finished_at->format('h:i A') }}</small>
                                             @else
-                                                <span class="text-muted">In Progress / Not finished</span>
+                                                <span class="text-muted">{{ __('In Progress / Not finished') }}</span>
                                             @endif
                                         </td>
 
@@ -321,7 +321,7 @@
                                                         action="{{ route('dashboard.backups.destroy', $backup) }}"
                                                         method="POST"
                                                         class="d-inline"
-                                                        onsubmit="return confirm('Are you sure you want to delete this backup record and file?');"
+                                                        onsubmit="return confirm(@js(__('Are you sure you want to delete this backup record and file?')));"
                                                     >
                                                         @csrf
                                                         @method('DELETE')
@@ -336,7 +336,7 @@
                                 @empty
                                     <tr>
                                         <td colspan="{{ auth()->check() ? 10 : 9 }}" class="text-center text-muted py-4">
-                                            No backup records found.
+                                            {{ __('No backup records found.') }}
                                         </td>
                                     </tr>
                                 @endforelse

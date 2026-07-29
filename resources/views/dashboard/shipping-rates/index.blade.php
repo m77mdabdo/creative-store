@@ -6,11 +6,11 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Shipping Rates</h1>
+                    <h1>{{ __('Shipping Rates') }}</h1>
                 </div>
                 <div class="col-sm-6 text-sm-right">
                     <a href="{{ route('dashboard.shipping-rates.create') }}" class="btn btn-primary">
-                        <i class="fas fa-plus mr-1"></i> Add Shipping Rate
+                        <i class="fas fa-plus mr-1"></i> {{ __('Add Shipping Rate') }}
                     </a>
                 </div>
             </div>
@@ -29,7 +29,7 @@
                     <div class="small-box bg-info">
                         <div class="inner">
                             <h3>{{ number_format($stats['total']) }}</h3>
-                            <p>Total Rates</p>
+                            <p>{{ __('Total Rates') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-money-check-alt"></i></div>
                     </div>
@@ -39,7 +39,7 @@
                     <div class="small-box bg-success">
                         <div class="inner">
                             <h3>{{ number_format($stats['active']) }}</h3>
-                            <p>Active</p>
+                            <p>{{ __('Active') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-check-circle"></i></div>
                     </div>
@@ -49,7 +49,7 @@
                     <div class="small-box bg-danger">
                         <div class="inner">
                             <h3>{{ number_format($stats['inactive']) }}</h3>
-                            <p>Inactive</p>
+                            <p>{{ __('Inactive') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-times-circle"></i></div>
                     </div>
@@ -59,7 +59,7 @@
                     <div class="small-box bg-warning">
                         <div class="inner">
                             <h3>{{ number_format($stats['zones']) }}</h3>
-                            <p>Zones</p>
+                            <p>{{ __('Zones') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-map-marked-alt"></i></div>
                     </div>
@@ -71,12 +71,12 @@
                     <form method="GET" action="{{ route('dashboard.shipping-rates.index') }}">
                         <div class="row">
                             <div class="col-md-3 mb-2">
-                                <input type="text" name="q" value="{{ request('q') }}" class="form-control" placeholder="Search city / district / zone / method">
+                                <input type="text" name="q" value="{{ request('q') }}" class="form-control" placeholder="{{ __('Search city / district / zone / method') }}">
                             </div>
 
                             <div class="col-md-2 mb-2">
                                 <select name="zone_id" class="form-control">
-                                    <option value="">All Zones</option>
+                                    <option value="">{{ __('All Zones') }}</option>
                                     @foreach($zones as $id => $name)
                                         <option value="{{ $id }}" @selected((int) request('zone_id') === (int) $id)>{{ $name }}</option>
                                     @endforeach
@@ -85,7 +85,7 @@
 
                             <div class="col-md-2 mb-2">
                                 <select name="method_id" class="form-control">
-                                    <option value="">All Methods</option>
+                                    <option value="">{{ __('All Methods') }}</option>
                                     @foreach($methods as $id => $name)
                                         <option value="{{ $id }}" @selected((int) request('method_id') === (int) $id)>{{ $name }}</option>
                                     @endforeach
@@ -94,29 +94,29 @@
 
                             <div class="col-md-1 mb-2">
                                 <select name="status" class="form-control">
-                                    <option value="">Status</option>
-                                    <option value="active" @selected(request('status') === 'active')>Active</option>
-                                    <option value="inactive" @selected(request('status') === 'inactive')>Inactive</option>
+                                    <option value="">{{ __('Status') }}</option>
+                                    <option value="active" @selected(request('status') === 'active')>{{ __('Active') }}</option>
+                                    <option value="inactive" @selected(request('status') === 'inactive')>{{ __('Inactive') }}</option>
                                 </select>
                             </div>
 
                             <div class="col-md-2 mb-2">
                                 <select name="sort" class="form-control">
-                                    <option value="priority_asc" @selected(request('sort', 'priority_asc') === 'priority_asc')>Priority Asc</option>
-                                    <option value="priority_desc" @selected(request('sort') === 'priority_desc')>Priority Desc</option>
-                                    <option value="price_asc" @selected(request('sort') === 'price_asc')>Price Asc</option>
-                                    <option value="price_desc" @selected(request('sort') === 'price_desc')>Price Desc</option>
-                                    <option value="newest" @selected(request('sort') === 'newest')>Newest</option>
-                                    <option value="oldest" @selected(request('sort') === 'oldest')>Oldest</option>
+                                    <option value="priority_asc" @selected(request('sort', 'priority_asc') === 'priority_asc')>{{ __('Priority Asc') }}</option>
+                                    <option value="priority_desc" @selected(request('sort') === 'priority_desc')>{{ __('Priority Desc') }}</option>
+                                    <option value="price_asc" @selected(request('sort') === 'price_asc')>{{ __('Price Asc') }}</option>
+                                    <option value="price_desc" @selected(request('sort') === 'price_desc')>{{ __('Price Desc') }}</option>
+                                    <option value="newest" @selected(request('sort') === 'newest')>{{ __('Newest') }}</option>
+                                    <option value="oldest" @selected(request('sort') === 'oldest')>{{ __('Oldest') }}</option>
                                 </select>
                             </div>
 
                             <div class="col-md-1 mb-2">
-                                <button class="btn btn-primary btn-block">Go</button>
+                                <button class="btn btn-primary btn-block">{{ __('Go') }}</button>
                             </div>
 
                             <div class="col-md-1 mb-2">
-                                <a href="{{ route('dashboard.shipping-rates.index') }}" class="btn btn-outline-secondary btn-block">Reset</a>
+                                <a href="{{ route('dashboard.shipping-rates.index') }}" class="btn btn-outline-secondary btn-block">{{ __('Reset') }}</a>
                             </div>
                         </div>
                     </form>
@@ -127,16 +127,16 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Zone</th>
-                                <th>Method</th>
-                                <th>City</th>
-                                <th>District</th>
-                                <th>Weight</th>
-                                <th>Price</th>
-                                <th>ETA</th>
-                                <th>Priority</th>
-                                <th>Status</th>
-                                <th width="220">Actions</th>
+                                <th>{{ __('Zone') }}</th>
+                                <th>{{ __('Method') }}</th>
+                                <th>{{ __('City') }}</th>
+                                <th>{{ __('District') }}</th>
+                                <th>{{ __('Weight') }}</th>
+                                <th>{{ __('Price') }}</th>
+                                <th>{{ __('ETA') }}</th>
+                                <th>{{ __('Priority') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th width="220">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -144,7 +144,7 @@
                                 <tr>
                                     <td>{{ $rate->id }}</td>
                                     <td>{{ $rate->zone?->name ?? '—' }}</td>
-                                    <td>{{ $rate->method?->name ?? '—' }}</td>
+                                    <td>{{ $rate->method?->label ?? '—' }}</td>
                                     <td>{{ $rate->city ?: '—' }}</td>
                                     <td>{{ $rate->district ?: '—' }}</td>
                                     <td>
@@ -157,36 +157,36 @@
                                     <td>{{ $rate->priority }}</td>
                                     <td>
                                         @if($rate->is_active)
-                                            <span class="badge badge-success">Active</span>
+                                            <span class="badge badge-success">{{ __('Active') }}</span>
                                         @else
-                                            <span class="badge badge-danger">Inactive</span>
+                                            <span class="badge badge-danger">{{ __('Inactive') }}</span>
                                         @endif
                                     </td>
                                     <td>
                                         <a href="{{ route('dashboard.shipping-rates.edit', $rate) }}" class="btn btn-sm btn-outline-primary">
-                                            Edit
+                                            {{ __('Edit') }}
                                         </a>
 
                                         <form action="{{ route('dashboard.shipping-rates.toggle-status', $rate) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('PATCH')
                                             <button type="submit" class="btn btn-sm btn-outline-warning">
-                                                {{ $rate->is_active ? 'Disable' : 'Enable' }}
+                                                {{ $rate->is_active ? __('Disable') : __('Enable') }}
                                             </button>
                                         </form>
 
-                                        <form action="{{ route('dashboard.shipping-rates.destroy', $rate) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this shipping rate?')">
+                                        <form action="{{ route('dashboard.shipping-rates.destroy', $rate) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Delete this shipping rate?')))">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                Delete
+                                                {{ __('Delete') }}
                                             </button>
                                         </form>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="11" class="text-center text-muted py-4">No shipping rates found.</td>
+                                    <td colspan="11" class="text-center text-muted py-4">{{ __('No shipping rates found.') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>

@@ -7,9 +7,9 @@
     <section class="content-header">
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center">
-                <h1>Create Blog Category</h1>
+                <h1>{{ __('Create Blog Category') }}</h1>
                 <a href="{{ route('dashboard.blog-categories.index') }}" class="btn btn-default">
-                    <i class="fas fa-arrow-left"></i> Back
+                    <i class="fas fa-arrow-left"></i> {{ __('Back') }}
                 </a>
             </div>
         </div>
@@ -21,7 +21,7 @@
 
             <form action="{{ route('dashboard.blog-categories.store') }}" method="POST">
                 @include('dashboard.blog-categories._form', [
-                    'formTitle' => 'Create New Category',
+                    'formTitle' => __('Create New Category'),
                     'submitLabel' => 'Create Category',
                 ])
             </form>

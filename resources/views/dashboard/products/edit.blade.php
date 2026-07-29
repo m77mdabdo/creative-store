@@ -6,10 +6,10 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center">
-            <h1>Edit Product</h1>
+            <h1>{{ __('Edit Product') }}</h1>
 
             <a href="{{ route('dashboard.products.show', $product) }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left mr-1"></i> Back
+                <i class="fas fa-arrow-left mr-1"></i> {{ __('Back') }}
             </a>
         </div>
     </section>

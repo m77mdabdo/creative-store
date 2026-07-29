@@ -6,9 +6,9 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center">
-            <h1>Edit Page</h1>
+            <h1>{{ __('Edit Page') }}</h1>
             <a href="{{ route('dashboard.pages.index') }}" class="btn btn-default">
-                <i class="fas fa-arrow-left"></i> Back
+                <i class="fas fa-arrow-left"></i> {{ __('Back') }}
             </a>
         </div>
     </section>
@@ -27,7 +27,7 @@
                     'translationEn' => $translationEn,
                     'aboutAr' => $aboutAr ?? [],
                     'aboutEn' => $aboutEn ?? [],
-                    'formTitle' => 'Update Page',
+                    'formTitle' => __('Update Page'),
                     'submitLabel' => 'Update Page',
                 ])
             </form>

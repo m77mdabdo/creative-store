@@ -9,12 +9,12 @@
             <div class="d-flex justify-content-between align-items-center flex-wrap">
                 <div>
                     <h1 class="mb-1">Error Log #{{ $errorLog->id }}</h1>
-                    <p class="text-muted mb-0">Detailed error log information.</p>
+                    <p class="text-muted mb-0">{{ __('Detailed error log information.') }}</p>
                 </div>
 
                 <div class="d-flex align-items-center flex-wrap">
                     <a href="{{ route('dashboard.error-logs.index') }}" class="btn btn-default mr-2 mb-2">
-                        <i class="fas fa-arrow-left mr-1"></i> Back
+                        <i class="fas fa-arrow-left mr-1"></i> {{ __('Back') }}
                     </a>
 
                     @if(!$errorLog->resolved_at)
@@ -22,7 +22,7 @@
                             @csrf
                             @method('PATCH')
                             <button type="submit" class="btn btn-success">
-                                <i class="fas fa-check mr-1"></i> Mark as Resolved
+                                <i class="fas fa-check mr-1"></i> {{ __('Mark as Resolved') }}
                             </button>
                         </form>
                     @endif
@@ -54,7 +54,7 @@
                 };
 
                 $statusClass = $errorLog->resolved_at ? 'badge badge-success' : 'badge badge-danger';
-                $statusText = $errorLog->resolved_at ? 'Resolved' : 'Open';
+                $statusText = $errorLog->resolved_at ? __('Resolved') : __('Open');
 
                 $contextArray = is_array($errorLog->context) ? $errorLog->context : [];
                 $contextJson = !empty($contextArray)
@@ -67,7 +67,7 @@
 
                     <div class="card card-outline card-primary">
                         <div class="card-header">
-                            <h3 class="card-title">Summary</h3>
+                            <h3 class="card-title">{{ __('Summary') }}</h3>
                         </div>
 
                         <div class="card-body">
@@ -83,19 +83,19 @@
                                         <td>{{ $errorLog->id }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Service</th>
+                                        <th>{{ __('Service') }}</th>
                                         <td>{{ $errorLog->service ?: '—' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Created At</th>
+                                        <th>{{ __('Created At') }}</th>
                                         <td>{{ optional($errorLog->created_at)->format('Y-m-d h:i A') }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Resolved At</th>
+                                        <th>{{ __('Resolved At') }}</th>
                                         <td>{{ optional($errorLog->resolved_at)->format('Y-m-d h:i A') ?: '—' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Updated At</th>
+                                        <th>{{ __('Updated At') }}</th>
                                         <td>{{ optional($errorLog->updated_at)->format('Y-m-d h:i A') }}</td>
                                     </tr>
                                 </tbody>
@@ -105,22 +105,22 @@
 
                     <div class="card card-outline card-secondary">
                         <div class="card-header">
-                            <h3 class="card-title">Quick Context</h3>
+                            <h3 class="card-title">{{ __('Quick Context') }}</h3>
                         </div>
 
                         <div class="card-body p-0">
                             <table class="table table-sm table-bordered mb-0">
                                 <tbody>
                                     <tr>
-                                        <th style="width: 150px;">Exception</th>
+                                        <th style="width: 150px;">{{ __('Exception') }}</th>
                                         <td>{{ $contextArray['exception'] ?? '—' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>File</th>
+                                        <th>{{ __('File') }}</th>
                                         <td class="text-break">{{ $contextArray['file'] ?? '—' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Line</th>
+                                        <th>{{ __('Line') }}</th>
                                         <td>{{ $contextArray['line'] ?? '—' }}</td>
                                     </tr>
                                     <tr>
@@ -128,11 +128,11 @@
                                         <td class="text-break">{{ $contextArray['url'] ?? '—' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Method</th>
+                                        <th>{{ __('Method') }}</th>
                                         <td>{{ $contextArray['method'] ?? '—' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>User ID</th>
+                                        <th>{{ __('User ID') }}</th>
                                         <td>{{ $contextArray['user_id'] ?? '—' }}</td>
                                     </tr>
                                     <tr>
@@ -150,9 +150,9 @@
 
                     <div class="card card-outline card-danger">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h3 class="card-title mb-0">Message</h3>
+                            <h3 class="card-title mb-0">{{ __('Message') }}</h3>
                             <button type="button" class="btn btn-xs btn-outline-secondary" onclick="copyBlock('error-message-block')">
-                                <i class="fas fa-copy mr-1"></i> Copy
+                                <i class="fas fa-copy mr-1"></i> {{ __('Copy') }}
                             </button>
                         </div>
 
@@ -163,10 +163,10 @@
 
                     <div class="card card-outline card-secondary">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h3 class="card-title mb-0">Context</h3>
+                            <h3 class="card-title mb-0">{{ __('Context') }}</h3>
                             @if($contextJson)
                                 <button type="button" class="btn btn-xs btn-outline-secondary" onclick="copyBlock('error-context-block')">
-                                    <i class="fas fa-copy mr-1"></i> Copy
+                                    <i class="fas fa-copy mr-1"></i> {{ __('Copy') }}
                                 </button>
                             @endif
                         </div>
@@ -175,17 +175,17 @@
                             @if(!empty($contextArray))
                                 <pre id="error-context-block" class="bg-light border rounded p-3 mb-0" style="white-space: pre-wrap; max-height: 320px; overflow:auto; font-size: 13px;">{{ $contextJson }}</pre>
                             @else
-                                <p class="text-muted mb-0">No context available.</p>
+                                <p class="text-muted mb-0">{{ __('No context available.') }}</p>
                             @endif
                         </div>
                     </div>
 
                     <div class="card card-outline card-dark">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h3 class="card-title mb-0">Trace</h3>
+                            <h3 class="card-title mb-0">{{ __('Trace') }}</h3>
                             @if($errorLog->trace)
                                 <button type="button" class="btn btn-xs btn-outline-secondary" onclick="copyBlock('error-trace-block')">
-                                    <i class="fas fa-copy mr-1"></i> Copy
+                                    <i class="fas fa-copy mr-1"></i> {{ __('Copy') }}
                                 </button>
                             @endif
                         </div>
@@ -194,7 +194,7 @@
                             @if($errorLog->trace)
                                 <pre id="error-trace-block" class="bg-light border rounded p-3 mb-0" style="white-space: pre-wrap; max-height: 600px; overflow:auto; font-size: 12px; line-height: 1.5;">{{ $errorLog->trace }}</pre>
                             @else
-                                <p class="text-muted mb-0">No trace available.</p>
+                                <p class="text-muted mb-0">{{ __('No trace available.') }}</p>
                             @endif
                         </div>
                     </div>

@@ -4,14 +4,14 @@
     <div class="col-md-8">
         <div class="card card-outline card-primary">
             <div class="card-header">
-                <h3 class="card-title">{{ $formTitle ?? 'Blog Form' }}</h3>
+                <h3 class="card-title">{{ $formTitle ?? __('Blog Form') }}</h3>
             </div>
 
             <div class="card-body">
                 <div class="form-group mb-3">
-                    <label for="blog_category_id">Category <span class="text-danger">*</span></label>
+                    <label for="blog_category_id">{{ __('Category') }} <span class="text-danger">*</span></label>
                     <select name="blog_category_id" id="blog_category_id" class="form-control @error('blog_category_id') is-invalid @enderror" required>
-                        <option value="">Select category</option>
+                        <option value="">{{ __('Select category') }}</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}" @selected((string) old('blog_category_id', $blog->blog_category_id ?? '') === (string) $category->id)>
                                 {{ $category->name }}
@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="title">Title <span class="text-danger">*</span></label>
+                    <label for="title">{{ __('Title') }} <span class="text-danger">*</span></label>
                     <input type="text" name="title" id="title" class="form-control @error('title') is-invalid @enderror"
                            value="{{ old('title', $blog->title ?? '') }}" maxlength="255" required>
                     @error('title')
@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="slug">Slug <span class="text-danger">*</span></label>
+                    <label for="slug">{{ __('Slug') }} <span class="text-danger">*</span></label>
                     <input type="text" name="slug" id="slug" class="form-control @error('slug') is-invalid @enderror"
                            value="{{ old('slug', $blog->slug ?? '') }}" maxlength="255" required>
                     @error('slug')
@@ -51,16 +51,16 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="author">Author</label>
+                    <label for="author">{{ __('Author') }}</label>
                     <input type="text" name="author" id="author" class="form-control @error('author') is-invalid @enderror"
-                           value="{{ old('author', $blog->author ?? auth()->user()->name ?? 'Admin') }}" maxlength="120">
+                           value="{{ old('author', $blog->author ?? auth()->user()->name ?? __('Admin')) }}" maxlength="120">
                     @error('author')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="published_at">Published At</label>
+                    <label for="published_at">{{ __('Published At') }}</label>
                     <input type="datetime-local" name="published_at" id="published_at"
                            class="form-control @error('published_at') is-invalid @enderror"
                            value="{{ old('published_at', isset($blog->published_at) && $blog->published_at ? $blog->published_at->format('Y-m-d\TH:i') : '') }}">
@@ -70,7 +70,7 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="excerpt">Excerpt</label>
+                    <label for="excerpt">{{ __('Excerpt') }}</label>
                     <textarea name="excerpt" id="excerpt" rows="4" maxlength="1000"
                               class="form-control @error('excerpt') is-invalid @enderror">{{ old('excerpt', $blog->excerpt ?? '') }}</textarea>
                     @error('excerpt')
@@ -88,7 +88,7 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="content">Content <span class="text-danger">*</span></label>
+                    <label for="content">{{ __('Content') }} <span class="text-danger">*</span></label>
                     <textarea name="content" id="content" rows="10"
                               class="form-control @error('content') is-invalid @enderror"
                               required>{{ old('content', $blog->content ?? '') }}</textarea>
@@ -107,7 +107,7 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="image">Image</label>
+                    <label for="image">{{ __('Image') }}</label>
                     <input type="file" name="image" id="image"
                            class="form-control @error('image') is-invalid @enderror"
                            accept=".jpg,.jpeg,.png,.webp">
@@ -134,20 +134,20 @@
                     <div class="custom-control custom-switch mb-2">
                         <input type="checkbox" class="custom-control-input" id="is_featured" name="is_featured" value="1"
                                @checked(old('is_featured', $blog->is_featured ?? false))>
-                        <label class="custom-control-label" for="is_featured">Featured</label>
+                        <label class="custom-control-label" for="is_featured">{{ __('Featured') }}</label>
                     </div>
 
                     <div class="custom-control custom-switch">
                         <input type="checkbox" class="custom-control-input" id="status" name="status" value="1"
                                @checked(old('status', $blog->status ?? true))>
-                        <label class="custom-control-label" for="status">Published / Active</label>
+                        <label class="custom-control-label" for="status">{{ __('Published / Active') }}</label>
                     </div>
                 </div>
             </div>
 
             <div class="card-footer d-flex justify-content-between">
-                <a href="{{ route('dashboard.blogs.index') }}" class="btn btn-secondary">Cancel</a>
-                <button type="submit" class="btn btn-primary">{{ $submitLabel ?? 'Save' }}</button>
+                <a href="{{ route('dashboard.blogs.index') }}" class="btn btn-secondary">{{ __('Cancel') }}</a>
+                <button type="submit" class="btn btn-primary">{{ $submitLabel ?? __('Save') }}</button>
             </div>
         </div>
     </div>

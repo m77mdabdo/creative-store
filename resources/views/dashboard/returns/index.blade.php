@@ -5,7 +5,7 @@
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
-                <div class="col-sm-6"><h1>Returns</h1></div>
+                <div class="col-sm-6"><h1>{{ __('Returns') }}</h1></div>
             </div>
         </div>
     </section>
@@ -18,7 +18,7 @@
                     <div class="small-box bg-info">
                         <div class="inner">
                             <h3>{{ number_format($stats['total_returns']) }}</h3>
-                            <p>Total</p>
+                            <p>{{ __('Total') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-box-open"></i></div>
                     </div>
@@ -28,7 +28,7 @@
                     <div class="small-box bg-warning">
                         <div class="inner">
                             <h3>{{ number_format($stats['requested_returns']) }}</h3>
-                            <p>Requested</p>
+                            <p>{{ __('Requested') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-clock"></i></div>
                     </div>
@@ -38,7 +38,7 @@
                     <div class="small-box bg-primary">
                         <div class="inner">
                             <h3>{{ number_format($stats['approved_returns']) }}</h3>
-                            <p>Approved</p>
+                            <p>{{ __('Approved') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-check"></i></div>
                     </div>
@@ -48,7 +48,7 @@
                     <div class="small-box bg-indigo">
                         <div class="inner">
                             <h3>{{ number_format($stats['received_returns']) }}</h3>
-                            <p>Received</p>
+                            <p>{{ __('Received') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-box"></i></div>
                     </div>
@@ -58,7 +58,7 @@
                     <div class="small-box bg-success">
                         <div class="inner">
                             <h3>{{ number_format($stats['refunded_returns']) }}</h3>
-                            <p>Refunded</p>
+                            <p>{{ __('Refunded') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-check-double"></i></div>
                     </div>
@@ -68,7 +68,7 @@
                     <div class="small-box bg-danger">
                         <div class="inner">
                             <h3>{{ number_format($stats['rejected_returns']) }}</h3>
-                            <p>Rejected</p>
+                            <p>{{ __('Rejected') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-times-circle"></i></div>
                     </div>
@@ -80,7 +80,7 @@
                     <div class="small-box bg-secondary">
                         <div class="inner">
                             <h3>{{ number_format($stats['partial_refunded_returns']) }}</h3>
-                            <p>Partial Refunded</p>
+                            <p>{{ __('Partial Refunded') }}</p>
                         </div>
                         <div class="icon"><i class="fas fa-undo-alt"></i></div>
                     </div>
@@ -97,16 +97,16 @@
                                     name="q"
                                     value="{{ request('q') }}"
                                     class="form-control"
-                                    placeholder="Search order / customer / reason"
+                                    placeholder="{{ __('Search order / customer / reason') }}"
                                 >
                             </div>
 
                             <div class="col-md-2 mb-2">
                                 <select name="status" class="form-control">
-                                    <option value="">All Statuses</option>
+                                    <option value="">{{ __('All Statuses') }}</option>
                                     @foreach(\App\Models\ReturnRequest::statuses() as $status)
                                         <option value="{{ $status }}" @selected(request('status') === $status)>
-                                            {{ ucfirst(str_replace('_', ' ', $status)) }}
+                                            {{ status_label($status) }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -122,13 +122,13 @@
 
                             <div class="col-md-1 mb-2">
                                 <select name="sort" class="form-control">
-                                    <option value="newest" @selected(request('sort', 'newest') === 'newest')>Newest</option>
-                                    <option value="oldest" @selected(request('sort') === 'oldest')>Oldest</option>
+                                    <option value="newest" @selected(request('sort', 'newest') === 'newest')>{{ __('Newest') }}</option>
+                                    <option value="oldest" @selected(request('sort') === 'oldest')>{{ __('Oldest') }}</option>
                                 </select>
                             </div>
 
                             <div class="col-md-1 mb-2">
-                                <button class="btn btn-primary btn-block">Go</button>
+                                <button class="btn btn-primary btn-block">{{ __('Go') }}</button>
                             </div>
                         </div>
                     </form>
@@ -139,15 +139,15 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Order</th>
-                                <th>Customer</th>
-                                <th>Items</th>
-                                <th>Items Refund</th>
-                                <th>Shipping Refund</th>
-                                <th>Tax Refund</th>
-                                <th>Status</th>
-                                <th>Requested At</th>
-                                <th>Action</th>
+                                <th>{{ __('Order') }}</th>
+                                <th>{{ __('Customer') }}</th>
+                                <th>{{ __('Items') }}</th>
+                                <th>{{ __('Items Refund') }}</th>
+                                <th>{{ __('Shipping Refund') }}</th>
+                                <th>{{ __('Tax Refund') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th>{{ __('Requested At') }}</th>
+                                <th>{{ __('Action') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -155,14 +155,14 @@
                                 <tr>
                                     <td>{{ $return->id }}</td>
                                     <td>{{ $return->order?->order_number ?? '—' }}</td>
-                                    <td>{{ $return->order?->user?->name ?? 'Guest' }}</td>
+                                    <td>{{ $return->order?->user?->name ?? __('Guest') }}</td>
                                     <td>{{ $return->items->count() }}</td>
                                     <td>{{ number_format($return->items_refund_total, 2) }}</td>
                                     <td>{{ number_format((float) ($return->shipping_refund_amount ?? 0), 2) }}</td>
                                     <td>{{ number_format((float) ($return->tax_refund_amount ?? 0), 2) }}</td>
                                     <td>
                                         <span class="{{ $return->status_badge_class }}">
-                                            {{ ucfirst(str_replace('_', ' ', $return->status)) }}
+                                            {{ status_label($return->status) }}
                                         </span>
                                     </td>
                                     <td>
@@ -170,13 +170,13 @@
                                     </td>
                                     <td>
                                         <a href="{{ route('dashboard.returns.show', $return) }}" class="btn btn-sm btn-outline-primary">
-                                            View
+                                            {{ __('View') }}
                                         </a>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10" class="text-center text-muted py-4">No return requests found.</td>
+                                    <td colspan="10" class="text-center text-muted py-4">{{ __('No return requests found.') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>

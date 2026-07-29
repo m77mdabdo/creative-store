@@ -6,15 +6,15 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap">
-            <h1>Edit Category</h1>
+            <h1>{{ __('Edit Category') }}</h1>
 
             <div>
                 <a href="{{ route('dashboard.categories.show', $category) }}" class="btn btn-info">
-                    <i class="fas fa-eye mr-1"></i> View Details
+                    <i class="fas fa-eye mr-1"></i> {{ __('View Details') }}
                 </a>
 
                 <a href="{{ route('dashboard.categories.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left mr-1"></i> Back
+                    <i class="fas fa-arrow-left mr-1"></i> {{ __('Back') }}
                 </a>
             </div>
         </div>

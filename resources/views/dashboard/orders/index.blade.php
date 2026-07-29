@@ -6,14 +6,14 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Orders</h1>
+                    <h1>{{ __('Orders') }}</h1>
                 </div>
                 <div class="col-sm-6 text-sm-right">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item">
-                            <a href="{{ route('dashboard.home') }}">Dashboard</a>
+                            <a href="{{ route('dashboard.home') }}">{{ __('Dashboard') }}</a>
                         </li>
-                        <li class="breadcrumb-item active">Orders</li>
+                        <li class="breadcrumb-item active">{{ __('Orders') }}</li>
                     </ol>
                 </div>
             </div>
@@ -36,7 +36,7 @@
                     <div class="small-box bg-info">
                         <div class="inner">
                             <h3>{{ number_format($stats['totalOrders']) }}</h3>
-                            <p>Total Orders</p>
+                            <p>{{ __('Total Orders') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-shopping-bag"></i>
@@ -48,7 +48,7 @@
                     <div class="small-box bg-success">
                         <div class="inner">
                             <h3>{{ number_format($stats['paidOrders']) }}</h3>
-                            <p>Paid Orders</p>
+                            <p>{{ __('Paid Orders') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-credit-card"></i>
@@ -60,7 +60,7 @@
                     <div class="small-box bg-warning">
                         <div class="inner">
                             <h3>{{ number_format($stats['pendingOrders']) }}</h3>
-                            <p>Pending / Processing</p>
+                            <p>{{ __('Pending / Processing') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-clock"></i>
@@ -72,7 +72,7 @@
                     <div class="small-box bg-primary">
                         <div class="inner">
                             <h3>{{ number_format($stats['totalSales'], 2) }}</h3>
-                            <p>Total Sales (Paid)</p>
+                            <p>{{ __('Total Sales (Paid)') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-money-bill-wave"></i>
@@ -83,78 +83,78 @@
 
             <div class="card card-outline card-primary">
                 <div class="card-header">
-                    <h3 class="card-title">Filters</h3>
+                    <h3 class="card-title">{{ __('Filters') }}</h3>
                 </div>
 
                 <div class="card-body">
                     <form method="GET" action="{{ route('dashboard.orders.index') }}">
                         <div class="row">
                             <div class="col-md-3 form-group">
-                                <label>Search</label>
+                                <label>{{ __('Search') }}</label>
                                 <input type="text" name="search" class="form-control"
                                        value="{{ $filters['search'] }}"
-                                       placeholder="Order number / customer / email">
+                                       placeholder="{{ __('Order number / customer / email') }}">
                             </div>
 
                             <div class="col-md-2 form-group">
-                                <label>Order Status</label>
+                                <label>{{ __('Order Status') }}</label>
                                 <select name="status" class="form-control">
-                                    <option value="">All</option>
-                                    <option value="pending" {{ $filters['status'] === 'pending' ? 'selected' : '' }}>Pending</option>
-                                    <option value="processing" {{ $filters['status'] === 'processing' ? 'selected' : '' }}>Processing</option>
-                                    <option value="completed" {{ $filters['status'] === 'completed' ? 'selected' : '' }}>Completed</option>
-                                    <option value="cancelled" {{ $filters['status'] === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                    <option value="">{{ __('All') }}</option>
+                                    <option value="pending" {{ $filters['status'] === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                                    <option value="processing" {{ $filters['status'] === 'processing' ? 'selected' : '' }}>{{ __('Processing') }}</option>
+                                    <option value="completed" {{ $filters['status'] === 'completed' ? 'selected' : '' }}>{{ __('Completed') }}</option>
+                                    <option value="cancelled" {{ $filters['status'] === 'cancelled' ? 'selected' : '' }}>{{ __('Cancelled') }}</option>
                                 </select>
                             </div>
 
                             <div class="col-md-2 form-group">
-                                <label>Payment Status</label>
+                                <label>{{ __('Payment Status') }}</label>
                                 <select name="payment_status" class="form-control">
-                                    <option value="">All</option>
-                                    <option value="pending" {{ $filters['payment_status'] === 'pending' ? 'selected' : '' }}>Pending</option>
-                                    <option value="paid" {{ $filters['payment_status'] === 'paid' ? 'selected' : '' }}>Paid</option>
-                                    <option value="failed" {{ $filters['payment_status'] === 'failed' ? 'selected' : '' }}>Failed</option>
-                                    <option value="refunded" {{ $filters['payment_status'] === 'refunded' ? 'selected' : '' }}>Refunded</option>
+                                    <option value="">{{ __('All') }}</option>
+                                    <option value="pending" {{ $filters['payment_status'] === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                                    <option value="paid" {{ $filters['payment_status'] === 'paid' ? 'selected' : '' }}>{{ __('Paid') }}</option>
+                                    <option value="failed" {{ $filters['payment_status'] === 'failed' ? 'selected' : '' }}>{{ __('Failed') }}</option>
+                                    <option value="refunded" {{ $filters['payment_status'] === 'refunded' ? 'selected' : '' }}>{{ __('Refunded') }}</option>
                                 </select>
                             </div>
 
                             <div class="col-md-2 form-group">
-                                <label>Shipping Status</label>
+                                <label>{{ __('Shipping Status') }}</label>
                                 <select name="shipping_status" class="form-control">
-                                    <option value="">All</option>
-                                    <option value="pending" {{ $filters['shipping_status'] === 'pending' ? 'selected' : '' }}>Pending</option>
-                                    <option value="processing" {{ $filters['shipping_status'] === 'processing' ? 'selected' : '' }}>Processing</option>
-                                    <option value="shipped" {{ $filters['shipping_status'] === 'shipped' ? 'selected' : '' }}>Shipped</option>
-                                    <option value="delivered" {{ $filters['shipping_status'] === 'delivered' ? 'selected' : '' }}>Delivered</option>
-                                    <option value="cancelled" {{ $filters['shipping_status'] === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                    <option value="">{{ __('All') }}</option>
+                                    <option value="pending" {{ $filters['shipping_status'] === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                                    <option value="processing" {{ $filters['shipping_status'] === 'processing' ? 'selected' : '' }}>{{ __('Processing') }}</option>
+                                    <option value="shipped" {{ $filters['shipping_status'] === 'shipped' ? 'selected' : '' }}>{{ __('Shipped') }}</option>
+                                    <option value="delivered" {{ $filters['shipping_status'] === 'delivered' ? 'selected' : '' }}>{{ __('Delivered') }}</option>
+                                    <option value="cancelled" {{ $filters['shipping_status'] === 'cancelled' ? 'selected' : '' }}>{{ __('Cancelled') }}</option>
                                 </select>
                             </div>
 
                             <div class="col-md-3 form-group">
-                                <label>Payment Method</label>
+                                <label>{{ __('Payment Method') }}</label>
                                 <input type="text" name="payment_method" class="form-control"
                                        value="{{ $filters['payment_method'] }}"
-                                       placeholder="e.g. moyasar">
+                                       placeholder="{{ __('e.g. moyasar') }}">
                             </div>
 
                             <div class="col-md-2 form-group">
-                                <label>Date From</label>
+                                <label>{{ __('Date From') }}</label>
                                 <input type="date" name="date_from" class="form-control" value="{{ $filters['date_from'] }}">
                             </div>
 
                             <div class="col-md-2 form-group">
-                                <label>Date To</label>
+                                <label>{{ __('Date To') }}</label>
                                 <input type="date" name="date_to" class="form-control" value="{{ $filters['date_to'] }}">
                             </div>
                         </div>
 
                         <div class="mt-2">
                             <button class="btn btn-primary" type="submit">
-                                <i class="fas fa-search mr-1"></i> Filter
+                                <i class="fas fa-search mr-1"></i> {{ __('Filter') }}
                             </button>
 
                             <a href="{{ route('dashboard.orders.index') }}" class="btn btn-secondary">
-                                Reset
+                                {{ __('Reset') }}
                             </a>
                         </div>
                     </form>
@@ -163,7 +163,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Orders List</h3>
+                    <h3 class="card-title">{{ __('Orders List') }}</h3>
                 </div>
 
                 <div class="card-body table-responsive p-0">
@@ -171,16 +171,16 @@
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>Order Number</th>
-                            <th>Customer</th>
-                            <th>Items</th>
-                            <th>Total</th>
-                            <th>Order Status</th>
-                            <th>Payment</th>
-                            <th>Shipping</th>
-                            <th>Method</th>
-                            <th>Date</th>
-                            <th style="width: 280px;">Actions</th>
+                            <th>{{ __('Order Number') }}</th>
+                            <th>{{ __('Customer') }}</th>
+                            <th>{{ __('Items') }}</th>
+                            <th>{{ __('Total') }}</th>
+                            <th>{{ __('Order Status') }}</th>
+                            <th>{{ __('Payment') }}</th>
+                            <th>{{ __('Shipping') }}</th>
+                            <th>{{ __('Method') }}</th>
+                            <th>{{ __('Date') }}</th>
+                            <th style="width: 280px;">{{ __('Actions') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -197,45 +197,45 @@
                                         <div>{{ $order->user->name }}</div>
                                         <small class="text-muted">{{ $order->user->email }}</small>
                                     @else
-                                        <div>{{ $order->guest_email ?? 'Guest' }}</div>
+                                        <div>{{ $order->guest_email ?? __('Guest') }}</div>
                                         <small class="text-muted">{{ $order->guest_phone ?? '-' }}</small>
                                     @endif
                                 </td>
 
                                 <td>{{ $order->items_count }}</td>
 
-                                <td>{{ number_format((float) $order->total, 2) }} {{ $order->currency ?? 'SAR' }}</td>
+                                <td>{{ number_format((float) $order->total, 2) }} {{ $order->currency ?? __('SAR') }}</td>
 
                                 <td>
                                     <span class="badge badge-{{ $order->status === 'completed' ? 'success' : ($order->status === 'cancelled' ? 'danger' : 'warning') }}">
-                                        {{ ucfirst($order->status) }}
+                                        {{ status_label($order->status) }}
                                     </span>
                                 </td>
 
                                 <td>
                                     <span class="badge badge-{{ $order->payment_status === 'paid' ? 'success' : ($order->payment_status === 'failed' ? 'danger' : 'secondary') }}">
-                                        {{ ucfirst($order->payment_status) }}
+                                        {{ status_label($order->payment_status) }}
                                     </span>
                                 </td>
 
                                 <td>
                                     <span class="badge badge-{{ $order->shipping_status === 'delivered' ? 'success' : ($order->shipping_status === 'cancelled' ? 'danger' : 'info') }}">
-                                        {{ ucfirst($order->shipping_status) }}
+                                        {{ status_label($order->shipping_status) }}
                                     </span>
                                 </td>
 
-                                <td>{{ $order->shippingMethod->name ?? '-' }}</td>
+                                <td>{{ $order->shippingMethod?->label ?? '-' }}</td>
 
                                 <td>{{ $order->created_at?->format('d M Y, h:i A') }}</td>
 
                                 <td>
                                     <div class="d-flex flex-wrap" style="gap:6px;">
                                         <a href="{{ route('dashboard.orders.show', $order) }}" class="btn btn-sm btn-outline-primary">
-                                            View
+                                            {{ __('View') }}
                                         </a>
 
                                         <a href="{{ route('dashboard.orders.invoice', $order) }}" target="_blank" class="btn btn-sm btn-outline-dark">
-                                            Invoice
+                                            {{ __('Invoice') }}
                                         </a>
 
                                         @if(($canEdit ?? false) && $order->status !== 'cancelled')
@@ -244,7 +244,7 @@
                                                 @method('PATCH')
                                                 <input type="hidden" name="action" value="mark_processing">
                                                 <button type="submit" class="btn btn-sm btn-outline-warning">
-                                                    Processing
+                                                    {{ __('Processing') }}
                                                 </button>
                                             </form>
 
@@ -253,7 +253,7 @@
                                                 @method('PATCH')
                                                 <input type="hidden" name="action" value="mark_paid">
                                                 <button type="submit" class="btn btn-sm btn-outline-success">
-                                                    Paid
+                                                    {{ __('Paid') }}
                                                 </button>
                                             </form>
 
@@ -262,7 +262,7 @@
                                                 @method('PATCH')
                                                 <input type="hidden" name="action" value="mark_completed">
                                                 <button type="submit" class="btn btn-sm btn-outline-primary">
-                                                    Complete
+                                                    {{ __('Complete') }}
                                                 </button>
                                             </form>
                                         @endif
@@ -272,7 +272,7 @@
                         @empty
                             <tr>
                                 <td colspan="11" class="text-center text-muted py-4">
-                                    No orders found.
+                                    {{ __('No orders found.') }}
                                 </td>
                             </tr>
                         @endforelse

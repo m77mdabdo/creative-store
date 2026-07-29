@@ -6,8 +6,8 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center">
-            <h1>Cart Details</h1>
-            <a href="{{ route('dashboard.carts.index') }}" class="btn btn-secondary">Back</a>
+            <h1>{{ __('Cart Details') }}</h1>
+            <a href="{{ route('dashboard.carts.index') }}" class="btn btn-secondary">{{ __('Back') }}</a>
         </div>
     </section>
 
@@ -24,69 +24,69 @@
                         <div class="card-body">
                             <table class="table table-bordered">
                                 <tr>
-                                    <th width="180">Cart ID</th>
+                                    <th width="180">{{ __('Cart ID') }}</th>
                                     <td>{{ $cart->id }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Type</th>
-                                    <td>{{ $cart->user_id ? 'User Cart' : 'Guest Cart' }}</td>
+                                    <th>{{ __('Type') }}</th>
+                                    <td>{{ $cart->user_id ? __('User Cart') : __('Guest Cart') }}</td>
                                 </tr>
                                 <tr>
-                                    <th>User</th>
+                                    <th>{{ __('User') }}</th>
                                     <td>{{ $cart->user->name ?? '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Email</th>
+                                    <th>{{ __('Email') }}</th>
                                     <td>{{ $cart->user->email ?? '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Phone</th>
+                                    <th>{{ __('Phone') }}</th>
                                     <td>{{ $cart->user->phone ?? '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Session ID</th>
+                                    <th>{{ __('Session ID') }}</th>
                                     <td>{{ $cart->session_id ?? '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Items Count</th>
+                                    <th>{{ __('Items Count') }}</th>
                                     <td>{{ $summary['items_count'] }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Total Qty</th>
+                                    <th>{{ __('Total Qty') }}</th>
                                     <td>{{ $summary['quantity_total'] }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Subtotal</th>
+                                    <th>{{ __('Subtotal') }}</th>
                                     <td>{{ number_format((float) $summary['subtotal'], 2) }} SAR</td>
                                 </tr>
                                 <tr>
-                                    <th>Status</th>
+                                    <th>{{ __('Status') }}</th>
                                     <td>
                                         @if($summary['is_abandoned'])
-                                            <span class="badge badge-warning">Abandoned</span>
+                                            <span class="badge badge-warning">{{ __('Abandoned') }}</span>
                                         @elseif($summary['items_count'] > 0)
-                                            <span class="badge badge-success">Active</span>
+                                            <span class="badge badge-success">{{ __('Active') }}</span>
                                         @else
-                                            <span class="badge badge-light">Empty</span>
+                                            <span class="badge badge-light">{{ __('Empty') }}</span>
                                         @endif
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>User Orders</th>
+                                    <th>{{ __('User Orders') }}</th>
                                     <td>
                                         @if($summary['has_user_orders'])
                                             <span class="badge badge-success">{{ $summary['orders_count'] }} Orders</span>
                                         @else
-                                            <span class="badge badge-secondary">No Orders</span>
+                                            <span class="badge badge-secondary">{{ __('No Orders') }}</span>
                                         @endif
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Created At</th>
+                                    <th>{{ __('Created At') }}</th>
                                     <td>{{ $cart->created_at?->format('Y-m-d H:i') }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Updated At</th>
+                                    <th>{{ __('Updated At') }}</th>
                                     <td>{{ $cart->updated_at?->format('Y-m-d H:i') }}</td>
                                 </tr>
                             </table>
@@ -97,7 +97,7 @@
                 <div class="col-md-8">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Cart Items</h3>
+                            <h3 class="card-title">{{ __('Cart Items') }}</h3>
                         </div>
 
                         <div class="card-body table-responsive p-0">
@@ -105,15 +105,15 @@
                                 <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Product</th>
-                                    <th>SKU</th>
-                                    <th>Variant SKU</th>
-                                    <th>Qty</th>
-                                    <th>Unit Price</th>
-                                    <th>Tax</th>
-                                    <th>Line Total</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th>{{ __('Product') }}</th>
+                                    <th>{{ __('SKU') }}</th>
+                                    <th>{{ __('Variant SKU') }}</th>
+                                    <th>{{ __('Qty') }}</th>
+                                    <th>{{ __('Unit Price') }}</th>
+                                    <th>{{ __('Tax') }}</th>
+                                    <th>{{ __('Line Total') }}</th>
+                                    <th>{{ __('Status') }}</th>
+                                    <th>{{ __('Actions') }}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -133,7 +133,7 @@
                                             @if($product)
                                                 <a href="{{ route('dashboard.products.show', $product) }}">{{ $productName }}</a>
                                             @else
-                                                <span class="text-muted">Deleted Product</span>
+                                                <span class="text-muted">{{ __('Deleted Product') }}</span>
                                             @endif
                                         </td>
                                         <td>{{ $product->sku ?? '-' }}</td>
@@ -144,22 +144,22 @@
                                         <td>{{ number_format((float) $lineTotal, 2) }}</td>
                                         <td>
                                             @if(($variant && $variant->is_active) || (!$variant && $product && $product->status === 'active'))
-                                                <span class="badge badge-success">Active</span>
+                                                <span class="badge badge-success">{{ __('Active') }}</span>
                                             @else
-                                                <span class="badge badge-secondary">Inactive</span>
+                                                <span class="badge badge-secondary">{{ __('Inactive') }}</span>
                                             @endif
                                         </td>
                                         <td>
                                             <form action="{{ route('dashboard.carts.items.destroy', [$cart, $item]) }}" method="POST" style="display:inline-block;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this cart item?')">Delete</button>
+                                                <button class="btn btn-sm btn-danger" onclick="return confirm(@js(__('Delete this cart item?')))">{{ __('Delete') }}</button>
                                             </form>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="10" class="text-center py-4">No items in this cart.</td>
+                                        <td colspan="10" class="text-center py-4">{{ __('No items in this cart.') }}</td>
                                     </tr>
                                 @endforelse
                                 </tbody>
@@ -170,7 +170,7 @@
                     @if($cart->user && $cart->user->orders()->exists())
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Recent User Orders</h3>
+                                <h3 class="card-title">{{ __('Recent User Orders') }}</h3>
                             </div>
                             <div class="card-body">
                                 @foreach($cart->user->orders()->latest()->take(5)->get() as $order)

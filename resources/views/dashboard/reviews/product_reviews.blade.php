@@ -10,11 +10,11 @@
 
             <div>
                 <a href="{{ route('dashboard.products.show', $product) }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left mr-1"></i> Back
+                    <i class="fas fa-arrow-left mr-1"></i> {{ __('Back') }}
                 </a>
 
                 <a href="{{ route('dashboard.reviews.index') }}" class="btn btn-dark">
-                    <i class="fas fa-comments mr-1"></i> All Reviews
+                    <i class="fas fa-comments mr-1"></i> {{ __('All Reviews') }}
                 </a>
             </div>
         </div>
@@ -30,26 +30,26 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Customer</th>
-                                <th>Rating</th>
-                                <th>Title</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                                <th width="220">Actions</th>
+                                <th>{{ __('Customer') }}</th>
+                                <th>{{ __('Rating') }}</th>
+                                <th>{{ __('Title') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th>{{ __('Date') }}</th>
+                                <th width="220">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($reviews as $review)
                                 <tr>
                                     <td>{{ $review->id }}</td>
-                                    <td>{{ $review->user?->name ?? 'Guest / Deleted User' }}</td>
+                                    <td>{{ $review->user?->name ?? __('Guest / Deleted User') }}</td>
                                     <td><span class="badge badge-warning">{{ $review->rating }}/5</span></td>
                                     <td>{{ $review->title ?: '-' }}</td>
                                     <td>
                                         @if($review->is_approved)
-                                            <span class="badge badge-success">Approved</span>
+                                            <span class="badge badge-success">{{ __('Approved') }}</span>
                                         @else
-                                            <span class="badge badge-secondary">Pending</span>
+                                            <span class="badge badge-secondary">{{ __('Pending') }}</span>
                                         @endif
                                     </td>
                                     <td>{{ $review->created_at?->format('Y-m-d h:i A') }}</td>
@@ -69,7 +69,7 @@
                                         @endif
 
                                         @if($canDelete)
-                                            <form action="{{ route('dashboard.reviews.destroy', $review) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this review?');">
+                                            <form action="{{ route('dashboard.reviews.destroy', $review) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Delete this review?')));">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">
@@ -81,7 +81,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-4">No reviews for this product.</td>
+                                    <td colspan="7" class="text-center py-4">{{ __('No reviews for this product.') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>

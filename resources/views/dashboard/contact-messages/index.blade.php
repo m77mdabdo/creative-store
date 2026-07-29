@@ -21,7 +21,7 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap">
-            <h1>Contact Messages</h1>
+            <h1>{{ __('Contact Messages') }}</h1>
         </div>
     </section>
 
@@ -34,7 +34,7 @@
                     <div class="small-box bg-info">
                         <div class="inner">
                             <h3>{{ $stats['total'] }}</h3>
-                            <p>Total Messages</p>
+                            <p>{{ __('Total Messages') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-envelope"></i>
@@ -46,7 +46,7 @@
                     <div class="small-box bg-danger">
                         <div class="inner">
                             <h3>{{ $stats['unread'] }}</h3>
-                            <p>Unread Messages</p>
+                            <p>{{ __('Unread Messages') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-envelope-open-text"></i>
@@ -58,7 +58,7 @@
                     <div class="small-box bg-success">
                         <div class="inner">
                             <h3>{{ $stats['read'] }}</h3>
-                            <p>Read Messages</p>
+                            <p>{{ __('Read Messages') }}</p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-check-circle"></i>
@@ -76,25 +76,25 @@
                                     type="text"
                                     name="q"
                                     class="form-control"
-                                    placeholder="Search by name, email, phone, subject..."
+                                    placeholder="{{ __('Search by name, email, phone, subject...') }}"
                                     value="{{ $filters['q'] ?? '' }}"
                                 >
                             </div>
 
                             <div class="col-md-2 mb-2">
                                 <select name="status" class="form-control">
-                                    <option value="">Status: All</option>
-                                    <option value="unread" @selected(($filters['status'] ?? '') === 'unread')>Unread</option>
-                                    <option value="read" @selected(($filters['status'] ?? '') === 'read')>Read</option>
+                                    <option value="">{{ __('Status: All') }}</option>
+                                    <option value="unread" @selected(($filters['status'] ?? '') === 'unread')>{{ __('Unread') }}</option>
+                                    <option value="read" @selected(($filters['status'] ?? '') === 'read')>{{ __('Read') }}</option>
                                 </select>
                             </div>
 
                             <div class="col-md-2 mb-2">
                                 <select name="sort" class="form-control">
-                                    <option value="latest" @selected(($filters['sort'] ?? 'latest') === 'latest')>Latest</option>
-                                    <option value="oldest" @selected(($filters['sort'] ?? '') === 'oldest')>Oldest</option>
-                                    <option value="name_asc" @selected(($filters['sort'] ?? '') === 'name_asc')>Name A-Z</option>
-                                    <option value="name_desc" @selected(($filters['sort'] ?? '') === 'name_desc')>Name Z-A</option>
+                                    <option value="latest" @selected(($filters['sort'] ?? 'latest') === 'latest')>{{ __('Latest') }}</option>
+                                    <option value="oldest" @selected(($filters['sort'] ?? '') === 'oldest')>{{ __('Oldest') }}</option>
+                                    <option value="name_asc" @selected(($filters['sort'] ?? '') === 'name_asc')>{{ __('Name A-Z') }}</option>
+                                    <option value="name_desc" @selected(($filters['sort'] ?? '') === 'name_desc')>{{ __('Name Z-A') }}</option>
                                 </select>
                             </div>
 
@@ -122,15 +122,15 @@
                         <div class="d-flex flex-wrap gap-2 align-items-center">
                             <div class="mr-2">
                                 <select name="action" class="form-control">
-                                    <option value="">Bulk Action</option>
-                                    <option value="read">Mark as Read</option>
-                                    <option value="unread">Mark as Unread</option>
-                                    <option value="delete">Delete</option>
+                                    <option value="">{{ __('Bulk Action') }}</option>
+                                    <option value="read">{{ __('Mark as Read') }}</option>
+                                    <option value="unread">{{ __('Mark as Unread') }}</option>
+                                    <option value="delete">{{ __('Delete') }}</option>
                                 </select>
                             </div>
 
-                            <button type="submit" class="btn btn-dark" onclick="return confirm('Apply selected action?')">
-                                Apply
+                            <button type="submit" class="btn btn-dark" onclick="return confirm(@js(__('Apply selected action?')))">
+                                {{ __('Apply') }}
                             </button>
                         </div>
                     </div>
@@ -143,13 +143,13 @@
                                         <input type="checkbox" id="check-all">
                                     </th>
                                     <th>#</th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Subject</th>
-                                    <th>Status</th>
-                                    <th>Date</th>
-                                    <th class="text-center" style="width: 220px;">Actions</th>
+                                    <th>{{ __('Name') }}</th>
+                                    <th>{{ __('Email') }}</th>
+                                    <th>{{ __('Phone') }}</th>
+                                    <th>{{ __('Subject') }}</th>
+                                    <th>{{ __('Status') }}</th>
+                                    <th>{{ __('Date') }}</th>
+                                    <th class="text-center" style="width: 220px;">{{ __('Actions') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -162,18 +162,18 @@
                                         <td>{{ $message->name }}</td>
                                         <td>{{ $message->email }}</td>
                                         <td>{{ $message->phone ?: '-' }}</td>
-                                        <td>{{ $message->subject ?: 'No Subject' }}</td>
+                                        <td>{{ $message->subject ?: __('No Subject') }}</td>
                                         <td>
                                             @if($message->is_read)
-                                                <span class="badge badge-success">Read</span>
+                                                <span class="badge badge-success">{{ __('Read') }}</span>
                                             @else
-                                                <span class="badge badge-danger">Unread</span>
+                                                <span class="badge badge-danger">{{ __('Unread') }}</span>
                                             @endif
                                         </td>
                                         <td>{{ $message->created_at?->format('Y-m-d h:i A') }}</td>
                                         <td class="text-center">
                                             <div class="btn-group">
-                                                <a href="{{ route('dashboard.contact-messages.show', $message) }}" class="btn btn-sm btn-info" title="View">
+                                                <a href="{{ route('dashboard.contact-messages.show', $message) }}" class="btn btn-sm btn-info" title="{{ __('View') }}">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
 
@@ -181,7 +181,7 @@
                                                     <form action="{{ route('dashboard.contact-messages.mark-unread', $message) }}" method="POST" style="display:inline-block;">
                                                         @csrf
                                                         @method('PATCH')
-                                                        <button type="submit" class="btn btn-sm btn-secondary" title="Mark as Unread">
+                                                        <button type="submit" class="btn btn-sm btn-secondary" title="{{ __('Mark as Unread') }}">
                                                             <i class="fas fa-envelope"></i>
                                                         </button>
                                                     </form>
@@ -189,7 +189,7 @@
                                                     <form action="{{ route('dashboard.contact-messages.mark-read', $message) }}" method="POST" style="display:inline-block;">
                                                         @csrf
                                                         @method('PATCH')
-                                                        <button type="submit" class="btn btn-sm btn-success" title="Mark as Read">
+                                                        <button type="submit" class="btn btn-sm btn-success" title="{{ __('Mark as Read') }}">
                                                             <i class="fas fa-check"></i>
                                                         </button>
                                                     </form>
@@ -198,10 +198,10 @@
                                                 <form action="{{ route('dashboard.contact-messages.destroy', $message) }}"
                                                       method="POST"
                                                       style="display:inline-block;"
-                                                      onsubmit="return confirm('Are you sure you want to delete this message?');">
+                                                      onsubmit="return confirm(@js(__('Are you sure you want to delete this message?')));">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="{{ __('Delete') }}">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
@@ -210,7 +210,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center text-muted py-4">No messages found.</td>
+                                        <td colspan="9" class="text-center text-muted py-4">{{ __('No messages found.') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>

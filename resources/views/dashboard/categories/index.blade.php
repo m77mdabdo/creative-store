@@ -7,18 +7,18 @@
     <section class="content-header">
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center flex-wrap">
-                <h1 class="mb-2">Categories</h1>
+                <h1 class="mb-2">{{ __('Categories') }}</h1>
 
                 <div class="mb-2">
                     @if($canViewTrash)
                         <a href="{{ route('dashboard.categories.trash') }}" class="btn btn-dark">
-                            <i class="fas fa-trash mr-1"></i> Trash
+                            <i class="fas fa-trash mr-1"></i> {{ __('Trash') }}
                         </a>
                     @endif
 
                     @if($canCreate)
                         <a href="{{ route('dashboard.categories.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus mr-1"></i> Add Category
+                            <i class="fas fa-plus mr-1"></i> {{ __('Add Category') }}
                         </a>
                     @endif
                 </div>
@@ -39,41 +39,41 @@
 
             <div class="card card-outline card-primary">
                 <div class="card-header">
-                    <h3 class="card-title">Filter Categories</h3>
+                    <h3 class="card-title">{{ __('Filter Categories') }}</h3>
                 </div>
 
                 <div class="card-body">
                     <form method="GET" action="{{ route('dashboard.categories.index') }}">
                         <div class="row">
                             <div class="col-md-4">
-                                <label>Search</label>
+                                <label>{{ __('Search') }}</label>
                                 <input
                                     type="text"
                                     name="search"
                                     class="form-control"
                                     value="{{ $filters['search'] }}"
-                                    placeholder="Name, slug, description..."
+                                    placeholder="{{ __('Name, slug, description...') }}"
                                 >
                             </div>
 
                             <div class="col-md-3">
-                                <label>Status</label>
+                                <label>{{ __('Status') }}</label>
                                 <select name="status" class="form-control">
-                                    <option value="">All</option>
-                                    <option value="active" {{ $filters['status'] === 'active' ? 'selected' : '' }}>Active</option>
-                                    <option value="inactive" {{ $filters['status'] === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                    <option value="">{{ __('All') }}</option>
+                                    <option value="active" {{ $filters['status'] === 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
+                                    <option value="inactive" {{ $filters['status'] === 'inactive' ? 'selected' : '' }}>{{ __('Inactive') }}</option>
                                 </select>
                             </div>
 
                             <div class="col-md-3">
-                                <label>Parent</label>
+                                <label>{{ __('Parent') }}</label>
                                 <select name="parent" class="form-control">
-                                    <option value="">All</option>
-                                    <option value="root" {{ $filters['parent'] === 'root' ? 'selected' : '' }}>Root Only</option>
+                                    <option value="">{{ __('All') }}</option>
+                                    <option value="root" {{ $filters['parent'] === 'root' ? 'selected' : '' }}>{{ __('Root Only') }}</option>
 
                                     @foreach($parents as $parent)
                                         <option value="{{ $parent->id }}" {{ (string) $filters['parent'] === (string) $parent->id ? 'selected' : '' }}>
-                                            {{ $parent->name ?? 'No Name' }}
+                                            {{ $parent->name ?? __('No Name') }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -81,11 +81,11 @@
 
                             <div class="col-md-2 d-flex align-items-end">
                                 <button class="btn btn-info mr-2" type="submit">
-                                    <i class="fas fa-search"></i> Filter
+                                    <i class="fas fa-search"></i> {{ __('Filter') }}
                                 </button>
 
                                 <a href="{{ route('dashboard.categories.index') }}" class="btn btn-secondary">
-                                    Reset
+                                    {{ __('Reset') }}
                                 </a>
                             </div>
                         </div>
@@ -96,20 +96,20 @@
             @if($canEdit && $categories->count())
                 <div class="card card-outline card-secondary">
                     <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-                        <h3 class="card-title mb-2">Bulk Actions</h3>
+                        <h3 class="card-title mb-2">{{ __('Bulk Actions') }}</h3>
 
                         <form id="bulkActionForm" action="{{ route('dashboard.categories.bulk-action') }}" method="POST" class="d-flex align-items-center">
                             @csrf
 
                             <select name="action" class="form-control mr-2" required>
-                                <option value="">Select action</option>
-                                <option value="activate">Activate</option>
-                                <option value="deactivate">Deactivate</option>
-                                <option value="delete">Move to Trash</option>
+                                <option value="">{{ __('Select action') }}</option>
+                                <option value="activate">{{ __('Activate') }}</option>
+                                <option value="deactivate">{{ __('Deactivate') }}</option>
+                                <option value="delete">{{ __('Move to Trash') }}</option>
                             </select>
 
                             <button type="submit" class="btn btn-warning">
-                                Apply
+                                {{ __('Apply') }}
                             </button>
                         </form>
                     </div>
@@ -123,15 +123,15 @@
                                             <input type="checkbox" id="check-all">
                                         </th>
                                         <th>#</th>
-                                        <th>Name (AR)</th>
-                                        <th>Name (EN)</th>
-                                        <th>Slug</th>
-                                        <th>Parent</th>
-                                        <th>Children</th>
-                                        <th>Products</th>
-                                        <th>Sort</th>
-                                        <th>Status</th>
-                                        <th width="240">Actions</th>
+                                        <th>{{ __('Name (AR)') }}</th>
+                                        <th>{{ __('Name (EN)') }}</th>
+                                        <th>{{ __('Slug') }}</th>
+                                        <th>{{ __('Parent') }}</th>
+                                        <th>{{ __('Children') }}</th>
+                                        <th>{{ __('Products') }}</th>
+                                        <th>{{ __('Sort') }}</th>
+                                        <th>{{ __('Status') }}</th>
+                                        <th width="240">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
 
@@ -151,15 +151,15 @@
                                             <td>{{ $category->translate('ar')?->name ?? '-' }}</td>
                                             <td>{{ $category->translate('en')?->name ?? '-' }}</td>
                                             <td>{{ $category->slug }}</td>
-                                            <td>{{ $category->parent?->name ?? 'Root' }}</td>
+                                            <td>{{ $category->parent?->name ?? __('Root') }}</td>
                                             <td>{{ $category->children_count }}</td>
                                             <td>{{ $category->products_count }}</td>
                                             <td>{{ $category->sort_order }}</td>
                                             <td>
                                                 @if($category->is_active)
-                                                    <span class="badge badge-success">Active</span>
+                                                    <span class="badge badge-success">{{ __('Active') }}</span>
                                                 @else
-                                                    <span class="badge badge-secondary">Inactive</span>
+                                                    <span class="badge badge-secondary">{{ __('Inactive') }}</span>
                                                 @endif
                                             </td>
                                             <td>
@@ -186,7 +186,7 @@
                                                         action="{{ route('dashboard.categories.destroy', $category) }}"
                                                         method="POST"
                                                         class="d-inline"
-                                                        onsubmit="return confirm('Are you sure you want to move this category to trash?');"
+                                                        onsubmit="return confirm(@js(__('Are you sure you want to move this category to trash?')));"
                                                     >
                                                         @csrf
                                                         @method('DELETE')
@@ -199,7 +199,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="11" class="text-center py-4">No categories found.</td>
+                                            <td colspan="11" class="text-center py-4">{{ __('No categories found.') }}</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -220,15 +220,15 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Name (AR)</th>
-                                    <th>Name (EN)</th>
-                                    <th>Slug</th>
-                                    <th>Parent</th>
-                                    <th>Children</th>
-                                    <th>Products</th>
-                                    <th>Sort</th>
-                                    <th>Status</th>
-                                    <th width="220">Actions</th>
+                                    <th>{{ __('Name (AR)') }}</th>
+                                    <th>{{ __('Name (EN)') }}</th>
+                                    <th>{{ __('Slug') }}</th>
+                                    <th>{{ __('Parent') }}</th>
+                                    <th>{{ __('Children') }}</th>
+                                    <th>{{ __('Products') }}</th>
+                                    <th>{{ __('Sort') }}</th>
+                                    <th>{{ __('Status') }}</th>
+                                    <th width="220">{{ __('Actions') }}</th>
                                 </tr>
                             </thead>
 
@@ -239,15 +239,15 @@
                                         <td>{{ $category->translate('ar')?->name ?? '-' }}</td>
                                         <td>{{ $category->translate('en')?->name ?? '-' }}</td>
                                         <td>{{ $category->slug }}</td>
-                                        <td>{{ $category->parent?->name ?? 'Root' }}</td>
+                                        <td>{{ $category->parent?->name ?? __('Root') }}</td>
                                         <td>{{ $category->children_count }}</td>
                                         <td>{{ $category->products_count }}</td>
                                         <td>{{ $category->sort_order }}</td>
                                         <td>
                                             @if($category->is_active)
-                                                <span class="badge badge-success">Active</span>
+                                                <span class="badge badge-success">{{ __('Active') }}</span>
                                             @else
-                                                <span class="badge badge-secondary">Inactive</span>
+                                                <span class="badge badge-secondary">{{ __('Inactive') }}</span>
                                             @endif
                                         </td>
                                         <td>
@@ -258,7 +258,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="10" class="text-center py-4">No categories found.</td>
+                                        <td colspan="10" class="text-center py-4">{{ __('No categories found.') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>

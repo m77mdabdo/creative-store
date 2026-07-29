@@ -6,10 +6,10 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center">
-            <h1>Trashed Products</h1>
+            <h1>{{ __('Trashed Products') }}</h1>
 
             <a href="{{ route('dashboard.products.index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left mr-1"></i> Back to Products
+                <i class="fas fa-arrow-left mr-1"></i> {{ __('Back to Products') }}
             </a>
         </div>
     </section>
@@ -24,10 +24,10 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Name</th>
-                                <th>SKU</th>
-                                <th>Deleted At</th>
-                                <th width="180">Actions</th>
+                                <th>{{ __('Name') }}</th>
+                                <th>{{ __('SKU') }}</th>
+                                <th>{{ __('Deleted At') }}</th>
+                                <th width="180">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -48,7 +48,7 @@
                                         @endif
 
                                         @if($canDelete)
-                                            <form action="{{ route('dashboard.products.force-delete', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Permanently delete product?');">
+                                            <form action="{{ route('dashboard.products.force-delete', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Permanently delete product?')));">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger">
@@ -60,7 +60,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center py-4">Trash is empty.</td>
+                                    <td colspan="5" class="text-center py-4">{{ __('Trash is empty.') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>

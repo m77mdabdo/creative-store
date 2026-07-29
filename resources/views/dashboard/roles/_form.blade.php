@@ -6,7 +6,7 @@
 <div class="card-body">
     <div class="row">
         <div class="col-md-4 mb-3">
-            <label>Role Name</label>
+            <label>{{ __('Role Name') }}</label>
             <input
                 type="text"
                 name="name"
@@ -20,7 +20,7 @@
 
     <hr>
 
-    <h5 class="mb-3">Assign Permissions</h5>
+    <h5 class="mb-3">{{ __('Assign Permissions') }}</h5>
 
     @php
         $selectedPermissions = old(
@@ -32,9 +32,9 @@
     @foreach($permissionsGrouped as $group => $permissions)
         <div class="card card-outline card-secondary mb-3">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="card-title text-capitalize">{{ $group }}</h3>
+                <h3 class="card-title text-capitalize">{{ status_label($group) }}</h3>
                 <button type="button" class="btn btn-xs btn-outline-primary toggle-group" data-group="{{ \Illuminate\Support\Str::slug($group) }}">
-                    Toggle
+                    {{ __('Toggle') }}
                 </button>
             </div>
             <div class="card-body">
@@ -51,7 +51,7 @@
                                     @checked(in_array($permission->code, $selectedPermissions, true))
                                 >
                                 <label class="form-check-label" for="permission_{{ $permission->id }}">
-                                    <strong>{{ $permission->name }}</strong>
+                                    <strong>{{ __($permission->name) }}</strong>
                                     <br>
                                     <small class="text-muted">{{ $permission->code }}</small>
                                 </label>
@@ -66,8 +66,8 @@
 </div>
 
 <div class="card-footer">
-    <button class="btn btn-primary">Save</button>
-    <a href="{{ route('dashboard.roles.index') }}" class="btn btn-secondary">Cancel</a>
+    <button class="btn btn-primary">{{ __('Save') }}</button>
+    <a href="{{ route('dashboard.roles.index') }}" class="btn btn-secondary">{{ __('Cancel') }}</a>
 </div>
 
 

@@ -4,12 +4,12 @@
     <div class="col-md-8">
         <div class="card card-outline card-primary">
             <div class="card-header">
-                <h3 class="card-title">{{ $formTitle ?? 'Category Form' }}</h3>
+                <h3 class="card-title">{{ $formTitle ?? __('Category Form') }}</h3>
             </div>
 
             <div class="card-body">
                 <div class="form-group mb-3">
-                    <label for="name">Name <span class="text-danger">*</span></label>
+                    <label for="name">{{ __('Name') }} <span class="text-danger">*</span></label>
                     <input
                         type="text"
                         name="name"
@@ -25,7 +25,7 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="slug">Slug <span class="text-danger">*</span></label>
+                    <label for="slug">{{ __('Slug') }} <span class="text-danger">*</span></label>
                     <input
                         type="text"
                         name="slug"
@@ -36,7 +36,7 @@
                         required
                     >
                     <small class="form-text text-muted">
-                        Lowercase letters, numbers, and hyphens only.
+                        {{ __('Lowercase letters, numbers, and hyphens only.') }}
                     </small>
                     @error('slug')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -46,11 +46,11 @@
 
             <div class="card-footer d-flex justify-content-between">
                 <a href="{{ route('dashboard.blog-categories.index') }}" class="btn btn-secondary">
-                    Cancel
+                    {{ __('Cancel') }}
                 </a>
 
                 <button type="submit" class="btn btn-primary">
-                    {{ $submitLabel ?? 'Save' }}
+                    {{ $submitLabel ?? __('Save') }}
                 </button>
             </div>
         </div>

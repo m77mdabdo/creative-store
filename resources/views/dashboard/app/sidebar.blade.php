@@ -26,7 +26,7 @@
             </div>
             <div class="info">
                 <a href="#" class="d-block font-weight-bold">
-                    {{ $sidebar['user']['name'] ?? 'Dashboard User' }}
+                    {{ $sidebar['user']['name'] ?? __('Dashboard User') }}
                 </a>
             </div>
         </div>

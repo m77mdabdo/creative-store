@@ -4,8 +4,8 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between">
-            <h1>Trashed Coupons</h1>
-            <a href="{{ route('dashboard.coupons.index') }}" class="btn btn-secondary">Back</a>
+            <h1>{{ __('Trashed Coupons') }}</h1>
+            <a href="{{ route('dashboard.coupons.index') }}" class="btn btn-secondary">{{ __('Back') }}</a>
         </div>
     </section>
 
@@ -24,40 +24,40 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Code</th>
-                                <th>Scope</th>
-                                <th>Type</th>
-                                <th>Deleted At</th>
-                                <th style="width:220px;">Actions</th>
+                                <th>{{ __('Code') }}</th>
+                                <th>{{ __('Scope') }}</th>
+                                <th>{{ __('Type') }}</th>
+                                <th>{{ __('Deleted At') }}</th>
+                                <th style="width:220px;">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($coupons as $coupon)
                                 <tr>
                                     <td>{{ $coupon->code }}</td>
-                                    <td>{{ $coupon->product_id ? 'Product' : 'Cart' }}</td>
-                                    <td>{{ ucfirst($coupon->type) }}</td>
+                                    <td>{{ $coupon->product_id ? __('Product') : __('Cart') }}</td>
+                                    <td>{{ status_label($coupon->type) }}</td>
                                     <td>{{ $coupon->deleted_at?->format('d M Y H:i') }}</td>
                                     <td>
                                         @if($canEdit)
                                             <form action="{{ route('dashboard.coupons.restore', $coupon->id) }}" method="POST" class="d-inline">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-success">Restore</button>
+                                                <button type="submit" class="btn btn-sm btn-success">{{ __('Restore') }}</button>
                                             </form>
                                         @endif
 
                                         @if($canDelete)
-                                            <form action="{{ route('dashboard.coupons.force-delete', $coupon->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this coupon permanently?')">
+                                            <form action="{{ route('dashboard.coupons.force-delete', $coupon->id) }}" method="POST" class="d-inline" onsubmit="return confirm(@js(__('Delete this coupon permanently?')))">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger">Delete Permanently</button>
+                                                <button type="submit" class="btn btn-sm btn-danger">{{ __('Delete Permanently') }}</button>
                                             </form>
                                         @endif
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center text-muted">Trash is empty.</td>
+                                    <td colspan="5" class="text-center text-muted">{{ __('Trash is empty.') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>

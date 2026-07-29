@@ -1,7 +1,7 @@
 @extends('dashboard.app.layout')
 
 @php
-    $currency = $order->currency ?? 'SAR';
+    $currency = $order->currency ?? __('SAR');
 
     $orderStatusMap = [
         'pending' => ['label' => 'Pending', 'class' => 'warning'],
@@ -42,9 +42,9 @@
         'cancelled' => ['label' => 'Cancelled', 'class' => 'secondary'],
     ];
 
-    $orderStatus = $orderStatusMap[$order->status] ?? ['label' => ucfirst($order->status), 'class' => 'secondary'];
-    $paymentStatus = $paymentStatusMap[$order->payment_status] ?? ['label' => ucfirst($order->payment_status), 'class' => 'secondary'];
-    $shippingStatus = $shippingStatusMap[$order->shipping_status] ?? ['label' => ucfirst($order->shipping_status), 'class' => 'secondary'];
+    $orderStatus = $orderStatusMap[$order->status] ?? ['label' => status_label($order->status), 'class' => 'secondary'];
+    $paymentStatus = $paymentStatusMap[$order->payment_status] ?? ['label' => status_label($order->payment_status), 'class' => 'secondary'];
+    $shippingStatus = $shippingStatusMap[$order->shipping_status] ?? ['label' => status_label($order->shipping_status), 'class' => 'secondary'];
 
     $placedAt = $order->placed_at?->format('d M Y, h:i A') ?? $order->created_at?->format('d M Y, h:i A') ?? '-';
 @endphp
@@ -63,22 +63,22 @@
 
                     <div class="d-flex flex-wrap align-items-center gap-2">
                         <a href="{{ route('dashboard.orders.index') }}" class="btn btn-outline-secondary mr-2 mb-2">
-                            <i class="fas fa-arrow-left mr-1"></i> Back to Orders
+                            <i class="fas fa-arrow-left mr-1"></i> {{ __('Back to Orders') }}
                         </a>
 
                         <a href="{{ route('dashboard.orders.invoice', $order) }}" target="_blank"
                            class="btn btn-outline-dark mb-2">
-                            <i class="fas fa-file-invoice mr-1"></i> Invoice
+                            <i class="fas fa-file-invoice mr-1"></i> {{ __('Invoice') }}
                         </a>
                     </div>
                 </div>
 
                 <ol class="breadcrumb float-sm-right mb-0">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('dashboard.home') }}">Dashboard</a>
+                        <a href="{{ route('dashboard.home') }}">{{ __('Dashboard') }}</a>
                     </li>
                     <li class="breadcrumb-item">
-                        <a href="{{ route('dashboard.orders.index') }}">Orders</a>
+                        <a href="{{ route('dashboard.orders.index') }}">{{ __('Orders') }}</a>
                     </li>
                     <li class="breadcrumb-item active">{{ $order->order_number }}</li>
                 </ol>
@@ -104,7 +104,7 @@
                     <div class="alert alert-danger alert-modern">
                         <div class="font-weight-bold mb-2">
                             <i class="fas fa-exclamation-triangle mr-1"></i>
-                            Please review the following:
+                            {{ __('Please review the following:') }}
                         </div>
                         <ul class="mb-0 pl-3">
                             @foreach($errors->all() as $error)
@@ -119,13 +119,13 @@
                     <div class="col-lg-4 col-md-6">
                         <div class="card summary-card border-0 shadow-sm">
                             <div class="card-body">
-                                <div class="summary-label">Order Status</div>
+                                <div class="summary-label">{{ __('Order Status') }}</div>
                                 <div class="summary-value">
                                     <span class="badge badge-{{ $orderStatus['class'] }} badge-pill px-3 py-2">
                                         {{ $orderStatus['label'] }}
                                     </span>
                                 </div>
-                                <div class="summary-meta">Current lifecycle state</div>
+                                <div class="summary-meta">{{ __('Current lifecycle state') }}</div>
                             </div>
                         </div>
                     </div>
@@ -133,13 +133,13 @@
                     <div class="col-lg-4 col-md-6">
                         <div class="card summary-card border-0 shadow-sm">
                             <div class="card-body">
-                                <div class="summary-label">Payment Status</div>
+                                <div class="summary-label">{{ __('Payment Status') }}</div>
                                 <div class="summary-value">
                                     <span class="badge badge-{{ $paymentStatus['class'] }} badge-pill px-3 py-2">
                                         {{ $paymentStatus['label'] }}
                                     </span>
                                 </div>
-                                <div class="summary-meta">{{ strtoupper($order->payment_method ?? '-') }}</div>
+                                <div class="summary-meta">{{ status_label($order->payment_method) }}</div>
                             </div>
                         </div>
                     </div>
@@ -147,13 +147,13 @@
                     <div class="col-lg-4 col-md-12">
                         <div class="card summary-card border-0 shadow-sm">
                             <div class="card-body">
-                                <div class="summary-label">Shipping Status</div>
+                                <div class="summary-label">{{ __('Shipping Status') }}</div>
                                 <div class="summary-value">
                                     <span class="badge badge-{{ $shippingStatus['class'] }} badge-pill px-3 py-2">
                                         {{ $shippingStatus['label'] }}
                                     </span>
                                 </div>
-                                <div class="summary-meta">{{ $order->shippingMethod->name ?? 'No shipping method' }}</div>
+                                <div class="summary-meta">{{ $order->shippingMethod?->label ?? __('No shipping method') }}</div>
                             </div>
                         </div>
                     </div>
@@ -167,49 +167,49 @@
                         <div class="card card-outline card-primary shadow-sm">
                             <div class="card-header border-0">
                                 <h3 class="card-title font-weight-bold">
-                                    <i class="fas fa-receipt mr-2 text-primary"></i>Order Summary
+                                    <i class="fas fa-receipt mr-2 text-primary"></i>{{ __('Order Summary') }}
                                 </h3>
                             </div>
                             <div class="card-body">
                                 <div class="row info-grid">
                                     <div class="col-md-4 mb-3">
                                         <div class="info-box-lite">
-                                            <div class="info-title">Order Number</div>
+                                            <div class="info-title">{{ __('Order Number') }}</div>
                                             <div class="info-text">{{ $order->order_number }}</div>
                                         </div>
                                     </div>
 
                                     <div class="col-md-4 mb-3">
                                         <div class="info-box-lite">
-                                            <div class="info-title">Placed At</div>
+                                            <div class="info-title">{{ __('Placed At') }}</div>
                                             <div class="info-text">{{ $placedAt }}</div>
                                         </div>
                                     </div>
 
                                     <div class="col-md-4 mb-3">
                                         <div class="info-box-lite">
-                                            <div class="info-title">Currency</div>
+                                            <div class="info-title">{{ __('Currency') }}</div>
                                             <div class="info-text">{{ $currency }}</div>
                                         </div>
                                     </div>
 
                                     <div class="col-md-4 mb-3">
                                         <div class="info-box-lite">
-                                            <div class="info-title">Payment Method</div>
-                                            <div class="info-text">{{ strtoupper($order->payment_method ?? '-') }}</div>
+                                            <div class="info-title">{{ __('Payment Method') }}</div>
+                                            <div class="info-text">{{ status_label($order->payment_method) }}</div>
                                         </div>
                                     </div>
 
                                     <div class="col-md-4 mb-3">
                                         <div class="info-box-lite">
-                                            <div class="info-title">Shipping Method</div>
-                                            <div class="info-text">{{ $order->shippingMethod->name ?? '-' }}</div>
+                                            <div class="info-title">{{ __('Shipping Method') }}</div>
+                                            <div class="info-text">{{ $order->shippingMethod?->label ?? '-' }}</div>
                                         </div>
                                     </div>
 
                                     <div class="col-md-4 mb-3">
                                         <div class="info-box-lite">
-                                            <div class="info-title">Coupon</div>
+                                            <div class="info-title">{{ __('Coupon') }}</div>
                                             <div class="info-text">{{ $order->coupon->code ?? '-' }}</div>
                                         </div>
                                     </div>
@@ -217,7 +217,7 @@
 
                                 @if($order->estimated_delivery_from || $order->estimated_delivery_to)
                                     <div class="soft-section mt-2">
-                                        <div class="font-weight-bold mb-1">Estimated Delivery</div>
+                                        <div class="font-weight-bold mb-1">{{ __('Estimated Delivery') }}</div>
                                         <div class="text-muted">
                                             {{ $order->estimated_delivery_from?->format('d M Y') ?: '-' }}
                                             —
@@ -229,10 +229,10 @@
                                 @if($order->cancelled_at)
                                     <div class="soft-section danger-soft mt-3">
                                         <div class="font-weight-bold text-danger mb-1">
-                                            <i class="fas fa-ban mr-1"></i> Cancellation Details
+                                            <i class="fas fa-ban mr-1"></i> {{ __('Cancellation Details') }}
                                         </div>
-                                        <div><strong>Cancelled At:</strong> {{ $order->cancelled_at?->format('d M Y, h:i A') }}</div>
-                                        <div><strong>Reason:</strong> {{ $order->cancellation_reason ?: '-' }}</div>
+                                        <div><strong>{{ __('Cancelled At:') }}</strong> {{ $order->cancelled_at?->format('d M Y, h:i A') }}</div>
+                                        <div><strong>{{ __('Reason:') }}</strong> {{ $order->cancellation_reason ?: '-' }}</div>
                                     </div>
                                 @endif
                             </div>
@@ -243,7 +243,7 @@
                             <div class="card card-outline card-warning shadow-sm">
                                 <div class="card-header border-0">
                                     <h3 class="card-title font-weight-bold">
-                                        <i class="fas fa-edit mr-2 text-warning"></i>Update Order Statuses
+                                        <i class="fas fa-edit mr-2 text-warning"></i>{{ __('Update Order Statuses') }}
                                     </h3>
                                 </div>
                                 <div class="card-body">
@@ -253,48 +253,48 @@
 
                                         <div class="row">
                                             <div class="col-md-4 form-group">
-                                                <label class="font-weight-semibold">Order Status</label>
+                                                <label class="font-weight-semibold">{{ __('Order Status') }}</label>
                                                 <select name="status" class="form-control custom-control-modern">
-                                                    <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Pending</option>
-                                                    <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Processing</option>
-                                                    <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Completed</option>
-                                                    <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                                    <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                                                    <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>{{ __('Processing') }}</option>
+                                                    <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>{{ __('Completed') }}</option>
+                                                    <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>{{ __('Cancelled') }}</option>
                                                 </select>
                                             </div>
 
                                             <div class="col-md-4 form-group">
-                                                <label class="font-weight-semibold">Payment Status</label>
+                                                <label class="font-weight-semibold">{{ __('Payment Status') }}</label>
                                                 <select name="payment_status" class="form-control custom-control-modern">
-                                                    <option value="pending" {{ $order->payment_status === 'pending' ? 'selected' : '' }}>Pending</option>
-                                                    <option value="paid" {{ $order->payment_status === 'paid' ? 'selected' : '' }}>Paid</option>
-                                                    <option value="failed" {{ $order->payment_status === 'failed' ? 'selected' : '' }}>Failed</option>
-                                                    <option value="refund_pending" {{ $order->payment_status === 'refund_pending' ? 'selected' : '' }}>Refund Pending</option>
-                                                    <option value="partially_refunded" {{ $order->payment_status === 'partially_refunded' ? 'selected' : '' }}>Partially Refunded</option>
-                                                    <option value="refunded" {{ $order->payment_status === 'refunded' ? 'selected' : '' }}>Refunded</option>
+                                                    <option value="pending" {{ $order->payment_status === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                                                    <option value="paid" {{ $order->payment_status === 'paid' ? 'selected' : '' }}>{{ __('Paid') }}</option>
+                                                    <option value="failed" {{ $order->payment_status === 'failed' ? 'selected' : '' }}>{{ __('Failed') }}</option>
+                                                    <option value="refund_pending" {{ $order->payment_status === 'refund_pending' ? 'selected' : '' }}>{{ __('Refund Pending') }}</option>
+                                                    <option value="partially_refunded" {{ $order->payment_status === 'partially_refunded' ? 'selected' : '' }}>{{ __('Partially Refunded') }}</option>
+                                                    <option value="refunded" {{ $order->payment_status === 'refunded' ? 'selected' : '' }}>{{ __('Refunded') }}</option>
                                                 </select>
                                             </div>
 
                                             <div class="col-md-4 form-group">
-                                                <label class="font-weight-semibold">Shipping Status</label>
+                                                <label class="font-weight-semibold">{{ __('Shipping Status') }}</label>
                                                 <select name="shipping_status" class="form-control custom-control-modern">
-                                                    <option value="pending" {{ $order->shipping_status === 'pending' ? 'selected' : '' }}>Pending</option>
-                                                    <option value="processing" {{ $order->shipping_status === 'processing' ? 'selected' : '' }}>Processing</option>
-                                                    <option value="shipped" {{ $order->shipping_status === 'shipped' ? 'selected' : '' }}>Shipped</option>
-                                                    <option value="delivered" {{ $order->shipping_status === 'delivered' ? 'selected' : '' }}>Delivered</option>
-                                                    <option value="cancelled" {{ $order->shipping_status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                                    <option value="pending" {{ $order->shipping_status === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                                                    <option value="processing" {{ $order->shipping_status === 'processing' ? 'selected' : '' }}>{{ __('Processing') }}</option>
+                                                    <option value="shipped" {{ $order->shipping_status === 'shipped' ? 'selected' : '' }}>{{ __('Shipped') }}</option>
+                                                    <option value="delivered" {{ $order->shipping_status === 'delivered' ? 'selected' : '' }}>{{ __('Delivered') }}</option>
+                                                    <option value="cancelled" {{ $order->shipping_status === 'cancelled' ? 'selected' : '' }}>{{ __('Cancelled') }}</option>
                                                 </select>
                                             </div>
 
                                             <div class="col-md-12 form-group mb-0">
-                                                <label class="font-weight-semibold">Admin Note</label>
+                                                <label class="font-weight-semibold">{{ __('Admin Note') }}</label>
                                                 <textarea name="note" rows="3" class="form-control custom-control-modern"
-                                                          placeholder="Optional internal note..."></textarea>
+                                                          placeholder="{{ __('Optional internal note...') }}"></textarea>
                                             </div>
                                         </div>
 
                                         <div class="mt-3">
                                             <button type="submit" class="btn btn-warning px-4">
-                                                <i class="fas fa-save mr-1"></i> Update Statuses
+                                                <i class="fas fa-save mr-1"></i> {{ __('Update Statuses') }}
                                             </button>
                                         </div>
                                     </form>
@@ -305,7 +305,7 @@
                             <div class="card card-outline card-info shadow-sm">
                                 <div class="card-header border-0">
                                     <h3 class="card-title font-weight-bold">
-                                        <i class="fas fa-truck mr-2 text-info"></i>Shipment Management
+                                        <i class="fas fa-truck mr-2 text-info"></i>{{ __('Shipment Management') }}
                                     </h3>
                                 </div>
                                 <div class="card-body">
@@ -314,69 +314,69 @@
 
                                         <div class="row">
                                             <div class="col-md-6 form-group">
-                                                <label class="font-weight-semibold">Carrier</label>
+                                                <label class="font-weight-semibold">{{ __('Carrier') }}</label>
                                                 <input type="text" name="carrier" class="form-control custom-control-modern"
                                                        value="{{ old('carrier', $order->shipment->carrier ?? '') }}"
-                                                       placeholder="e.g. Aramex / SMSA / DHL">
+                                                       placeholder="{{ __('e.g. Aramex / SMSA / DHL') }}">
                                             </div>
 
                                             <div class="col-md-6 form-group">
-                                                <label class="font-weight-semibold">Tracking Number</label>
+                                                <label class="font-weight-semibold">{{ __('Tracking Number') }}</label>
                                                 <input type="text" name="tracking_number" class="form-control custom-control-modern"
                                                        value="{{ old('tracking_number', $order->shipment->tracking_number ?? '') }}"
-                                                       placeholder="Tracking number">
+                                                       placeholder="{{ __('Tracking number') }}">
                                             </div>
 
                                             <div class="col-md-4 form-group">
-                                                <label class="font-weight-semibold">Shipment Status</label>
+                                                <label class="font-weight-semibold">{{ __('Shipment Status') }}</label>
                                                 @php
                                                     $shipmentStatus = old('status', $order->shipment->status ?? $order->shipping_status ?? 'pending');
                                                 @endphp
                                                 <select name="status" class="form-control custom-control-modern">
-                                                    <option value="pending" {{ $shipmentStatus === 'pending' ? 'selected' : '' }}>Pending</option>
-                                                    <option value="processing" {{ $shipmentStatus === 'processing' ? 'selected' : '' }}>Processing</option>
-                                                    <option value="shipped" {{ $shipmentStatus === 'shipped' ? 'selected' : '' }}>Shipped</option>
-                                                    <option value="delivered" {{ $shipmentStatus === 'delivered' ? 'selected' : '' }}>Delivered</option>
-                                                    <option value="cancelled" {{ $shipmentStatus === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                                    <option value="pending" {{ $shipmentStatus === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                                                    <option value="processing" {{ $shipmentStatus === 'processing' ? 'selected' : '' }}>{{ __('Processing') }}</option>
+                                                    <option value="shipped" {{ $shipmentStatus === 'shipped' ? 'selected' : '' }}>{{ __('Shipped') }}</option>
+                                                    <option value="delivered" {{ $shipmentStatus === 'delivered' ? 'selected' : '' }}>{{ __('Delivered') }}</option>
+                                                    <option value="cancelled" {{ $shipmentStatus === 'cancelled' ? 'selected' : '' }}>{{ __('Cancelled') }}</option>
                                                 </select>
                                             </div>
 
                                             <div class="col-md-4 form-group">
-                                                <label class="font-weight-semibold">Shipped At</label>
+                                                <label class="font-weight-semibold">{{ __('Shipped At') }}</label>
                                                 <input type="datetime-local" name="shipped_at" class="form-control custom-control-modern"
                                                        value="{{ old('shipped_at', optional($order->shipment?->shipped_at)->format('Y-m-d\TH:i')) }}">
                                             </div>
 
                                             <div class="col-md-4 form-group">
-                                                <label class="font-weight-semibold">Delivered At</label>
+                                                <label class="font-weight-semibold">{{ __('Delivered At') }}</label>
                                                 <input type="datetime-local" name="delivered_at" class="form-control custom-control-modern"
                                                        value="{{ old('delivered_at', optional($order->shipment?->delivered_at)->format('Y-m-d\TH:i')) }}">
                                             </div>
 
                                             <div class="col-md-6 form-group">
-                                                <label class="font-weight-semibold">Current Location</label>
+                                                <label class="font-weight-semibold">{{ __('Current Location') }}</label>
                                                 <input type="text" name="current_location" class="form-control custom-control-modern"
                                                        value="{{ old('current_location', $order->shipment->current_location ?? '') }}"
-                                                       placeholder="Current shipment location">
+                                                       placeholder="{{ __('Current shipment location') }}">
                                             </div>
 
                                             <div class="col-md-6 form-group">
-                                                <label class="font-weight-semibold">Carrier Status</label>
+                                                <label class="font-weight-semibold">{{ __('Carrier Status') }}</label>
                                                 <input type="text" name="carrier_status" class="form-control custom-control-modern"
                                                        value="{{ old('carrier_status', $order->shipment->carrier_status ?? '') }}"
-                                                       placeholder="Carrier status text">
+                                                       placeholder="{{ __('Carrier status text') }}">
                                             </div>
 
                                             <div class="col-md-12 form-group mb-0">
-                                                <label class="font-weight-semibold">Shipment Notes</label>
+                                                <label class="font-weight-semibold">{{ __('Shipment Notes') }}</label>
                                                 <textarea name="notes" rows="3" class="form-control custom-control-modern"
-                                                          placeholder="Optional shipment note...">{{ old('notes', $order->shipment->notes ?? '') }}</textarea>
+                                                          placeholder="{{ __('Optional shipment note...') }}">{{ old('notes', $order->shipment->notes ?? '') }}</textarea>
                                             </div>
                                         </div>
 
                                         <div class="mt-3">
                                             <button type="submit" class="btn btn-info px-4">
-                                                <i class="fas fa-truck mr-1"></i> Save Shipment
+                                                <i class="fas fa-truck mr-1"></i> {{ __('Save Shipment') }}
                                             </button>
                                         </div>
                                     </form>
@@ -388,7 +388,7 @@
                                 <div class="card card-outline card-danger shadow-sm">
                                     <div class="card-header border-0">
                                         <h3 class="card-title font-weight-bold">
-                                            <i class="fas fa-times-circle mr-2 text-danger"></i>Cancel Order
+                                            <i class="fas fa-times-circle mr-2 text-danger"></i>{{ __('Cancel Order') }}
                                         </h3>
                                     </div>
                                     <div class="card-body">
@@ -396,9 +396,9 @@
                                             @csrf
 
                                             <div class="form-group">
-                                                <label class="font-weight-semibold">Cancellation Reason</label>
+                                                <label class="font-weight-semibold">{{ __('Cancellation Reason') }}</label>
                                                 <textarea name="reason" class="form-control custom-control-modern" rows="3"
-                                                          placeholder="Write a clear reason for cancellation...">{{ old('reason') }}</textarea>
+                                                          placeholder="{{ __('Write a clear reason for cancellation...') }}">{{ old('reason') }}</textarea>
                                             </div>
 
                                             <div class="form-group form-check mb-3">
@@ -409,25 +409,25 @@
                                                        id="refund_if_paid"
                                                        {{ old('refund_if_paid', '1') ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="refund_if_paid">
-                                                    Refund payment if the order is already paid
+                                                    {{ __('Refund payment if the order is already paid') }}
                                                 </label>
                                             </div>
 
                                             <div class="form-group mb-0">
-                                                <label class="font-weight-semibold">Refund Amount (optional)</label>
+                                                <label class="font-weight-semibold">{{ __('Refund Amount (optional)') }}</label>
                                                 <input type="number"
                                                        step="0.01"
                                                        min="0.01"
                                                        name="refund_amount"
                                                        value="{{ old('refund_amount') }}"
                                                        class="form-control custom-control-modern"
-                                                       placeholder="Leave empty for full refund">
+                                                       placeholder="{{ __('Leave empty for full refund') }}">
                                             </div>
 
                                             <div class="mt-3">
                                                 <button type="submit" class="btn btn-danger px-4"
-                                                        onclick="return confirm('Are you sure you want to cancel this order?')">
-                                                    <i class="fas fa-ban mr-1"></i> Cancel Order
+                                                        onclick="return confirm(@js(__('Are you sure you want to cancel this order?')))">
+                                                    <i class="fas fa-ban mr-1"></i> {{ __('Cancel Order') }}
                                                 </button>
                                             </div>
                                         </form>
@@ -440,7 +440,7 @@
                         <div class="card shadow-sm">
                             <div class="card-header border-0 d-flex justify-content-between align-items-center">
                                 <h3 class="card-title font-weight-bold">
-                                    <i class="fas fa-box-open mr-2 text-dark"></i>Order Items
+                                    <i class="fas fa-box-open mr-2 text-dark"></i>{{ __('Order Items') }}
                                 </h3>
                                 <span class="badge badge-light">{{ $order->items->count() }} item(s)</span>
                             </div>
@@ -449,12 +449,12 @@
                                 <table class="table table-hover align-middle mb-0 order-items-table">
                                     <thead>
                                         <tr>
-                                            <th>Product</th>
-                                            <th>SKU</th>
-                                            <th class="text-center">Qty</th>
-                                            <th class="text-right">Unit Price</th>
-                                            <th class="text-right">Tax</th>
-                                            <th class="text-right">Line Total</th>
+                                            <th>{{ __('Product') }}</th>
+                                            <th>{{ __('SKU') }}</th>
+                                            <th class="text-center">{{ __('Qty') }}</th>
+                                            <th class="text-right">{{ __('Unit Price') }}</th>
+                                            <th class="text-right">{{ __('Tax') }}</th>
+                                            <th class="text-right">{{ __('Line Total') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -478,7 +478,7 @@
                                                     @if(!empty($item->variant_options))
                                                         @foreach($item->variant_options as $option)
                                                             <small class="text-muted d-block">
-                                                                {{ $option['name'] ?? 'Option' }}: {{ $option['value'] ?? '-' }}
+                                                                {{ $option['name'] ?? __('Option') }}: {{ $option['value'] ?? '-' }}
                                                             </small>
                                                         @endforeach
                                                     @endif
@@ -491,7 +491,7 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="6" class="text-center text-muted py-4">No items found.</td>
+                                                <td colspan="6" class="text-center text-muted py-4">{{ __('No items found.') }}</td>
                                             </tr>
                                         @endforelse
                                     </tbody>
@@ -503,23 +503,23 @@
                                     <div class="col-md-5 ml-auto">
                                         <table class="table table-sm table-borderless mb-0 totals-table">
                                             <tr>
-                                                <th>Subtotal</th>
+                                                <th>{{ __('Subtotal') }}</th>
                                                 <td class="text-right">{{ number_format((float) $order->subtotal, 2) }} {{ $currency }}</td>
                                             </tr>
                                             <tr>
-                                                <th>Discount</th>
+                                                <th>{{ __('Discount') }}</th>
                                                 <td class="text-right text-danger">- {{ number_format((float) $order->discount, 2) }} {{ $currency }}</td>
                                             </tr>
                                             <tr>
-                                                <th>Shipping</th>
+                                                <th>{{ __('Shipping') }}</th>
                                                 <td class="text-right">{{ number_format((float) $order->shipping_fee, 2) }} {{ $currency }}</td>
                                             </tr>
                                             <tr>
-                                                <th>VAT</th>
+                                                <th>{{ __('VAT') }}</th>
                                                 <td class="text-right">{{ number_format((float) $order->tax_total, 2) }} {{ $currency }}</td>
                                             </tr>
                                             <tr class="total-row">
-                                                <th>Total</th>
+                                                <th>{{ __('Total') }}</th>
                                                 <td class="text-right font-weight-bold">{{ number_format((float) $order->total, 2) }} {{ $currency }}</td>
                                             </tr>
                                         </table>
@@ -532,7 +532,7 @@
                         <div class="card shadow-sm">
                             <div class="card-header border-0">
                                 <h3 class="card-title font-weight-bold">
-                                    <i class="fas fa-history mr-2 text-secondary"></i>Status Timeline
+                                    <i class="fas fa-history mr-2 text-secondary"></i>{{ __('Status Timeline') }}
                                 </h3>
                             </div>
                             <div class="card-body">
@@ -541,12 +541,12 @@
                                         <div class="timeline-dot"></div>
                                         <div class="timeline-content">
                                             <div class="font-weight-bold">
-                                                {{ $log->from_status ?: 'N/A' }}
+                                                {{ $log->from_status ? status_label($log->from_status) : __('N/A') }}
                                                 <i class="fas fa-arrow-right mx-2 text-muted"></i>
-                                                {{ $log->to_status ?: 'N/A' }}
+                                                {{ $log->to_status ? status_label($log->to_status) : __('N/A') }}
                                             </div>
                                             <div class="text-muted small mt-1">
-                                                By: {{ $log->changer->name ?? 'System' }}
+                                                By: {{ $log->changer->name ?? __('System') }}
                                                 • {{ $log->created_at?->format('d M Y, h:i A') }}
                                             </div>
                                             @if($log->note)
@@ -555,7 +555,7 @@
                                         </div>
                                     </div>
                                 @empty
-                                    <p class="text-muted mb-0">No status logs found.</p>
+                                    <p class="text-muted mb-0">{{ __('No status logs found.') }}</p>
                                 @endforelse
                             </div>
                         </div>
@@ -568,18 +568,18 @@
                         <div class="card card-outline card-info shadow-sm sticky-card">
                             <div class="card-header border-0">
                                 <h3 class="card-title font-weight-bold">
-                                    <i class="fas fa-user mr-2 text-info"></i>Customer
+                                    <i class="fas fa-user mr-2 text-info"></i>{{ __('Customer') }}
                                 </h3>
                             </div>
                             <div class="card-body">
                                 @if($order->user)
-                                    <div class="data-line"><span>Name</span><strong>{{ $order->user->name }}</strong></div>
-                                    <div class="data-line"><span>Email</span><strong>{{ $order->user->email }}</strong></div>
-                                    <div class="data-line"><span>Phone</span><strong>{{ $order->user->phone ?? '-' }}</strong></div>
-                                    <div class="data-line"><span>User ID</span><strong>#{{ $order->user->id }}</strong></div>
+                                    <div class="data-line"><span>{{ __('Name') }}</span><strong>{{ $order->user->name }}</strong></div>
+                                    <div class="data-line"><span>{{ __('Email') }}</span><strong>{{ $order->user->email }}</strong></div>
+                                    <div class="data-line"><span>{{ __('Phone') }}</span><strong>{{ $order->user->phone ?? '-' }}</strong></div>
+                                    <div class="data-line"><span>{{ __('User ID') }}</span><strong>#{{ $order->user->id }}</strong></div>
                                 @else
-                                    <div class="data-line"><span>Guest Email</span><strong>{{ $order->guest_email ?? '-' }}</strong></div>
-                                    <div class="data-line"><span>Guest Phone</span><strong>{{ $order->guest_phone ?? '-' }}</strong></div>
+                                    <div class="data-line"><span>{{ __('Guest Email') }}</span><strong>{{ $order->guest_email ?? '-' }}</strong></div>
+                                    <div class="data-line"><span>{{ __('Guest Phone') }}</span><strong>{{ $order->guest_phone ?? '-' }}</strong></div>
                                 @endif
                             </div>
                         </div>
@@ -588,7 +588,7 @@
                         <div class="card card-outline card-secondary shadow-sm">
                             <div class="card-header border-0">
                                 <h3 class="card-title font-weight-bold">
-                                    <i class="fas fa-map-marker-alt mr-2 text-secondary"></i>Shipping Address
+                                    <i class="fas fa-map-marker-alt mr-2 text-secondary"></i>{{ __('Shipping Address') }}
                                 </h3>
                             </div>
                             <div class="card-body">
@@ -614,13 +614,13 @@
 
                                         @if($order->addressSnapshot->notes)
                                             <div class="soft-section mt-3">
-                                                <strong>Notes:</strong>
+                                                <strong>{{ __('Notes:') }}</strong>
                                                 <div class="text-muted">{{ $order->addressSnapshot->notes }}</div>
                                             </div>
                                         @endif
                                     </div>
                                 @else
-                                    <p class="text-muted mb-0">No address snapshot found.</p>
+                                    <p class="text-muted mb-0">{{ __('No address snapshot found.') }}</p>
                                 @endif
                             </div>
                         </div>
@@ -629,13 +629,13 @@
                         <div class="card card-outline card-success shadow-sm">
                             <div class="card-header border-0">
                                 <h3 class="card-title font-weight-bold">
-                                    <i class="fas fa-credit-card mr-2 text-success"></i>Payments
+                                    <i class="fas fa-credit-card mr-2 text-success"></i>{{ __('Payments') }}
                                 </h3>
                             </div>
                             <div class="card-body">
                                 @forelse($order->payments as $payment)
                                     @php
-                                        $paymentBadge = $paymentStatusMap[$payment->status] ?? ['label' => ucfirst($payment->status), 'class' => 'secondary'];
+                                        $paymentBadge = $paymentStatusMap[$payment->status] ?? ['label' => status_label($payment->status), 'class' => 'secondary'];
                                     @endphp
 
                                     <div class="mini-panel">
@@ -646,16 +646,16 @@
                                             </span>
                                         </div>
 
-                                        <div class="small text-muted mb-1">Amount</div>
+                                        <div class="small text-muted mb-1">{{ __('Amount') }}</div>
                                         <div class="font-weight-bold mb-2">
                                             {{ number_format((float) $payment->amount, 2) }} {{ $payment->currency }}
                                         </div>
 
-                                        <div><strong>Transaction ID:</strong> {{ $payment->transaction_id ?: '-' }}</div>
-                                        <div><strong>Paid At:</strong> {{ $payment->paid_at?->format('d M Y, h:i A') ?: '-' }}</div>
+                                        <div><strong>{{ __('Transaction ID:') }}</strong> {{ $payment->transaction_id ?: '-' }}</div>
+                                        <div><strong>{{ __('Paid At:') }}</strong> {{ $payment->paid_at?->format('d M Y, h:i A') ?: '-' }}</div>
                                     </div>
                                 @empty
-                                    <p class="text-muted mb-0">No payments found.</p>
+                                    <p class="text-muted mb-0">{{ __('No payments found.') }}</p>
                                 @endforelse
                             </div>
                         </div>
@@ -664,13 +664,13 @@
                         <div class="card card-outline card-warning shadow-sm">
                             <div class="card-header border-0">
                                 <h3 class="card-title font-weight-bold">
-                                    <i class="fas fa-shipping-fast mr-2 text-warning"></i>Shipment
+                                    <i class="fas fa-shipping-fast mr-2 text-warning"></i>{{ __('Shipment') }}
                                 </h3>
                             </div>
                             <div class="card-body">
                                 @if($order->shipment)
                                     @php
-                                        $shipmentBadge = $shippingStatusMap[$order->shipment->status ?? 'pending'] ?? ['label' => ucfirst($order->shipment->status ?? 'pending'), 'class' => 'secondary'];
+                                        $shipmentBadge = $shippingStatusMap[$order->shipment->status ?? 'pending'] ?? ['label' => status_label($order->shipment->status ?? 'pending'), 'class' => 'secondary'];
                                     @endphp
 
                                     <div class="mb-2">
@@ -679,21 +679,21 @@
                                         </span>
                                     </div>
 
-                                    <div class="data-line"><span>Carrier</span><strong>{{ $order->shipment->carrier ?: '-' }}</strong></div>
-                                    <div class="data-line"><span>Tracking No.</span><strong>{{ $order->shipment->tracking_number ?: '-' }}</strong></div>
-                                    <div class="data-line"><span>Location</span><strong>{{ $order->shipment->current_location ?: '-' }}</strong></div>
-                                    <div class="data-line"><span>Carrier Status</span><strong>{{ $order->shipment->carrier_status ?: '-' }}</strong></div>
-                                    <div class="data-line"><span>Shipped At</span><strong>{{ $order->shipment->shipped_at?->format('d M Y, h:i A') ?: '-' }}</strong></div>
-                                    <div class="data-line"><span>Delivered At</span><strong>{{ $order->shipment->delivered_at?->format('d M Y, h:i A') ?: '-' }}</strong></div>
+                                    <div class="data-line"><span>{{ __('Carrier') }}</span><strong>{{ $order->shipment->carrier ?: '-' }}</strong></div>
+                                    <div class="data-line"><span>{{ __('Tracking No.') }}</span><strong>{{ $order->shipment->tracking_number ?: '-' }}</strong></div>
+                                    <div class="data-line"><span>{{ __('Location') }}</span><strong>{{ $order->shipment->current_location ?: '-' }}</strong></div>
+                                    <div class="data-line"><span>{{ __('Carrier Status') }}</span><strong>{{ $order->shipment->carrier_status ?: '-' }}</strong></div>
+                                    <div class="data-line"><span>{{ __('Shipped At') }}</span><strong>{{ $order->shipment->shipped_at?->format('d M Y, h:i A') ?: '-' }}</strong></div>
+                                    <div class="data-line"><span>{{ __('Delivered At') }}</span><strong>{{ $order->shipment->delivered_at?->format('d M Y, h:i A') ?: '-' }}</strong></div>
 
                                     @if($order->shipment->notes)
                                         <div class="soft-section mt-3">
-                                            <strong>Notes:</strong>
+                                            <strong>{{ __('Notes:') }}</strong>
                                             <div class="text-muted">{{ $order->shipment->notes }}</div>
                                         </div>
                                     @endif
                                 @else
-                                    <p class="text-muted mb-0">No shipment record found.</p>
+                                    <p class="text-muted mb-0">{{ __('No shipment record found.') }}</p>
                                 @endif
                             </div>
                         </div>
@@ -702,13 +702,13 @@
                         <div class="card card-outline card-danger shadow-sm">
                             <div class="card-header border-0">
                                 <h3 class="card-title font-weight-bold">
-                                    <i class="fas fa-undo-alt mr-2 text-danger"></i>Returns / Refunds
+                                    <i class="fas fa-undo-alt mr-2 text-danger"></i>{{ __('Returns / Refunds') }}
                                 </h3>
                             </div>
                             <div class="card-body">
                                 @forelse($order->returnRequests as $return)
                                     @php
-                                        $returnBadge = $returnStatusMap[$return->status] ?? ['label' => ucfirst($return->status), 'class' => 'secondary'];
+                                        $returnBadge = $returnStatusMap[$return->status] ?? ['label' => status_label($return->status), 'class' => 'secondary'];
                                     @endphp
 
                                     <div class="mini-panel">
@@ -719,15 +719,15 @@
                                             </span>
                                         </div>
 
-                                        <div><strong>Reason:</strong> {{ $return->reason ?: '-' }}</div>
-                                        <div><strong>Requested At:</strong> {{ $return->requested_at?->format('d M Y, h:i A') ?: '-' }}</div>
-                                        <div><strong>Processed At:</strong> {{ $return->processed_at?->format('d M Y, h:i A') ?: '-' }}</div>
+                                        <div><strong>{{ __('Reason:') }}</strong> {{ $return->reason ?: '-' }}</div>
+                                        <div><strong>{{ __('Requested At:') }}</strong> {{ $return->requested_at?->format('d M Y, h:i A') ?: '-' }}</div>
+                                        <div><strong>{{ __('Processed At:') }}</strong> {{ $return->processed_at?->format('d M Y, h:i A') ?: '-' }}</div>
 
                                         @if($return->refunds && $return->refunds->count())
                                             <hr>
                                             @foreach($return->refunds as $refund)
                                                 @php
-                                                    $refundBadge = $refundStatusMap[$refund->status] ?? ['label' => ucfirst($refund->status), 'class' => 'secondary'];
+                                                    $refundBadge = $refundStatusMap[$refund->status] ?? ['label' => status_label($refund->status), 'class' => 'secondary'];
                                                 @endphp
                                                 <div class="refund-row">
                                                     <div class="d-flex justify-content-between align-items-center">
@@ -747,7 +747,7 @@
                                         @endif
                                     </div>
                                 @empty
-                                    <p class="text-muted mb-0">No returns found.</p>
+                                    <p class="text-muted mb-0">{{ __('No returns found.') }}</p>
                                 @endforelse
                             </div>
                         </div>

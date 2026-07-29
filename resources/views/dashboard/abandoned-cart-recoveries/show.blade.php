@@ -6,8 +6,8 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center">
-            <h1>Recovery Details</h1>
-            <a href="{{ route('dashboard.abandoned-cart-recoveries.index') }}" class="btn btn-secondary">Back</a>
+            <h1>{{ __('Recovery Details') }}</h1>
+            <a href="{{ route('dashboard.abandoned-cart-recoveries.index') }}" class="btn btn-secondary">{{ __('Back') }}</a>
         </div>
     </section>
 
@@ -20,63 +20,63 @@
                         <div class="card-body">
                             <table class="table table-bordered">
                                 <tr>
-                                    <th width="180">Recovery ID</th>
+                                    <th width="180">{{ __('Recovery ID') }}</th>
                                     <td>{{ $recovery->id }}</td>
                                 </tr>
                                 <tr>
-                                    <th>User</th>
+                                    <th>{{ __('User') }}</th>
                                     <td>{{ $recovery->user->name ?? '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Email</th>
+                                    <th>{{ __('Email') }}</th>
                                     <td>{{ $recovery->email ?? $recovery->user->email ?? '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Session ID</th>
+                                    <th>{{ __('Session ID') }}</th>
                                     <td>{{ $recovery->session_id ?: '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Channel</th>
-                                    <td>{{ ucfirst($recovery->channel) }}</td>
+                                    <th>{{ __('Channel') }}</th>
+                                    <td>{{ status_label($recovery->channel) }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Status</th>
-                                    <td>{{ ucfirst($recovery->status) }}</td>
+                                    <th>{{ __('Status') }}</th>
+                                    <td>{{ status_label($recovery->status) }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Recovery Token</th>
+                                    <th>{{ __('Recovery Token') }}</th>
                                     <td style="word-break: break-all;">{{ $recovery->recovery_token }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Cart Abandoned At</th>
+                                    <th>{{ __('Cart Abandoned At') }}</th>
                                     <td>{{ $recovery->cart_abandoned_at?->format('Y-m-d H:i') ?: '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Sent At</th>
+                                    <th>{{ __('Sent At') }}</th>
                                     <td>{{ $recovery->sent_at?->format('Y-m-d H:i') ?: '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Recovered At</th>
+                                    <th>{{ __('Recovered At') }}</th>
                                     <td>{{ $recovery->recovered_at?->format('Y-m-d H:i') ?: '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Expires At</th>
+                                    <th>{{ __('Expires At') }}</th>
                                     <td>{{ $recovery->expires_at?->format('Y-m-d H:i') ?: '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Items Count</th>
+                                    <th>{{ __('Items Count') }}</th>
                                     <td>{{ $summary['cart_items_count'] }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Total Qty</th>
+                                    <th>{{ __('Total Qty') }}</th>
                                     <td>{{ $summary['cart_qty_total'] }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Cart Subtotal</th>
+                                    <th>{{ __('Cart Subtotal') }}</th>
                                     <td>{{ number_format((float) $summary['cart_subtotal'], 2) }} SAR</td>
                                 </tr>
                                 <tr>
-                                    <th>Note</th>
+                                    <th>{{ __('Note') }}</th>
                                     <td>{{ $recovery->note ?: '-' }}</td>
                                 </tr>
                             </table>
@@ -87,7 +87,7 @@
                 <div class="col-md-8">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Recovered Cart Items</h3>
+                            <h3 class="card-title">{{ __('Recovered Cart Items') }}</h3>
                         </div>
 
                         <div class="card-body table-responsive p-0">
@@ -95,13 +95,13 @@
                                 <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Product</th>
-                                    <th>SKU</th>
-                                    <th>Variant SKU</th>
-                                    <th>Qty</th>
-                                    <th>Unit Price</th>
-                                    <th>Line Total</th>
-                                    <th>Status</th>
+                                    <th>{{ __('Product') }}</th>
+                                    <th>{{ __('SKU') }}</th>
+                                    <th>{{ __('Variant SKU') }}</th>
+                                    <th>{{ __('Qty') }}</th>
+                                    <th>{{ __('Unit Price') }}</th>
+                                    <th>{{ __('Line Total') }}</th>
+                                    <th>{{ __('Status') }}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -121,7 +121,7 @@
                                             @if($product)
                                                 <a href="{{ route('dashboard.products.show', $product) }}">{{ $productName }}</a>
                                             @else
-                                                <span class="text-muted">Deleted Product</span>
+                                                <span class="text-muted">{{ __('Deleted Product') }}</span>
                                             @endif
                                         </td>
                                         <td>{{ $product->sku ?? '-' }}</td>
@@ -131,15 +131,15 @@
                                         <td>{{ number_format((float) $lineTotal, 2) }}</td>
                                         <td>
                                             @if(($variant && $variant->is_active) || (!$variant && $product && $product->status === 'active'))
-                                                <span class="badge badge-success">Active</span>
+                                                <span class="badge badge-success">{{ __('Active') }}</span>
                                             @else
-                                                <span class="badge badge-secondary">Inactive</span>
+                                                <span class="badge badge-secondary">{{ __('Inactive') }}</span>
                                             @endif
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="text-center py-4">No cart items found.</td>
+                                        <td colspan="8" class="text-center py-4">{{ __('No cart items found.') }}</td>
                                     </tr>
                                 @endforelse
                                 </tbody>
@@ -150,7 +150,7 @@
                     @if($recovery->cart)
                         <div class="mt-2">
                             <a href="{{ route('dashboard.carts.show', $recovery->cart) }}" class="btn btn-info">
-                                Open Cart
+                                {{ __('Open Cart') }}
                             </a>
                         </div>
                     @endif

@@ -6,9 +6,9 @@
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center">
-            <h1>Create Page</h1>
+            <h1>{{ __('Create Page') }}</h1>
             <a href="{{ route('dashboard.pages.index') }}" class="btn btn-default">
-                <i class="fas fa-arrow-left"></i> Back
+                <i class="fas fa-arrow-left"></i> {{ __('Back') }}
             </a>
         </div>
     </section>
@@ -21,7 +21,7 @@
                 @csrf
 
                 @include('dashboard.pages._form', [
-                    'formTitle' => 'Create New Page',
+                    'formTitle' => __('Create New Page'),
                     'submitLabel' => 'Create Page',
                     'page' => null,
                     'translationAr' => null,
