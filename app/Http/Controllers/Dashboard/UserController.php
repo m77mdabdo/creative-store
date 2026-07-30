@@ -170,7 +170,7 @@ class UserController extends Controller
 
         return redirect()
             ->route('dashboard.users.index')
-            ->with('success', 'User created successfully.');
+            ->with('success', __('User created successfully.'));
     }
 
     public function show(User $user): View
@@ -258,13 +258,13 @@ class UserController extends Controller
 
         return redirect()
             ->route('dashboard.users.index')
-            ->with('success', 'User updated successfully.');
+            ->with('success', __('User updated successfully.'));
     }
 
     public function destroy(User $user): RedirectResponse
     {
         if (auth()->id() === $user->id) {
-            return back()->with('error', 'You cannot delete your own account.');
+            return back()->with('error', __('You cannot delete your own account.'));
         }
 
         try {
@@ -278,7 +278,7 @@ class UserController extends Controller
 
         return redirect()
             ->route('dashboard.users.index')
-            ->with('success', 'User moved to trash successfully.');
+            ->with('success', __('User moved to trash successfully.'));
     }
 
     public function trash(UserIndexRequest $request): View
@@ -318,7 +318,7 @@ class UserController extends Controller
 
         return redirect()
             ->route('dashboard.users.trash')
-            ->with('success', 'User restored successfully.');
+            ->with('success', __('User restored successfully.'));
     }
 
     public function forceDelete(int $user): RedirectResponse
@@ -326,7 +326,7 @@ class UserController extends Controller
         $record = User::onlyTrashed()->with(['roles', 'permissions'])->findOrFail($user);
 
         if (auth()->id() === $record->id) {
-            return back()->with('error', 'You cannot permanently delete your own account.');
+            return back()->with('error', __('You cannot permanently delete your own account.'));
         }
 
         try {
@@ -344,7 +344,7 @@ class UserController extends Controller
 
         return redirect()
             ->route('dashboard.users.trash')
-            ->with('success', 'User permanently deleted.');
+            ->with('success', __('User permanently deleted.'));
     }
 
     public function bulkAction(UserBulkActionRequest $request): RedirectResponse
@@ -356,7 +356,7 @@ class UserController extends Controller
             ->get();
 
         if ($users->isEmpty()) {
-            return back()->with('error', 'No users selected.');
+            return back()->with('error', __('No users selected.'));
         }
 
         DB::transaction(function () use ($users, $data) {
@@ -385,7 +385,7 @@ class UserController extends Controller
             }
         });
 
-        return back()->with('success', 'Bulk action applied successfully.');
+        return back()->with('success', __('Bulk action applied successfully.'));
     }
 
     protected function syncRoles(User $user, array $roleIds, User $actor): void

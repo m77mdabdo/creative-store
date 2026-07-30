@@ -122,7 +122,7 @@ class ProductReviewController extends Controller
 
     $this->statsService->clear();
 
-    return back()->with('success', 'Review status updated successfully.');
+    return back()->with('success', __('Review status updated successfully.'));
 }
 
 public function bulkAction(Request $request): RedirectResponse
@@ -145,7 +145,7 @@ public function bulkAction(Request $request): RedirectResponse
 
     $this->statsService->clear();
 
-    return back()->with('success', 'Bulk action applied successfully.');
+    return back()->with('success', __('Bulk action applied successfully.'));
 }
 
 public function destroy(Review $review): RedirectResponse
@@ -154,7 +154,7 @@ public function destroy(Review $review): RedirectResponse
 
     $this->statsService->clear();
 
-    return back()->with('success', 'Review deleted successfully.');
+    return back()->with('success', __('Review deleted successfully.'));
 }
 
     private function canCurrentUser(string $permission): bool

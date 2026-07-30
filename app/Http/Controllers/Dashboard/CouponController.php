@@ -97,7 +97,7 @@ class CouponController extends Controller
 
         return redirect()
             ->route('dashboard.coupons.index')
-            ->with('success', 'Coupon created successfully.');
+            ->with('success', __('Coupon created successfully.'));
     }
 
     public function show(Coupon $coupon): View
@@ -130,7 +130,7 @@ class CouponController extends Controller
 
         return redirect()
             ->route('dashboard.coupons.index')
-            ->with('success', 'Coupon updated successfully.');
+            ->with('success', __('Coupon updated successfully.'));
     }
 
     public function toggleStatus(Coupon $coupon): RedirectResponse
@@ -139,7 +139,7 @@ class CouponController extends Controller
             'is_active' => ! $coupon->is_active,
         ]);
 
-        return back()->with('success', 'Coupon status updated successfully.');
+        return back()->with('success', __('Coupon status updated successfully.'));
     }
 
     public function destroy(Coupon $coupon): RedirectResponse
@@ -148,7 +148,7 @@ class CouponController extends Controller
 
         return redirect()
             ->route('dashboard.coupons.index')
-            ->with('success', 'Coupon moved to trash successfully.');
+            ->with('success', __('Coupon moved to trash successfully.'));
     }
 
     public function restore(int $id): RedirectResponse
@@ -158,7 +158,7 @@ class CouponController extends Controller
 
         return redirect()
             ->route('dashboard.coupons.trash')
-            ->with('success', 'Coupon restored successfully.');
+            ->with('success', __('Coupon restored successfully.'));
     }
 
     public function forceDelete(int $id): RedirectResponse
@@ -168,7 +168,7 @@ class CouponController extends Controller
 
         return redirect()
             ->route('dashboard.coupons.trash')
-            ->with('success', 'Coupon permanently deleted.');
+            ->with('success', __('Coupon permanently deleted.'));
     }
 
     public function bulkAction(Request $request): RedirectResponse
@@ -189,7 +189,7 @@ class CouponController extends Controller
             };
         }
 
-        return back()->with('success', 'Bulk action applied successfully.');
+        return back()->with('success', __('Bulk action applied successfully.'));
     }
 
     private function productsList()

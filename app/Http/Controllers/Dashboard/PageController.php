@@ -134,7 +134,7 @@ class PageController extends Controller
 
         return redirect()
             ->route('dashboard.pages.index')
-            ->with('success', 'Page created successfully.');
+            ->with('success', __('Page created successfully.'));
     }
 
     public function edit(Page $page): View
@@ -206,7 +206,7 @@ class PageController extends Controller
 
         return redirect()
             ->route('dashboard.pages.index')
-            ->with('success', 'Page updated successfully.');
+            ->with('success', __('Page updated successfully.'));
     }
 
     public function destroy(Page $page): RedirectResponse
@@ -228,7 +228,7 @@ class PageController extends Controller
 
         return redirect()
             ->route('dashboard.pages.index')
-            ->with('success', 'Page deleted successfully.');
+            ->with('success', __('Page deleted successfully.'));
     }
 
     public function toggleStatus(Page $page): RedirectResponse
@@ -241,7 +241,7 @@ class PageController extends Controller
 
         return redirect()
             ->route('dashboard.pages.index')
-            ->with('success', 'Page status updated successfully.');
+            ->with('success', __('Page status updated successfully.'));
     }
 
     private function buildTranslationContents(StorePageRequest|UpdatePageRequest $request, array $data, ?Page $page = null): array

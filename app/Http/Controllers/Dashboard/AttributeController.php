@@ -68,7 +68,7 @@ class AttributeController extends Controller
 
         return redirect()
             ->route('dashboard.attributes.index')
-            ->with('success', 'Attribute created successfully.');
+            ->with('success', __('Attribute created successfully.'));
     }
 
     public function show(Attribute $attribute): View
@@ -101,7 +101,7 @@ class AttributeController extends Controller
 
         return redirect()
             ->route('dashboard.attributes.index')
-            ->with('success', 'Attribute updated successfully.');
+            ->with('success', __('Attribute updated successfully.'));
     }
 
     public function toggleStatus(Attribute $attribute): RedirectResponse
@@ -110,20 +110,20 @@ class AttributeController extends Controller
             'is_active' => ! $attribute->is_active,
         ]);
 
-        return back()->with('success', 'Attribute status updated successfully.');
+        return back()->with('success', __('Attribute status updated successfully.'));
     }
 
     public function destroy(Attribute $attribute): RedirectResponse
     {
         if ($attribute->values()->exists() || $attribute->products()->exists()) {
-            return back()->with('error', 'Cannot delete this attribute because it is linked to values or products.');
+            return back()->with('error', __('Cannot delete this attribute because it is linked to values or products.'));
         }
 
         $attribute->delete();
 
         return redirect()
             ->route('dashboard.attributes.index')
-            ->with('success', 'Attribute deleted successfully.');
+            ->with('success', __('Attribute deleted successfully.'));
     }
 
     private function formData(?Attribute $attribute = null): array

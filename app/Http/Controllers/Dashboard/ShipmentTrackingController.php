@@ -34,6 +34,6 @@ class ShipmentTrackingController extends Controller
             'carrier_status' => $request->carrier_status ?? $shipment->carrier_status,
         ]);
 
-        return back()->with('success', 'Tracking added');
+        return back()->with('success', __('Tracking added'));
     }
 }

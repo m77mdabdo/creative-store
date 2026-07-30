@@ -33,7 +33,7 @@ class VariantImageController extends Controller
             }
         });
 
-        return back()->with('success', 'Variant images uploaded successfully.');
+        return back()->with('success', __('Variant images uploaded successfully.'));
     }
 
     public function setPrimary(Product $product, ProductVariant $variant, ProductImage $image): RedirectResponse
@@ -50,7 +50,7 @@ class VariantImageController extends Controller
             $image->update(['is_primary' => true]);
         });
 
-        return back()->with('success', 'Primary variant image updated successfully.');
+        return back()->with('success', __('Primary variant image updated successfully.'));
     }
 
     public function destroy(Product $product, ProductVariant $variant, ProductImage $image): RedirectResponse
@@ -68,6 +68,6 @@ class VariantImageController extends Controller
 
         $image->delete();
 
-        return back()->with('success', 'Variant image deleted successfully.');
+        return back()->with('success', __('Variant image deleted successfully.'));
     }
 }

@@ -68,7 +68,7 @@ class BackupController extends Controller
 
             return redirect()
                 ->route('dashboard.backups.show', $backup)
-                ->with('success', 'Manual backup created successfully.');
+                ->with('success', __('Manual backup created successfully.'));
         } catch (Throwable $e) {
             return redirect()
                 ->route('dashboard.backups.index')
@@ -109,7 +109,7 @@ class BackupController extends Controller
 
         return redirect()
             ->route('dashboard.backups.index')
-            ->with('success', 'Backup history record deleted successfully.');
+            ->with('success', __('Backup history record deleted successfully.'));
     }
 
     public function bulkDelete(BulkDeleteBackupRequest $request): RedirectResponse
@@ -126,7 +126,7 @@ class BackupController extends Controller
 
         return redirect()
             ->route('dashboard.backups.index')
-            ->with('success', 'Selected backup history records deleted successfully.');
+            ->with('success', __('Selected backup history records deleted successfully.'));
     }
 
     protected function applyFilters(Builder $query, array $filters): void

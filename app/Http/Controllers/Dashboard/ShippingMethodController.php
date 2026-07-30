@@ -69,7 +69,7 @@ class ShippingMethodController extends Controller
 
         return redirect()
             ->route('dashboard.shipping-methods.index')
-            ->with('success', 'Shipping method created successfully.');
+            ->with('success', __('Shipping method created successfully.'));
     }
 
     public function edit(ShippingMethod $shippingMethod): View
@@ -88,7 +88,7 @@ class ShippingMethodController extends Controller
 
         return redirect()
             ->route('dashboard.shipping-methods.index')
-            ->with('success', 'Shipping method updated successfully.');
+            ->with('success', __('Shipping method updated successfully.'));
     }
 
     public function toggleStatus(ShippingMethod $shippingMethod): RedirectResponse
@@ -97,23 +97,23 @@ class ShippingMethodController extends Controller
             'is_active' => ! $shippingMethod->is_active,
         ]);
 
-        return back()->with('success', 'Shipping method status updated.');
+        return back()->with('success', __('Shipping method status updated.'));
     }
 
     public function destroy(ShippingMethod $shippingMethod): RedirectResponse
     {
         if ($shippingMethod->rates()->exists()) {
-            return back()->with('error', 'Cannot delete this shipping method because it is linked to shipping rates.');
+            return back()->with('error', __('Cannot delete this shipping method because it is linked to shipping rates.'));
         }
 
         if ($shippingMethod->shipments()->exists()) {
-            return back()->with('error', 'Cannot delete this shipping method because it is linked to shipments.');
+            return back()->with('error', __('Cannot delete this shipping method because it is linked to shipments.'));
         }
 
         $shippingMethod->delete();
 
         return redirect()
             ->route('dashboard.shipping-methods.index')
-            ->with('success', 'Shipping method deleted successfully.');
+            ->with('success', __('Shipping method deleted successfully.'));
     }
 }

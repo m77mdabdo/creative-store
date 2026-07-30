@@ -53,7 +53,7 @@ class ProductVariantController extends Controller
         );
 
         if ($created === 0) {
-            return back()->with('error', 'No new variants were generated.');
+            return back()->with('error', __('No new variants were generated.'));
         }
 
         return back()->with('success', "Generated {$created} new variants successfully.");
@@ -66,7 +66,7 @@ class ProductVariantController extends Controller
         $combinationKey = $this->buildCombinationKey(array_column($payload['values'], 'attribute_value_id'));
 
         if ($product->variants()->where('combination_key', $combinationKey)->exists()) {
-            return back()->withErrors(['values' => 'This variant combination already exists.'])->withInput();
+            return back()->withErrors(['values' => __('This variant combination already exists.')])->withInput();
         }
 
         $allowedAttributeIds = $product->attributes()->pluck('attributes.id')->map(fn($id) => (int) $id)->all();
@@ -74,7 +74,7 @@ class ProductVariantController extends Controller
         foreach ($payload['values'] as $row) {
             if (! in_array((int) $row['attribute_id'], $allowedAttributeIds, true)) {
                 return back()->withErrors([
-                    'values' => 'One or more selected attributes are not linked to this product.'
+                    'values' => __('One or more selected attributes are not linked to this product.')
                 ])->withInput();
             }
         }
@@ -98,7 +98,7 @@ class ProductVariantController extends Controller
             }
         });
 
-        return back()->with('success', 'Variant created successfully.');
+        return back()->with('success', __('Variant created successfully.'));
     }
 
     public function update(UpdateProductVariantRequest $request, Product $product, ProductVariant $variant): RedirectResponse
@@ -114,14 +114,14 @@ class ProductVariantController extends Controller
             ->exists();
 
         if ($exists) {
-            return back()->withErrors(['values' => 'This variant combination already exists.'])->withInput();
+            return back()->withErrors(['values' => __('This variant combination already exists.')])->withInput();
         }
         $allowedAttributeIds = $product->attributes()->pluck('attributes.id')->map(fn($id) => (int) $id)->all();
 
         foreach ($payload['values'] as $row) {
             if (! in_array((int) $row['attribute_id'], $allowedAttributeIds, true)) {
                 return back()->withErrors([
-                    'values' => 'One or more selected attributes are not linked to this product.'
+                    'values' => __('One or more selected attributes are not linked to this product.')
                 ])->withInput();
             }
         }
@@ -144,7 +144,7 @@ class ProductVariantController extends Controller
             }
         });
 
-        return back()->with('success', 'Variant updated successfully.');
+        return back()->with('success', __('Variant updated successfully.'));
     }
 
     public function toggleStatus(Product $product, ProductVariant $variant): RedirectResponse
@@ -156,7 +156,7 @@ class ProductVariantController extends Controller
             'version' => (int) $variant->version + 1,
         ]);
 
-        return back()->with('success', 'Variant status updated successfully.');
+        return back()->with('success', __('Variant status updated successfully.'));
     }
 
     public function destroy(Product $product, ProductVariant $variant): RedirectResponse
@@ -181,7 +181,7 @@ class ProductVariantController extends Controller
             }
         });
 
-        return back()->with('success', 'Variant deleted successfully.');
+        return back()->with('success', __('Variant deleted successfully.'));
     }
 
 private function normalizePayload(Request $request): array

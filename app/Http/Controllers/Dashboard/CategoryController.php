@@ -205,18 +205,18 @@ class CategoryController extends Controller
     public function destroy(Category $category): RedirectResponse
     {
         if ($category->children()->exists()) {
-            return back()->with('error', 'Cannot delete category because it has child categories.');
+            return back()->with('error', __('Cannot delete category because it has child categories.'));
         }
 
         if ($category->products()->exists()) {
-            return back()->with('error', 'Cannot delete category because it has related products.');
+            return back()->with('error', __('Cannot delete category because it has related products.'));
         }
 
         $category->delete();
 
         return redirect()
             ->route('dashboard.categories.index')
-            ->with('success', 'Category moved to trash successfully.');
+            ->with('success', __('Category moved to trash successfully.'));
     }
 
     public function restore(int $id): RedirectResponse
@@ -224,14 +224,14 @@ class CategoryController extends Controller
         $category = Category::onlyTrashed()->findOrFail($id);
 
         if ($category->parent_id && ! $this->parentExistsAndActive($category->parent_id)) {
-            return back()->with('error', 'Cannot restore category because its parent is missing or inactive.');
+            return back()->with('error', __('Cannot restore category because its parent is missing or inactive.'));
         }
 
         $category->restore();
 
         return redirect()
             ->route('dashboard.categories.trash')
-            ->with('success', 'Category restored successfully.');
+            ->with('success', __('Category restored successfully.'));
     }
 
     public function forceDelete(int $id): RedirectResponse
@@ -241,11 +241,11 @@ class CategoryController extends Controller
             ->findOrFail($id);
 
         if ($category->children_count > 0) {
-            return back()->with('error', 'Cannot permanently delete category because it still has child categories.');
+            return back()->with('error', __('Cannot permanently delete category because it still has child categories.'));
         }
 
         if ($category->products_count > 0) {
-            return back()->with('error', 'Cannot permanently delete category because it still has related products.');
+            return back()->with('error', __('Cannot permanently delete category because it still has related products.'));
         }
 
         $category->translations()->delete();
@@ -253,7 +253,7 @@ class CategoryController extends Controller
 
         return redirect()
             ->route('dashboard.categories.trash')
-            ->with('success', 'Category permanently deleted.');
+            ->with('success', __('Category permanently deleted.'));
     }
 
     public function toggleStatus(Category $category): RedirectResponse
@@ -261,7 +261,7 @@ class CategoryController extends Controller
         $newStatus = ! $category->is_active;
 
         if ($newStatus && $category->parent_id && ! $this->parentAllowsActiveChild($category->parent_id)) {
-            return back()->with('error', 'Cannot activate this category while parent category is inactive.');
+            return back()->with('error', __('Cannot activate this category while parent category is inactive.'));
         }
 
         DB::transaction(function () use ($category, $newStatus) {
@@ -274,7 +274,7 @@ class CategoryController extends Controller
             }
         });
 
-        return back()->with('success', 'Category status updated successfully.');
+        return back()->with('success', __('Category status updated successfully.'));
     }
 
     public function bulkAction(Request $request): RedirectResponse
@@ -291,7 +291,7 @@ class CategoryController extends Controller
             ->values();
 
         if ($ids->isEmpty()) {
-            return back()->with('error', 'No categories selected.');
+            return back()->with('error', __('No categories selected.'));
         }
 
         $categories = Category::whereIn('id', $ids)->get();
@@ -303,7 +303,7 @@ class CategoryController extends Controller
                 }
             }
 
-            return back()->with('success', 'Selected categories activated successfully.');
+            return back()->with('success', __('Selected categories activated successfully.'));
         }
 
         if ($request->action === 'deactivate') {
@@ -312,7 +312,7 @@ class CategoryController extends Controller
                 $category->children()->update(['is_active' => false]);
             }
 
-            return back()->with('success', 'Selected categories deactivated successfully.');
+            return back()->with('success', __('Selected categories deactivated successfully.'));
         }
 
         if ($request->action === 'delete') {
@@ -322,10 +322,10 @@ class CategoryController extends Controller
                 }
             }
 
-            return back()->with('success', 'Bulk delete completed.');
+            return back()->with('success', __('Bulk delete completed.'));
         }
 
-        return back()->with('error', 'Invalid bulk action.');
+        return back()->with('error', __('Invalid bulk action.'));
     }
 
     private function extractFilters(Request $request): array

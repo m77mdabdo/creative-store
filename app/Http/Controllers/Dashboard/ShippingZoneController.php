@@ -66,7 +66,7 @@ class ShippingZoneController extends Controller
 
         return redirect()
             ->route('dashboard.shipping-zones.index')
-            ->with('success', 'Shipping zone created successfully.');
+            ->with('success', __('Shipping zone created successfully.'));
     }
 
     public function edit(ShippingZone $shippingZone): View
@@ -83,7 +83,7 @@ class ShippingZoneController extends Controller
 
         return redirect()
             ->route('dashboard.shipping-zones.index')
-            ->with('success', 'Shipping zone updated successfully.');
+            ->with('success', __('Shipping zone updated successfully.'));
     }
 
     public function toggleStatus(ShippingZone $shippingZone): RedirectResponse
@@ -92,19 +92,19 @@ class ShippingZoneController extends Controller
             'is_active' => ! $shippingZone->is_active,
         ]);
 
-        return back()->with('success', 'Shipping zone status updated.');
+        return back()->with('success', __('Shipping zone status updated.'));
     }
 
     public function destroy(ShippingZone $shippingZone): RedirectResponse
     {
         if ($shippingZone->rates()->exists()) {
-            return back()->with('error', 'Cannot delete this shipping zone because it is linked to shipping rates.');
+            return back()->with('error', __('Cannot delete this shipping zone because it is linked to shipping rates.'));
         }
 
         $shippingZone->delete();
 
         return redirect()
             ->route('dashboard.shipping-zones.index')
-            ->with('success', 'Shipping zone deleted successfully.');
+            ->with('success', __('Shipping zone deleted successfully.'));
     }
 }

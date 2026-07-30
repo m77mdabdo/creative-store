@@ -138,7 +138,7 @@ class AddressController extends Controller
 
         return redirect()
             ->route('dashboard.addresses.index')
-            ->with('success', 'Address updated successfully.');
+            ->with('success', __('Address updated successfully.'));
     }
 
     public function toggleDefault(Address $address): RedirectResponse
@@ -162,7 +162,7 @@ class AddressController extends Controller
             }
         });
 
-        return back()->with('success', 'Default address status updated.');
+        return back()->with('success', __('Default address status updated.'));
     }
 
     public function destroy(Address $address): RedirectResponse
@@ -171,6 +171,6 @@ class AddressController extends Controller
 
         return redirect()
             ->route('dashboard.addresses.index')
-            ->with('success', 'Address deleted successfully.');
+            ->with('success', __('Address deleted successfully.'));
     }
 }

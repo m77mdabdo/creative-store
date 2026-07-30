@@ -149,23 +149,23 @@ class OrderController extends Controller
             $oldPaymentStatus === $newPaymentStatus &&
             $oldShippingStatus === $newShippingStatus
         ) {
-            return back()->with('error', 'No status changes were made.');
+            return back()->with('error', __('No status changes were made.'));
         }
 
         if ($oldStatus === 'cancelled' && $newStatus !== 'cancelled') {
-            return back()->with('error', 'Cancelled orders cannot be reopened from this action.');
+            return back()->with('error', __('Cancelled orders cannot be reopened from this action.'));
         }
 
         if ($oldShippingStatus === 'delivered' && $newShippingStatus !== 'delivered') {
-            return back()->with('error', 'Delivered shipment status cannot be rolled back from this action.');
+            return back()->with('error', __('Delivered shipment status cannot be rolled back from this action.'));
         }
 
         if ($newStatus === 'completed' && $newPaymentStatus !== 'paid') {
-            return back()->with('error', 'Order cannot be marked as completed unless payment status is paid.');
+            return back()->with('error', __('Order cannot be marked as completed unless payment status is paid.'));
         }
 
         if ($newShippingStatus === 'delivered' && !in_array($newStatus, ['processing', 'completed'], true)) {
-            return back()->with('error', 'Shipping cannot be marked delivered unless order is processing or completed.');
+            return back()->with('error', __('Shipping cannot be marked delivered unless order is processing or completed.'));
         }
 
         DB::transaction(function () use (
@@ -227,7 +227,7 @@ class OrderController extends Controller
             }
         });
 
-        return back()->with('success', 'Order statuses updated successfully.');
+        return back()->with('success', __('Order statuses updated successfully.'));
     }
 
     public function quickAction(Request $request, Order $order): RedirectResponse
@@ -237,7 +237,7 @@ class OrderController extends Controller
         ]);
 
         if ($order->status === 'cancelled') {
-            return back()->with('error', 'Cancelled orders cannot be updated by quick actions.');
+            return back()->with('error', __('Cancelled orders cannot be updated by quick actions.'));
         }
 
         $action = (string) $request->input('action');
@@ -278,14 +278,14 @@ class OrderController extends Controller
                 shippingStatus: 'delivered',
                 note: 'Quick action: shipment marked as delivered.'
             ),
-            default => back()->with('error', 'Invalid quick action.'),
+            default => back()->with('error', __('Invalid quick action.')),
         };
     }
 
     public function upsertShipment(UpsertShipmentRequest $request, Order $order): RedirectResponse
     {
         if ($order->status === 'cancelled') {
-            return back()->with('error', 'Cannot manage shipment for a cancelled order.');
+            return back()->with('error', __('Cannot manage shipment for a cancelled order.'));
         }
 
         $data = [
@@ -338,7 +338,7 @@ class OrderController extends Controller
             }
         });
 
-        return back()->with('success', 'Shipment information saved successfully.');
+        return back()->with('success', __('Shipment information saved successfully.'));
     }
 
 
@@ -346,7 +346,7 @@ class OrderController extends Controller
 public function cancel(CancelOrderRequest $request, Order $order): RedirectResponse
 {
     if ($order->status === 'cancelled') {
-        return back()->with('error', 'Order is already cancelled.');
+        return back()->with('error', __('Order is already cancelled.'));
     }
 
     $reason = trim((string) $request->input('reason', 'Order cancelled by admin'));
@@ -361,7 +361,7 @@ public function cancel(CancelOrderRequest $request, Order $order): RedirectRespo
             $order = Order::query()->lockForUpdate()->findOrFail($order->id);
 
             if ($order->status === 'cancelled') {
-                throw new RuntimeException('Order is already cancelled.');
+                throw new RuntimeException(__('Order is already cancelled.'));
             }
 
             $order->load([
@@ -466,7 +466,7 @@ public function cancel(CancelOrderRequest $request, Order $order): RedirectRespo
             }
         });
 
-        return back()->with('success', 'Order cancelled successfully and return/refund recorded.');
+        return back()->with('success', __('Order cancelled successfully and return/refund recorded.'));
     } catch (\Throwable $e) {
         report($e);
 
@@ -504,11 +504,11 @@ public function cancel(CancelOrderRequest $request, Order $order): RedirectRespo
         $oldShippingStatus = (string) $order->shipping_status;
 
         if ($oldShippingStatus === 'delivered' && $shippingStatus !== 'delivered') {
-            return back()->with('error', 'Delivered shipment status cannot be rolled back.');
+            return back()->with('error', __('Delivered shipment status cannot be rolled back.'));
         }
 
         if ($status === 'completed' && $paymentStatus !== 'paid') {
-            return back()->with('error', 'Completed orders must be paid.');
+            return back()->with('error', __('Completed orders must be paid.'));
         }
 
         DB::transaction(function () use (
@@ -564,7 +564,7 @@ public function cancel(CancelOrderRequest $request, Order $order): RedirectRespo
             }
         });
 
-        return back()->with('success', 'Quick action applied successfully.');
+        return back()->with('success', __('Quick action applied successfully.'));
     }
 
     private function buildStatusLogNote(string $label, string $note, string $from, string $to): string

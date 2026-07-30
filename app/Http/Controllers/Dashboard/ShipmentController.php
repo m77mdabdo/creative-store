@@ -118,7 +118,7 @@ class ShipmentController extends Controller
 
         return redirect()
             ->route('dashboard.shipments.index')
-            ->with('success', 'Shipment created successfully.');
+            ->with('success', __('Shipment created successfully.'));
     }
 
     public function show(Shipment $shipment): View
@@ -205,7 +205,7 @@ public function update(UpdateShipmentRequest $request, Shipment $shipment): Redi
 
     return redirect()
         ->route('dashboard.shipments.index')
-        ->with('success', 'Shipment updated successfully.');
+        ->with('success', __('Shipment updated successfully.'));
 }
 
     public function toggleStatus(Shipment $shipment): RedirectResponse
@@ -230,7 +230,7 @@ public function update(UpdateShipmentRequest $request, Shipment $shipment): Redi
 
         $shipment->update($data);
 
-        return back()->with('success', 'Shipment status updated.');
+        return back()->with('success', __('Shipment status updated.'));
     }
 
     public function destroy(Shipment $shipment): RedirectResponse
@@ -239,6 +239,6 @@ public function update(UpdateShipmentRequest $request, Shipment $shipment): Redi
 
         return redirect()
             ->route('dashboard.shipments.index')
-            ->with('success', 'Shipment deleted successfully.');
+            ->with('success', __('Shipment deleted successfully.'));
     }
 }

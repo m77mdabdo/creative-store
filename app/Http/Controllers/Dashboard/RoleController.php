@@ -84,7 +84,7 @@ class RoleController extends Controller
 
         return redirect()
             ->route('dashboard.roles.index')
-            ->with('success', 'Role created successfully.');
+            ->with('success', __('Role created successfully.'));
     }
 
     public function show(Role $role): View
@@ -144,7 +144,7 @@ class RoleController extends Controller
 
         return redirect()
             ->route('dashboard.roles.index')
-            ->with('success', 'Role updated successfully.');
+            ->with('success', __('Role updated successfully.'));
     }
 
     public function destroy(DeleteRoleRequest $request, Role $role): RedirectResponse
@@ -159,7 +159,7 @@ class RoleController extends Controller
 
         return redirect()
             ->route('dashboard.roles.index')
-            ->with('success', 'Role deleted successfully.');
+            ->with('success', __('Role deleted successfully.'));
     }
 
     protected function isProtectedSystemRole(string $roleName): bool

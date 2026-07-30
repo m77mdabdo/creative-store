@@ -151,7 +151,7 @@ class BlogController extends Controller
 
         return redirect()
             ->route('dashboard.blogs.index')
-            ->with('success', 'Blog status updated successfully.');
+            ->with('success', __('Blog status updated successfully.'));
     }
 
     public function toggleFeatured(Blog $blog): RedirectResponse
@@ -162,7 +162,7 @@ class BlogController extends Controller
 
         return redirect()
             ->route('dashboard.blogs.index')
-            ->with('success', 'Blog featured flag updated successfully.');
+            ->with('success', __('Blog featured flag updated successfully.'));
     }
 
     public function destroy(DeleteBlogRequest $request, Blog $blog): RedirectResponse
@@ -170,7 +170,7 @@ class BlogController extends Controller
         if ($blog->comments()->exists()) {
             return redirect()
                 ->route('dashboard.blogs.index')
-                ->with('error', 'Cannot delete this blog because it has comments.');
+                ->with('error', __('Cannot delete this blog because it has comments.'));
         }
 
         if ($blog->image && media_disk()->exists($blog->image)) {

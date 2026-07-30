@@ -96,7 +96,7 @@ class ContactMessageController extends Controller
             'is_read' => true,
         ]);
 
-        return back()->with('success', 'Message marked as read successfully.');
+        return back()->with('success', __('Message marked as read successfully.'));
     }
 
     public function markAsUnread(ContactMessage $message): RedirectResponse
@@ -105,7 +105,7 @@ class ContactMessageController extends Controller
             'is_read' => false,
         ]);
 
-        return back()->with('success', 'Message marked as unread successfully.');
+        return back()->with('success', __('Message marked as unread successfully.'));
     }
 
     public function bulkAction(Request $request): RedirectResponse
@@ -121,22 +121,22 @@ class ContactMessageController extends Controller
         if ($data['action'] === 'read') {
             $query->update(['is_read' => true]);
 
-            return back()->with('success', 'Selected messages marked as read.');
+            return back()->with('success', __('Selected messages marked as read.'));
         }
 
         if ($data['action'] === 'unread') {
             $query->update(['is_read' => false]);
 
-            return back()->with('success', 'Selected messages marked as unread.');
+            return back()->with('success', __('Selected messages marked as unread.'));
         }
 
         if ($data['action'] === 'delete') {
             $query->delete();
 
-            return back()->with('success', 'Selected messages deleted successfully.');
+            return back()->with('success', __('Selected messages deleted successfully.'));
         }
 
-        return back()->with('error', 'Invalid action.');
+        return back()->with('error', __('Invalid action.'));
     }
 
     public function destroy(ContactMessage $message): RedirectResponse
@@ -145,6 +145,6 @@ class ContactMessageController extends Controller
 
         return redirect()
             ->route('dashboard.contact-messages.index')
-            ->with('success', 'Message deleted successfully.');
+            ->with('success', __('Message deleted successfully.'));
     }
 }

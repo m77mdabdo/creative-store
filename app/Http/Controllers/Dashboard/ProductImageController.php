@@ -48,7 +48,7 @@ class ProductImageController extends Controller
             }
         });
 
-        return back()->with('success', 'Product images uploaded successfully.');
+        return back()->with('success', __('Product images uploaded successfully.'));
     }
 
     public function setPrimary(Product $product, ProductImage $image): RedirectResponse
@@ -60,7 +60,7 @@ class ProductImageController extends Controller
             $image->update(['is_primary' => true]);
         });
 
-        return back()->with('success', 'Primary image updated successfully.');
+        return back()->with('success', __('Primary image updated successfully.'));
     }
 
     public function sort(Request $request, Product $product, ProductImage $image): RedirectResponse
@@ -75,7 +75,7 @@ class ProductImageController extends Controller
             'sort_order' => (int) $request->sort_order,
         ]);
 
-        return back()->with('success', 'Image order updated successfully.');
+        return back()->with('success', __('Image order updated successfully.'));
     }
 
     public function destroy(Product $product, ProductImage $image): RedirectResponse
@@ -88,6 +88,6 @@ class ProductImageController extends Controller
 
         $image->delete();
 
-        return back()->with('success', 'Image deleted successfully.');
+        return back()->with('success', __('Image deleted successfully.'));
     }
 }

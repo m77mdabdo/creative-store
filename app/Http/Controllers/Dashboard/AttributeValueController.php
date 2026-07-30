@@ -30,7 +30,7 @@ class AttributeValueController extends Controller
 
         return redirect()
             ->route('dashboard.attributes.show', $attribute)
-            ->with('success', 'Attribute value created successfully.');
+            ->with('success', __('Attribute value created successfully.'));
     }
 
     public function edit(Attribute $attribute, AttributeValue $value): View
@@ -54,7 +54,7 @@ class AttributeValueController extends Controller
 
         return redirect()
             ->route('dashboard.attributes.show', $attribute)
-            ->with('success', 'Attribute value updated successfully.');
+            ->with('success', __('Attribute value updated successfully.'));
     }
 
     public function toggleStatus(Attribute $attribute, AttributeValue $value): RedirectResponse
@@ -65,7 +65,7 @@ class AttributeValueController extends Controller
             'is_active' => ! $value->is_active,
         ]);
 
-        return back()->with('success', 'Attribute value status updated successfully.');
+        return back()->with('success', __('Attribute value status updated successfully.'));
     }
 
     public function destroy(Attribute $attribute, AttributeValue $value): RedirectResponse
@@ -73,12 +73,12 @@ class AttributeValueController extends Controller
         abort_unless($value->attribute_id === $attribute->id, 404);
 
         if ($value->variantValues()->exists()) {
-            return back()->with('error', 'Cannot delete this value because it is linked to product variants.');
+            return back()->with('error', __('Cannot delete this value because it is linked to product variants.'));
         }
 
         $value->delete();
 
-        return back()->with('success', 'Attribute value deleted successfully.');
+        return back()->with('success', __('Attribute value deleted successfully.'));
     }
 
     private function formData(?AttributeValue $value = null): array

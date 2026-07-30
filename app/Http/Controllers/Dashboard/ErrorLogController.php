@@ -82,7 +82,7 @@ class ErrorLogController extends Controller
 
         return redirect()
             ->back()
-            ->with('success', 'Error log marked as resolved successfully.');
+            ->with('success', __('Error log marked as resolved successfully.'));
     }
 
     public function bulkResolve(BulkErrorLogActionRequest $request): RedirectResponse
@@ -99,7 +99,7 @@ class ErrorLogController extends Controller
 
         return redirect()
             ->back()
-            ->with('success', 'Selected error logs marked as resolved successfully.');
+            ->with('success', __('Selected error logs marked as resolved successfully.'));
     }
 
     public function bulkDelete(BulkErrorLogActionRequest $request): RedirectResponse
@@ -112,7 +112,7 @@ class ErrorLogController extends Controller
 
         return redirect()
             ->back()
-            ->with('success', 'Selected error logs deleted successfully.');
+            ->with('success', __('Selected error logs deleted successfully.'));
     }
 
     public function clearResolved(): RedirectResponse
@@ -123,7 +123,7 @@ class ErrorLogController extends Controller
 
         return redirect()
             ->route('dashboard.error-logs.index')
-            ->with('success', 'Resolved error logs cleared successfully.');
+            ->with('success', __('Resolved error logs cleared successfully.'));
     }
 
     protected function applyFilters(Builder $query, array $filters): void

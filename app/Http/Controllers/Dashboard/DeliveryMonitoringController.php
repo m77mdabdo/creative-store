@@ -56,6 +56,6 @@ class DeliveryMonitoringController extends Controller
             'delivered_at' => $request->status === 'delivered' && ! $shipment->delivered_at ? now() : $shipment->delivered_at,
         ]);
 
-        return back()->with('success', 'Delivery attempt added successfully.');
+        return back()->with('success', __('Delivery attempt added successfully.'));
     }
 }

@@ -71,6 +71,6 @@ class BlogCommentController extends Controller
 
         return redirect()
             ->route('dashboard.blog-comments.index')
-            ->with('success', 'Comment deleted successfully.');
+            ->with('success', __('Comment deleted successfully.'));
     }
 }

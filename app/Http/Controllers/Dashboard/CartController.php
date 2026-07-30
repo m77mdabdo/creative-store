@@ -220,7 +220,7 @@ class CartController extends Controller
 
         return redirect()
             ->route('dashboard.carts.index')
-            ->with('success', 'Cart deleted successfully.');
+            ->with('success', __('Cart deleted successfully.'));
     }
 
     public function destroyItem(Cart $cart, CartItem $item): RedirectResponse
@@ -231,6 +231,6 @@ class CartController extends Controller
 
         $item->delete();
 
-        return back()->with('success', 'Cart item deleted successfully.');
+        return back()->with('success', __('Cart item deleted successfully.'));
     }
 }

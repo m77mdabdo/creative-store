@@ -199,7 +199,7 @@ class WishlistController extends Controller
 
         return redirect()
             ->route('dashboard.wishlists.index')
-            ->with('success', 'Wishlist deleted successfully.');
+            ->with('success', __('Wishlist deleted successfully.'));
     }
 
     public function destroyItem(Wishlist $wishlist, WishlistItem $item): RedirectResponse
@@ -210,7 +210,7 @@ class WishlistController extends Controller
 
         $item->delete();
 
-        return back()->with('success', 'Wishlist item deleted successfully.');
+        return back()->with('success', __('Wishlist item deleted successfully.'));
     }
 
     public function moveAllToCart(Wishlist $wishlist): RedirectResponse
@@ -218,7 +218,7 @@ class WishlistController extends Controller
         $wishlist->load(['items.product', 'items.variant']);
 
         if (!$wishlist->user_id) {
-            return back()->with('error', 'This wishlist is not linked to a valid user.');
+            return back()->with('error', __('This wishlist is not linked to a valid user.'));
         }
 
         $cart = Cart::firstOrCreate([
@@ -263,7 +263,7 @@ class WishlistController extends Controller
             }
         });
 
-        return back()->with('success', 'All wishlist items moved to cart successfully.');
+        return back()->with('success', __('All wishlist items moved to cart successfully.'));
     }
 
     public function moveItemToCart(Wishlist $wishlist, WishlistItem $item): RedirectResponse
@@ -276,7 +276,7 @@ class WishlistController extends Controller
         $item->loadMissing(['product', 'variant']);
 
         if (!$wishlist->user_id || !$item->product) {
-            return back()->with('error', 'Cannot move this item to cart.');
+            return back()->with('error', __('Cannot move this item to cart.'));
         }
 
         $cart = Cart::firstOrCreate([
@@ -317,6 +317,6 @@ class WishlistController extends Controller
             $item->delete();
         });
 
-        return back()->with('success', 'Wishlist item moved to cart successfully.');
+        return back()->with('success', __('Wishlist item moved to cart successfully.'));
     }
 }

@@ -128,7 +128,7 @@ public function create(): View
 
         return redirect()
             ->route('dashboard.shipping-rates.index')
-            ->with('success', 'Shipping rate created successfully.');
+            ->with('success', __('Shipping rate created successfully.'));
     }
 
     public function edit(ShippingRate $shippingRate): View
@@ -159,7 +159,7 @@ public function create(): View
 
         return redirect()
             ->route('dashboard.shipping-rates.index')
-            ->with('success', 'Shipping rate updated successfully.');
+            ->with('success', __('Shipping rate updated successfully.'));
     }
 
     public function toggleStatus(ShippingRate $shippingRate): RedirectResponse
@@ -168,7 +168,7 @@ public function create(): View
             'is_active' => ! $shippingRate->is_active,
         ]);
 
-        return back()->with('success', 'Shipping rate status updated.');
+        return back()->with('success', __('Shipping rate status updated.'));
     }
 
     public function destroy(ShippingRate $shippingRate): RedirectResponse
@@ -177,6 +177,6 @@ public function create(): View
 
         return redirect()
             ->route('dashboard.shipping-rates.index')
-            ->with('success', 'Shipping rate deleted successfully.');
+            ->with('success', __('Shipping rate deleted successfully.'));
     }
 }

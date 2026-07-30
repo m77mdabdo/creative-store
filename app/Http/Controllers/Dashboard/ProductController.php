@@ -142,7 +142,7 @@ class ProductController extends Controller
 
         return redirect()
             ->route('dashboard.products.index')
-            ->with('success', 'Product created successfully.');
+            ->with('success', __('Product created successfully.'));
     }
 
     public function show(Product $product): View
@@ -219,7 +219,7 @@ class ProductController extends Controller
 
         return redirect()
             ->route('dashboard.products.index')
-            ->with('success', 'Product updated successfully.');
+            ->with('success', __('Product updated successfully.'));
     }
 
     public function destroy(Product $product): RedirectResponse
@@ -228,7 +228,7 @@ class ProductController extends Controller
 
         return redirect()
             ->route('dashboard.products.index')
-            ->with('success', 'Product moved to trash successfully.');
+            ->with('success', __('Product moved to trash successfully.'));
     }
 
     public function restore(int $id): RedirectResponse
@@ -238,7 +238,7 @@ class ProductController extends Controller
 
         return redirect()
             ->route('dashboard.products.trash')
-            ->with('success', 'Product restored successfully.');
+            ->with('success', __('Product restored successfully.'));
     }
 
     public function forceDelete(int $id): RedirectResponse
@@ -269,7 +269,7 @@ class ProductController extends Controller
 
         return redirect()
             ->route('dashboard.products.trash')
-            ->with('success', 'Product permanently deleted.');
+            ->with('success', __('Product permanently deleted.'));
     }
 
     public function toggleStatus(Product $product): RedirectResponse
@@ -281,7 +281,7 @@ class ProductController extends Controller
             'status' => $product->status === 'active' ? 'draft' : 'active',
         ]);
 
-        return back()->with('success', 'Product status updated successfully.');
+        return back()->with('success', __('Product status updated successfully.'));
     }
 
     public function toggleFeatured(Product $product): RedirectResponse
@@ -290,7 +290,7 @@ class ProductController extends Controller
             'is_featured' => ! $product->is_featured,
         ]);
 
-        return back()->with('success', 'Product featured flag updated successfully.');
+        return back()->with('success', __('Product featured flag updated successfully.'));
     }
 
     public function bulkAction(Request $request): RedirectResponse
@@ -313,7 +313,7 @@ class ProductController extends Controller
             };
         }
 
-        return back()->with('success', 'Bulk action applied successfully.');
+        return back()->with('success', __('Bulk action applied successfully.'));
     }
 
     private function categoriesList()
