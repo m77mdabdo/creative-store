@@ -340,6 +340,45 @@ php artisan event:cache
 
 ---
 
+## Go-live checklist
+
+**1. Server `.env`**
+```
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-domain.com
+APP_FALLBACK_LOCALE=en
+MEDIA_DISK=public
+SESSION_SECURE_COOKIE=true
+LOG_LEVEL=warning
+```
+
+**2. Payments (Moyasar dashboard)**
+- Switch `MOYASAR_PUBLISHABLE_KEY` / `MOYASAR_SECRET_KEY` from `pk_test_` / `sk_test_` to the live keys.
+- Set the webhook URL to `https://your-domain.com/webhooks/moyasar` with the same secret as `MOYASAR_WEBHOOK_SECRET`.
+
+**3. Mail**: a domain sender (e.g. `no-reply@your-domain.com`) with SPF and DKIM, so OTP and order emails reach the inbox.
+
+**4. Content**
+- `php artisan db:seed --class=LegalPagesSeeder`, then fill every `[placeholder]` (trade name, CR number, VAT number, support email, store address) from the dashboard → Pages.
+- Fill `STORE_SUPPORT_EMAIL`, `STORE_SUPPORT_PHONE` and the social links in `.env`.
+- Review shipping rates, free-shipping thresholds and store-pickup cities in the dashboard.
+
+**5. Background processes**
+```
+* * * * * cd /path/to/app && php artisan schedule:run >> /dev/null 2>&1
+```
+Run `php artisan queue:work --tries=3 --max-time=3600` under Supervisor.
+
+**6. Deploy**: `bash bin/deploy.sh`
+
+**7. After launch**
+- Place one real low-value order, refund it from the dashboard, and confirm the refund in Moyasar.
+- Submit `https://your-domain.com/sitemap.xml` in Google Search Console.
+- Confirm a database backup appears in Dashboard → Backups after 12 hours.
+
+---
+
 ## Roadmap
 
 - Feature tests for checkout and payment against a MySQL test database
