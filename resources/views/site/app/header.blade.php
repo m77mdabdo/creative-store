@@ -47,7 +47,7 @@
         <div class="top-bar custom-topbar">
             <div class="content-topbar container">
                 <div class="left-top-bar">
-                    {{ __('site.free_shipping_over_100') }}
+                    {{ __('site.free_shipping_over', ['amount' => number_format((int) config('store.free_shipping_threshold', 300))]) }}
                 </div>
 
                 <div class="right-top-bar">
@@ -85,9 +85,9 @@
 
                     <div class="topbar-divider"></div>
 
-                    <a href="#" class="topbar-link currency-link">
-                        USD
-                    </a>
+                    <span class="topbar-link currency-link" title="{{ __('site.prices_in_sar') }}">
+                        {{ __('SAR') }}
+                    </span>
                 </div>
             </div>
         </div>

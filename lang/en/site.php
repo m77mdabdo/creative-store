@@ -525,5 +525,10 @@ return [
     'newsletter_subscribed' => 'You are subscribed to our newsletter.',
     'seo_tagline' => 'Fashion and accessories delivered across Saudi Arabia',
     'seo_description' => 'Shop the latest women’s and men’s fashion, shoes, bags, watches and fragrances at Creative Store, with secure payment and fast delivery across Saudi Arabia.',
+    'free_shipping_over' => 'Free shipping on orders over :amount SAR',
+    'prices_in_sar' => 'All prices are in Saudi riyals',
+    'decrease_quantity' => 'Decrease quantity',
+    'increase_quantity' => 'Increase quantity',
+    'choose_options_first' => 'Choose colour and size to see stock',
 
 ];
