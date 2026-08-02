@@ -23,7 +23,7 @@
 <script src="{{ asset('cozastore/vendor/isotope/isotope.pkgd.min.js') }}"></script>
 <script src="{{ asset('cozastore/vendor/sweetalert/sweetalert.min.js') }}"></script>
 <script src="{{ asset('cozastore/vendor/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
-<script src="{{ asset('cozastore/js/main.js') }}"></script>
+<script src="{{ versioned_asset('cozastore/js/main.js') }}"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -107,88 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    const sizeSelect   = document.getElementById('sizeSelect');
-    const colorSelect  = document.getElementById('colorSelect');
-    const variantInput = document.getElementById('variantInput');
-    const errorEl      = document.getElementById('variantError');
-    const form         = document.getElementById('addToCartForm');
-    const variantMap   = @json($variantMap ?? []);
-
-    if (variantInput) {
-        function buildKey(sizeId, colorId) {
-            if (sizeSelect && colorSelect) {
-                if (!sizeId || !colorId) return '';
-                return sizeId + '-' + colorId;
-            }
-
-            if (sizeSelect) {
-                if (!sizeId) return '';
-                return sizeId;
-            }
-
-            if (colorSelect) {
-                if (!colorId) return '';
-                return colorId;
-            }
-
-            return '';
-        }
-
-        function hideVariantError() {
-            if (!errorEl) return;
-            errorEl.style.display = 'none';
-            errorEl.textContent = '';
-        }
-
-        function showVariantError(message) {
-            if (!errorEl) return;
-            errorEl.style.display = 'block';
-            errorEl.textContent = message;
-        }
-
-        function updateVariant() {
-            const sizeId  = sizeSelect ? sizeSelect.value : '';
-            const colorId = colorSelect ? colorSelect.value : '';
-            const key = buildKey(sizeId, colorId);
-
-            if (!key) {
-                variantInput.value = '';
-                hideVariantError();
-                return;
-            }
-
-            if (Object.prototype.hasOwnProperty.call(variantMap, key)) {
-                variantInput.value = variantMap[key];
-                hideVariantError();
-            } else {
-                variantInput.value = '';
-                showVariantError(i18n.combinationNotAvailable);
-            }
-        }
-
-        if (sizeSelect) {
-            sizeSelect.addEventListener('change', updateVariant);
-        }
-
-        if (colorSelect) {
-            colorSelect.addEventListener('change', updateVariant);
-        }
-
-        if (form) {
-            form.addEventListener('submit', function (e) {
-                const sizeId  = sizeSelect ? sizeSelect.value : '';
-                const colorId = colorSelect ? colorSelect.value : '';
-                const key     = buildKey(sizeId, colorId);
-
-                if ((sizeSelect || colorSelect) && (!key || !variantMap[key])) {
-                    e.preventDefault();
-                    showVariantError(i18n.pleaseSelectRequiredOptions);
-                }
-            });
-        }
-
-        updateVariant();
-    }
+    // Variant selection lives in the product page script.
 });
 </script>
 

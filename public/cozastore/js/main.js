@@ -214,14 +214,25 @@
 
     /*==================================================================
     [ +/- num product ]*/
+    // Quantity stepper: stays between the input's min (default 1) and max (default 20)
+    function clampQty($input, value) {
+        var min = Number($input.attr('min')) || 1;
+        var max = Number($input.attr('max')) || 20;
+        return Math.min(max, Math.max(min, value || min));
+    }
+
     $('.btn-num-product-down').on('click', function(){
-        var numProduct = Number($(this).next().val());
-        if(numProduct > 0) $(this).next().val(numProduct - 1);
+        var $input = $(this).next();
+        $input.val(clampQty($input, Number($input.val()) - 1)).trigger('change');
     });
 
     $('.btn-num-product-up').on('click', function(){
-        var numProduct = Number($(this).prev().val());
-        $(this).prev().val(numProduct + 1);
+        var $input = $(this).prev();
+        $input.val(clampQty($input, Number($input.val()) + 1)).trigger('change');
+    });
+
+    $('.num-product').on('change blur', function(){
+        $(this).val(clampQty($(this), Number($(this).val())));
     });
 
     /*==================================================================

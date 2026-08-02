@@ -119,7 +119,7 @@
 
                         <div class="stext-102 cl3 p-t-5">
                             {{ __('site.stock') }}:
-                            <span id="dynamicStock">{{ $product->variants?->first()?->stock ?? __('site.n_a') }}</span>
+                            <span id="dynamicStock">{{ count($variantMatrix) ? __('site.choose_options_first') : __('site.n_a') }}</span>
                         </div>
 
                         <p class="stext-102 p-t-5" id="stockMessage" style="display:none;color:#e3342f;">
@@ -190,7 +190,7 @@
                             @csrf
 
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
-                            <input type="hidden" name="variant_id" id="variantInput" value="">
+                            <input type="hidden" name="variant_id" id="variantInput" value="" autocomplete="off">
 
                             {{-- Dynamic Option Attributes --}}
                             @foreach($optionAttributes as $attribute)
@@ -243,7 +243,7 @@
                                 <div class="option-field">
                                     <div class="product-qty-row">
                                         <div class="wrap-num-product flex-w m-r-20 m-tb-10">
-                                            <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
+                                            <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m" role="button" tabindex="0" aria-label="{{ __('site.decrease_quantity') }}">
                                                 <i class="fs-16 zmdi zmdi-minus"></i>
                                             </div>
 
@@ -252,9 +252,12 @@
                                                    name="quantity"
                                                    value="1"
                                                    min="1"
+                                                   max="20"
+                                                   inputmode="numeric"
+                                                   aria-label="{{ __('site.quantity') }}"
                                                    id="qtyInput">
 
-                                            <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
+                                            <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m" role="button" tabindex="0" aria-label="{{ __('site.increase_quantity') }}">
                                                 <i class="fs-16 zmdi zmdi-plus"></i>
                                             </div>
                                         </div>
@@ -676,6 +679,7 @@
             couponApplied:            @json(__('site.apply_coupon')),
             outOfStock:               @json(__('site.out_of_stock_variant')),
             na:                       @json(__('site.n_a')),
+            chooseOptions:            @json(__('site.choose_options_first')),
         };
 
         // ----------------------------------------------------------------
@@ -854,7 +858,7 @@
             if (dynamicSku)  dynamicSku.textContent  = baseSku || i18n.na;
             if (skuInfo)      skuInfo.textContent      = baseSku || i18n.na;
             if (footerSku)    footerSku.textContent    = baseSku || i18n.na;
-            if (dynamicStock) dynamicStock.textContent = i18n.na;
+            if (dynamicStock) dynamicStock.textContent = requiredOptionCount() ? i18n.chooseOptions : i18n.na;
             if (variantInput) variantInput.value       = '';
         }
 
@@ -1021,6 +1025,21 @@
         // ----------------------------------------------------------------
         setGallery(defaultGallery);
         resetBaseUI();
+
+        // Pre-select any option group that has a single choice (e.g. one colour).
+        document.querySelectorAll('.variant-option-buttons').forEach(group => {
+            const buttons = group.querySelectorAll('.variant-option-btn');
+            if (buttons.length === 1) setActiveOptionButton(buttons[0]);
+        });
+
+        optionSelects.forEach(select => {
+            const choices = Array.from(select.options).filter(option => option.value !== '');
+            if (choices.length === 1) {
+                select.value = choices[0].value;
+                if (window.jQuery) window.jQuery(select).trigger('change.select2');
+            }
+        });
+
         updateVariantUI();
     });
 </script>

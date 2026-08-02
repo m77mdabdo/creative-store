@@ -81,3 +81,36 @@ textarea {
         padding-right: 15px;
     }
 }
+
+/* Quantity stepper: the theme fixed it at 140px while its buttons and input
+   need more, so the "+" wrapped onto a hidden second line. */
+.wrap-num-product {
+    display: inline-flex !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch;
+    width: auto !important;
+    min-width: 0;
+    direction: ltr; /* minus on the left, plus on the right in both languages */
+}
+
+.wrap-num-product .btn-num-product-down,
+.wrap-num-product .btn-num-product-up {
+    flex: 0 0 auto;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.wrap-num-product .num-product {
+    flex: 0 0 auto;
+    min-width: 52px;
+    text-align: center;
+    -moz-appearance: textfield;
+}
+
+.wrap-num-product .num-product::-webkit-outer-spin-button,
+.wrap-num-product .num-product::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
