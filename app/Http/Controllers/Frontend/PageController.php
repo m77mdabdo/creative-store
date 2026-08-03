@@ -18,7 +18,7 @@ class PageController extends Controller
 
         return view('frontend.pages.show', [
             'page' => $page,
-            'translation' => $page->translation(),
+            'translation' => $page->translate(app()->getLocale(), true),
         ]);
     }
 }
