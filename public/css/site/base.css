@@ -67,12 +67,21 @@ textarea {
     }
 }
 
-/* Never let a wide element push the page sideways on phones */
+/* Page scrolling: the theme gives html and body height:100% and several
+   sheets add overflow-x:hidden to both, which turns <body> into its own
+   scroller (double scroll, blank area under the footer). "clip" hides
+   sideways overflow without creating a scroll container. */
+html,
+body {
+    overflow-x: clip !important;
+}
+
+body {
+    height: auto !important;
+    min-height: 100%;
+}
+
 @media (max-width: 575.98px) {
-    html,
-    body {
-        overflow-x: hidden;
-    }
 
     /* Match the Bootstrap 4 row gutter (-15px) so rows never poke past
        the screen edge; page styles had shrunk this to 12px. */
