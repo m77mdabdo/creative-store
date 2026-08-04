@@ -340,7 +340,6 @@
     }
 
     html[dir="rtl"] .products-toolbar-row {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .products-categories {
@@ -348,11 +347,9 @@
     }
 
     html[dir="rtl"] .products-actions {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .products-search-form {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .products-search-form input {

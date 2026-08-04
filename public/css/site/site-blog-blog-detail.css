@@ -373,7 +373,6 @@
     html[dir="rtl"] .blog-meta-row,
     html[dir="rtl"] .comment-head,
     html[dir="rtl"] .blog-category-link {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .blog-search-input {

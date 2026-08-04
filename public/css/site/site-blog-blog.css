@@ -307,7 +307,6 @@
 
     html[dir="rtl"] .blog-post-meta,
     html[dir="rtl"] .blog-post-meta-left {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .blog-post-date-badge {
@@ -326,7 +325,6 @@
     }
 
     html[dir="rtl"] .blog-category-link {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .blog-pagination nav {

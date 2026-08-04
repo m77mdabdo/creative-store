@@ -76,7 +76,7 @@ html[dir="rtl"] .cs-sidebar {
     border-bottom: 1px solid rgba(255,255,255,.07);
 }
 
-html[dir="rtl"] .cs-brand { flex-direction: row-reverse; }
+html[dir="rtl"] .cs-brand { }
 
 .cs-brand-logo {
     width: 40px; height: 40px;
@@ -115,7 +115,7 @@ html[dir="rtl"] .cs-brand { flex-direction: row-reverse; }
     gap: 11px;
 }
 
-html[dir="rtl"] .cs-user-card { flex-direction: row-reverse; }
+html[dir="rtl"] .cs-user-card { }
 
 .cs-avatar {
     width: 38px; height: 38px;
@@ -165,7 +165,7 @@ html[dir="rtl"] .cs-user-card { flex-direction: row-reverse; }
     margin-bottom: 2px;
 }
 
-html[dir="rtl"] .cs-nav-link { flex-direction: row-reverse; }
+html[dir="rtl"] .cs-nav-link { }
 
 .cs-nav-link i {
     width: 16px;

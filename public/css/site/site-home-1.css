@@ -303,20 +303,16 @@ html[dir="rtl"] .blog-content {
 }
 
 html[dir="rtl"] .blog-meta {
-    flex-direction: row-reverse;
     justify-content: flex-end;
 }
 
 html[dir="rtl"] .home-blog-header {
-    flex-direction: row-reverse;
 }
 
 html[dir="rtl"] .home-blog-view-all {
-    flex-direction: row-reverse;
 }
 
 html[dir="rtl"] .blog-read-more {
-    flex-direction: row-reverse;
 }
 
 html[dir="rtl"] .blog-date-badge {

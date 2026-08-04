@@ -575,11 +575,9 @@
     }
 
     html[dir="rtl"] .option-row {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .product-qty-row {
-        flex-direction: row-reverse;
         justify-content: flex-start;
     }
 
@@ -588,11 +586,9 @@
     html[dir="rtl"] .product-share-group,
     html[dir="rtl"] .review-form-box .flex-w,
     html[dir="rtl"] .offer-card .flex-w {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .product-info-list li {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .product-details-box .select2-container--default .select2-selection--single .select2-selection__rendered {

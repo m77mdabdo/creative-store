@@ -89,5 +89,4 @@
     }
 
     html[dir="rtl"] .success-info-item {
-        flex-direction: row-reverse;
     }

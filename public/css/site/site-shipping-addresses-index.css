@@ -73,7 +73,6 @@
 }
 
 html[dir="rtl"] .address-header {
-    flex-direction: row-reverse;
 }
 
 html[dir="rtl"] .address-card {
@@ -81,5 +80,4 @@ html[dir="rtl"] .address-card {
 }
 
 html[dir="rtl"] .address-actions {
-    flex-direction: row-reverse;
 }

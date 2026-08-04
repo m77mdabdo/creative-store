@@ -357,7 +357,6 @@
        SEARCH MODAL
     ========================= */
     html[dir="rtl"] .wrap-search-header {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .wrap-search-header input {
@@ -389,7 +388,6 @@
     }
 
     html[dir="rtl"] .custom-topbar .content-topbar {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .custom-topbar .left-top-bar {
@@ -397,16 +395,13 @@
     }
 
     html[dir="rtl"] .custom-topbar .right-top-bar {
-        flex-direction: row-reverse;
         justify-content: flex-start;
     }
 
     html[dir="rtl"] .custom-navbar .navbar-inner {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .custom-navbar .site-brand {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .custom-navbar .menu-desktop {
@@ -414,11 +409,9 @@
     }
 
     html[dir="rtl"] .custom-navbar .main-menu {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .custom-navbar .site-actions {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .custom-navbar .user-link {
@@ -432,15 +425,12 @@
     }
 
     html[dir="rtl"] .custom-mobile-header {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .mobile-brand {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .mobile-icons {
-        flex-direction: row-reverse;
     }
 
     /* =========================
@@ -530,37 +520,28 @@
 
 /* الـ navbar الرئيسي */
 html[dir="rtl"] .custom-navbar .navbar-inner {
-    flex-direction: row-reverse !important;
 }
 
 /* اللوجو — يروح اليمين */
 html[dir="rtl"] .custom-navbar .site-brand {
-    flex-direction: row-reverse !important;
-    order: 3 !important;
 }
 
 /* المنيو — يفضل في المنتصف */
 html[dir="rtl"] .custom-navbar .menu-desktop {
-    order: 2 !important;
 }
 
 html[dir="rtl"] .custom-navbar .main-menu {
-    flex-direction: row-reverse !important;
 }
 
 /* الأيقونات — تروح الشمال */
 html[dir="rtl"] .custom-navbar .site-actions {
-    flex-direction: row-reverse !important;
-    order: 1 !important;
 }
 
 /* الـ topbar */
 html[dir="rtl"] .custom-topbar .content-topbar {
-    flex-direction: row-reverse !important;
 }
 
 html[dir="rtl"] .custom-topbar .right-top-bar {
-    flex-direction: row-reverse !important;
 }
 
 /* الـ badge — يجي على الشمال في RTL */
@@ -573,7 +554,6 @@ html[dir="rtl"] .custom-navbar .menu-desktop {
     flex: 1 1 auto !important;
     display: flex !important;
     justify-content: center !important;
-    order: 2 !important;
 }
 
 html[dir="rtl"] .custom-navbar .navbar-inner {

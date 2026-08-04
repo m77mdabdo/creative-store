@@ -46,14 +46,16 @@ html[lang="ar"] { --font-main: 'Cairo', sans-serif; }
 }
 
 /* ─── Grid ─── */
+.acc-grid > * { min-width: 0; }
+
 .acc-grid {
     display: grid;
-    grid-template-columns: 1fr 1.45fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr);
     gap: 20px;
     align-items: start;
 }
 
-@media (max-width: 900px) { .acc-grid { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .acc-grid { grid-template-columns: minmax(0, 1fr); } }
 
 /* ─── Card ─── */
 .acc-card {
@@ -78,7 +80,7 @@ html[lang="ar"] { --font-main: 'Cairo', sans-serif; }
     background: var(--cs-surface-alt);
 }
 
-html[dir="rtl"] .acc-card-head { flex-direction: row-reverse; }
+html[dir="rtl"] .acc-card-head { }
 
 .acc-card-title {
     font-size: 13px;
@@ -91,7 +93,7 @@ html[dir="rtl"] .acc-card-head { flex-direction: row-reverse; }
     letter-spacing: .04em;
 }
 
-html[dir="rtl"] .acc-card-title { flex-direction: row-reverse; }
+html[dir="rtl"] .acc-card-title { }
 
 .acc-card-title-icon {
     width: 26px; height: 26px;
@@ -116,7 +118,7 @@ html[dir="rtl"] .acc-card-title { flex-direction: row-reverse; }
 .info-row:last-child { border-bottom: none; padding-bottom: 0; }
 .info-row:first-child { padding-top: 0; }
 
-html[dir="rtl"] .info-row { flex-direction: row-reverse; }
+html[dir="rtl"] .info-row { }
 
 .info-label {
     font-size: 12px;
@@ -168,7 +170,7 @@ html[dir="rtl"] .info-value { text-align: left; }
     letter-spacing: .04em;
 }
 
-html[dir="rtl"] .orders-link-btn { flex-direction: row-reverse; }
+html[dir="rtl"] .orders-link-btn { }
 
 .orders-link-btn:hover {
     background: var(--accent);
@@ -326,7 +328,7 @@ html[dir="rtl"] .orders-table th { text-align: right; }
     text-transform: uppercase;
 }
 
-html[dir="rtl"] .cs-btn { flex-direction: row-reverse; }
+html[dir="rtl"] .cs-btn { }
 
 .cs-btn-primary {
     background: var(--accent);
@@ -358,7 +360,6 @@ html[dir="rtl"] .cs-btn { flex-direction: row-reverse; }
 }
 
 html[dir="rtl"] .cs-alert {
-    flex-direction: row-reverse;
     border-left: none;
     border-right: 3px solid var(--success);
 }
@@ -385,7 +386,7 @@ html[dir="rtl"] .cs-alert {
     text-decoration: none;
 }
 
-html[dir="rtl"] .cs-forgot-link { flex-direction: row-reverse; }
+html[dir="rtl"] .cs-forgot-link { }
 
 /* Divider */
 .section-divider {

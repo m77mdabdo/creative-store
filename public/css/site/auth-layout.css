@@ -1,0 +1,182 @@
+/*
+ * Shared sign-in / sign-up layout (loaded after the page styles).
+ * Media panel on one side, one centred card with the form on the other.
+ * The old markup nested a second two-column split inside the card, which
+ * squeezed the form and left large empty areas.
+ */
+html, body { min-height: 100%; }
+
+body.hold-transition {
+    margin: 0;
+    background: var(--cs-surface-alt);
+    font-family: var(--cs-font-sans);
+}
+
+html[dir="rtl"] body.hold-transition { font-family: var(--cs-font-arabic); }
+
+.register-wrapper {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-height: 100vh;
+    width: 100%;
+}
+
+.register-video {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.register-video video {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    transform: none !important;
+    object-fit: cover;
+}
+
+.register-form-side {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: var(--cs-space-6) var(--cs-space-5) !important;
+    min-height: 100vh;
+    background: var(--cs-surface-alt);
+}
+
+.register-form-side .register-box {
+    width: 100% !important;
+    max-width: 460px !important;
+    margin: 0 auto !important;
+}
+
+.register-form-side .card {
+    margin: 0;
+    border: 1px solid var(--cs-border) !important;
+    border-top: 0 !important;
+    border-radius: var(--cs-radius-lg) !important;
+    box-shadow: var(--cs-shadow-md) !important;
+    overflow: hidden;
+}
+
+.register-form-side .logo-header {
+    padding: var(--cs-space-6) var(--cs-space-5) var(--cs-space-2) !important;
+    border: 0 !important;
+    background: transparent !important;
+    text-align: center;
+}
+
+.register-form-side .logo-header img {
+    max-height: 72px !important;
+    width: auto;
+}
+
+/* Collapse the inner split into one column: heading on top, then the form */
+.auth-split-card {
+    display: block !important;
+    min-height: 0 !important;
+    border: 0 !important;
+}
+
+.auth-split-left {
+    display: block !important;
+    padding: var(--cs-space-2) var(--cs-space-6) 0 !important;
+    min-height: 0 !important;
+    background: none !important;
+    color: var(--cs-ink) !important;
+    text-align: center !important;
+    border: 0 !important;
+}
+
+.auth-split-left h2 {
+    margin: 0 0 var(--cs-space-2) !important;
+    font-size: var(--cs-text-2xl) !important;
+    color: var(--cs-ink) !important;
+}
+
+.auth-split-left p {
+    margin: 0 0 var(--cs-space-3) !important;
+    font-size: var(--cs-text-sm) !important;
+    color: var(--cs-text-muted) !important;
+}
+
+.auth-split-left .btn {
+    width: auto !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    color: var(--cs-primary) !important;
+    font-size: var(--cs-text-sm);
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.auth-split-right {
+    display: block !important;
+    padding: var(--cs-space-5) var(--cs-space-6) var(--cs-space-6) !important;
+    min-height: 0 !important;
+    border: 0 !important;
+}
+
+.auth-right-inner {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.auth-right-inner .login-box-msg { display: none; }
+
+.auth-right-inner .form-control {
+    height: 48px;
+    border-radius: var(--cs-radius-md) 0 0 var(--cs-radius-md);
+}
+
+html[dir="rtl"] .auth-right-inner .form-control { border-radius: 0 var(--cs-radius-md) var(--cs-radius-md) 0; }
+
+.auth-right-inner .input-group-text {
+    min-width: 48px;
+    justify-content: center;
+    border-radius: 0 var(--cs-radius-md) var(--cs-radius-md) 0;
+}
+
+html[dir="rtl"] .auth-right-inner .input-group-text { border-radius: var(--cs-radius-md) 0 0 var(--cs-radius-md); }
+
+.auth-right-inner .btn-primary,
+.auth-right-inner .btn-google {
+    min-height: 46px;
+    border-radius: var(--cs-radius-pill) !important;
+    font-weight: 600;
+}
+
+.auth-right-inner .lang-switcher {
+    display: flex;
+    justify-content: center;
+    gap: var(--cs-space-4);
+    margin-top: var(--cs-space-4);
+}
+
+.auth-right-inner .mt-3 { text-align: center; }
+
+/* Tablets and phones: form only, full width */
+@media (max-width: 991.98px) {
+    .register-wrapper { grid-template-columns: 1fr; }
+    .register-video { display: none !important; }
+    .register-form-side { min-height: 100vh; padding: var(--cs-space-5) var(--cs-space-4) !important; }
+}
+
+@media (max-width: 575.98px) {
+    .auth-split-left,
+    .auth-split-right { padding-inline: var(--cs-space-4) !important; }
+    .auth-right-inner .row.mb-3 > [class*="col-"] { flex: 0 0 100%; max-width: 100%; }
+    .auth-right-inner .row.mb-3 .btn-primary { margin-top: var(--cs-space-3); }
+}

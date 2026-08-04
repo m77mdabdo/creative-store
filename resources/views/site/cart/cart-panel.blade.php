@@ -126,7 +126,7 @@
 
                                         <td class="column-2">
                                             @if($productSlug)
-                                                <a href="{{ url('/products/' . $productSlug) }}" class="cart-product-name">
+                                                <a href="{{ route('products.show', $productSlug) }}" class="cart-product-name">
                                                     {{ $name }}
                                                 </a>
                                             @else
@@ -163,11 +163,11 @@
                                             </div>
                                         </td>
 
-                                        <td class="column-3">
+                                        <td class="column-3" data-label="{{ __('site.price') }}">
                                             {{ number_format($price, 2) }} {{ $currency }}
                                         </td>
 
-                                        <td class="column-4">
+                                        <td class="column-4" data-label="{{ __('site.quantity') }}">
                                             <form action="{{ route('cart.update') }}" method="POST" class="flex-w flex-m">
                                                 @csrf
                                                 <input type="hidden" name="key" value="{{ $key }}">
@@ -202,11 +202,11 @@
                                             </form>
                                         </td>
 
-                                        <td class="column-5">
+                                        <td class="column-5" data-label="{{ __('site.total') }}">
                                             {{ number_format($price * $qty, 2) }} {{ $currency }}
                                         </td>
 
-                                        <td class="column-6">
+                                        <td class="column-6" data-label="{{ __('site.remove') }}">
                                             <form action="{{ route('cart.remove', ['key' => $key]) }}" method="POST"
                                                 onsubmit="return confirm('{{ __('site.remove_item_confirm') }}')">
                                                 @csrf

@@ -222,7 +222,6 @@ body {
         }
 
         html[dir="rtl"] .auth-split-card {
-            flex-direction: row-reverse;
         }
 
         html[dir="rtl"] .auth-split-left {

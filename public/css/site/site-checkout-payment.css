@@ -197,7 +197,6 @@
     html[dir="rtl"] .order-summary-item,
     html[dir="rtl"] .payment-summary-total-box,
     html[dir="rtl"] .payment-secure-badge {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .order-summary-value {

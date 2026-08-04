@@ -398,7 +398,6 @@
     }
 
     html[dir="rtl"] .products-toolbar-row {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .products-categories {
@@ -406,11 +405,9 @@
     }
 
     html[dir="rtl"] .products-actions {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .products-search-form {
-        flex-direction: row-reverse;
     }
 
     html[dir="rtl"] .products-search-form input {
@@ -427,7 +424,6 @@
     }
 
     html[dir="rtl"] .product-card-body {
-        flex-direction: row-reverse;
     }
 
     @media (max-width: 1199.98px) {
@@ -664,7 +660,6 @@
 
     html[dir="rtl"] .home-blog-meta,
     html[dir="rtl"] .home-blog-meta-left {
-        flex-direction: row-reverse;
     }
 
     @media (max-width: 991.98px) {
@@ -890,11 +885,9 @@
 
 
 html[dir="rtl"] .home-blog-header{
-    flex-direction: row-reverse;
 }
 
 html[dir="rtl"] .blog-meta{
-    flex-direction: row-reverse;
 }
 
 html[dir="rtl"] .blog-date-badge{
@@ -904,7 +897,6 @@ html[dir="rtl"] .blog-date-badge{
 
 html[dir="rtl"] .home-blog-view-all,
 html[dir="rtl"] .blog-read-more{
-    flex-direction: row-reverse;
 }
 
 @media (max-width: 991.98px){
@@ -1978,7 +1970,6 @@ html[dir="rtl"] .products-actions {
 html[dir="rtl"] .home-blog-view-all,
 html[dir="rtl"] .blog-read-more,
 html[dir="rtl"] .products-action-btn {
-    flex-direction: row-reverse;
 }
 
 html[dir="rtl"] .products-pagination nav > div {

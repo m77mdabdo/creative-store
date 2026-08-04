@@ -4,7 +4,6 @@
 
     /* عكس ترتيب العناصر الرئيسية */
     html[dir="rtl"] .custom-navbar .navbar-inner {
-        flex-direction: row-reverse !important;
     }
 
     /* المنيو يبدأ من اليمين بدون عكس الأيتمز */
@@ -15,12 +14,10 @@
 
     /* الأيقونات تتعكس */
     html[dir="rtl"] .custom-navbar .site-actions {
-        flex-direction: row-reverse !important;
     }
 
     /* اللوجو يتعكس */
     html[dir="rtl"] .custom-navbar .site-brand {
-        flex-direction: row-reverse !important;
     }
 
     /* الـ badge على الشمال في RTL */
