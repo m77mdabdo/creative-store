@@ -1,7 +1,14 @@
+/* Slick's RTL mode positions slides correctly only when the slider element
+   itself carries dir="rtl"; inheriting it from <html> is not enough. */
+(function ($) {
+    var rtl = $('html').attr('dir') === 'rtl';
+    $('.slick1, .slick2, .slick3, .slick-blog').attr('dir', rtl ? 'rtl' : 'ltr');
+})(jQuery);
+
 (function ($) {
     "use strict";
 
-    var isRTL = window.isRTL || false;
+    var isRTL = window.isRTL === true || $('html').attr('dir') === 'rtl';
 
     /*==================================================================
     [ Slick1 ]*/
