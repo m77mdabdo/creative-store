@@ -14,6 +14,7 @@
 
     <link rel="stylesheet" href="{{ versioned_asset('css/site/auth-login.css') }}">
     <link rel="stylesheet" href="{{ versioned_asset('css/site/tokens.css') }}">
+    <link rel="stylesheet" href="{{ versioned_asset('css/site/auth-layout.css') }}">
 </head>
 
 <body class="hold-transition">
