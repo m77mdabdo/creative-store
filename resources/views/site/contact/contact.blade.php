@@ -122,8 +122,13 @@
                                 {{ $content['phone_title'] ?? __('site.lets_talk') }}
                             </span>
 
+                            @php($contactPhone = ($content['phone_text'] ?? null) ?: config('store.support_phone'))
                             <p class="stext-115 cl1 size-213 p-t-18">
-                                {{ $content['phone_text'] ?? '+966 5X XXX XXXX' }}
+                                @if ($contactPhone)
+                                    <a href="tel:{{ preg_replace('/[^0-9+]/', '', $contactPhone) }}" dir="ltr">{{ $contactPhone }}</a>
+                                @else
+                                    {{ __('site.contact_form_hint') }}
+                                @endif
                             </p>
                         </div>
                     </div>
@@ -138,8 +143,13 @@
                                 {{ $content['email_title'] ?? __('site.support_email') }}
                             </span>
 
+                            @php($contactEmail = ($content['email_text'] ?? null) ?: config('store.support_email'))
                             <p class="stext-115 cl1 size-213 p-t-18">
-                                {{ $content['email_text'] ?? 'support@example.com' }}
+                                @if ($contactEmail)
+                                    <a href="mailto:{{ $contactEmail }}" dir="ltr">{{ $contactEmail }}</a>
+                                @else
+                                    {{ __('site.contact_form_hint') }}
+                                @endif
                             </p>
                         </div>
                     </div>
