@@ -35,7 +35,6 @@ class HomeController extends Controller
 
         $attributes = $this->catalog->filterAttributes();
         $home = $this->pages->forSlug('home');
-        $about = $this->pages->forSlug('about');
 
         return view('site.home', [
             'categories'         => $this->catalog->topCategories(),
@@ -47,8 +46,8 @@ class HomeController extends Controller
             'blogs'              => $this->latestBlogs(),
             'homePageTitle'      => $home['title'],
             'homeContent'        => $home['content'],
-            'pageTitle'          => $about['title'],
-            'aboutContent'       => $about['content'],
+            'categoryTiles'      => $this->catalog->categoryTiles(8),
+            'featuredProducts'   => $this->catalog->featured(8),
         ]);
     }
 

@@ -101,7 +101,7 @@
 
                                 <a href="{{ route('blog.show', $blog->slug) }}" class="blog-read-more">
                                     {{ __('site.continue_reading') }}
-                                    <i class="fa fa-long-arrow-right"></i>
+                                    <i class="fa fa-long-arrow-{{ app()->getLocale() === 'ar' ? 'left' : 'right' }}" aria-hidden="true"></i>
                                 </a>
                             </div>
 

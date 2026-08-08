@@ -34,6 +34,61 @@ class ProductCatalogService
     }
 
     /**
+     * Top-level categories that have products on sale, each with a product
+     * count and a cover photo taken from one of its products. One query for
+     * all tiles (correlated sub-select), cached for ten minutes.
+     */
+    public function categoryTiles(int $limit = 9): Collection
+    {
+        [$locale, $fallback] = $this->locales();
+
+        $rows = \Illuminate\Support\Facades\Cache::remember("catalog.category-tiles.{$limit}", now()->addMinutes(10), function () use ($limit) {
+            return Category::query()
+                ->select(['id', 'slug', 'sort_order'])
+                ->whereNull('parent_id')
+                ->where('is_active', true)
+                ->withCount(['products as active_products_count' => fn ($q) => $q->where('status', 'active')])
+                ->addSelect(['cover_path' => \App\Models\ProductImage::query()
+                    ->select('product_images.path')
+                    ->join('products', 'products.id', '=', 'product_images.product_id')
+                    ->whereColumn('products.category_id', 'categories.id')
+                    ->where('products.status', 'active')
+                    ->whereNull('products.deleted_at')
+                    ->where('product_images.is_primary', true)
+                    ->orderByDesc('products.is_featured')
+                    ->orderBy('products.id')
+                    ->limit(1)])
+                ->having('active_products_count', '>', 0)
+                ->orderBy('sort_order')
+                ->limit($limit)
+                ->get()
+                ->map(fn (Category $c) => ['id' => $c->id, 'slug' => $c->slug, 'count' => $c->active_products_count, 'cover' => $c->cover_path])
+                ->all();
+        });
+
+        $names = \App\Models\CategoryTranslation::query()
+            ->whereIn('category_id', array_column($rows, 'id'))
+            ->whereIn('locale', [$locale, $fallback])
+            ->get()
+            ->groupBy('category_id');
+
+        return collect($rows)->map(fn (array $row) => (object) [
+            'slug'  => $row['slug'],
+            'count' => $row['count'],
+            'cover' => media_url($row['cover'], asset('cozastore/images/banner-01.jpg')),
+            'name'  => self::translated($names->get($row['id']), 'name', $locale, $fallback, $row['slug']),
+        ]);
+    }
+
+    /**
+     * Featured products first, then the newest, for the home page grid.
+     */
+    public function featured(int $limit = 8): Collection
+    {
+        return $this->listing(['sort' => 'featured'], [], $limit);
+    }
+
+    /**
      * @return array{color: ?Attribute, tag: ?Attribute}
      */
     public function filterAttributes(): array
@@ -72,7 +127,7 @@ class ProductCatalogService
         [$locale, $fallback] = $this->locales();
 
         $query = Product::query()
-            ->select(['id', 'category_id', 'slug', 'base_price', 'currency', 'created_at'])
+            ->select(['id', 'category_id', 'slug', 'base_price', 'currency', 'is_featured', 'created_at'])
             ->where('status', 'active')
             ->with([
                 'translations' => fn ($q) => $q
@@ -140,6 +195,7 @@ class ProductCatalogService
         }
 
         match ($filters['sort'] ?? 'new') {
+            'featured'   => $query->orderByDesc('is_featured')->latest(),
             'price_asc'  => $query->orderBy('base_price')->latest(),
             'price_desc' => $query->orderByDesc('base_price')->latest(),
             default      => $query->latest(),
