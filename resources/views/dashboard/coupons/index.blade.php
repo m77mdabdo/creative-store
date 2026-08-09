@@ -135,8 +135,8 @@
                                                         {{ $coupon->is_active ? __('Active') : __('Inactive') }}
                                                     </span>
                                                 </td>
-                                                <td>{{ $coupon->starts_at?->format('d M Y H:i') ?? '-' }}</td>
-                                                <td>{{ $coupon->expires_at?->format('d M Y H:i') ?? '-' }}</td>
+                                                <td>{{ $coupon->starts_at?->translatedFormat('d M Y H:i') ?? '-' }}</td>
+                                                <td>{{ $coupon->expires_at?->translatedFormat('d M Y H:i') ?? '-' }}</td>
                                                 <td>
                                                     <a href="{{ route('dashboard.coupons.show', $coupon) }}" class="btn btn-sm btn-outline-primary">{{ __('View') }}</a>
 

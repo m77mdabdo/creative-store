@@ -107,7 +107,7 @@
                                             {{ $page->is_active ? __('Active') : __('Inactive') }}
                                         </span>
                                     </td>
-                                    <td>{{ $page->created_at?->format('Y-m-d h:i A') }}</td>
+                                    <td>{{ $page->created_at?->translatedFormat('Y-m-d h:i A') }}</td>
                                     <td class="text-center">
                                         <div class="btn-group">
                                             @if(auth()->user()->hasRole('owner') || auth()->user()->hasRole('admin') || auth()->user()->hasPermission('pages.view'))

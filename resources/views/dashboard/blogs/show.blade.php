@@ -74,7 +74,7 @@
 
                     <div class="mb-3">
                         <strong>{{ __('Published At:') }}</strong>
-                        {{ $blog->published_at?->format('Y-m-d h:i A') ?? '-' }}
+                        {{ $blog->published_at?->translatedFormat('Y-m-d h:i A') ?? '-' }}
                     </div>
 
                     @if($blog->excerpt)

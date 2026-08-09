@@ -24,7 +24,7 @@
                         <tr><th>{{ __('Refund Transaction') }}</th><td>{{ $refund->transaction_id ?? '—' }}</td></tr>
                         <tr><th>{{ __('Amount') }}</th><td>{{ number_format((float) $refund->amount, 2) }}</td></tr>
                         <tr><th>{{ __('Status') }}</th><td><span class="{{ $refund->status_badge_class }}">{{ status_label($refund->status) }}</span></td></tr>
-                        <tr><th>{{ __('Processed At') }}</th><td>{{ $refund->processed_at?->format('Y-m-d h:i A') ?: '—' }}</td></tr>
+                        <tr><th>{{ __('Processed At') }}</th><td>{{ $refund->processed_at?->translatedFormat('Y-m-d h:i A') ?: '—' }}</td></tr>
                     </table>
                 </div>
             </div>

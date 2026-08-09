@@ -170,7 +170,7 @@
                                                 <span class="badge badge-danger">{{ __('Unread') }}</span>
                                             @endif
                                         </td>
-                                        <td>{{ $message->created_at?->format('Y-m-d h:i A') }}</td>
+                                        <td>{{ $message->created_at?->translatedFormat('Y-m-d h:i A') }}</td>
                                         <td class="text-center">
                                             <div class="btn-group">
                                                 <a href="{{ route('dashboard.contact-messages.show', $message) }}" class="btn btn-sm btn-info" title="{{ __('View') }}">

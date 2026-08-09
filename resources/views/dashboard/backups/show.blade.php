@@ -140,7 +140,7 @@
                                         <th>{{ __('Started At') }}</th>
                                         <td>
                                             @if($systemBackup->started_at)
-                                                {{ $systemBackup->started_at->format('Y-m-d h:i:s A') }}
+                                                {{ $systemBackup->started_at->translatedFormat('Y-m-d h:i:s A') }}
                                             @else
                                                 —
                                             @endif
@@ -151,7 +151,7 @@
                                         <th>{{ __('Finished At') }}</th>
                                         <td>
                                             @if($systemBackup->finished_at)
-                                                {{ $systemBackup->finished_at->format('Y-m-d h:i:s A') }}
+                                                {{ $systemBackup->finished_at->translatedFormat('Y-m-d h:i:s A') }}
                                             @else
                                                 <span class="text-muted">{{ __('Not finished') }}</span>
                                             @endif
@@ -180,7 +180,7 @@
                                         <th>{{ __('Created At') }}</th>
                                         <td>
                                             @if($systemBackup->created_at)
-                                                {{ $systemBackup->created_at->format('Y-m-d h:i:s A') }}
+                                                {{ $systemBackup->created_at->translatedFormat('Y-m-d h:i:s A') }}
                                             @else
                                                 —
                                             @endif
@@ -191,7 +191,7 @@
                                         <th>{{ __('Updated At') }}</th>
                                         <td>
                                             @if($systemBackup->updated_at)
-                                                {{ $systemBackup->updated_at->format('Y-m-d h:i:s A') }}
+                                                {{ $systemBackup->updated_at->translatedFormat('Y-m-d h:i:s A') }}
                                             @else
                                                 —
                                             @endif

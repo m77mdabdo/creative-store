@@ -46,7 +46,7 @@
     $paymentStatus = $paymentStatusMap[$order->payment_status] ?? ['label' => status_label($order->payment_status), 'class' => 'secondary'];
     $shippingStatus = $shippingStatusMap[$order->shipping_status] ?? ['label' => status_label($order->shipping_status), 'class' => 'secondary'];
 
-    $placedAt = $order->placed_at?->format('d M Y, h:i A') ?? $order->created_at?->format('d M Y, h:i A') ?? '-';
+    $placedAt = $order->placed_at?->translatedFormat('d M Y, h:i A') ?? $order->created_at?->translatedFormat('d M Y, h:i A') ?? '-';
 @endphp
 
 @section('content')
@@ -219,9 +219,9 @@
                                     <div class="soft-section mt-2">
                                         <div class="font-weight-bold mb-1">{{ __('Estimated Delivery') }}</div>
                                         <div class="text-muted">
-                                            {{ $order->estimated_delivery_from?->format('d M Y') ?: '-' }}
+                                            {{ $order->estimated_delivery_from?->translatedFormat('d M Y') ?: '-' }}
                                             —
-                                            {{ $order->estimated_delivery_to?->format('d M Y') ?: '-' }}
+                                            {{ $order->estimated_delivery_to?->translatedFormat('d M Y') ?: '-' }}
                                         </div>
                                     </div>
                                 @endif
@@ -231,7 +231,7 @@
                                         <div class="font-weight-bold text-danger mb-1">
                                             <i class="fas fa-ban mr-1"></i> {{ __('Cancellation Details') }}
                                         </div>
-                                        <div><strong>{{ __('Cancelled At:') }}</strong> {{ $order->cancelled_at?->format('d M Y, h:i A') }}</div>
+                                        <div><strong>{{ __('Cancelled At:') }}</strong> {{ $order->cancelled_at?->translatedFormat('d M Y, h:i A') }}</div>
                                         <div><strong>{{ __('Reason:') }}</strong> {{ $order->cancellation_reason ?: '-' }}</div>
                                     </div>
                                 @endif
@@ -547,7 +547,7 @@
                                             </div>
                                             <div class="text-muted small mt-1">
                                                 By: {{ $log->changer->name ?? __('System') }}
-                                                • {{ $log->created_at?->format('d M Y, h:i A') }}
+                                                • {{ $log->created_at?->translatedFormat('d M Y, h:i A') }}
                                             </div>
                                             @if($log->note)
                                                 <div class="mt-2">{{ $log->note }}</div>
@@ -652,7 +652,7 @@
                                         </div>
 
                                         <div><strong>{{ __('Transaction ID:') }}</strong> {{ $payment->transaction_id ?: '-' }}</div>
-                                        <div><strong>{{ __('Paid At:') }}</strong> {{ $payment->paid_at?->format('d M Y, h:i A') ?: '-' }}</div>
+                                        <div><strong>{{ __('Paid At:') }}</strong> {{ $payment->paid_at?->translatedFormat('d M Y, h:i A') ?: '-' }}</div>
                                     </div>
                                 @empty
                                     <p class="text-muted mb-0">{{ __('No payments found.') }}</p>
@@ -683,8 +683,8 @@
                                     <div class="data-line"><span>{{ __('Tracking No.') }}</span><strong>{{ $order->shipment->tracking_number ?: '-' }}</strong></div>
                                     <div class="data-line"><span>{{ __('Location') }}</span><strong>{{ $order->shipment->current_location ?: '-' }}</strong></div>
                                     <div class="data-line"><span>{{ __('Carrier Status') }}</span><strong>{{ $order->shipment->carrier_status ?: '-' }}</strong></div>
-                                    <div class="data-line"><span>{{ __('Shipped At') }}</span><strong>{{ $order->shipment->shipped_at?->format('d M Y, h:i A') ?: '-' }}</strong></div>
-                                    <div class="data-line"><span>{{ __('Delivered At') }}</span><strong>{{ $order->shipment->delivered_at?->format('d M Y, h:i A') ?: '-' }}</strong></div>
+                                    <div class="data-line"><span>{{ __('Shipped At') }}</span><strong>{{ $order->shipment->shipped_at?->translatedFormat('d M Y, h:i A') ?: '-' }}</strong></div>
+                                    <div class="data-line"><span>{{ __('Delivered At') }}</span><strong>{{ $order->shipment->delivered_at?->translatedFormat('d M Y, h:i A') ?: '-' }}</strong></div>
 
                                     @if($order->shipment->notes)
                                         <div class="soft-section mt-3">
@@ -720,8 +720,8 @@
                                         </div>
 
                                         <div><strong>{{ __('Reason:') }}</strong> {{ $return->reason ?: '-' }}</div>
-                                        <div><strong>{{ __('Requested At:') }}</strong> {{ $return->requested_at?->format('d M Y, h:i A') ?: '-' }}</div>
-                                        <div><strong>{{ __('Processed At:') }}</strong> {{ $return->processed_at?->format('d M Y, h:i A') ?: '-' }}</div>
+                                        <div><strong>{{ __('Requested At:') }}</strong> {{ $return->requested_at?->translatedFormat('d M Y, h:i A') ?: '-' }}</div>
+                                        <div><strong>{{ __('Processed At:') }}</strong> {{ $return->processed_at?->translatedFormat('d M Y, h:i A') ?: '-' }}</div>
 
                                         @if($return->refunds && $return->refunds->count())
                                             <hr>

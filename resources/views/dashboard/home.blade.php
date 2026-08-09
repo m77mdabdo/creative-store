@@ -9,12 +9,12 @@
                 <div class="d-flex justify-content-between align-items-center flex-wrap">
                     <div>
                         <h1 class="mb-1" style="font-weight:700; color:#1f2937;">{{ __('site.Dashboard Overview') }}</h1>
-                        <p class="text-muted mb-0">{{ __('site.Welcome back') }}, {{ auth()->user()->name }} 👋</p>
+                        <p class="text-muted mb-0">{{ __('site.Welcome back') }}{{ app()->getLocale() === 'ar' ? '،' : ',' }} <bdi>{{ auth()->user()->name }}</bdi> 👋</p>
                     </div>
                     <div class="mt-2 mt-md-0">
                         <span class="badge badge-light p-2 shadow-sm" style="font-size: 13px;">
                             <i class="far fa-calendar-alt mr-1"></i>
-                            {{ now()->format('d M Y') }}
+                            {{ now()->translatedFormat('d M Y') }}
                         </span>
                     </div>
                 </div>

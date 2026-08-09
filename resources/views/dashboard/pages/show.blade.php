@@ -54,7 +54,7 @@
 
                         <div class="col-md-3">
                             <strong>{{ __('Updated At') }}</strong>
-                            <div>{{ $page->updated_at?->format('Y-m-d h:i A') }}</div>
+                            <div>{{ $page->updated_at?->translatedFormat('Y-m-d h:i A') }}</div>
                         </div>
                     </div>
 

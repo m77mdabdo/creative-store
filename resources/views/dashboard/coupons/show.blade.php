@@ -29,8 +29,8 @@
                     <p><strong>{{ __('Per User Limit:') }}</strong> {{ $coupon->per_user_limit ?? '∞' }}</p>
                     <p><strong>{{ __('Used Count:') }}</strong> {{ $coupon->used_count }}</p>
                     <p><strong>{{ __('Status:') }}</strong> {{ $coupon->is_active ? __('Active') : __('Inactive') }}</p>
-                    <p><strong>{{ __('Starts At:') }}</strong> {{ $coupon->starts_at?->format('d M Y H:i') ?? '-' }}</p>
-                    <p><strong>{{ __('Expires At:') }}</strong> {{ $coupon->expires_at?->format('d M Y H:i') ?? '-' }}</p>
+                    <p><strong>{{ __('Starts At:') }}</strong> {{ $coupon->starts_at?->translatedFormat('d M Y H:i') ?? '-' }}</p>
+                    <p><strong>{{ __('Expires At:') }}</strong> {{ $coupon->expires_at?->translatedFormat('d M Y H:i') ?? '-' }}</p>
                 </div>
             </div>
 
@@ -54,7 +54,7 @@
                                     <td>{{ $usage->user->name ?? 'User #' . $usage->user_id }}</td>
                                     <td>{{ $usage->order->order_number ?? 'Order #' . $usage->order_id }}</td>
                                     <td>{{ number_format((float) $usage->discount_amount, 2) }}</td>
-                                    <td>{{ $usage->created_at?->format('d M Y H:i') }}</td>
+                                    <td>{{ $usage->created_at?->translatedFormat('d M Y H:i') }}</td>
                                 </tr>
                             @empty
                                 <tr>

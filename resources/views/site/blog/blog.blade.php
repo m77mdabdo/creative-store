@@ -64,7 +64,7 @@
                                     </span>
 
                                     <span class="stext-109 cl3 txt-center">
-                                        {{ optional($blog->published_at)->format('M Y') ?? $blog->created_at->format('M Y') }}
+                                        {{ optional($blog->published_at)->translatedFormat('M Y') ?? $blog->created_at->translatedFormat('M Y') }}
                                     </span>
                                 </div>
                             </a>

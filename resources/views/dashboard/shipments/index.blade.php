@@ -152,8 +152,8 @@
                                     <td>{{ $shipment->tracking_number ?: '—' }}</td>
                                     <td><span class="{{ $shipment->status_badge_class }}">{{ status_label($shipment->status) }}</span></td>
                                     <td>{{ $shipment->current_location ?: '—' }}</td>
-                                    <td>{{ $shipment->shipped_at?->format('Y-m-d h:i A') ?: '—' }}</td>
-                                    <td>{{ $shipment->delivered_at?->format('Y-m-d h:i A') ?: '—' }}</td>
+                                    <td>{{ $shipment->shipped_at?->translatedFormat('Y-m-d h:i A') ?: '—' }}</td>
+                                    <td>{{ $shipment->delivered_at?->translatedFormat('Y-m-d h:i A') ?: '—' }}</td>
                                     <td>
                                         <a href="{{ route('dashboard.shipments.show', $shipment) }}" class="btn btn-sm btn-outline-info">{{ __('View') }}</a>
                                         <a href="{{ route('dashboard.shipments.edit', $shipment) }}" class="btn btn-sm btn-outline-primary">{{ __('Edit') }}</a>

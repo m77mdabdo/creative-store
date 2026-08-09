@@ -83,12 +83,12 @@
 
                                     <tr>
                                         <th>{{ __('Created At') }}</th>
-                                        <td>{{ optional($auditLog->created_at)->format('Y-m-d h:i A') }}</td>
+                                        <td>{{ optional($auditLog->created_at)->translatedFormat('Y-m-d h:i A') }}</td>
                                     </tr>
 
                                     <tr>
                                         <th>{{ __('Updated At') }}</th>
-                                        <td>{{ optional($auditLog->updated_at)->format('Y-m-d h:i A') }}</td>
+                                        <td>{{ optional($auditLog->updated_at)->translatedFormat('Y-m-d h:i A') }}</td>
                                     </tr>
                                 </tbody>
                             </table>

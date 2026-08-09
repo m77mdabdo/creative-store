@@ -102,11 +102,11 @@
                                 </tr>
                                 <tr>
                                     <th>{{ __('Shipped At') }}</th>
-                                    <td>{{ $shipment->shipped_at?->format('Y-m-d h:i A') ?: '—' }}</td>
+                                    <td>{{ $shipment->shipped_at?->translatedFormat('Y-m-d h:i A') ?: '—' }}</td>
                                 </tr>
                                 <tr>
                                     <th>{{ __('Delivered At') }}</th>
-                                    <td>{{ $shipment->delivered_at?->format('Y-m-d h:i A') ?: '—' }}</td>
+                                    <td>{{ $shipment->delivered_at?->translatedFormat('Y-m-d h:i A') ?: '—' }}</td>
                                 </tr>
                                 <tr>
                                     <th>{{ __('Notes') }}</th>
@@ -379,13 +379,13 @@
                                             <div>
                                                 <small>
                                                     Attempted:
-                                                    {{ $attempt->attempted_at?->format('Y-m-d h:i A') ?: '—' }}
+                                                    {{ $attempt->attempted_at?->translatedFormat('Y-m-d h:i A') ?: '—' }}
                                                 </small>
                                             </div>
                                             <div>
                                                 <small>
                                                     Next:
-                                                    {{ $attempt->next_attempt_at?->format('Y-m-d h:i A') ?: '—' }}
+                                                    {{ $attempt->next_attempt_at?->translatedFormat('Y-m-d h:i A') ?: '—' }}
                                                 </small>
                                             </div>
                                         </div>

@@ -73,7 +73,7 @@
 
                         <div class="col-md-4">
                             <strong>{{ __('Created At') }}</strong>
-                            <div>{{ $message->created_at?->format('Y-m-d h:i A') }}</div>
+                            <div>{{ $message->created_at?->translatedFormat('Y-m-d h:i A') }}</div>
                         </div>
                     </div>
 

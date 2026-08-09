@@ -60,8 +60,8 @@
                             </p>
                             <p><strong>{{ __('Meta Title:') }}</strong> {{ $category->meta_title ?: '-' }}</p>
                             <p><strong>{{ __('Meta Description:') }}</strong> {{ $category->meta_description ?: '-' }}</p>
-                            <p><strong>{{ __('Created At:') }}</strong> {{ $category->created_at?->format('Y-m-d h:i A') }}</p>
-                            <p><strong>{{ __('Updated At:') }}</strong> {{ $category->updated_at?->format('Y-m-d h:i A') }}</p>
+                            <p><strong>{{ __('Created At:') }}</strong> {{ $category->created_at?->translatedFormat('Y-m-d h:i A') }}</p>
+                            <p><strong>{{ __('Updated At:') }}</strong> {{ $category->updated_at?->translatedFormat('Y-m-d h:i A') }}</p>
                         </div>
                     </div>
 

@@ -213,7 +213,7 @@
                                         </span>
                                     </td>
 
-                                    <td>{{ $payment->paid_at?->format('Y-m-d h:i A') ?: '—' }}</td>
+                                    <td>{{ $payment->paid_at?->translatedFormat('Y-m-d h:i A') ?: '—' }}</td>
                                     <td>{{ number_format($payment->refunded_amount, 2) }}</td>
                                     <td>{{ $payment->created_at?->format('Y-m-d') }}</td>
 

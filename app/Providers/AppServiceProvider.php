@@ -5,6 +5,9 @@ namespace App\Providers;
 use App\Services\Dashboard\DashboardBadgeService;
 use App\Support\Dashboard\SidebarBuilder;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Foundation\Events\LocaleUpdated;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
@@ -29,6 +32,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureRateLimiting();
+
+        // Month names, weekdays and AM/PM follow the site language.
+        Carbon::setLocale($this->app->getLocale());
+        Event::listen(LocaleUpdated::class, fn (LocaleUpdated $event) => Carbon::setLocale($event->locale));
 
         View::composer(['dashboard.app.nav', 'dashboard.app.sidebar'], function ($view) {
             $user = Auth::user();

@@ -92,7 +92,7 @@
                                     </td>
                                     <td>{{ $comment->website ?? '-' }}</td>
                                     <td>{{ \Illuminate\Support\Str::limit($comment->comment, 60) }}</td>
-                                    <td>{{ $comment->created_at?->format('Y-m-d h:i A') }}</td>
+                                    <td>{{ $comment->created_at?->translatedFormat('Y-m-d h:i A') }}</td>
                                     <td class="text-center">
                                         <div class="btn-group">
                                             @if(auth()->user()->hasRole('owner') || auth()->user()->hasRole('admin') || auth()->user()->hasPermission('blog-comments.view'))

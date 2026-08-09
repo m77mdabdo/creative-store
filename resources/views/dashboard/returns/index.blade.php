@@ -166,7 +166,7 @@
                                         </span>
                                     </td>
                                     <td>
-                                        {{ $return->requested_at?->format('Y-m-d h:i A') ?: $return->created_at?->format('Y-m-d h:i A') }}
+                                        {{ $return->requested_at?->translatedFormat('Y-m-d h:i A') ?: $return->created_at?->translatedFormat('Y-m-d h:i A') }}
                                     </td>
                                     <td>
                                         <a href="{{ route('dashboard.returns.show', $return) }}" class="btn btn-sm btn-outline-primary">

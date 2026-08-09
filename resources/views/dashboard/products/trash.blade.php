@@ -36,7 +36,7 @@
                                     <td>{{ $product->id }}</td>
                                     <td>{{ $product->name ?? '-' }}</td>
                                     <td>{{ $product->sku }}</td>
-                                    <td>{{ $product->deleted_at?->format('Y-m-d h:i A') }}</td>
+                                    <td>{{ $product->deleted_at?->translatedFormat('Y-m-d h:i A') }}</td>
                                     <td>
                                         @if($canEdit)
                                             <form action="{{ route('dashboard.products.restore', $product->id) }}" method="POST" class="d-inline">

@@ -51,7 +51,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <strong>{{ __('Created At:') }}</strong> {{ $comment->created_at?->format('Y-m-d h:i A') }}
+                        <strong>{{ __('Created At:') }}</strong> {{ $comment->created_at?->translatedFormat('Y-m-d h:i A') }}
                     </div>
 
                     <div class="mb-3">

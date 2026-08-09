@@ -88,15 +88,15 @@
                                     </tr>
                                     <tr>
                                         <th>{{ __('Created At') }}</th>
-                                        <td>{{ optional($errorLog->created_at)->format('Y-m-d h:i A') }}</td>
+                                        <td>{{ optional($errorLog->created_at)->translatedFormat('Y-m-d h:i A') }}</td>
                                     </tr>
                                     <tr>
                                         <th>{{ __('Resolved At') }}</th>
-                                        <td>{{ optional($errorLog->resolved_at)->format('Y-m-d h:i A') ?: '—' }}</td>
+                                        <td>{{ optional($errorLog->resolved_at)->translatedFormat('Y-m-d h:i A') ?: '—' }}</td>
                                     </tr>
                                     <tr>
                                         <th>{{ __('Updated At') }}</th>
-                                        <td>{{ optional($errorLog->updated_at)->format('Y-m-d h:i A') }}</td>
+                                        <td>{{ optional($errorLog->updated_at)->translatedFormat('Y-m-d h:i A') }}</td>
                                     </tr>
                                 </tbody>
                             </table>

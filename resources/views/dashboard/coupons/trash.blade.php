@@ -37,7 +37,7 @@
                                     <td>{{ $coupon->code }}</td>
                                     <td>{{ $coupon->product_id ? __('Product') : __('Cart') }}</td>
                                     <td>{{ status_label($coupon->type) }}</td>
-                                    <td>{{ $coupon->deleted_at?->format('d M Y H:i') }}</td>
+                                    <td>{{ $coupon->deleted_at?->translatedFormat('d M Y H:i') }}</td>
                                     <td>
                                         @if($canEdit)
                                             <form action="{{ route('dashboard.coupons.restore', $coupon->id) }}" method="POST" class="d-inline">

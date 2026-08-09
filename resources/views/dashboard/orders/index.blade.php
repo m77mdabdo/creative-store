@@ -226,7 +226,7 @@
 
                                 <td>{{ $order->shippingMethod?->label ?? '-' }}</td>
 
-                                <td>{{ $order->created_at?->format('d M Y, h:i A') }}</td>
+                                <td>{{ $order->created_at?->translatedFormat('d M Y, h:i A') }}</td>
 
                                 <td>
                                     <div class="d-flex flex-wrap" style="gap:6px;">

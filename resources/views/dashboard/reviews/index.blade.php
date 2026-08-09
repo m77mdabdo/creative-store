@@ -128,7 +128,7 @@
                                             <span class="badge badge-secondary">{{ __('Pending') }}</span>
                                         @endif
                                     </td>
-                                    <td>{{ $review->created_at?->format('Y-m-d h:i A') }}</td>
+                                    <td>{{ $review->created_at?->translatedFormat('Y-m-d h:i A') }}</td>
                                     <td>
                                         <a href="{{ route('dashboard.reviews.show', $review) }}" class="btn btn-sm btn-info">
                                             <i class="fas fa-eye"></i>

@@ -50,7 +50,7 @@
                                     <td>{{ $category->translate('ar')?->name ?? '-' }}</td>
                                     <td>{{ $category->translate('en')?->name ?? '-' }}</td>
                                     <td>{{ $category->slug }}</td>
-                                    <td>{{ $category->deleted_at?->format('Y-m-d h:i A') }}</td>
+                                    <td>{{ $category->deleted_at?->translatedFormat('Y-m-d h:i A') }}</td>
                                     <td>
                                         @if($canEdit)
                                             <form action="{{ route('dashboard.categories.restore', $category->id) }}" method="POST" class="d-inline">

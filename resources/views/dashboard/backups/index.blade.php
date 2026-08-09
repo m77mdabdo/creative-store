@@ -284,7 +284,7 @@
                                             @if($backup->started_at)
                                                 {{ $backup->started_at->format('Y-m-d') }}
                                                 <br>
-                                                <small class="text-muted">{{ $backup->started_at->format('h:i A') }}</small>
+                                                <small class="text-muted">{{ $backup->started_at->translatedFormat('h:i A') }}</small>
                                             @else
                                                 —
                                             @endif
@@ -294,7 +294,7 @@
                                             @if($backup->finished_at)
                                                 {{ $backup->finished_at->format('Y-m-d') }}
                                                 <br>
-                                                <small class="text-muted">{{ $backup->finished_at->format('h:i A') }}</small>
+                                                <small class="text-muted">{{ $backup->finished_at->translatedFormat('h:i A') }}</small>
                                             @else
                                                 <span class="text-muted">{{ __('In Progress / Not finished') }}</span>
                                             @endif

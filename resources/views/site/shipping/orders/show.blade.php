@@ -47,7 +47,7 @@
         && $order->created_at->diffInHours(now()) >= 3
         && $order->status !== 'cancelled';
 
-    $placedAt = $order->created_at?->format('d M Y - h:i A');
+    $placedAt = $order->created_at?->translatedFormat('d M Y - h:i A');
 @endphp
 
 @section('content')

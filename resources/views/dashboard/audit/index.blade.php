@@ -234,7 +234,7 @@
 
                                             <td>
                                                 <div>{{ optional($auditLog->created_at)->format('Y-m-d') }}</div>
-                                                <small class="text-muted">{{ optional($auditLog->created_at)->format('h:i A') }}</small>
+                                                <small class="text-muted">{{ optional($auditLog->created_at)->translatedFormat('h:i A') }}</small>
                                             </td>
 
                                             <td class="text-right">

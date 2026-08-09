@@ -48,7 +48,7 @@
 
     <h1>{{ __('Audit Logs') }}</h1>
     <div class="meta">
-        Generated at: {{ now()->format('Y-m-d h:i A') }}
+        Generated at: {{ now()->translatedFormat('Y-m-d h:i A') }}
     </div>
 
     <table>
@@ -77,7 +77,7 @@
                     <td>{{ class_basename($auditLog->auditable_type) }}</td>
                     <td>{{ $auditLog->auditable_id }}</td>
                     <td>{{ $auditLog->ip_address ?: '—' }}</td>
-                    <td>{{ optional($auditLog->created_at)->format('Y-m-d h:i A') }}</td>
+                    <td>{{ optional($auditLog->created_at)->translatedFormat('Y-m-d h:i A') }}</td>
                 </tr>
             @endforeach
         </tbody>

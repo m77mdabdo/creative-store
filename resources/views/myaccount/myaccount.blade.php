@@ -39,7 +39,7 @@
                     <span class="info-value">
                         <span class="info-badge">
                             <i class="fas fa-check-circle" style="font-size:10px;"></i>
-                            {{ $user->created_at?->format('d M Y') }}
+                            {{ $user->created_at?->translatedFormat('d M Y') }}
                         </span>
                     </span>
                 </div>
@@ -93,7 +93,7 @@
                                                 {{ ucfirst($order->status) }}
                                             </span>
                                         </td>
-                                        <td>{{ $order->created_at?->format('d M Y') }}</td>
+                                        <td>{{ $order->created_at?->translatedFormat('d M Y') }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>

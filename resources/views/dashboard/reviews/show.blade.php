@@ -64,7 +64,7 @@
                         <div class="card-body">
                             <p><strong>{{ __('Name:') }}</strong> {{ $review->user?->name ?? __('Guest / Deleted User') }}</p>
                             <p><strong>{{ __('Email:') }}</strong> {{ $review->user?->email ?? '-' }}</p>
-                            <p><strong>{{ __('Date:') }}</strong> {{ $review->created_at?->format('Y-m-d h:i A') }}</p>
+                            <p><strong>{{ __('Date:') }}</strong> {{ $review->created_at?->translatedFormat('Y-m-d h:i A') }}</p>
                         </div>
                     </div>
 

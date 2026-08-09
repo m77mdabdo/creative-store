@@ -29,8 +29,8 @@
                         <tr><th>{{ __('Tax Refund Amount') }}</th><td>{{ number_format((float) ($returnRequest->tax_refund_amount ?? 0), 2) }}</td></tr>
                         <tr><th>{{ __('Items Refund Total') }}</th><td>{{ number_format($returnRequest->items_refund_total, 2) }}</td></tr>
                         <tr><th>{{ __('Grand Refund Total') }}</th><td>{{ number_format($returnRequest->grand_refund_total, 2) }}</td></tr>
-                        <tr><th>{{ __('Requested At') }}</th><td>{{ $returnRequest->requested_at?->format('Y-m-d h:i A') ?: '—' }}</td></tr>
-                        <tr><th>{{ __('Processed At') }}</th><td>{{ $returnRequest->processed_at?->format('Y-m-d h:i A') ?: '—' }}</td></tr>
+                        <tr><th>{{ __('Requested At') }}</th><td>{{ $returnRequest->requested_at?->translatedFormat('Y-m-d h:i A') ?: '—' }}</td></tr>
+                        <tr><th>{{ __('Processed At') }}</th><td>{{ $returnRequest->processed_at?->translatedFormat('Y-m-d h:i A') ?: '—' }}</td></tr>
                     </table>
                 </div>
             </div>
@@ -93,7 +93,7 @@
                                     <td>{{ $refund->transaction_id ?? '—' }}</td>
                                     <td>{{ number_format((float) $refund->amount, 2) }}</td>
                                     <td><span class="{{ $refund->status_badge_class }}">{{ status_label($refund->status) }}</span></td>
-                                    <td>{{ $refund->processed_at?->format('Y-m-d h:i A') ?: '—' }}</td>
+                                    <td>{{ $refund->processed_at?->translatedFormat('Y-m-d h:i A') ?: '—' }}</td>
                                 </tr>
                             @empty
                                 <tr>

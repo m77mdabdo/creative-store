@@ -120,7 +120,7 @@
                                     <td>{{ $refund->transaction_id ?? '—' }}</td>
                                     <td>{{ number_format((float) $refund->amount, 2) }}</td>
                                     <td><span class="{{ $refund->status_badge_class }}">{{ status_label($refund->status) }}</span></td>
-                                    <td>{{ $refund->processed_at?->format('Y-m-d h:i A') ?: '—' }}</td>
+                                    <td>{{ $refund->processed_at?->translatedFormat('Y-m-d h:i A') ?: '—' }}</td>
                                     <td>
                                         <a href="{{ route('dashboard.refunds.show', $refund) }}" class="btn btn-sm btn-outline-primary">{{ __('View') }}</a>
                                     </td>

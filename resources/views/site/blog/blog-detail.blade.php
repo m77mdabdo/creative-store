@@ -49,7 +49,7 @@
                                 </span>
 
                                 <span class="stext-109 cl3 txt-center">
-                                    {{ optional($blog->published_at)->format('M Y') ?? $blog->created_at->format('M Y') }}
+                                    {{ optional($blog->published_at)->translatedFormat('M Y') ?? $blog->created_at->translatedFormat('M Y') }}
                                 </span>
                             </div>
                         </div>
@@ -64,7 +64,7 @@
                                 <span class="blog-meta-sep">|</span>
 
                                 <span>
-                                    {{ optional($blog->published_at)->format('d M, Y') ?? $blog->created_at->format('d M, Y') }}
+                                    {{ optional($blog->published_at)->translatedFormat('d M, Y') ?? $blog->created_at->translatedFormat('d M, Y') }}
                                 </span>
 
                                 <span class="blog-meta-sep">|</span>
@@ -118,7 +118,7 @@
                                                 </a>
 
                                                 <span class="related-post-date">
-                                                    {{ optional($item->published_at)->format('d M Y') ?? $item->created_at->format('d M Y') }}
+                                                    {{ optional($item->published_at)->translatedFormat('d M Y') ?? $item->created_at->translatedFormat('d M Y') }}
                                                 </span>
                                             </div>
                                         </div>
@@ -137,7 +137,7 @@
                             <div class="comment-card">
                                 <div class="comment-head">
                                     <strong class="comment-author">{{ $comment->name }}</strong>
-                                    <span class="comment-date">{{ $comment->created_at->format('d M Y') }}</span>
+                                    <span class="comment-date">{{ $comment->created_at->translatedFormat('d M Y') }}</span>
                                 </div>
 
                                 <p class="comment-text">

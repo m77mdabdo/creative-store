@@ -74,15 +74,15 @@
                                 </tr>
                                 <tr>
                                     <th>{{ __('Paid At') }}</th>
-                                    <td>{{ $payment->paid_at?->format('Y-m-d h:i A') ?: '—' }}</td>
+                                    <td>{{ $payment->paid_at?->translatedFormat('Y-m-d h:i A') ?: '—' }}</td>
                                 </tr>
                                 <tr>
                                     <th>{{ __('Created At') }}</th>
-                                    <td>{{ $payment->created_at?->format('Y-m-d h:i A') }}</td>
+                                    <td>{{ $payment->created_at?->translatedFormat('Y-m-d h:i A') }}</td>
                                 </tr>
                                 <tr>
                                     <th>{{ __('Updated At') }}</th>
-                                    <td>{{ $payment->updated_at?->format('Y-m-d h:i A') }}</td>
+                                    <td>{{ $payment->updated_at?->translatedFormat('Y-m-d h:i A') }}</td>
                                 </tr>
                             </table>
                         </div>

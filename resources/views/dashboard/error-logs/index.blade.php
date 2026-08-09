@@ -279,7 +279,7 @@
 
                                                 <td>
                                                     <div>{{ optional($errorLog->created_at)->format('Y-m-d') }}</div>
-                                                    <small class="text-muted">{{ optional($errorLog->created_at)->format('h:i A') }}</small>
+                                                    <small class="text-muted">{{ optional($errorLog->created_at)->translatedFormat('h:i A') }}</small>
                                                 </td>
 
                                                 <td class="text-right">

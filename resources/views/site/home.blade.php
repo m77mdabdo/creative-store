@@ -460,7 +460,7 @@
                                         class="blog-card-image" loading="lazy" decoding="async">
 
                                     <span class="blog-date-badge">
-                                        {{ optional($blog->published_at ?? $blog->created_at)->format('d M') }}
+                                        {{ optional($blog->published_at ?? $blog->created_at)->translatedFormat('d M') }}
                                     </span>
                                 </a>
 
