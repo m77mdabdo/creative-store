@@ -9,7 +9,7 @@
 
             <div class="card-body">
                 <div class="form-group mb-3">
-                    <label for="name">{{ __('Name') }} <span class="text-danger">*</span></label>
+                    <label for="name">{{ __('Name (EN)') }} <span class="text-danger">*</span></label>
                     <input
                         type="text"
                         name="name"
@@ -20,6 +20,22 @@
                         required
                     >
                     @error('name')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="name_ar">{{ __('Name (AR)') }}</label>
+                    <input
+                        type="text"
+                        name="name_ar"
+                        id="name_ar"
+                        dir="rtl"
+                        class="form-control @error('name_ar') is-invalid @enderror"
+                        value="{{ old('name_ar', $category->name_ar ?? '') }}"
+                        maxlength="150"
+                    >
+                    @error('name_ar')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>

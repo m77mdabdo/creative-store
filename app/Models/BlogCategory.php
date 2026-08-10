@@ -13,8 +13,19 @@ class BlogCategory extends Model
     use Auditable ;
     protected $fillable = [
         'name',
+        'name_ar',
         'slug',
     ];
+
+    /**
+     * Name in the current language, falling back to the English name.
+     */
+    protected function localizedName(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::get(
+            fn () => app()->getLocale() === 'ar' && filled($this->name_ar) ? $this->name_ar : $this->name
+        );
+    }
 
     protected static function booted(): void
     {

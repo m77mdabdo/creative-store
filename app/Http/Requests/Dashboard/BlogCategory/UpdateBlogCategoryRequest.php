@@ -38,6 +38,7 @@ class UpdateBlogCategoryRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'min:2', 'max:150'],
+            'name_ar' => ['nullable', 'string', 'max:150'],
             'slug' => [
                 'required',
                 'string',
