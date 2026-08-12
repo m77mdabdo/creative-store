@@ -70,7 +70,7 @@
                                 <span class="blog-meta-sep">|</span>
 
                                 <span>
-                                    {{ $blog->category->name ?? __('site.uncategorized') }}
+                                    {{ $blog->category?->localized_name ?? __('site.uncategorized') }}
                                 </span>
 
                                 <span class="blog-meta-sep">|</span>
@@ -259,7 +259,7 @@
                                 <li class="blog-category-item">
                                     <a href="{{ route('blog.index', ['category' => $category->slug]) }}"
                                        class="blog-category-link">
-                                        <span>{{ $category->name }}</span>
+                                        <span>{{ $category->localized_name }}</span>
                                         <span>({{ $category->blogs_count }})</span>
                                     </a>
                                 </li>

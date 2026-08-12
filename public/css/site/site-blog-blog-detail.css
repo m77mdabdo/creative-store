@@ -420,3 +420,89 @@
             border-radius: 16px;
         }
     }
+
+/* Article body: headings, lists, quotes, tables and product links */
+.blog-content-box {
+    font-size: var(--cs-text-base);
+    line-height: 1.9;
+    color: var(--cs-text);
+    overflow-wrap: anywhere;
+}
+
+.blog-content-box h2 {
+    margin: var(--cs-space-7) 0 var(--cs-space-3);
+    font-size: var(--cs-text-xl);
+    font-weight: 700;
+    line-height: var(--cs-leading-tight);
+    color: var(--cs-ink);
+}
+
+.blog-content-box h3 {
+    margin: var(--cs-space-5) 0 var(--cs-space-2);
+    font-size: var(--cs-text-lg);
+    color: var(--cs-ink);
+}
+
+.blog-content-box p { margin: 0 0 var(--cs-space-4); }
+
+.blog-content-box ul,
+.blog-content-box ol {
+    margin: 0 0 var(--cs-space-5);
+    padding-inline-start: var(--cs-space-5);
+}
+
+.blog-content-box ul { list-style: disc; }
+.blog-content-box ol { list-style: decimal; }
+
+.blog-content-box li { margin-bottom: var(--cs-space-2); }
+.blog-content-box li::marker { color: var(--cs-primary); }
+
+.blog-content-box a {
+    color: var(--cs-primary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+}
+
+.blog-content-box a:hover { color: var(--cs-primary-hover); }
+
+.blog-content-box blockquote {
+    margin: var(--cs-space-6) 0;
+    padding: var(--cs-space-4) var(--cs-space-5);
+    border-inline-start: 4px solid var(--cs-primary);
+    border-radius: var(--cs-radius-md);
+    background: var(--cs-surface-alt);
+    color: var(--cs-ink);
+    font-weight: 500;
+}
+
+.blog-content-box table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 var(--cs-space-5);
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: var(--cs-text-sm);
+}
+
+.blog-content-box th,
+.blog-content-box td {
+    padding: var(--cs-space-3) var(--cs-space-4);
+    border-bottom: 1px solid var(--cs-border);
+    text-align: start;
+    white-space: nowrap;
+}
+
+.blog-content-box th {
+    background: var(--cs-surface-alt);
+    color: var(--cs-ink);
+    font-weight: 700;
+}
+
+@media (max-width: 575.98px) {
+    .blog-content-box h2 { font-size: var(--cs-text-lg); margin-top: var(--cs-space-6); }
+    .blog-content-box th,
+    .blog-content-box td { padding: var(--cs-space-2) var(--cs-space-3); }
+}

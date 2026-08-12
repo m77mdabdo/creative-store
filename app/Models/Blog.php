@@ -114,6 +114,21 @@ class Blog extends Model
             ->where(fn (Builder $q) => $q->whereNull('published_at')->orWhere('published_at', '<=', now()));
     }
 
+    /**
+     * Posts readable in the current language: the Arabic site lists only
+     * posts that have an Arabic title and body, so no English text shows up
+     * under an Arabic layout.
+     */
+    public function scopeForCurrentLocale(Builder $query): Builder
+    {
+        if (app()->getLocale() !== 'ar') {
+            return $query;
+        }
+
+        return $query->whereNotNull('title_ar')->where('title_ar', '!=', '')
+            ->whereNotNull('content_ar')->where('content_ar', '!=', '');
+    }
+
     public function scopeSearch(Builder $query, ?string $term): Builder
     {
         $term = trim((string) $term);
@@ -124,6 +139,7 @@ class Blog extends Model
 
         return $query->where(function (Builder $q) use ($term) {
             $q->where('title', 'like', "%{$term}%")
+                ->orWhere('title_ar', 'like', "%{$term}%")
                 ->orWhere('slug', 'like', "%{$term}%")
                 ->orWhere('author', 'like', "%{$term}%")
                 ->orWhere('excerpt', 'like', "%{$term}%");

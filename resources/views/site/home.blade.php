@@ -467,7 +467,7 @@
                                 <div class="blog-content">
                                     <div class="blog-meta">
                                         @if(!empty($blog->category?->name))
-                                            <span>{{ $blog->category->name }}</span>
+                                            <span>{{ $blog->category->localized_name }}</span>
                                         @endif
 
                                         <span>{{ optional($blog->published_at ?? $blog->created_at)->format('Y') }}</span>

@@ -57,6 +57,7 @@ class HomeController extends Controller
 
         return Blog::query()
             ->published()
+            ->forCurrentLocale()
             ->with('category')
             ->orderByDesc('published_at')
             ->latest('id')

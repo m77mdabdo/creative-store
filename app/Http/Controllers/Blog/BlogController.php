@@ -14,7 +14,7 @@ class BlogController extends Controller
         $fallbackBlogImage = asset('cozastore/images/blog-04.jpg');
 
         $query = Blog::with('category')
-            ->where('status', true);
+            ->published()->forCurrentLocale();
 
         if ($request->filled('search')) {
             $search = trim($request->search);
@@ -43,10 +43,10 @@ class BlogController extends Controller
         });
 
         $categories = BlogCategory::withCount(['blogs' => function ($q) {
-            $q->where('status', true);
-        }])->get();
+            $q->published()->forCurrentLocale();
+        }])->get()->filter(fn (BlogCategory $category) => $category->blogs_count > 0)->values();
 
-        $featuredBlogs = Blog::where('status', true)
+        $featuredBlogs = Blog::query()->published()->forCurrentLocale()
             ->where('is_featured', true)
             ->latest('published_at')
             ->take(3)
@@ -56,7 +56,7 @@ class BlogController extends Controller
                 return $blog;
             });
 
-        $latestBlogs = Blog::where('status', true)
+        $latestBlogs = Blog::query()->published()->forCurrentLocale()
             ->latest('published_at')
             ->take(5)
             ->get()
@@ -78,7 +78,7 @@ class BlogController extends Controller
         $fallbackBlogImage = asset('cozastore/images/blog-04.jpg');
 
         $blog = Blog::with('category', 'comments')
-            ->where('status', true)
+            ->published()
             ->where('slug', $slug)
             ->firstOrFail();
 
@@ -87,10 +87,10 @@ class BlogController extends Controller
         $blog->image_url = $this->resolveBlogImageUrl($blog->image, $fallbackBlogImage);
 
         $categories = BlogCategory::withCount(['blogs' => function ($q) {
-            $q->where('status', true);
-        }])->get();
+            $q->published()->forCurrentLocale();
+        }])->get()->filter(fn (BlogCategory $category) => $category->blogs_count > 0)->values();
 
-        $latestBlogs = Blog::where('status', true)
+        $latestBlogs = Blog::query()->published()->forCurrentLocale()
             ->where('id', '!=', $blog->id)
             ->latest('published_at')
             ->take(5)
@@ -101,7 +101,7 @@ class BlogController extends Controller
             });
 
         $relatedBlogs = Blog::with('category')
-            ->where('status', true)
+            ->published()->forCurrentLocale()
             ->where('id', '!=', $blog->id)
             ->where('blog_category_id', $blog->blog_category_id)
             ->latest('published_at')
