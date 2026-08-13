@@ -31,8 +31,8 @@
     /* Typography */
     --cs-font-sans: "Poppins", "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --cs-font-arabic: "Cairo", "Tajawal", system-ui, sans-serif;
-    --cs-text-xs: 0.75rem;
-    --cs-text-sm: 0.875rem;
+    --cs-text-xs: max(12px, 0.75rem);
+    --cs-text-sm: max(13px, 0.875rem);
     --cs-text-base: 1rem;
     --cs-text-lg: 1.125rem;
     --cs-text-xl: 1.375rem;

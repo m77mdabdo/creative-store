@@ -253,7 +253,7 @@
     .custom-navbar .icon-header-noti::after,
     .custom-mobile-header .icon-header-noti::after {
         font-family: inherit;
-        font-size: 10px;
+        font-size: 12px;
         line-height: 18px;
         min-width: 18px;
         height: 18px;

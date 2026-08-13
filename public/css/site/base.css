@@ -123,3 +123,84 @@ body {
     -webkit-appearance: none;
     margin: 0;
 }
+
+/* Tables follow the reading direction (the theme's Bootstrap forces left). */
+table th { text-align: start; }
+
+/* ───── Phones: comfortable sizes ─────────────────────────────────── */
+@media (max-width: 767.98px) {
+    /* iOS zooms the page when a field under 16px is focused */
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    /* Buttons and text links that act like buttons: at least 40px tall */
+    .btn,
+    .btn-sm,
+    .main-action-btn,
+    .orders-link-btn,
+    .home-section-link,
+    .blog-read-more,
+    .home-blog-view-all {
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-sm { padding-inline: 14px; }
+
+    /* Link rows (footer, breadcrumbs, auth links) get vertical breathing room */
+    .footer-bottom-links a,
+    .bread-crumb a,
+    .policy-breadcrumb a,
+    .auth-right-inner .mt-3 a,
+    .cs-forgot-link {
+        display: inline-block;
+        padding-block: 10px;
+    }
+
+    .auth-split-left .btn { min-height: 0; padding-block: 10px !important; }
+
+    /* Slider arrows and dots */
+    .arrow-slick2,
+    .arrow-slick1,
+    .arrow-slick3 {
+        width: 40px !important;
+        height: 40px !important;
+        display: grid !important;
+        place-items: center;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, .92);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+        z-index: 2;
+    }
+
+    .slick-dots li button {
+        width: 28px !important;
+        height: 28px !important;
+        padding: 9px !important;
+        background-clip: content-box !important;
+    }
+
+    /* Remove-from-cart icon */
+    .remove-cart-btn {
+        min-width: 40px;
+        min-height: 40px;
+        display: inline-grid;
+        place-items: center;
+    }
+
+    /* Hero page titles scale with the screen */
+    .bg-img1 h2,
+    .blog-hero-title {
+        font-size: clamp(26px, 7.5vw, 34px) !important;
+        line-height: 1.25 !important;
+    }
+
+    .home-newsletter-form input { height: 48px !important; }
+}

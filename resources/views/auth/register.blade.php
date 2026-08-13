@@ -17,6 +17,7 @@
 
     <link rel="stylesheet" href="{{ versioned_asset('css/site/auth-register.css') }}">
     <link rel="stylesheet" href="{{ versioned_asset('css/site/tokens.css') }}">
+    <link rel="stylesheet" href="{{ versioned_asset('css/site/base.css') }}">
     <link rel="stylesheet" href="{{ versioned_asset('css/site/auth-layout.css') }}">
 </head>
 

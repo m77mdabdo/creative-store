@@ -98,7 +98,7 @@ html[dir="rtl"] .cs-brand { }
     letter-spacing: -.2px;
 }
 .cs-brand-sub {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-white-muted);
     margin-top: 1px;
 }
@@ -129,7 +129,7 @@ html[dir="rtl"] .cs-user-card { }
 
 .cs-user-info { min-width: 0; flex: 1; }
 .cs-user-name  { font-size: 13px; font-weight: 600; color: var(--text-white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cs-user-email { font-size: 11px; color: var(--text-white-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+.cs-user-email { font-size: 12px; color: var(--text-white-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
 
 /* Nav */
 .cs-nav {
@@ -141,7 +141,7 @@ html[dir="rtl"] .cs-user-card { }
 .cs-nav::-webkit-scrollbar { display: none; }
 
 .cs-nav-label {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: .12em;
     text-transform: uppercase;
@@ -290,3 +290,7 @@ html[dir="rtl"] .cs-mobile-toggle { left: auto; right: 14px; }
 @media (max-width: 480px) {
     .cs-main { padding: 64px 12px 20px; }
 }
+
+/* AdminLTE (loaded for this area) forces body{text-align:left}; follow the
+   page direction instead so Arabic headings, labels and cards align right. */
+body { text-align: start; }

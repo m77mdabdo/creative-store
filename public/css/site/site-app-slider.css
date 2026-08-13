@@ -127,7 +127,7 @@
 
 .slick1 .slick-dots li button:before {
     color: var(--cs-surface);
-    font-size: 10px;
+    font-size: 12px;
     opacity: 0.6;
 }
 

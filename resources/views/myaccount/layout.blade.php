@@ -11,8 +11,10 @@
     <link rel="stylesheet" href="{{ asset('AdminLTE/plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('AdminLTE/dist/css/adminlte.min.css') }}">
 
-<link rel="stylesheet" href="{{ versioned_asset('css/site/myaccount-layout.css') }}">
     <link rel="stylesheet" href="{{ versioned_asset('css/site/tokens.css') }}">
+    <link rel="stylesheet" href="{{ versioned_asset('css/site/base.css') }}">
+    <link rel="stylesheet" href="{{ versioned_asset('css/site/myaccount-layout.css') }}">
+    @stack('styles')
 </head>
 <body>
 

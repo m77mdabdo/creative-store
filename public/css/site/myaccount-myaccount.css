@@ -100,7 +100,7 @@ html[dir="rtl"] .acc-card-title { }
     border-radius: var(--radius-sm);
     background: var(--accent-soft);
     display: flex; align-items: center; justify-content: center;
-    font-size: 11px;
+    font-size: 12px;
     color: var(--accent);
 }
 
@@ -132,7 +132,7 @@ html[dir="rtl"] .info-row { }
     font-size: 13px;
     color: var(--text-secondary);
     font-weight: 500;
-    text-align: right;
+    text-align: end;
     word-break: break-all;
 }
 
@@ -142,7 +142,7 @@ html[dir="rtl"] .info-value { text-align: left; }
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     padding: 3px 10px;
     border-radius: 20px;
@@ -156,7 +156,7 @@ html[dir="rtl"] .info-value { text-align: left; }
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--accent);
     text-decoration: none;
@@ -203,13 +203,13 @@ html[dir="rtl"] .orders-link-btn { }
 }
 
 .orders-table th {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .07em;
     color: var(--text-muted);
     padding: 0 10px 12px;
-    text-align: left;
+    text-align: start;
     white-space: nowrap;
     border-bottom: 2px solid var(--border);
 }
@@ -245,7 +245,7 @@ html[dir="rtl"] .orders-table th { text-align: right; }
     gap: 4px;
     padding: 3px 8px;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
 }
 
