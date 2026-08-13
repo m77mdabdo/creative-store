@@ -86,3 +86,55 @@ html[lang="ar"] .table th {
         min-width: 0;
     }
 }
+
+/* Readable minimums: AdminLTE's text-sm shrinks badges to 10.5px and
+   <small> to 11.2px. */
+.badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: .35em .6em;
+    line-height: 1.2;
+}
+
+small,
+.small,
+.text-sm small {
+    font-size: 12px;
+}
+
+html[lang="ar"] .badge { letter-spacing: 0; }
+
+/* Phones: comfortable touch targets and no iOS zoom on inputs */
+@media (max-width: 767.98px) {
+    input.form-control,
+    select.form-control,
+    textarea.form-control,
+    .custom-select,
+    .select2-container .select2-selection {
+        font-size: 16px !important;
+    }
+
+    .form-control,
+    .custom-select {
+        min-height: 42px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .content-wrapper .btn,
+    .content-wrapper .btn-sm,
+    .content-wrapper .btn-xs {
+        min-height: 38px;
+        min-width: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+    }
+
+    .small-box .small-box-footer {
+        padding-block: 10px;
+    }
+
+    .content-header h1 { font-size: 1.4rem; }
+}
