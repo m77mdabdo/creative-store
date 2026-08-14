@@ -138,3 +138,25 @@ html[lang="ar"] .badge { letter-spacing: 0; }
 
     .content-header h1 { font-size: 1.4rem; }
 }
+
+/* Any table that was not wrapped in .table-responsive scrolls inside its
+   card instead of pushing the whole page sideways. */
+.card-body,
+.card > .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Long file paths, tokens and URLs wrap instead of overflowing */
+.text-wrap,
+td code,
+.card-body code {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+code { font-size: 12px; }
+
+/* Decorative stat-card icons stay inside their card (in RTL the large icon
+   overflowed the page edge on phones). */
+.small-box { overflow: hidden; }

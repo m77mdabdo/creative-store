@@ -204,3 +204,17 @@ table th { text-align: start; }
 
     .home-newsletter-form input { height: 48px !important; }
 }
+
+/* Status badges: readable minimum */
+.badge { font-size: 12px; }
+
+@media (max-width: 575.98px) {
+    /* Product names in cards and the cart: a full-height tap area */
+    .block2-txt-child1 > a,
+    .cart-product-name,
+    .home-product-name,
+    .footer-logo a {
+        display: inline-block;
+        padding-block: 8px;
+    }
+}

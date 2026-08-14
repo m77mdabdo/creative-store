@@ -110,7 +110,7 @@ html[dir="rtl"] body.hold-transition { font-family: var(--cs-font-arabic); }
 
 .auth-split-left .btn {
     width: auto !important;
-    padding: 0 !important;
+    padding: 10px 4px !important;
     border: 0 !important;
     background: none !important;
     box-shadow: none !important;
