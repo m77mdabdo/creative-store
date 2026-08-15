@@ -218,3 +218,106 @@ table th { text-align: start; }
         padding-block: 8px;
     }
 }
+
+/* Mobile header: the theme pins the logo with position:absolute;left:0,
+   which ignores the reading direction. Let it flow from the start edge. */
+.custom-mobile-header .logo-mobile {
+    display: flex !important;
+    align-items: center;
+    height: auto !important;
+    padding: 0 !important;
+}
+
+.custom-mobile-header .logo-mobile img,
+.custom-mobile-header .mobile-brand img {
+    position: static !important;
+    width: 48px !important;
+    height: 48px !important;
+    max-width: none !important;
+    margin: 0 !important;
+}
+
+.custom-mobile-header .mobile-icons { margin-inline: 8px 12px; }
+
+.custom-mobile-header .btn-show-menu-mobile {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Category filter chips (home "product overview" and the shop page): one
+   horizontally scrolling row on phones instead of a tall vertical list. */
+@media (max-width: 767.98px) {
+    .products-categories {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        flex-direction: row !important;
+        gap: 8px;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 6px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x proximity;
+    }
+
+    .products-categories::-webkit-scrollbar { display: none; }
+
+    .products-categories a {
+        flex: 0 0 auto;
+        width: auto !important;
+        white-space: nowrap;
+        scroll-snap-align: start;
+        min-height: 40px;
+        display: inline-flex !important;
+        align-items: center;
+        padding: 0 16px !important;
+        border: 1px solid var(--cs-border);
+        border-radius: 999px;
+        margin: 0 !important;
+    }
+
+    .products-toolbar-row {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 12px;
+    }
+}
+
+/* ============================================================
+   Final sizing and contrast (wins over the theme's 100vh slides)
+   ============================================================ */
+.section-slide .item-slick1.slick-slide, .section-slide .item-slick1 {
+    height: min(86vh, 780px) !important;
+    min-height: 520px !important;
+}
+
+/* Darker towards the text so white copy is readable on light photos */
+.section-slide .item-slick1::before {
+    background: linear-gradient(
+        to bottom,
+        rgba(var(--cs-shadow-rgb), .10) 0%,
+        rgba(var(--cs-shadow-rgb), .25) 40%,
+        rgba(var(--cs-shadow-rgb), .72) 100%
+    ) !important;
+}
+
+@media (max-width: 991.98px) {
+    .section-slide .item-slick1.slick-slide, .section-slide .item-slick1 { height: 70vh !important; min-height: 460px !important; }
+}
+
+@media (max-width: 575.98px) {
+    .section-slide .item-slick1.slick-slide, .section-slide .item-slick1 {
+        height: 64vh !important;
+        min-height: 420px !important;
+        background-position: 70% top !important;
+    }
+
+    .section-slide .item-slick1 .container { padding-bottom: 56px; }
+    .section-slide .item-slick1 h2 { font-size: 32px !important; margin-bottom: 20px !important; }
+    .section-slide .item-slick1 .ltext-101 { font-size: 14px; letter-spacing: 1px; }
+}
+
+html[lang="ar"] .item-slick1 .ltext-101 { letter-spacing: 0; }
