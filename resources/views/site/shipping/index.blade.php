@@ -1,5 +1,7 @@
 @extends('site.app.layout')
 
+@section('title', __('site.checkout'))
+
 @section('content')
 <section class="bg0 p-t-75 p-b-85">
     <div class="container">
@@ -125,7 +127,7 @@
                         </div>
                         <div class="size-209">
                             <span class="mtext-110 cl2" id="summary-subtotal">
-                                {{ number_format($totals['subtotal'], 2) }} SAR
+                                {{ money($totals['subtotal']) }}
                             </span>
                         </div>
                     </div>
@@ -136,7 +138,7 @@
                         </div>
                         <div class="size-209">
                             <span class="mtext-110 cl2" id="summary-discount">
-                                {{ number_format($totals['discount'], 2) }} SAR
+                                {{ money($totals['discount']) }}
                             </span>
                         </div>
                     </div>
@@ -147,7 +149,7 @@
                         </div>
                         <div class="size-209">
                             <span class="mtext-110 cl2" id="summary-shipping">
-                                {{ number_format($totals['shipping_fee'], 2) }} SAR
+                                {{ money($totals['shipping_fee']) }}
                             </span>
                         </div>
                     </div>
@@ -158,7 +160,7 @@
                         </div>
                         <div class="size-209">
                             <span class="mtext-110 cl2" id="summary-tax">
-                                {{ number_format($totals['tax_total'], 2) }} SAR
+                                {{ money($totals['tax_total']) }}
                             </span>
                         </div>
                     </div>
@@ -169,7 +171,7 @@
                         </div>
                         <div class="size-209">
                             <span class="mtext-110 cl2" id="summary-total">
-                                {{ number_format($totals['total'], 2) }} SAR
+                                {{ money($totals['total']) }}
                             </span>
                         </div>
                     </div>
@@ -233,9 +235,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('place-order-shipping-method-id').value = input.dataset.methodId;
                 document.getElementById('place-order-shipping-rate-id').value = input.dataset.rateId;
 
-                document.getElementById('summary-shipping').innerText = response.totals.shipping_fee.toFixed(2) + ' SAR';
-                document.getElementById('summary-tax').innerText = response.totals.tax_total.toFixed(2) + ' SAR';
-                document.getElementById('summary-total').innerText = response.totals.total.toFixed(2) + ' SAR';
+                document.getElementById('summary-shipping').innerText = response.totals.shipping_fee.toFixed(2) + ' ' + @json(__('SAR'));
+                document.getElementById('summary-tax').innerText = response.totals.tax_total.toFixed(2) + ' ' + @json(__('SAR'));
+                document.getElementById('summary-total').innerText = response.totals.total.toFixed(2) + ' ' + @json(__('SAR'));
             }
         })
         .finally(() => {
@@ -278,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                    data-rate-id="${option.rate_id}"
                                    ${index === 0 ? 'checked' : ''}>
                             <strong>${option.method_name}</strong><br>
-                            ${option.price.toFixed(2)} SAR<br>
+                            ${option.price.toFixed(2)} ${@json(__('SAR'))}<br>
                             ${option.eta_min_days ?? 0} - ${option.eta_max_days ?? 0} {{ __('site.days') }}
                         </label>
                     </div>

@@ -26,7 +26,7 @@
                             <span class="home-product-category">{{ $product->category_name }}</span>
                         @endif
                         <a href="{{ route('products.show', $product->slug) }}" class="home-product-name">{{ $product->display_name }}</a>
-                        <span class="home-product-price">{{ number_format((float) $product->base_price, 2) }} {{ __('SAR') }}</span>
+                        <span class="home-product-price">{{ money($product->base_price) }}</span>
                     </div>
                 </article>
             @endforeach

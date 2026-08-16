@@ -1,5 +1,7 @@
 @extends('site.app.layout')
 
+@section('title', __('site.payment'))
+
 @section('content')
 
 <link rel="stylesheet" href="{{ versioned_asset('css/site/site-checkout-payment.css') }}">
@@ -78,7 +80,7 @@
                             <div class="payment-summary-total-box">
                                 <span class="label">{{ __('site.total_amount') }}</span>
                                 <span class="value">
-                                    {{ number_format($order->total, 2) }} {{ $order->currency }}
+                                    {{ money($order->total, $order->currency) }}
                                 </span>
                             </div>
                         </div>

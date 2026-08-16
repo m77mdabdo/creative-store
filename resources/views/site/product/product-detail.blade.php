@@ -108,7 +108,7 @@
                     </h1>
 
                     <span class="product-price" id="productPrice">
-                        {{ number_format((float) $productPrice, 2) }} {{ $productCurrency }}
+                        {{ money((float) $productPrice, $productCurrency) }}
                     </span>
 
                     <div class="product-meta">
@@ -292,7 +292,7 @@
                                     <div class="stext-115 cl6">
                                         {{ __('site.original_price') }}:
                                         <span id="priceOriginal">
-                                            {{ number_format((float) $productPrice, 2) }} {{ $productCurrency }}
+                                            {{ money((float) $productPrice, $productCurrency) }}
                                         </span>
                                     </div>
 
@@ -405,7 +405,7 @@
                                     </li>
                                     <li>
                                         <span class="product-info-label">{{ __('site.currency_label') }}</span>
-                                        <span class="product-info-value">{{ $productCurrency ?: '-' }}</span>
+                                        <span class="product-info-value">{{ strtoupper((string) $productCurrency) === 'SAR' ? __('SAR') : ($productCurrency ?: '-') }}</span>
                                     </li>
                                     <li>
                                         <span class="product-info-label">{{ __('site.sku') }}</span>
@@ -598,7 +598,7 @@
                                     </a>
 
                                     <span class="stext-105 cl3">
-                                        {{ $rp['price'] }} {{ $rp['currency'] }}
+                                        {{ money($rp['price'], $rp['currency']) }}
                                     </span>
                                 </div>
 
@@ -664,7 +664,7 @@
         // PHP data
         // ----------------------------------------------------------------
         const productId     = {{ (int) $product->id }};
-        const currency      = @json($productCurrency);
+        const currency      = @json(strtoupper((string) $productCurrency) === 'SAR' || ! $productCurrency ? __('SAR') : $productCurrency);
         const basePrice     = {{ (float) $productPrice }};
         const baseSku       = @json($productSku);
         const variantMatrix = @json($variantMatrix);

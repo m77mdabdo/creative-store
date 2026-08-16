@@ -57,7 +57,7 @@
                             </span>
 
                             <span class="header-cart-item-info">
-                                {{ $qty }} × {{ number_format($price, 2) }} {{ $currency }}
+                                {{ $qty }} × {{ money($price, $currency) }}
                             </span>
 
                             <div class="p-t-6">
@@ -84,7 +84,7 @@
 
             <div class="w-full">
                 <div class="header-cart-total w-full p-tb-40">
-                    {{ __('site.total') }}: {{ number_format($cartTotal, 2) }} {{ $currency }}
+                    {{ __('site.total') }}: {{ money($cartTotal, $currency) }}
                 </div>
 
                 <div class="header-cart-buttons flex-w w-full">

@@ -548,5 +548,7 @@ return [
     'newsletter_text' => 'Subscribe for new arrivals and exclusive offers.',
     'contact_form_hint' => 'Use the form and we will reply shortly',
     'from_our_blog' => 'Latest from the blog',
+    'payment' => 'Payment',
+    'order_placed' => 'Order received',
 
 ];

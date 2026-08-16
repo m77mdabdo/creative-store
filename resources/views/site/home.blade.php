@@ -380,7 +380,7 @@
                                         </a>
 
                                         <span class="product-card-price">
-                                            {{ number_format((float) $product->base_price, 2) }} {{ $product->currency }}
+                                            {{ money((float) $product->base_price, $product->currency) }}
                                         </span>
                                     </div>
 

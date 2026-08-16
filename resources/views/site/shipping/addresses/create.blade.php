@@ -1,5 +1,7 @@
 @extends('site.app.layout')
 
+@section('title', __('site.add_new_address'))
+
 @section('content')
 
 <link rel="stylesheet" href="{{ versioned_asset('css/site/site-shipping-addresses-create.css') }}">

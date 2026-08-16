@@ -165,7 +165,7 @@
                         : asset('cozastore/images/product-01.jpg');
                 @endphp
 
-                <div class="col-sm-6 col-md-4 col-lg-3 p-b-30">
+                <div class="col-6 col-md-4 col-lg-3 p-b-30">
                     <div class="product-card">
                         <div class="product-card-media">
                             <img src="{{ $img }}" alt="{{ $product->name }}" loading="lazy" decoding="async">
@@ -183,7 +183,7 @@
                             </a>
 
                             <span class="product-card-price">
-                                {{ number_format($product->base_price, 2) }} {{ $product->currency }}
+                                {{ money($product->base_price, $product->currency) }}
                             </span>
                         </div>
                     </div>

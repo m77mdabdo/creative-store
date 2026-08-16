@@ -1,5 +1,7 @@
 @extends('site.app.layout')
 
+@section('title', __('site.order_details') . ' #' . $order->order_number)
+
 @php
     $currency = $order->currency ?? 'SAR';
 
@@ -70,7 +72,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-8 m-b-15">
                     <div class="page-mini-title">{{ __('site.order_details') }}</div>
-                    <h2 class="page-main-title">{{ __('site.order_number') }} #{{ $order->order_number }}</h2>
+                    <h2 class="page-main-title">{{ __('site.order_number') }} <bdi dir="ltr">#{{ $order->order_number }}</bdi></h2>
                     <div class="page-sub-title">
                         {{ __('site.placed_on') }} {{ $placedAt ?? '-' }}
                     </div>
@@ -97,21 +99,21 @@
                             <tbody>
                                 <tr>
                                     <th>{{ __('site.order_number') }}</th>
-                                    <td>{{ $order->order_number }}</td>
+                                    <td><bdi dir="ltr">{{ $order->order_number }}</bdi></td>
                                     <th>{{ __('site.placed_at') }}</th>
                                     <td>{{ $placedAt ?? '-' }}</td>
                                 </tr>
                                 <tr>
                                     <th>{{ __('site.payment_method') }}</th>
-                                    <td>{{ strtoupper($order->payment_method ?? '-') }}</td>
+                                    <td>{{ status_label($order->payment_method) }}</td>
                                     <th>{{ __('site.shipping_method') }}</th>
                                     <td>{{ $order->shippingMethod?->label ?? '-' }}</td>
                                 </tr>
                                 <tr>
                                     <th>{{ __('site.currency') }}</th>
-                                    <td>{{ $currency }}</td>
+                                    <td>{{ strtoupper($currency) === 'SAR' ? __('SAR') : $currency }}</td>
                                     <th>{{ __('site.total') }}</th>
-                                    <td>{{ number_format((float) $order->total, 2) }} {{ $currency }}</td>
+                                    <td>{{ money((float) $order->total, $currency) }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -206,11 +208,11 @@
                                     @endphp
 
                                     <tr>
-                                        <td class="product-title-cell">
+                                        <td class="product-title-cell" data-label="{{ __('site.product') }}">
                                             <strong>{{ $item->product_name_snapshot }}</strong>
                                         </td>
 
-                                        <td class="product-detail-cell">
+                                        <td class="product-detail-cell" data-label="{{ __('site.details') }}">
                                             @if($item->sku_snapshot)
                                                 <div><span>{{ __('site.sku') }}:</span> {{ $item->sku_snapshot }}</div>
                                             @endif
@@ -233,9 +235,9 @@
                                             @endif
                                         </td>
 
-                                        <td class="text-center">{{ (int) $item->quantity }}</td>
-                                        <td class="text-right">{{ number_format((float) $item->unit_price, 2) }} {{ $currency }}</td>
-                                        <td class="text-right total-strong">{{ number_format((float) $item->line_total, 2) }} {{ $currency }}</td>
+                                        <td class="text-center" data-label="{{ __('site.quantity') }}">{{ (int) $item->quantity }}</td>
+                                        <td class="text-right" data-label="{{ __('site.unit_price') }}">{{ money((float) $item->unit_price, $currency) }}</td>
+                                        <td class="text-right total-strong" data-label="{{ __('site.line_total') }}">{{ money((float) $item->line_total, $currency) }}</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -379,29 +381,29 @@
                                 <tbody>
                                     <tr>
                                         <th>{{ __('site.subtotal') }}</th>
-                                        <td class="text-right">{{ number_format((float) $order->subtotal, 2) }} {{ $currency }}</td>
+                                        <td class="text-right">{{ money((float) $order->subtotal, $currency) }}</td>
                                     </tr>
 
                                     @if((float) $order->discount > 0)
                                         <tr class="danger-row-soft">
                                             <th>{{ __('site.discount') }}</th>
-                                            <td class="text-right">- {{ number_format((float) $order->discount, 2) }} {{ $currency }}</td>
+                                            <td class="text-right">- {{ money((float) $order->discount, $currency) }}</td>
                                         </tr>
                                     @endif
 
                                     <tr>
                                         <th>{{ __('site.shipping_fee') }}</th>
-                                        <td class="text-right">{{ number_format((float) $order->shipping_fee, 2) }} {{ $currency }}</td>
+                                        <td class="text-right">{{ money((float) $order->shipping_fee, $currency) }}</td>
                                     </tr>
 
                                     <tr>
                                         <th>{{ __('site.vat') }}</th>
-                                        <td class="text-right">{{ number_format((float) $order->tax_total, 2) }} {{ $currency }}</td>
+                                        <td class="text-right">{{ money((float) $order->tax_total, $currency) }}</td>
                                     </tr>
 
                                     <tr class="grand-total-row">
                                         <th>{{ __('site.total') }}</th>
-                                        <td class="text-right">{{ number_format((float) $order->total, 2) }} {{ $currency }}</td>
+                                        <td class="text-right">{{ money((float) $order->total, $currency) }}</td>
                                     </tr>
                                 </tbody>
                             </table>

@@ -164,7 +164,7 @@
                                         </td>
 
                                         <td class="column-3" data-label="{{ __('site.price') }}">
-                                            {{ number_format($price, 2) }} {{ $currency }}
+                                            {{ money($price, $currency) }}
                                         </td>
 
                                         <td class="column-4" data-label="{{ __('site.quantity') }}">
@@ -203,7 +203,7 @@
                                         </td>
 
                                         <td class="column-5" data-label="{{ __('site.total') }}">
-                                            {{ number_format($price * $qty, 2) }} {{ $currency }}
+                                            {{ money($price * $qty, $currency) }}
                                         </td>
 
                                         <td class="column-6" data-label="{{ __('site.remove') }}">
@@ -304,7 +304,7 @@
                                 <span class="stext-110 cl2">{{ __('site.subtotal') }}</span>
                             </div>
                             <div class="size-209">
-                                <span class="mtext-110 cl2">{{ number_format($subtotal, 2) }} {{ $currency }}</span>
+                                <span class="mtext-110 cl2">{{ money($subtotal, $currency) }}</span>
                             </div>
                         </div>
 
@@ -326,7 +326,7 @@
                                 </div>
                                 <div class="size-209">
                                     <span class="mtext-110 cl2">
-                                        - {{ number_format($productDiscount, 2) }} {{ $currency }}
+                                        - {{ money($productDiscount, $currency) }}
                                     </span>
                                 </div>
                             </div>
@@ -347,7 +347,7 @@
                                     <span class="stext-110 cl2">{{ __('site.cart_discount') }}</span>
                                 </div>
                                 <div class="size-209">
-                                    <span class="mtext-110 cl2">- {{ number_format($cartDiscount, 2) }} {{ $currency }}</span>
+                                    <span class="mtext-110 cl2">- {{ money($cartDiscount, $currency) }}</span>
                                 </div>
                             </div>
                         @endif
@@ -358,7 +358,7 @@
                                     <span class="stext-110 cl2">{{ __('site.total_discount') }}</span>
                                 </div>
                                 <div class="size-209">
-                                    <span class="mtext-110 cl2">- {{ number_format($discount, 2) }} {{ $currency }}</span>
+                                    <span class="mtext-110 cl2">- {{ money($discount, $currency) }}</span>
                                 </div>
                             </div>
                         @endif
@@ -368,7 +368,7 @@
                                 <span class="stext-110 cl2">{{ __('site.net_total') }}</span>
                             </div>
                             <div class="size-209">
-                                <span class="mtext-110 cl2">{{ number_format($netTotal, 2) }} {{ $currency }}</span>
+                                <span class="mtext-110 cl2">{{ money($netTotal, $currency) }}</span>
                             </div>
                         </div>
 
@@ -377,7 +377,7 @@
                                 <span class="stext-110 cl2">{{ __('site.vat') }} (15%)</span>
                             </div>
                             <div class="size-209">
-                                <span class="mtext-110 cl2">{{ number_format($vatValue, 2) }} {{ $currency }}</span>
+                                <span class="mtext-110 cl2">{{ money($vatValue, $currency) }}</span>
                             </div>
                         </div>
 
@@ -388,7 +388,7 @@
                                 <span class="stext-110 cl2">{{ __('site.total') }}</span>
                             </div>
                             <div class="size-209">
-                                <span class="mtext-110 cl2">{{ number_format($grandTotal, 2) }} {{ $currency }}</span>
+                                <span class="mtext-110 cl2">{{ money($grandTotal, $currency) }}</span>
                             </div>
                         </div>
 

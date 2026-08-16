@@ -1,5 +1,7 @@
 @extends('site.app.layout')
 
+@section('title', __('site.wishlist'))
+
 @section('content')
 
 <!-- Title page -->
@@ -82,7 +84,7 @@
                             </td>
 
                             <td class="column-3">
-                                {{ number_format((float) $price, 2) }} {{ $currency }}
+                                {{ money((float) $price, $currency) }}
                             </td>
 
                             <td class="column-5">

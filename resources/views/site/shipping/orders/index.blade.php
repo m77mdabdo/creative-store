@@ -1,5 +1,7 @@
 @extends('site.app.layout')
 
+@section('title', __('site.my_orders'))
+
 @section('content')
 
 <link rel="stylesheet" href="{{ versioned_asset('css/site/site-shipping-orders-index.css') }}">
@@ -30,7 +32,7 @@
 
                     <p class="order-meta">
                         <strong>{{ __('site.total') }}:</strong>
-                        {{ number_format($order->total, 2) }} SAR
+                        {{ money($order->total) }}
                     </p>
 
                     <div class="order-actions">

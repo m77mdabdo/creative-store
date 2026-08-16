@@ -1,5 +1,7 @@
 @extends('site.app.layout')
 
+@section('title', __('site.order_placed'))
+
 @section('content')
 
 <link rel="stylesheet" href="{{ versioned_asset('css/site/site-orders-success.css') }}">
@@ -46,7 +48,7 @@
                 <div class="success-info-item">
                     <span class="success-label">{{ __('site.total_amount') }}</span>
                     <span class="success-value">
-                        {{ number_format($order->total, 2) }} {{ $order->currency }}
+                        {{ money($order->total, $order->currency) }}
                     </span>
                 </div>
 
