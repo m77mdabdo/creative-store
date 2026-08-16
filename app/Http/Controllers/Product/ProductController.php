@@ -436,7 +436,7 @@ class ProductController extends Controller
                 return [
                     'slug'     => $rp->slug,
                     'name'     => $rp->name ?? $rp->slug,
-                    'price'    => number_format((float) ($rp->base_price ?? 0), 2),
+                    'price'    => (float) ($rp->base_price ?? 0),
                     'currency' => $rp->currency ?? 'SAR',
                     'image'    => $this->resolvePublicImageUrl($rp->primaryImage?->path, $fallbackRelated),
                 ];

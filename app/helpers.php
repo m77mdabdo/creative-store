@@ -94,3 +94,16 @@ if (! function_exists('status_label')) {
         return __(\Illuminate\Support\Str::headline($value));
     }
 }
+
+if (! function_exists('money')) {
+    /**
+     * Price for display in the current language: "289.00 ر.س" / "289.00 SAR".
+     */
+    function money(float|int|string|null $amount, ?string $currency = 'SAR'): string
+    {
+        $currency = $currency ?: 'SAR';
+        $label = strtoupper($currency) === 'SAR' ? __('SAR') : $currency;
+
+        return number_format((float) $amount, 2) . ' ' . $label;
+    }
+}
