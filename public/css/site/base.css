@@ -321,3 +321,63 @@ table th { text-align: start; }
 }
 
 html[lang="ar"] .item-slick1 .ltext-101 { letter-spacing: 0; }
+
+/* Shop grid on phones: two compact cards per row */
+@media (max-width: 575.98px) {
+    .products-grid > .row > .col-6,
+    .row > .col-6.col-md-4.col-lg-3 {
+        padding-inline: 6px;
+        padding-bottom: 12px !important;
+    }
+
+    .product-card-media {
+        aspect-ratio: 4 / 5;
+        height: auto !important;
+    }
+
+    .product-card-media img {
+        width: 100%;
+        height: 100% !important;
+        object-fit: cover;
+    }
+
+    .product-card-btn {
+        min-width: 0 !important;
+        width: auto !important;
+        padding: 0 14px !important;
+        height: 34px !important;
+        font-size: 13px !important;
+        bottom: 10px !important;
+    }
+
+    .product-card-body { padding: 10px 12px 12px !important; }
+
+    .product-card-title {
+        font-size: 14px !important;
+        line-height: 1.45 !important;
+        min-height: 2.9em;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .product-card-price { font-size: 14px !important; font-weight: 700; }
+}
+
+/* Phones: the theme's large side paddings (40-70px) waste a fifth of the
+   screen inside cards; 16px matches the page gutter. */
+@media (max-width: 575.98px) {
+    .p-lr-40, .p-lr-45, .p-lr-50, .p-lr-55, .p-lr-60, .p-lr-65, .p-lr-70 {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+
+    .p-t-75, .p-t-80, .p-t-90 { padding-top: 40px !important; }
+    .p-b-85, .p-b-90, .p-b-100, .p-b-116, .p-b-120 { padding-bottom: 48px !important; }
+
+    .bor10 { border-radius: 16px; }
+}
+
+/* Order numbers never break across lines */
+bdi[dir="ltr"] { white-space: nowrap; unicode-bidi: isolate; }

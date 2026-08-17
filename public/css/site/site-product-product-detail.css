@@ -679,3 +679,56 @@
             align-items: flex-start;
         }
     }
+
+/* Phones: the main photo uses the full width (the thumbnail column stays
+   empty for single-photo products), and option dropdowns are wide enough
+   for their text. */
+@media (max-width: 767.98px) {
+    .wrap-slick3 { padding: 0 !important; }
+
+    .wrap-slick3 .wrap-slick3-dots { display: none !important; }
+
+    .wrap-slick3 .slick3 {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .wrap-slick3 .slick3 img {
+        width: 100%;
+        aspect-ratio: 4 / 5;
+        object-fit: cover;
+        border-radius: 16px;
+    }
+}
+
+.product-details-box .select2-container {
+    width: 100% !important;
+    max-width: 280px;
+    min-width: 160px;
+}
+
+.product-details-box .select2-container .select2-selection__rendered {
+    white-space: nowrap;
+}
+
+.product-details-box .select2-container .select2-selection--single {
+    height: 46px !important;
+    display: flex;
+    align-items: center;
+}
+
+.product-details-box .select2-container .select2-selection__rendered {
+    line-height: 46px !important;
+    padding-inline: 14px 36px !important;
+}
+
+html[dir="rtl"] .product-details-box .select2-container .select2-selection__rendered {
+    padding-inline: 14px 36px !important;
+    text-align: right;
+}
+
+.product-details-box .select2-container .select2-selection__arrow {
+    top: 50% !important;
+    transform: translateY(-50%);
+    height: 26px !important;
+}

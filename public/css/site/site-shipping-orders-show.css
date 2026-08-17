@@ -277,3 +277,74 @@
             width: 100%;
         }
     }
+
+/* Phones: label/value rows instead of a four-column grid, and order lines
+   as cards instead of a squeezed five-column table. */
+@media (max-width: 767.98px) {
+    .page-main-title { font-size: 22px !important; line-height: 1.35; word-break: break-word; }
+
+    .details-grid-table,
+    .details-grid-table tbody { display: block; width: 100%; }
+
+    .details-grid-table tr {
+        display: grid;
+        grid-template-columns: minmax(110px, 40%) 1fr;
+        border-bottom: 1px solid var(--cs-border);
+    }
+
+    .details-grid-table th,
+    .details-grid-table td {
+        display: block;
+        border: 0 !important;
+        padding: 10px 12px !important;
+        text-align: start !important;
+    }
+
+    .details-grid-table th { color: var(--cs-text-muted); font-weight: 600; }
+
+    .items-main-table,
+    .items-main-table tbody { display: block; width: 100%; min-width: 0 !important; }
+
+    .items-main-table thead { display: none; }
+
+    .items-main-table tr {
+        display: block;
+        padding: 12px 14px;
+        margin-bottom: 12px;
+        border: 1px solid var(--cs-border);
+        border-radius: 14px;
+        background: var(--cs-surface);
+    }
+
+    .items-main-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        width: auto !important;
+        padding: 6px 0 !important;
+        border: 0 !important;
+        text-align: end !important;
+    }
+
+    .items-main-table td[data-label]::before {
+        content: attr(data-label);
+        flex: 0 0 auto;
+        color: var(--cs-text-muted);
+        font-size: 13px;
+        text-align: start;
+    }
+
+    .items-main-table td.product-title-cell {
+        font-size: 15px;
+        padding-bottom: 10px !important;
+        border-bottom: 1px dashed var(--cs-border) !important;
+        margin-bottom: 4px;
+    }
+
+    .items-main-table td.product-title-cell::before { display: none; }
+
+    .items-main-table .product-detail-cell { flex-direction: column; align-items: stretch; }
+    .items-main-table .product-detail-cell::before { margin-bottom: 4px; }
+    .items-main-table .product-detail-cell div { text-align: start; }
+}
