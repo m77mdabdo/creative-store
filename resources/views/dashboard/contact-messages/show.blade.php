@@ -1,6 +1,6 @@
 @extends('dashboard.app.layout')
 
-@section('title', 'View Contact Message')
+@section('title', __('View Contact Message'))
 
 @section('content')
 <div class="content-wrapper">

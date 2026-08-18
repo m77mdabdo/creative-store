@@ -1,6 +1,6 @@
 @extends('dashboard.app.layout')
 
-@section('title', 'Contact Messages')
+@section('title', __('Contact Messages'))
 
 @section('content')
 @php

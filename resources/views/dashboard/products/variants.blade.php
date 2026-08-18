@@ -1,6 +1,6 @@
 @extends('dashboard.app.layout')
 
-@section('title', 'Product Variants')
+@section('title', __('Product Variants'))
 
 @section('content')
 <div class="content-wrapper">

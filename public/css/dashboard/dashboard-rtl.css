@@ -195,7 +195,7 @@ html[dir="rtl"] .breadcrumb-item + .breadcrumb-item::before {
     float: right;
     padding-left: .5rem;
     padding-right: 0;
-    content: "\\";
+    content: "/";
 }
 
 html[dir="rtl"] .float-sm-right { float: left !important; }

@@ -1,6 +1,6 @@
 @extends('dashboard.app.layout')
 
-@section('title', 'Pages')
+@section('title', __('Pages'))
 
 @section('content')
 @php

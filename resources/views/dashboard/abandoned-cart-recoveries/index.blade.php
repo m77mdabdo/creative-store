@@ -1,6 +1,6 @@
 @extends('dashboard.app.layout')
 
-@section('title', 'Abandoned Cart Recovery Dashboard')
+@section('title', __('Abandoned Cart Recovery Dashboard'))
 
 @section('content')
 <div class="content-wrapper">

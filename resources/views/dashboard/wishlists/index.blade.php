@@ -1,6 +1,6 @@
 @extends('dashboard.app.layout')
 
-@section('title', 'Wishlist Activity')
+@section('title', __('Wishlist Activity'))
 
 @section('content')
 <div class="content-wrapper">

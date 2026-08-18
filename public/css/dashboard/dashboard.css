@@ -160,3 +160,29 @@ code { font-size: 12px; }
 /* Decorative stat-card icons stay inside their card (in RTL the large icon
    overflowed the page edge on phones). */
 .small-box { overflow: hidden; }
+
+/* Stat numbers scale down instead of being cut off in half-width cards */
+.small-box .inner h3 {
+    font-size: clamp(1.35rem, 5.5vw, 2.2rem);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 575.98px) {
+    .small-box .inner h3 { font-size: clamp(1.15rem, 6vw, 1.6rem); }
+    .small-box .inner p { font-size: 13px; }
+}
+
+/* Action buttons in table rows stay on one line (each sits in its own
+   form, which otherwise stacks them and makes rows very tall). */
+.table td form,
+.table td .d-inline {
+    display: inline-block !important;
+    margin: 2px;
+    vertical-align: middle;
+}
+
+.table td:last-child { white-space: nowrap; }
+
+.table td .d-flex.flex-wrap { flex-wrap: nowrap !important; }

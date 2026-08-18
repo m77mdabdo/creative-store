@@ -1,6 +1,6 @@
 @extends('dashboard.app.layout')
 
-@section('title', 'System Backups')
+@section('title', __('System Backups'))
 
 @section('content')
 <div class="content-wrapper">
