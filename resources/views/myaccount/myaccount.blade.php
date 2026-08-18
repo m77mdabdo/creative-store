@@ -87,10 +87,10 @@
                                                 #{{ $order->order_number }}
                                             </a>
                                         </td>
-                                        <td>{{ $order->total ? number_format($order->total, 2) . ' ' . $order->currency : '—' }}</td>
+                                        <td>{{ $order->total ? money($order->total, $order->currency) : '—' }}</td>
                                         <td>
                                             <span class="status-badge {{ $statusClass }}">
-                                                {{ ucfirst($order->status) }}
+                                                {{ status_label($order->status) }}
                                             </span>
                                         </td>
                                         <td>{{ $order->created_at?->translatedFormat('d M Y') }}</td>

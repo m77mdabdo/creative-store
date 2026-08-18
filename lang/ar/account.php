@@ -90,10 +90,6 @@ return [
 'shipping_status' => 'حالة الشحن',
 'view_order' => 'عرض الطلب',
 'no_orders_found' => 'لا توجد طلبات',
-
-
-
-
+    'manage_your_account' => 'إدارة بياناتك وطلباتك وكلمة المرور',
 
 ];
-

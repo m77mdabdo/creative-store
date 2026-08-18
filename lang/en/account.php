@@ -37,4 +37,6 @@ return [
     'name_updated_successfully' => 'Name updated successfully.',
     'password_updated_successfully' => 'Password updated successfully.',
     'current_password_incorrect' => 'Current password is incorrect.',
+    'manage_your_account' => 'Manage your details, orders and password',
+
 ];
