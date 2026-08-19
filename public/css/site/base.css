@@ -381,3 +381,17 @@ html[lang="ar"] .item-slick1 .ltext-101 { letter-spacing: 0; }
 
 /* Order numbers never break across lines */
 bdi[dir="ltr"] { white-space: nowrap; unicode-bidi: isolate; }
+
+/* Slider dots and blog titles: comfortable tap areas everywhere */
+.slick-dots li button {
+    min-width: 24px;
+    min-height: 24px;
+}
+
+@media (max-width: 575.98px) {
+    .blog-title a,
+    .blog-post-title a {
+        display: inline-block;
+        padding-block: 6px;
+    }
+}

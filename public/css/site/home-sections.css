@@ -295,5 +295,6 @@ html[lang="ar"] .home-product-category { text-transform: none; letter-spacing: 0
     .home-trust-list { grid-template-columns: 1fr; gap: var(--cs-space-3); padding: var(--cs-space-4) 0; }
     .home-newsletter-box { padding: var(--cs-space-6) var(--cs-space-4); }
     .home-newsletter-form { flex-direction: column; }
+    .home-newsletter-form input { flex: none; width: 100%; }
     .home-newsletter-form button { width: 100%; }
 }
