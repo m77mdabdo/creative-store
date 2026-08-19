@@ -45,7 +45,7 @@
                     <tr style="border-bottom:1px solid #e5e7eb;">
                         <td>{{ $productName }}</td>
                         <td>{{ $item->quantity }}</td>
-                        <td>{{ number_format((float) $item->price_snapshot, 2) }} {{ $product->currency ?? 'SAR' }}</td>
+                        <td>{{ money((float) $item->price_snapshot, $product->currency ?? 'SAR') }}</td>
                     </tr>
                 @endforeach
             </tbody>
