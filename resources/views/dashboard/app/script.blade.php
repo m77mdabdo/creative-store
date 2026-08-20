@@ -40,8 +40,21 @@
 <!-- AdminLTE App -->
 <script src="{{ asset('AdminLTE/dist/js/adminlte.js') }}"></script>
 
-<!-- AdminLTE for demo purposes -->
-<script src="{{ asset('AdminLTE/dist/js/demo.js') }}"></script>
+<script>
+    // OverlayScrollbars miscalculates its scroll area in RTL (sidebar content
+    // shifted, logo cut off, stray horizontal scrollbar). In Arabic the
+    // sidebar uses native scrolling instead; see dashboard-rtl.css.
+    (function ($) {
+        if (document.documentElement.dir !== 'rtl') return;
 
-<!-- AdminLTE dashboard demo -->
-<script src="{{ asset('AdminLTE/dist/js/pages/dashboard.js') }}"></script>
+        function useNativeSidebarScroll() {
+            var $sidebar = $('.main-sidebar .sidebar');
+            if (!$sidebar.length || !$.fn.overlayScrollbars) return;
+            var instance = $sidebar.overlayScrollbars();
+            if (instance) instance.destroy();
+        }
+
+        $(window).on('load', function () { setTimeout(useNativeSidebarScroll, 0); });
+        $(useNativeSidebarScroll);
+    })(jQuery);
+</script>

@@ -38,7 +38,7 @@
                                     <p>{{ __('site.Total Sales') }}</p>
                                 </div>
                                 <div class="icon">
-                                    <i class="fas fa-sack-dollar"></i>
+                                    <i class="fas fa-money-bill-wave"></i>
                                 </div>
                             </div>
                         </div>
@@ -69,7 +69,7 @@
                                 <p>{{ __('site.Paid Orders') }}</p>
                             </div>
                             <div class="icon">
-                                <i class="fas fa-circle-check"></i>
+                                <i class="fas fa-check-circle"></i>
                             </div>
                             <a href="{{ route('dashboard.orders.index') }}" class="small-box-footer"
                                 style="border-radius:0 0 18px 18px;">
@@ -215,7 +215,7 @@
                                 </div>
                                 <div class="rounded-circle d-flex align-items-center justify-content-center"
                                     style="width:52px;height:52px;background:#fff7ed;color:#ea580c;">
-                                    <i class="fas fa-triangle-exclamation fa-lg"></i>
+                                    <i class="fas fa-exclamation-triangle fa-lg"></i>
                                 </div>
                             </div>
                         </div>

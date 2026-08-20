@@ -186,3 +186,22 @@ code { font-size: 12px; }
 .table td:last-child { white-space: nowrap; }
 
 .table td .d-flex.flex-wrap { flex-wrap: nowrap !important; }
+
+/* Top-bar counters stay small corner badges (the 12px badge minimum
+   made them cover their icons). */
+.main-header .navbar-badge {
+    font-size: 10px !important;
+    font-weight: 700;
+    padding: 2px 4px !important;
+    line-height: 1.1;
+    top: 6px !important;
+    right: 2px;
+    min-width: 16px;
+}
+
+html[dir="rtl"] .main-header .navbar-badge {
+    right: auto !important;
+    left: 2px !important;
+}
+
+.main-header .nav-link { position: relative; }
