@@ -25,8 +25,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const iti = window.intlTelInput(input, {
         separateDialCode: true,
         nationalMode: true,
-        preferredCountries: ["eg","sa","ae","kw","qa"],
-        initialCountry: "eg",
+        preferredCountries: ["sa","ae","kw","qa","bh","om","eg"],
+        initialCountry: "sa",
         utilsScript: "/build/intl-tel-input-utils.js",
     });
 

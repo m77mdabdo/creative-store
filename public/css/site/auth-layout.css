@@ -180,3 +180,30 @@ html[dir="rtl"] .auth-right-inner .input-group-text { border-radius: var(--cs-ra
     .auth-right-inner .row.mb-3 > [class*="col-"] { flex: 0 0 100%; max-width: 100%; }
     .auth-right-inner .row.mb-3 .btn-primary { margin-top: var(--cs-space-3); }
 }
+
+/* The page stylesheets give the two inner columns fixed percentage widths;
+   in the single-card layout both take the full card width. */
+.auth-split-card > .auth-split-left,
+.auth-split-card > .auth-split-right {
+    width: 100% !important;
+    max-width: none !important;
+    flex: none !important;
+}
+
+.auth-split-left h2 { white-space: normal; }
+
+/* Remember me on its own line, then a full-width submit button */
+.auth-right-inner form .row.mb-3 > [class*="col-"],
+.auth-right-inner form .row.mb-2 > [class*="col-"] {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+}
+
+.auth-right-inner form .row.mb-3 .btn-primary,
+.auth-right-inner form .row.mb-2 .btn-primary {
+    width: 100%;
+    margin-top: var(--cs-space-3);
+    border-radius: var(--cs-radius-pill) !important;
+}
+
+.auth-right-inner .social-auth-links .btn { width: 100%; }
