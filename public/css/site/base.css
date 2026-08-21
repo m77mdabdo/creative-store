@@ -395,3 +395,13 @@ bdi[dir="ltr"] { white-space: nowrap; unicode-bidi: isolate; }
         padding-block: 6px;
     }
 }
+
+/* RTL: browsers indent lists on the right; Bootstrap only resets the left */
+html[dir="rtl"] .nav,
+html[dir="rtl"] .navbar-nav,
+html[dir="rtl"] .list-unstyled,
+html[dir="rtl"] .list-inline,
+html[dir="rtl"] .pagination,
+html[dir="rtl"] .breadcrumb {
+    padding-right: 0;
+}

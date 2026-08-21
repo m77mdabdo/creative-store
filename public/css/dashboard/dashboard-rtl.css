@@ -340,3 +340,21 @@ html[dir="rtl"] .main-sidebar .brand-link .brand-image {
     float: none;
     margin: 0;
 }
+
+/* Browsers put a list's default 40px indent on the RIGHT in RTL, but
+   Bootstrap only resets padding-left. That pushed the sidebar menu 40px
+   past its edge (cut logo, active item offset). Reset the right side too. */
+html[dir="rtl"] .nav,
+html[dir="rtl"] .navbar-nav,
+html[dir="rtl"] .list-unstyled,
+html[dir="rtl"] .list-inline,
+html[dir="rtl"] .list-group,
+html[dir="rtl"] .pagination,
+html[dir="rtl"] .breadcrumb,
+html[dir="rtl"] .dropdown-menu ul {
+    padding-right: 0;
+}
+
+html[dir="rtl"] .nav-sidebar .nav-treeview {
+    padding-right: .6rem;
+}
