@@ -144,8 +144,11 @@ class OrderPaymentService
 
         $order->user?->notify($notification);
 
+        // The customer was notified above; staff who placed the order
+        // themselves should not get it a second time.
         User::query()
             ->dashboardUsers()
+            ->when($order->user_id, fn ($query) => $query->whereKeyNot($order->user_id))
             ->chunkById(100, fn ($admins) => Notification::send($admins, $notification));
     }
 }
