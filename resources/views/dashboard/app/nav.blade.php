@@ -174,51 +174,50 @@
         </li>
 
         {{-- User Notifications --}}
-        <li class="nav-item dropdown mr-3">
-            <a class="nav-link" data-toggle="dropdown" href="#" style="position:relative;">
-                <i class="far fa-bell"></i>
+        @auth
+            @php
+                $notifUnread = auth()->user()->unreadNotifications()->count();
+                $notifItems = auth()->user()->notifications()->latest()->take(8)->get()
+                    ->map(fn ($n) => \App\Support\Notifications\NotificationPresenter::present($n));
+            @endphp
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#" role="button"
+                   aria-label="{{ __('notifications.title') }}" aria-haspopup="true" aria-expanded="false">
+                    <i class="far fa-bell"></i>
+                    @if ($notifUnread > 0)
+                        <span id="notif-count" class="badge badge-danger navbar-badge">{{ $notifUnread > 99 ? '99+' : $notifUnread }}</span>
+                    @endif
+                </a>
 
-                <span id="notif-count" class="badge badge-danger navbar-badge">
-                    {{ auth()->check() ? auth()->user()->unreadNotifications()->count() : 0 }}
-                </span>
-            </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right cs-notif-menu" id="notif-dropdown">
+                    <div class="cs-notif-head">
+                        <strong>{{ __('notifications.title') }}</strong>
+                        <span class="text-muted">{{ trans_choice('notifications.new_count', $notifUnread, ['count' => $notifUnread]) }}</span>
+                    </div>
 
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right"
-                 id="notif-dropdown"
-                 style="max-height:400px;overflow:auto;min-width:320px;">
-
-                @auth
-                    @forelse(auth()->user()->notifications()->latest()->take(10)->get() as $notification)
-                        <a href="#" class="dropdown-item">
-                            <div>
-                                <strong>{{ $notification->data['title'] ?? __('site.Notification') }}</strong>
-                                <span class="float-right text-muted text-sm">
-                                    {{ $notification->created_at?->diffForHumans() }}
-                                </span>
+                    <div class="cs-notif-list">
+                        @forelse ($notifItems as $item)
+                            @include('dashboard.notifications._item', ['item' => $item, 'dropdown' => true])
+                        @empty
+                            <div class="cs-notif-empty">
+                                <i class="far fa-bell-slash" aria-hidden="true"></i>
+                                <p>{{ __('notifications.empty') }}</p>
                             </div>
+                        @endforelse
+                    </div>
 
-                            <div class="text-sm text-muted mt-1">
-                                {{ $notification->data['message'] ?? '' }}
-                            </div>
-
-                            @if(!empty($notification->data['order_number']))
-                                <div class="text-xs text-primary mt-1">
-                                    {{ __('site.Order') }} #{{ $notification->data['order_number'] }}
-                                </div>
-                            @endif
-                        </a>
-                        <div class="dropdown-divider"></div>
-                    @empty
-                        <span class="dropdown-item text-muted">{{ __('site.No notifications') }}</span>
-                        <div class="dropdown-divider"></div>
-                    @endforelse
-
-                    <a href="#" class="dropdown-item dropdown-footer">
-                        {{ __('site.See All Notifications') }}
-                    </a>
-                @endauth
-            </div>
-        </li>
+                    <div class="cs-notif-foot">
+                        @if ($notifUnread > 0)
+                            <form method="POST" action="{{ route('dashboard.notifications.read-all') }}">
+                                @csrf
+                                <button type="submit" class="btn btn-link btn-sm p-0">{{ __('notifications.mark_all_read') }}</button>
+                            </form>
+                        @endif
+                        <a href="{{ route('dashboard.notifications.index') }}">{{ __('notifications.see_all') }}</a>
+                    </div>
+                </div>
+            </li>
+        @endauth
 
         {{-- Fullscreen --}}
         <li class="nav-item d-none d-md-block">

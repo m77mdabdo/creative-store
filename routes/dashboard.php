@@ -35,6 +35,7 @@ use App\Http\Controllers\Dashboard\PermissionController;
 use App\Http\Controllers\Dashboard\AuditLogController;
 use App\Http\Controllers\Dashboard\ErrorLogController;
 use App\Http\Controllers\Dashboard\BackupController;
+use App\Http\Controllers\Dashboard\NotificationController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 
@@ -56,6 +57,11 @@ Route::group([
 ], function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('home');
+
+    // The signed-in user's own notifications (no extra permission needed)
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/{id}/open', [NotificationController::class, 'open'])->name('notifications.open');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
 
         /*
         |--------------------------------------------------------------------------
