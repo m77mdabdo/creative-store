@@ -358,3 +358,6 @@ html[dir="rtl"] .dropdown-menu ul {
 html[dir="rtl"] .nav-sidebar .nav-treeview {
     padding-right: .6rem;
 }
+
+html[dir="rtl"] .nav-sidebar .nav-link > p > .badge.right:last-child { left: 1rem !important; }
+html[dir="rtl"] .nav-sidebar .nav-link > p > i.right { left: 1rem !important; right: auto !important; }

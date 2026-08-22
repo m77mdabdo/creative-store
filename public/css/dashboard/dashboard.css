@@ -337,3 +337,61 @@ html[dir="rtl"] .main-header .navbar-badge {
         transform: none !important;
     }
 }
+
+/* ───── Sidebar badges and arrows (LTR) ─────
+   The menu markup is "Label <badge> <arrow>"; AdminLTE puts the second
+   .right element 2.2rem from the edge, which placed the arrow inside the
+   badge. Arrow at the edge, badge just before it, or at the edge when the
+   item has no arrow. (RTL mirrors this in dashboard-rtl.css.) */
+html[dir="ltr"] .nav-sidebar .nav-link > p > i.right {
+    right: 1rem !important;
+    left: auto !important;
+}
+
+html[dir="ltr"] .nav-sidebar .nav-link > p > .badge.right {
+    right: 2.2rem !important;
+    left: auto !important;
+}
+
+html[dir="ltr"] .nav-sidebar .nav-link > p > .badge.right:last-child {
+    right: 1rem !important;
+}
+
+html[dir="ltr"] .nav-sidebar > .nav-item > .nav-link {
+    padding-right: 4.6rem;
+}
+
+.nav-sidebar .nav-link > p > .badge.right {
+    min-width: 22px;
+    text-align: center;
+}
+
+/* Brand: logo on a white circle so the black mark is visible on the dark
+   sidebar, sitting next to the store name in both directions. */
+.main-sidebar .brand-link {
+    display: flex !important;
+    align-items: center;
+    gap: .6rem;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.main-sidebar .brand-link .brand-image {
+    float: none !important;
+    margin: 0 0 0 .6rem !important;
+    width: 34px;
+    height: 34px;
+    max-height: none;
+    padding: 3px;
+    background: #fff;
+    object-fit: contain;
+    opacity: 1 !important;
+}
+
+html[dir="rtl"] .main-sidebar .brand-link .brand-image {
+    margin: 0 .6rem 0 0 !important;
+}
+
+.main-sidebar .brand-link .brand-text {
+    font-weight: 600 !important;
+}
