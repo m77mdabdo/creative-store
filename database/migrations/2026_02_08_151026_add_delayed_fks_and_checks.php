@@ -13,7 +13,12 @@ return new class extends Migration {
             $table->foreign('variant_id')->references('id')->on('product_variants')->nullOnDelete();
         });
 
-        // CHECK constraints (MySQL 8+ / PostgreSQL)
+        // CHECK constraints (MySQL 8+ / PostgreSQL). SQLite cannot add a
+        // constraint to an existing table; the test database skips them.
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         DB::statement("ALTER TABLE cart_items ADD CONSTRAINT chk_cart_items_quantity CHECK (quantity > 0)");
         DB::statement("ALTER TABLE cart_items ADD CONSTRAINT chk_cart_items_price CHECK (price_snapshot >= 0)");
 
