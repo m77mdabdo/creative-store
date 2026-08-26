@@ -9,6 +9,16 @@ return new class extends Migration {
 
     public function up(): void
     {
+        // SQLite (tests) stores enums as text with a CHECK list; relax it to
+        // a plain string instead of the MySQL-only MODIFY ENUM.
+        if (DB::getDriverName() === 'sqlite') {
+            Schema::table('payments', function (Blueprint $table) {
+                $table->string('status')->default('pending')->change();
+            });
+
+            return;
+        }
+
         DB::statement("
             ALTER TABLE payments
             MODIFY status ENUM(
@@ -25,6 +35,10 @@ return new class extends Migration {
 
     public function down(): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         DB::statement("
             ALTER TABLE payments
             MODIFY status ENUM(
