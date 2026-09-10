@@ -107,3 +107,21 @@ if (! function_exists('money')) {
         return number_format((float) $amount, 2) . ' ' . $label;
     }
 }
+
+if (! function_exists('pdf_arabic')) {
+    /**
+     * Shape Arabic text for dompdf, which renders letters unjoined and in
+     * the wrong order. Non-Arabic text is returned unchanged.
+     */
+    function pdf_arabic(string $text): string
+    {
+        if ($text === '' || ! preg_match('/\p{Arabic}/u', $text)) {
+            return $text;
+        }
+
+        static $shaper = null;
+        $shaper ??= new \ArPHP\I18N\Arabic();
+
+        return $shaper->utf8Glyphs($text);
+    }
+}

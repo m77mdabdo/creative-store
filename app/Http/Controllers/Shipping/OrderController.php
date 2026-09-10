@@ -211,20 +211,12 @@ class OrderController extends Controller
         return back()->with('success', __('Order cancelled successfully.'));
     }
 
-    public function invoice(Order $order)
+    public function invoice(Order $order, \App\Services\Invoices\TaxInvoiceBuilder $invoices)
     {
         abort_unless($order->user_id === auth()->id(), 403);
 
-        $order->load([
-            'items',
-            'addressSnapshot',
-            'shippingMethod',
-            'shipment',
-        ]);
-
-        $pdf = Pdf::loadView('site.orders.invoice', [
-            'order' => $order,
-        ])->setPaper('a4', 'portrait');
+        $pdf = Pdf::loadView('invoices.tax-invoice', $invoices->build($order))
+            ->setPaper('a4', 'portrait');
 
         return $pdf->download('invoice-' . $order->order_number . '.pdf');
     }

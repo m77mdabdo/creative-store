@@ -474,20 +474,10 @@ public function cancel(CancelOrderRequest $request, Order $order): RedirectRespo
     }
 }
 
-    public function invoice(Order $order): Response
+    public function invoice(Order $order, \App\Services\Invoices\TaxInvoiceBuilder $invoices): Response
     {
-        $order->load([
-            'user:id,name,email,phone',
-            'addressSnapshot',
-            'items.product:id,slug,sku',
-            'items.variant:id,product_id,sku',
-            'shippingMethod:id,name,code',
-            'coupon:id,code,type,value',
-        ]);
-
-        $pdf = Pdf::loadView('dashboard.orders.invoice', [
-            'order' => $order,
-        ])->setPaper('a4', 'portrait');
+        $pdf = Pdf::loadView('invoices.tax-invoice', $invoices->build($order))
+            ->setPaper('a4', 'portrait');
 
         return $pdf->stream('invoice-' . $order->order_number . '.pdf');
     }
