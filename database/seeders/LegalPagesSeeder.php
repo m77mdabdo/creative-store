@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\DB;
  * Store policy pages required before taking real payments: privacy, terms,
  * returns, shipping and FAQ, in Arabic and English.
  *
- * Only missing pages are created, so edits made later in the dashboard are
- * never overwritten. Replace the [bracketed] placeholders with the store's
- * registration details and have the texts reviewed before launch.
+ * Missing pages are created; pages that still hold the old [bracketed]
+ * placeholders are refreshed with the details from config/store.php.
+ * Pages edited in the dashboard are never overwritten.
  *
  *   php artisan db:seed --class=LegalPagesSeeder
  */
@@ -21,8 +21,10 @@ class LegalPagesSeeder extends Seeder
     public function run(): void
     {
         foreach (LegalPagesContent::pages() as $slug => $locales) {
-            if (Page::query()->where('slug', $slug)->exists()) {
-                $this->command?->line("Skipped {$slug} (already exists).");
+            $existing = Page::query()->where('slug', $slug)->first();
+
+            if ($existing) {
+                $this->refreshPlaceholders($existing, $locales);
                 continue;
             }
 
@@ -40,5 +42,21 @@ class LegalPagesSeeder extends Seeder
 
             $this->command?->info("Created {$slug}.");
         }
+    }
+
+    private function refreshPlaceholders(Page $page, array $locales): void
+    {
+        $refreshed = false;
+
+        foreach ($locales as $locale => [$title, $content]) {
+            $translation = $page->translations()->where('locale', $locale)->first();
+
+            if ($translation && preg_match('/\[[^\]]{2,40}\]/u', (string) $translation->content)) {
+                $translation->update(['content' => trim($content)]);
+                $refreshed = true;
+            }
+        }
+
+        $this->command?->line($refreshed ? "Filled placeholders in {$page->slug}." : "Skipped {$page->slug} (already set).");
     }
 }

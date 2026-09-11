@@ -3,11 +3,33 @@
 namespace Database\Seeders;
 
 /**
- * Texts for LegalPagesSeeder. Placeholders in [brackets] must be filled in.
+ * Texts for LegalPagesSeeder. {tokens} are filled from config/store.php
+ * (trade name, CR and VAT numbers, address, support contacts).
  */
 final class LegalPagesContent
 {
     public static function pages(): array
+    {
+        $legal = config('store.legal');
+        $tokens = [
+            '{name_ar}'    => $legal['name_ar'],
+            '{name_en}'    => $legal['name_en'],
+            '{vat}'        => $legal['vat_number'],
+            '{cr}'         => $legal['cr_number'],
+            '{address_ar}' => $legal['address_ar'],
+            '{address_en}' => $legal['address_en'],
+            '{email}'      => config('store.support_email') ?: 'support@creativestore.test',
+            '{phone}'      => config('store.support_phone') ?: '+966 11 000 0000',
+            '{date}'       => now()->translatedFormat('Y-m-d'),
+        ];
+
+        return array_map(
+            fn (array $locales) => array_map(fn (array $page) => [$page[0], strtr($page[1], $tokens)], $locales),
+            self::raw(),
+        );
+    }
+
+    private static function raw(): array
     {
         return [
             'privacy' => self::privacy(),
@@ -41,9 +63,9 @@ final class LegalPagesContent
 لا نبيع بياناتك. نشاركها فقط مع شركات الشحن وبوابة الدفع بالقدر اللازم لتنفيذ طلبك، أو مع الجهات الرسمية عند الطلب النظامي.
 
 حقوقك
-يحق لك طلب نسخة من بياناتك أو تصحيحها أو حذف حسابك بالتواصل معنا على [البريد الإلكتروني للدعم].
+يحق لك طلب نسخة من بياناتك أو تصحيحها أو حذف حسابك بالتواصل معنا على {email}.
 
-آخر تحديث: [التاريخ]
+آخر تحديث: {date}
 TXT],
             'en' => ['Privacy Policy', <<<'TXT'
 We respect your privacy and protect your personal data in line with the Saudi Personal Data Protection Law.
@@ -65,9 +87,9 @@ Sharing
 We do not sell your data. We share it only with delivery partners and the payment gateway as needed to fulfil your order, or with authorities when legally required.
 
 Your rights
-You can request a copy of your data, correct it or delete your account by contacting [support email].
+You can request a copy of your data, correct it or delete your account by contacting {email}.
 
-Last updated: [date]
+Last updated: {date}
 TXT],
         ];
     }
@@ -79,7 +101,7 @@ TXT],
 باستخدامك متجر كرييتف ستور فإنك توافق على الشروط التالية.
 
 بيانات المتجر
-الاسم التجاري: [الاسم التجاري] — السجل التجاري: [رقم السجل] — الرقم الضريبي: [الرقم الضريبي].
+الاسم التجاري: {name_ar} — السجل التجاري: {cr} — الرقم الضريبي: {vat}.
 
 الأسعار والضريبة
 الأسعار بالريال السعودي، وتُضاف ضريبة القيمة المضافة 15% وتظهر بوضوح قبل الدفع. قد تتغير الأسعار دون إشعار، ويُعتمد السعر الظاهر وقت إتمام الطلب.
@@ -96,13 +118,13 @@ TXT],
 القانون المطبق
 تخضع هذه الشروط لأنظمة المملكة العربية السعودية، ومنها نظام التجارة الإلكترونية ونظام حماية المستهلك.
 
-للتواصل: [البريد الإلكتروني للدعم] — [رقم الجوال].
+للتواصل: {email} — {phone}.
 TXT],
             'en' => ['Terms and Conditions', <<<'TXT'
 By using Creative Store you agree to the following terms.
 
 Store details
-Trade name: [trade name] — Commercial registration: [CR number] — VAT number: [VAT number].
+Trade name: {name_en} — Commercial registration: {cr} — VAT number: {vat}.
 
 Prices and VAT
 Prices are in Saudi riyals. 15% VAT is added and shown clearly before payment. Prices may change without notice; the price shown when you place the order applies.
@@ -119,7 +141,7 @@ You can cancel an order before it ships, and return items under our published re
 Governing law
 These terms are governed by the laws of the Kingdom of Saudi Arabia, including the E-Commerce Law and the Consumer Protection Law.
 
-Contact: [support email] — [phone].
+Contact: {email} — {phone}.
 TXT],
         ];
     }
@@ -144,7 +166,7 @@ TXT],
 الاسترداد
 يُرد المبلغ لنفس وسيلة الدفع خلال 5 إلى 14 يوم عمل من استلامنا للمنتج، حسب البنك المصدر للبطاقة.
 
-لبدء طلب استرجاع تواصل معنا على [البريد الإلكتروني للدعم] أو من صفحة "تواصل معنا".
+لبدء طلب استرجاع تواصل معنا على {email} أو من صفحة "تواصل معنا".
 TXT],
             'en' => ['Returns and Exchanges', <<<'TXT'
 You may return an item within 7 days of receiving it, in line with the Saudi E-Commerce Law.
@@ -163,7 +185,7 @@ If an item arrives damaged or is not what you ordered, we cover shipping and rep
 Refunds
 Refunds go back to the original payment method within 5 to 14 business days of us receiving the item, depending on your card issuer.
 
-To start a return, contact [support email] or use the Contact page.
+To start a return, contact {email} or use the Contact page.
 TXT],
         ];
     }
@@ -177,8 +199,8 @@ TXT],
 طرق التوصيل
 - التوصيل العادي: من 1 إلى 6 أيام عمل حسب المدينة.
 - التوصيل السريع: من يوم إلى 3 أيام عمل.
-- التوصيل في نفس اليوم: داخل الرياض للطلبات قبل الساعة [الوقت].
-- الاستلام من المتجر: [عنوان المتجر].
+- التوصيل في نفس اليوم: داخل الرياض للطلبات قبل الساعة الساعة 1 ظهرًا.
+- الاستلام من المتجر: {address_ar}.
 
 الرسوم
 تظهر رسوم الشحن حسب مدينتك وطريقة التوصيل قبل الدفع، والشحن مجاني للطلبات التي تتجاوز الحد المعلن.
@@ -195,8 +217,8 @@ We deliver to every city in Saudi Arabia.
 Delivery options
 - Standard: 1 to 6 business days depending on the city.
 - Express: 1 to 3 business days.
-- Same day: within Riyadh for orders placed before [time].
-- Store pickup: [store address].
+- Same day: within Riyadh for orders placed before 1:00 PM.
+- Store pickup: {address_en}.
 
 Fees
 Shipping fees for your city and method are shown before payment. Orders above the advertised threshold ship free.
@@ -230,7 +252,7 @@ TXT],
 من 5 إلى 14 يوم عمل حسب البنك.
 
 كيف أتواصل معكم؟
-من صفحة "تواصل معنا" أو على [البريد الإلكتروني للدعم].
+من صفحة "تواصل معنا" أو على {email}.
 TXT],
             'en' => ['Frequently Asked Questions', <<<'TXT'
 How do I find my size?
@@ -249,7 +271,7 @@ How long do refunds take?
 5 to 14 business days depending on your bank.
 
 How can I reach you?
-Through the Contact page or at [support email].
+Through the Contact page or at {email}.
 TXT],
         ];
     }
