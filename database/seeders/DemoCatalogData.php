@@ -33,7 +33,7 @@ final class DemoCatalogData
             ['men', 'photo-1602810316693-3667c854239a', 'Navy Button-Up Shirt', 'قميص كحلي بأزرار', 189, ['Navy']],
             ['men', 'photo-1611312449412-6cefac5dc3e4', 'Grey Check Flannel Shirt', 'قميص فلانيل كاروهات رمادي', 179, ['Grey', 'Black']],
             ['men', 'photo-1603252110481-7ba873bf42ab', 'Lilac Pinstripe Shirt', 'قميص مقلم بنفسجي فاتح', 179, ['Purple', 'White']],
-            ['men', 'photo-1623658580851-3b25bf83b4ea', 'Classic Pique Polo', 'بولو بيكيه كلاسيكي', 139, ['Blue', 'White', 'Black']],
+            ['men', 'photo-1761956255550-e1d6d12e94be', 'Classic Pique Polo', 'بولو بيكيه كلاسيكي', 139, ['Blue', 'White', 'Black']],
             ['men', 'photo-1594938291221-94f18cbb5660', 'Striped Business Shirt', 'قميص عمل مقلم', 209, ['Blue']],
             ['men', 'photo-1581655353564-df123a1eb820', 'Essential White Tee', 'تيشيرت أبيض أساسي', 79, ['White']],
             ['men', 'photo-1618677603286-0ec56cb6e1b5', 'Heavyweight Cotton Tee', 'تيشيرت قطن ثقيل', 99, ['White', 'Black']],
@@ -110,7 +110,7 @@ final class DemoCatalogData
             ['fragrances', 'photo-1760920250029-36af9369a0bb', 'Cedar and Vetiver', 'عطر أرز وفيتيفر', 359, []],
             ['fragrances', 'photo-1543422655-ac1c6ca993ed', 'Citrus Bloom', 'عطر زهر الحمضيات', 269, []],
             ['fragrances', 'photo-1622618991746-fe6004db3a47', 'Rose Petal Eau de Parfum', 'عطر بتلات الورد', 329, []],
-            ['fragrances', 'photo-1761659760494-32b921a2449f', 'Silver Mist', 'عطر الضباب الفضي', 289, []],
+            ['fragrances', 'photo-1615160460366-2c9a41771b51', 'Silver Mist', 'عطر الضباب الفضي', 289, []],
         ];
     }
 }
