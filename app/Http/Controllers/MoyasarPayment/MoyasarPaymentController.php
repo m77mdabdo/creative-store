@@ -44,6 +44,10 @@ class MoyasarPaymentController extends Controller
             'payment'        => $payment,
             'publishableKey' => config('services.moyasar.publishable_key'),
             'callbackUrl'    => route('checkout.payment.callback'),
+            'methods'        => array_values(array_intersect(
+                config('services.moyasar.methods', ['creditcard']),
+                ['creditcard', 'applepay', 'stcpay'],
+            )) ?: ['creditcard'],
         ]);
     }
 

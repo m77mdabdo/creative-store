@@ -90,7 +90,7 @@ class OrderPaymentService
             ]);
 
             if ($remote->isSuccessful()) {
-                $this->confirmOrder($order, $source);
+                $this->confirmOrder($order, $source, $remote->method());
 
                 return self::RESULT_PAID;
             }
@@ -119,15 +119,16 @@ class OrderPaymentService
             && $remote->currency === strtoupper((string) $order->currency);
     }
 
-    private function confirmOrder(Order $order, string $source): void
+    private function confirmOrder(Order $order, string $source, ?string $method = null): void
     {
         $previousStatus = $order->status;
 
-        $order->update([
+        $order->update(array_filter([
             'payment_status' => 'paid',
             'status'         => 'confirmed',
             'paid_at'        => now(),
-        ]);
+            'payment_method' => $method,
+        ]));
 
         OrderStatusLog::create([
             'order_id'    => $order->id,

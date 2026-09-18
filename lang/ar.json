@@ -1358,5 +1358,9 @@
     "Attribute Details": "تفاصيل الخاصية",
     "Audit Log Details": "تفاصيل سجل التدقيق",
     "Edit Attribute Value": "تعديل قيمة الخاصية",
-    "Create Attribute Value": "إنشاء قيمة خاصية"
+    "Create Attribute Value": "إنشاء قيمة خاصية",
+    "Applepay": "Apple Pay",
+    "Stcpay": "STC Pay",
+    "Visa": "فيزا",
+    "Mastercard": "ماستركارد"
 }

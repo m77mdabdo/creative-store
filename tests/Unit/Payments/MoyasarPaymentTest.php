@@ -70,4 +70,12 @@ class MoyasarPaymentTest extends TestCase
         $this->assertFalse($gateway->isValidPaymentId('../../v1/invoices'));
         $this->assertFalse($gateway->isValidPaymentId('abc'));
     }
+
+    public function test_it_reports_how_the_customer_paid(): void
+    {
+        $this->assertSame('mada', MoyasarPayment::fromArray(['source' => ['type' => 'creditcard', 'company' => 'mada']])->method());
+        $this->assertSame('applepay', MoyasarPayment::fromArray(['source' => ['type' => 'applepay']])->method());
+        $this->assertSame('stcpay', MoyasarPayment::fromArray(['source' => ['type' => 'stcpay']])->method());
+        $this->assertNull(MoyasarPayment::fromArray([])->method());
+    }
 }

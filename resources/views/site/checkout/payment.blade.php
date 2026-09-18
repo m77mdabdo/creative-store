@@ -103,11 +103,16 @@ Moyasar.init({
     element: '.mysr-form',
     amount: {{ (int) round($order->total * 100) }},
     currency: '{{ $order->currency }}',
-    description: 'Payment for Order {{ $order->order_number }}',
+    description: @json('Payment for Order ' . $order->order_number),
     publishable_api_key: '{{ $publishableKey }}',
     callback_url: '{{ $callbackUrl }}',
-    methods: ['creditcard'],
+    methods: @json($methods),
     supported_networks: ['mada', 'visa', 'mastercard'],
+    apple_pay: {
+        country: 'SA',
+        label: @json(config('services.moyasar.apple_pay_label')),
+        validate_merchant_url: 'https://api.moyasar.com/v1/applepay/initiate'
+    },
     language: '{{ app()->getLocale() === "ar" ? "ar" : "en" }}',
     metadata: {
         order_id: '{{ $order->id }}',
