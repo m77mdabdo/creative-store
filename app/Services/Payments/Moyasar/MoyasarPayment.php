@@ -37,6 +37,20 @@ final class MoyasarPayment
         );
     }
 
+    /**
+     * How the customer paid: mada, visa, mastercard, applepay or stcpay.
+     */
+    public function method(): ?string
+    {
+        $type = strtolower((string) data_get($this->raw, 'source.type', ''));
+
+        return match ($type) {
+            'creditcard' => strtolower((string) data_get($this->raw, 'source.company', 'creditcard')) ?: 'creditcard',
+            'applepay', 'stcpay' => $type,
+            default => null,
+        };
+    }
+
     public function isSuccessful(): bool
     {
         return in_array($this->status, self::SUCCESS_STATUSES, true);

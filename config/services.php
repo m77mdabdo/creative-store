@@ -46,5 +46,11 @@ return [
     'secret_key' => env('MOYASAR_SECRET_KEY'),
     'currency' => env('MOYASAR_CURRENCY', 'SAR'),
     'webhook_secret' => env('MOYASAR_WEBHOOK_SECRET'),
+
+    // Payment methods shown on the checkout form. Apple Pay also needs the
+    // domain verified in the Moyasar dashboard; STC Pay needs it enabled on
+    // the Moyasar account. Test keys accept the Moyasar test wallets.
+    'methods' => array_values(array_filter(array_map('trim', explode(',', env('MOYASAR_METHODS', 'creditcard,applepay,stcpay'))))),
+    'apple_pay_label' => env('MOYASAR_APPLE_PAY_LABEL', env('APP_NAME', 'Creative Store')),
 ],
 ];

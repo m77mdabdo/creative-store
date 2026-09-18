@@ -1092,7 +1092,7 @@
     "Refund Requested": "Refund Requested",
     "Pending Payment": "Pending Payment",
     "Mada": "Mada",
-    "Creditcard": "Creditcard",
+    "Creditcard": "Credit card",
     "Moyasar": "Moyasar",
     "Cod": "Cod",
     "Create attributes": "Create attributes",
@@ -1358,5 +1358,9 @@
     "Attribute Details": "Attribute Details",
     "Audit Log Details": "Audit Log Details",
     "Edit Attribute Value": "Edit Attribute Value",
-    "Create Attribute Value": "Create Attribute Value"
+    "Create Attribute Value": "Create Attribute Value",
+    "Applepay": "Apple Pay",
+    "Stcpay": "STC Pay",
+    "Visa": "Visa",
+    "Mastercard": "Mastercard"
 }
