@@ -36,6 +36,7 @@ use App\Http\Controllers\Dashboard\AuditLogController;
 use App\Http\Controllers\Dashboard\ErrorLogController;
 use App\Http\Controllers\Dashboard\BackupController;
 use App\Http\Controllers\Dashboard\NotificationController;
+use App\Http\Controllers\Dashboard\ShipmentCarrierController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 
@@ -650,6 +651,18 @@ Route::group([
         Route::post('/shipments', [ShipmentController::class, 'store'])
             ->middleware('permission:shipments.create')
             ->name('shipments.store');
+
+        Route::post('/shipments/{shipment}/waybill', [ShipmentCarrierController::class, 'book'])
+            ->middleware('permission:shipments.edit')
+            ->name('shipments.waybill');
+
+        Route::post('/shipments/{shipment}/sync', [ShipmentCarrierController::class, 'sync'])
+            ->middleware('permission:shipments.edit')
+            ->name('shipments.sync');
+
+        Route::get('/shipments/{shipment}/label', [ShipmentCarrierController::class, 'label'])
+            ->middleware('permission:shipments.view')
+            ->name('shipments.label');
 
         Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])
             ->middleware('permission:shipments.view')

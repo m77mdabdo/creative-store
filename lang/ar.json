@@ -1362,5 +1362,11 @@
     "Applepay": "Apple Pay",
     "Stcpay": "STC Pay",
     "Visa": "فيزا",
-    "Mastercard": "ماستركارد"
+    "Mastercard": "ماستركارد",
+    "Create waybill": "إنشاء بوليصة",
+    "Shipping label": "ملصق الشحن",
+    "Update tracking": "تحديث التتبع",
+    "Waybill :number created.": "تم إنشاء البوليصة :number.",
+    "This shipment already has a waybill.": "هذه الشحنة لها بوليصة بالفعل.",
+    "{0} Tracking is up to date.|{1} 1 new tracking update.|[2,*] :count new tracking updates.": "{0} التتبع محدّث.|{1} تحديث تتبع جديد.|[2,*] :count تحديثات تتبع جديدة."
 }

@@ -6,12 +6,32 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Shipment #{{ $shipment->id }}</h1>
+                    <h1>{{ __('Shipment') }} #{{ $shipment->id }}</h1>
                 </div>
                 <div class="col-sm-6 text-sm-right">
                     <a href="{{ route('dashboard.shipments.index') }}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left mr-1"></i> {{ __('Back') }}
                     </a>
+                    @if (! $shipment->tracking_number && $shipment->order?->status !== 'cancelled')
+                        <form method="POST" action="{{ route('dashboard.shipments.waybill', $shipment) }}" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-barcode mr-1"></i> {{ __('Create waybill') }}
+                            </button>
+                        </form>
+                    @elseif ($shipment->tracking_number)
+                        <a href="{{ route('dashboard.shipments.label', $shipment) }}" class="btn btn-outline-dark">
+                            <i class="fas fa-print mr-1"></i> {{ __('Shipping label') }}
+                        </a>
+                        @if ($shipment->status !== 'delivered')
+                            <form method="POST" action="{{ route('dashboard.shipments.sync', $shipment) }}" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-outline-primary">
+                                    <i class="fas fa-sync-alt mr-1"></i> {{ __('Update tracking') }}
+                                </button>
+                            </form>
+                        @endif
+                    @endif
                     <a href="{{ route('dashboard.shipments.edit', $shipment) }}" class="btn btn-primary">
                         <i class="fas fa-edit mr-1"></i> {{ __('Edit Shipment') }}
                     </a>
