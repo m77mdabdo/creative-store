@@ -3,6 +3,7 @@
 @section('title', __('site.order_placed'))
 
 @section('content')
+@php(\App\Support\Analytics\Analytics::purchase($order))
 
 <link rel="stylesheet" href="{{ versioned_asset('css/site/site-orders-success.css') }}">
 
