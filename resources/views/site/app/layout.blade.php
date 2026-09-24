@@ -4,6 +4,7 @@
     @include('site.app.head')
     @stack('head')
     @stack('styles')
+    @include('site.app.analytics')
 </head>
 <body class="site-body {{ app()->getLocale() === 'ar' ? 'rtl-site' : 'ltr-site' }}">
 

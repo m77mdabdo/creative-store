@@ -5,6 +5,14 @@
 @section('og_image', $generalGallery[0]['url'] ?? '')
 @section('og_type', 'product')
 
+@php
+    \App\Support\Analytics\Analytics::track('view_item', [
+        'currency' => $productCurrency ?: 'SAR',
+        'value'    => round((float) $productPrice, 2),
+        'items'    => [\App\Support\Analytics\Analytics::item($product->id, (string) $productName, (float) $productPrice, 1, $categoryName ?: null)],
+    ]);
+@endphp
+
 @push('head')
 @php
     $variantStocks = collect($variantMatrix);

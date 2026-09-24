@@ -26,21 +26,31 @@ class ShippingController extends Controller
         }
 
         $addresses = Address::where('user_id', auth()->id())->latest()->get();
-       $shipping = session('shipping', []);
-       $shippingFee = (float) ($shipping['shipping_fee'] ?? 0);
+        $shipping = session('shipping', []);
+        $shippingFee = (float) ($shipping['shipping_fee'] ?? 0);
 
-// ده summary اللي جاي من صفحة الكارت
-      $cartSummary = session('cart_summary', [
-    'subtotal' => 0,
-    'discount' => 0,
-    'tax_total' => 0,
-    'total' => 0,
-]);
+        // Totals carried over from the cart page.
+        $cartSummary = session('cart_summary', [
+            'subtotal'  => 0,
+            'discount'  => 0,
+            'tax_total' => 0,
+            'total'     => 0,
+        ]);
 
-      $totals = $this->shippingService->orderTotalsFromCartSummary($cartSummary, $shippingFee);
-      session([
-    'checkout_totals' => $totals,
-     ]);
+        $totals = $this->shippingService->orderTotalsFromCartSummary($cartSummary, $shippingFee);
+        session(['checkout_totals' => $totals]);
+
+        \App\Support\Analytics\Analytics::track('begin_checkout', [
+            'currency' => 'SAR',
+            'value'    => round((float) ($totals['total'] ?? 0), 2),
+            'items'    => collect($cart)->map(fn (array $item) => \App\Support\Analytics\Analytics::item(
+                $item['product_id'] ?? '',
+                (string) ($item['name'] ?? ''),
+                (float) ($item['price'] ?? 0),
+                (int) ($item['quantity'] ?? 1),
+            ))->values()->all(),
+        ]);
+
         return view('site.shipping.index', compact('cart', 'addresses', 'shipping', 'totals'));
     }
 

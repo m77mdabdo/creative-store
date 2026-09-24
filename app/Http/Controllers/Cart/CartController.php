@@ -174,6 +174,19 @@ public function add(Request $request)
 
     session()->put('cart', $cart);
 
+    \App\Support\Analytics\Analytics::flash('add_to_cart', [
+        'currency' => $product->currency ?? 'SAR',
+        'value'    => round($price * (int) $validated['quantity'], 2),
+        'items'    => [\App\Support\Analytics\Analytics::item(
+            $product->id,
+            (string) ($product->name ?? $product->slug),
+            $price,
+            (int) $validated['quantity'],
+            null,
+            trim(implode(' / ', array_filter([$selectedOptions['color'], $selectedOptions['size']]))) ?: null,
+        )],
+    ]);
+
     if (!empty($validated['coupon_code'])) {
         $code = strtoupper(trim($validated['coupon_code']));
         $coupon = Coupon::query()->where('code', $code)->first();

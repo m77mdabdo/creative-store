@@ -28,6 +28,10 @@ class ProductController extends Controller
             'sort'     => ['nullable', 'in:new,price_asc,price_desc'],
         ]);
 
+        if (filled($request->query('q'))) {
+            \App\Support\Analytics\Analytics::track('search', ['search_term' => (string) $request->query('q')]);
+        }
+
         $locale   = app()->getLocale();
         $fallback = config('app.fallback_locale');
 
