@@ -3,11 +3,14 @@
 namespace App\Notifications;
 
 use App\Models\Order;
+use App\Notifications\Channels\TextMessageChannel;
+use App\Services\Messaging\TextMessage;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class OrderPlacedNotification extends Notification
+class OrderPlacedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -20,11 +23,28 @@ class OrderPlacedNotification extends Notification
             'addressSnapshot',
             'shippingMethod'
         ]);
+
+        // Queued, and only once the payment transaction has committed.
+        $this->afterCommit();
     }
 
     public function via($notifiable)
     {
-        return ['mail','database'];
+        // The customer also gets a text message; staff copies do not.
+        return (int) $notifiable->getKey() === (int) $this->order->user_id
+            ? ['mail', 'database', TextMessageChannel::class]
+            : ['mail', 'database'];
+    }
+
+    public function toText($notifiable): TextMessage
+    {
+        return new TextMessage(
+            __('notifications.text.order_placed', [
+                'number' => $this->order->order_number,
+                'total'  => money($this->order->total, $this->order->currency),
+            ], config('app.locale')),
+            $this->order->addressSnapshot?->phone ?? $notifiable->phone,
+        );
     }
 
     public function toMail($notifiable)

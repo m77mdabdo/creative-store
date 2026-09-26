@@ -32,4 +32,17 @@ return [
     'generic' => [
         'title' => 'Notification',
     ],
+    'text' => [
+        'order_placed' => 'Creative Store: your order :number is confirmed, total :total. Thank you for shopping with us.',
+        'shipped' => 'Creative Store: your order :number has shipped with :carrier. Tracking number: :tracking',
+        'delivered' => 'Creative Store: your order :number was delivered. We hope you love it!',
+    ],
+    'shipment_shipped' => [
+        'title' => 'Order shipped',
+        'message' => 'Order #:number is on its way, tracking :tracking',
+    ],
+    'shipment_delivered' => [
+        'title' => 'Order delivered',
+        'message' => 'Order #:number was delivered.',
+    ],
 ];

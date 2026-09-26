@@ -32,4 +32,17 @@ return [
     'generic' => [
         'title' => 'إشعار',
     ],
+    'text' => [
+        'order_placed' => 'كرييتف ستور: تم تأكيد طلبك :number بقيمة :total. شكرًا لتسوقك معنا.',
+        'shipped' => 'كرييتف ستور: تم شحن طلبك :number مع :carrier. رقم التتبع: :tracking',
+        'delivered' => 'كرييتف ستور: تم توصيل طلبك :number. نتمنى أن ينال إعجابك!',
+    ],
+    'shipment_shipped' => [
+        'title' => 'تم شحن الطلب',
+        'message' => 'الطلب #:number في الطريق، رقم التتبع :tracking',
+    ],
+    'shipment_delivered' => [
+        'title' => 'تم توصيل الطلب',
+        'message' => 'تم توصيل الطلب #:number.',
+    ],
 ];

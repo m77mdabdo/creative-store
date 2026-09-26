@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\OrderStatusLog;
 use App\Models\Shipment;
 use App\Models\ShipmentTrackingLog;
+use App\Notifications\ShipmentStatusNotification;
 use App\Services\Shipping\Carriers\Carrier;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -63,7 +64,10 @@ class ShipmentCarrierService
             $this->moveOrder($shipment->order, 'shipped');
         });
 
-        return $shipment->fresh();
+        $shipment = $shipment->fresh();
+        $shipment->order?->user?->notify(new ShipmentStatusNotification($shipment, 'shipped'));
+
+        return $shipment;
     }
 
     /**
@@ -78,8 +82,9 @@ class ShipmentCarrierService
         $events = $this->carrier()->track($shipment);
         $known = $shipment->trackingLogs()->pluck('carrier_status')->all();
         $new = 0;
+        $delivered = false;
 
-        DB::transaction(function () use ($shipment, $events, $known, &$new) {
+        DB::transaction(function () use ($shipment, $events, $known, &$new, &$delivered) {
             foreach ($events as $event) {
                 if (in_array($event->carrierStatus, $known, true)) {
                     continue;
@@ -97,9 +102,14 @@ class ShipmentCarrierService
 
                 if ($event->status === Shipment::STATUS_DELIVERED) {
                     $this->moveOrder($shipment->order, 'delivered');
+                    $delivered = true;
                 }
             }
         });
+
+        if ($delivered) {
+            $shipment->order?->user?->notify(new ShipmentStatusNotification($shipment, 'delivered'));
+        }
 
         return $new;
     }
