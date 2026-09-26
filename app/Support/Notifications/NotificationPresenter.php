@@ -7,6 +7,7 @@ use App\Notifications\NewContactMessageNotification;
 use App\Notifications\OrderCancelledNotification;
 use App\Notifications\OrderPlacedNotification;
 use App\Notifications\RegisteredNotify;
+use App\Notifications\ShipmentStatusNotification;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -49,6 +50,16 @@ final class NotificationPresenter
                 __('notifications.contact_message.title', ['name' => $data['name'] ?? '—']),
                 Str::limit((string) (($data['subject'] ?? '') ?: ($data['message'] ?? '')), 90),
                 $data['url'] ?? self::route('dashboard.contact-messages.index'),
+            ],
+            ShipmentStatusNotification::class => [
+                ($data['type'] ?? '') === 'shipment_delivered' ? 'fa-check-circle' : 'fa-truck',
+                ($data['type'] ?? '') === 'shipment_delivered' ? 'success' : 'info',
+                __('notifications.' . (($data['type'] ?? '') === 'shipment_delivered' ? 'shipment_delivered' : 'shipment_shipped') . '.title'),
+                __('notifications.' . (($data['type'] ?? '') === 'shipment_delivered' ? 'shipment_delivered' : 'shipment_shipped') . '.message', [
+                    'number'   => $orderNumber ?? '—',
+                    'tracking' => $data['tracking_number'] ?? '—',
+                ]),
+                self::orderUrl($orderId),
             ],
             LoginNotify::class => [
                 'fa-sign-in-alt', 'secondary',
