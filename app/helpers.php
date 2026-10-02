@@ -73,7 +73,7 @@ if (! function_exists('media_url')) {
         // Local public disk: build the URL from the current request so images
         // load on whatever host and port serves the site, not only APP_URL.
         if (config("filesystems.disks.{$disk}.driver") === 'local') {
-            return asset('storage/' . ltrim($path, '/'));
+            return asset('storage/' . ltrim(webp_variant($path, $disk), '/'));
         }
 
         return media_disk()->url($path);
@@ -123,5 +123,25 @@ if (! function_exists('pdf_arabic')) {
         $shaper ??= new \ArPHP\I18N\Arabic();
 
         return $shaper->utf8Glyphs($text);
+    }
+}
+
+if (! function_exists('webp_variant')) {
+    /**
+     * The .webp copy of an uploaded JPEG/PNG when `php artisan media:webp`
+     * has created one (about 30-70% smaller), otherwise the original path.
+     */
+    function webp_variant(string $path, ?string $disk = null): string
+    {
+        static $checked = [];
+
+        if (! preg_match('/\.(jpe?g|png)$/i', $path)) {
+            return $path;
+        }
+
+        $webp = preg_replace('/\.(jpe?g|png)$/i', '.webp', $path);
+        $disk ??= config('filesystems.media_disk', 'public');
+
+        return $checked[$disk . '|' . $path] ??= \Illuminate\Support\Facades\Storage::disk($disk)->exists($webp) ? $webp : $path;
     }
 }
