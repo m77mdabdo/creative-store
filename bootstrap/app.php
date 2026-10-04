@@ -39,6 +39,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Errors go to Sentry when SENTRY_LARAVEL_DSN is set (no-op otherwise).
+        \Sentry\Laravel\Integration::handles($exceptions);
+
         $exceptions->report(function (Throwable $e) {
             try {
                 if (app()->runningInConsole()) {
