@@ -39,14 +39,18 @@ Creative Store covers the full online-retail lifecycle: catalogue with product v
 - Wishlist, product reviews, blog with comments, CMS pages (home, about, contact)
 - Registration with email OTP verification, Google sign-in, password reset
 - Address book, zone-based shipping rates and delivery estimates
-- Online card payment through Moyasar, verified on the server
-- Order history, PDF invoices, self-service cancellation and public shipment tracking
+- Online payment through Moyasar (mada, Visa, Mastercard, Apple Pay, STC Pay), verified on the server
+- ZATCA simplified tax invoices (Arabic/English PDF with the Fatoora QR code)
+- Order confirmation, shipping and delivery messages by SMS or WhatsApp
+- GA4, Meta, Snap and TikTok e-commerce events (view, add to cart, checkout, purchase, search)
+- Order history, self-service cancellation and public shipment tracking
 - Abandoned-cart recovery emails
 
 ### Admin dashboard
 - Three staff roles (owner, admin, employee) plus per-user permission overrides
 - Products, variants, images, categories, attributes, coupons
 - Orders, payments, refunds, returns, shipments, tracking logs and delivery attempts
+- Carrier integration: one-click waybill, printable label and automatic tracking updates
 - Shipping methods, zones, cities and rates
 - Users, roles, permissions, audit log, error log, contact inbox, blog and pages
 - Sales statistics and scheduled database backups
@@ -247,6 +251,7 @@ The goal is that request time depends on the page size, not on how big the table
 | `orders:expire-unpaid` | every 15 min | cancel unpaid orders, release stock and coupons |
 | `carts:process-abandoned` | every 5 min | send recovery emails in bounded batches |
 | `backup:run scheduled` | every 12 h | database backup with retention |
+| `shipments:sync` | every 30 min | pull carrier tracking, mark orders delivered, text the customer |
 | `model:prune` | daily 03:30 | trim audit, error and webhook logs |
 
 Run the worker and scheduler in production:
@@ -299,6 +304,15 @@ Photos are from [Unsplash](https://unsplash.com/license) (free for commercial us
 | `MOYASAR_WEBHOOK_SECRET` | must match the secret configured in Moyasar |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google sign-in |
 | `BACKUP_RETENTION_DAYS` | how long backups are kept (default 30) |
+| `MOYASAR_METHODS` | checkout methods, default `creditcard,applepay,stcpay` |
+| `STORE_LEGAL_NAME_AR`, `STORE_LEGAL_NAME_EN`, `STORE_VAT_NUMBER`, `STORE_CR_NUMBER`, `STORE_ADDRESS_AR`, `STORE_ADDRESS_EN` | seller details on tax invoices and policy pages (demo values by default) |
+| `SHIPPING_CARRIER` | waybills and tracking; `sandbox` simulates a carrier |
+| `MESSAGING_DRIVER` | `log` (default, nothing sent), `unifonic` (SMS) or `whatsapp` |
+| `UNIFONIC_APP_SID`, `UNIFONIC_SENDER_ID` | Unifonic SMS |
+| `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_TEMPLATE` | WhatsApp Cloud API |
+| `GA4_MEASUREMENT_ID`, `META_PIXEL_ID`, `SNAP_PIXEL_ID`, `TIKTOK_PIXEL_ID` | analytics tags (each loads only when set) |
+| `ANALYTICS_DEBUG` | print every e-commerce event to the browser console |
+| `SENTRY_LARAVEL_DSN` | error monitoring (off when empty) |
 | `REVERB_*` | realtime broadcasting |
 
 Register the webhook in the Moyasar dashboard:
@@ -315,7 +329,16 @@ https://your-domain.com/webhooks/moyasar
 php artisan test
 ```
 
-Unit tests cover the HTML sanitizer (script, event handler, `javascript:` and protocol-relative URL removal, Arabic text preserved) and Moyasar payment handling (payload parsing, status mapping, webhook secret check, payment id validation).
+The suite runs on an in-memory SQLite database and on every push through GitHub Actions (PHP 8.4 and 8.5). It covers:
+
+- **Checkout**: stock is reserved and never oversold, stale cart prices and unpublished products are refused, coupon limits hold
+- **Payments**: a paid payment confirms the order exactly once, amount mismatches and cancelled orders are refused, webhook secret and redelivery
+- **Payment page**: configured methods (card, Apple Pay, STC Pay), only the owner can pay an open order
+- **Tax invoices**: VAT breakdown adds up, the ZATCA QR decodes to the right fields, customers only see their own invoice
+- **Shipping**: waybill and label, tracking to delivered, order status follows
+- **Messaging**: phone normalization, texts for confirmed, shipped and delivered orders, provider failures never break the flow
+- **Storefront**: sitemap, robots, security headers, policy pages, analytics events, WebP images
+- **Units**: HTML sanitizer, Moyasar payload mapping, ZATCA TLV encoding, money and status helpers
 
 ---
 
@@ -360,7 +383,7 @@ LOG_LEVEL=warning
 **3. Mail**: a domain sender (e.g. `no-reply@your-domain.com`) with SPF and DKIM, so OTP and order emails reach the inbox.
 
 **4. Content**
-- `php artisan db:seed --class=LegalPagesSeeder`, then fill every `[placeholder]` (trade name, CR number, VAT number, support email, store address) from the dashboard → Pages.
+- Set the `STORE_LEGAL_*`, `STORE_VAT_NUMBER` and `STORE_CR_NUMBER` values, then run `php artisan db:seed --class=LegalPagesSeeder`; the policy pages and tax invoices use them.
 - Fill `STORE_SUPPORT_EMAIL`, `STORE_SUPPORT_PHONE` and the social links in `.env`.
 - Review shipping rates, free-shipping thresholds and store-pickup cities in the dashboard.
 
@@ -370,9 +393,17 @@ LOG_LEVEL=warning
 ```
 Run `php artisan queue:work --tries=3 --max-time=3600` under Supervisor.
 
-**6. Deploy**: `bash bin/deploy.sh`
+**6. Integrations**
+- Payments: verify the domain for Apple Pay and enable STC Pay in the Moyasar dashboard.
+- Messaging: set `MESSAGING_DRIVER=unifonic` (or `whatsapp`) with its credentials.
+- Shipping: add a driver for your carrier in `config/carriers.php` (the sandbox shows the flow) and set `SHIPPING_CARRIER`.
+- Analytics: set the GA4 / pixel IDs; turn on `ANALYTICS_DEBUG` once to watch the events in the console.
+- Monitoring: set `SENTRY_LARAVEL_DSN`.
+- Images: run `php artisan media:webp` once (and after large uploads) to serve WebP copies.
 
-**7. After launch**
+**7. Deploy**: `bash bin/deploy.sh`
+
+**8. After launch**
 - Place one real low-value order, refund it from the dashboard, and confirm the refund in Moyasar.
 - Submit `https://your-domain.com/sitemap.xml` in Google Search Console.
 - Confirm a database backup appears in Dashboard → Backups after 12 hours.
