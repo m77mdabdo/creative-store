@@ -550,5 +550,7 @@ return [
     'from_our_blog' => 'Latest from the blog',
     'payment' => 'Payment',
     'order_placed' => 'Order received',
+    'login_to_checkout' => 'Sign in or create an account to complete your order. Your cart is saved.',
+    'checkout_login_hint' => 'You will sign in when you check out',
 
 ];

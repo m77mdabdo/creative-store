@@ -26,6 +26,16 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
+        // Guests can shop and fill the cart; checkout asks them to sign in
+        // and brings them back to the same step afterwards.
+        $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
+            if ($request->routeIs('shipping.*', 'checkout.*') && $request->hasSession()) {
+                $request->session()->flash('info', __('site.login_to_checkout'));
+            }
+
+            return route('login');
+        });
+
         $middleware->validateCsrfTokens(except: [
             'webhooks/moyasar',
         ]);

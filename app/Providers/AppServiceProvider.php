@@ -76,6 +76,10 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('forms', fn (Request $request) => Limit::perMinute(6)
             ->by($request->user()?->id ?: $request->ip()));
 
+        // Adding to the cart is open to guests; this only stops scripted floods.
+        RateLimiter::for('cart', fn (Request $request) => Limit::perMinute(60)
+            ->by($request->user()?->id ?: $request->ip()));
+
         RateLimiter::for('checkout', fn (Request $request) => Limit::perMinute(10)
             ->by($request->user()?->id ?: $request->ip()));
 

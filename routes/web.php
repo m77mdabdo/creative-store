@@ -188,30 +188,31 @@ Route::group([
     |--------------------------------------------------------------------------
     */
 
+    // Open to guests: signing in is only required at checkout.
     Route::prefix('cart')->name('cart.')->group(function () {
         Route::get('/', [CartController::class, 'index'])->name('index');
 
-        Route::middleware('auth')->group(function () {
-            Route::post('/add', [CartController::class, 'add'])->name('add');
+        Route::post('/add', [CartController::class, 'add'])
+            ->middleware('throttle:cart')
+            ->name('add');
 
-            Route::delete('/remove/{key}', [CartController::class, 'remove'])
-                ->where('key', '.*')
-                ->name('remove');
+        Route::delete('/remove/{key}', [CartController::class, 'remove'])
+            ->where('key', '.*')
+            ->name('remove');
 
-            Route::post('/update', [CartController::class, 'update'])->name('update');
-            Route::post('/clear', [CartController::class, 'clear'])->name('clear');
+        Route::post('/update', [CartController::class, 'update'])->name('update');
+        Route::post('/clear', [CartController::class, 'clear'])->name('clear');
 
-            Route::post('/coupon', [CartController::class, 'applyCoupon'])
-                ->middleware('throttle:forms')
-                ->name('coupon');
+        Route::post('/coupon', [CartController::class, 'applyCoupon'])
+            ->middleware('throttle:forms')
+            ->name('coupon');
 
-            Route::delete('/coupon/remove', [CartController::class, 'removeCoupon'])
-                ->name('coupon.remove');
+        Route::delete('/coupon/remove', [CartController::class, 'removeCoupon'])
+            ->name('coupon.remove');
 
-            Route::post('/coupon/preview', [CartController::class, 'previewCoupon'])
-                ->middleware('throttle:forms')
-                ->name('coupon.preview');
-        });
+        Route::post('/coupon/preview', [CartController::class, 'previewCoupon'])
+            ->middleware('throttle:forms')
+            ->name('coupon.preview');
     });
 
     Route::get('/cart/view', fn () => view('site.cart.cart-panel'))->name('cart.view');

@@ -396,6 +396,13 @@
                            class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer m-t-10">
                             {{ __('site.continue_to_shipping') }}
                         </a>
+
+                        @guest
+                            <p class="stext-111 cl6 text-center m-t-10 m-b-0">
+                                <i class="zmdi zmdi-lock-outline" aria-hidden="true"></i>
+                                {{ __('site.checkout_login_hint') }}
+                            </p>
+                        @endguest
                     </div>
                 </div>
             </div>
