@@ -56,6 +56,12 @@
 
                                     <p class="login-box-msg mb-4">{{ __('site.sign_in_start_session') }}</p>
 
+                                    @if (session('info'))
+                                        <div class="alert alert-info" role="status">
+                                            {{ session('info') }}
+                                        </div>
+                                    @endif
+
                                     @if (session('success'))
                                         <div class="alert alert-success" role="status">
                                             {{ session('success') }}
