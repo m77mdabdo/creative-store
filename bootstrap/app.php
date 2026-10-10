@@ -25,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+        $middleware->appendToGroup('web', \App\Http\Middleware\PersistCustomerCart::class);
 
         // Guests can shop and fill the cart; checkout asks them to sign in
         // and brings them back to the same step afterwards.
