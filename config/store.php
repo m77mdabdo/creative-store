@@ -23,6 +23,10 @@ return [
         'vat_rate'   => (float) (env('STORE_VAT_RATE') ?: 0.15),
     ],
 
+    // Customers who leave items in their cart get one reminder (email and
+    // SMS/WhatsApp) this many hours after their last cart change.
+    'cart_reminder_after_hours' => (int) (env('CART_REMINDER_AFTER_HOURS') ?: 3),
+
     'support_email' => env('STORE_SUPPORT_EMAIL'),
     'support_phone' => env('STORE_SUPPORT_PHONE'),
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Cart;
 use App\Http\Controllers\Controller;
 use App\Models\AbandonedCartRecovery;
 use Illuminate\Http\RedirectResponse;
+use App\Services\Cart\SavedCart;
 use Illuminate\Support\Facades\Auth;
 
 class CartRecoveryController extends Controller
@@ -16,7 +17,9 @@ class CartRecoveryController extends Controller
             ->where('recovery_token', $token)
             ->firstOrFail();
 
-        if (!$recovery->isRecoverable()) {
+        $reopened = $recovery->status === 'recovered' && $recovery->expires_at?->isFuture();
+
+        if (!$recovery->isRecoverable() && !$reopened) {
             return redirect('/')
                 ->with('error', __('This recovery link is no longer valid.'));
         }
@@ -34,9 +37,14 @@ class CartRecoveryController extends Controller
         }
 
         if ($cart->user_id && !Auth::check()) {
-            return redirect()->route('login')
+            // Come back to this link after signing in.
+            return redirect()->guest(route('login'))
                 ->with('info', __('Please log in to restore your cart.'));
         }
+
+        // Put the saved items back into this browser's cart.
+        $savedCart = app(SavedCart::class);
+        session()->put('cart', $savedCart->merge(session()->get('cart', []), $savedCart->restore($cart)));
 
         $cart->touch();
 
@@ -45,6 +53,6 @@ class CartRecoveryController extends Controller
             'recovered_at' => now(),
         ]);
 
-        return redirect('/cart')->with('success', __('Your cart has been recovered successfully.'));
+        return redirect()->route('cart.index')->with('success', __('Your cart has been recovered successfully.'));
     }
 }
