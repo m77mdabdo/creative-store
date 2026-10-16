@@ -2,17 +2,16 @@
 
 namespace App\Jobs;
 
-use App\Mail\AbandonedCartRecoveryMail;
 use App\Models\AbandonedCartRecovery;
 use App\Models\Cart;
+use App\Notifications\CartReminderNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 /**
- * Emails customers about carts they left behind.
+ * Reminds customers (email and SMS/WhatsApp) about carts they left behind.
  *
  * Works in bounded batches so the run time and memory stay flat no matter
  * how many carts exist: only carts abandoned in the recent window are
@@ -22,8 +21,6 @@ use Illuminate\Support\Str;
 class ProcessAbandonedCarts implements ShouldQueue
 {
     use Queueable;
-
-    private const ABANDONED_AFTER_HOURS = 24;
 
     private const LOOKBACK_DAYS = 7;
 
@@ -42,7 +39,7 @@ class ProcessAbandonedCarts implements ShouldQueue
             ->whereNotNull('user_id')
             ->whereBetween('updated_at', [
                 now()->subDays(self::LOOKBACK_DAYS),
-                now()->subHours(self::ABANDONED_AFTER_HOURS),
+                now()->subHours(max(1, (int) config('store.cart_reminder_after_hours', 3))),
             ])
             ->whereHas('items')
             ->whereNotExists(fn (QueryBuilder $q) => $q
@@ -50,7 +47,7 @@ class ProcessAbandonedCarts implements ShouldQueue
                 ->from('abandoned_cart_recoveries')
                 ->whereColumn('abandoned_cart_recoveries.cart_id', 'carts.id')
                 ->whereIn('abandoned_cart_recoveries.status', ['pending', 'sent', 'recovered']))
-            ->with(['user:id,name,email'])
+            ->with(['user:id,name,email,phone'])
             ->withCount('items')
             ->chunkById(self::BATCH_SIZE, function ($carts) use (&$processed) {
                 foreach ($carts as $cart) {
@@ -85,7 +82,7 @@ class ProcessAbandonedCarts implements ShouldQueue
         ]);
 
         try {
-            Mail::to($email)->send(new AbandonedCartRecoveryMail($recovery));
+            $cart->user->notify(new CartReminderNotification($recovery));
 
             $recovery->update(['status' => 'sent', 'sent_at' => now()]);
         } catch (\Throwable $e) {

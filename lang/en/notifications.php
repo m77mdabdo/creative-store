@@ -33,6 +33,7 @@ return [
         'title' => 'Notification',
     ],
     'text' => [
+        'cart_reminder' => '{1} Creative Store: an item is still waiting in your cart. Complete your order: :link|[2,*] Creative Store: :count items are still waiting in your cart. Complete your order: :link',
         'order_placed' => 'Creative Store: your order :number is confirmed, total :total. Thank you for shopping with us.',
         'shipped' => 'Creative Store: your order :number has shipped with :carrier. Tracking number: :tracking',
         'delivered' => 'Creative Store: your order :number was delivered. We hope you love it!',
@@ -44,5 +45,17 @@ return [
     'shipment_delivered' => [
         'title' => 'Order delivered',
         'message' => 'Order #:number was delivered.',
+    ],
+    'cart_email' => [
+        'subject' => 'Items are still waiting in your cart',
+        'title' => 'Your cart is waiting',
+        'greeting' => 'Hi :name,',
+        'greeting_guest' => 'Hello,',
+        'body' => 'You added items to your cart but did not complete your order. They are saved for you, and you can finish in one click.',
+        'product' => 'Product',
+        'quantity' => 'Qty',
+        'price' => 'Price',
+        'button' => 'Return to your cart',
+        'expiry' => 'This link is valid for 3 days. Prices and availability are confirmed at checkout.',
     ],
 ];

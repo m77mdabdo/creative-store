@@ -25,7 +25,7 @@ class AbandonedCartRecoveryMail extends Mailable
             'user',
         ]);
 
-        return $this->subject('You left items in your cart')
+        return $this->subject(__('notifications.cart_email.subject'))
             ->view('emails.abandoned-cart-recovery', [
                 'recovery' => $this->recovery,
                 'cart'     => $cart,
