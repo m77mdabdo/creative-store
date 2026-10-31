@@ -4,6 +4,7 @@ namespace App\Services\Shipping;
 
 use App\Models\Address;
 use App\Models\ShippingRate;
+use App\Support\Shipping\DeliveryPromise;
 
 class ShippingService
 {
@@ -113,7 +114,7 @@ public function availableOptions(Address $address, array $cart): array
         })->first();
     })->values();
 
-    return $grouped->map(function ($rate) use ($subtotal) {
+    return $grouped->sortBy(fn ($rate) => $rate->method->sort_order ?? PHP_INT_MAX)->map(function ($rate) use ($subtotal) {
         $shippingFee = (float) $rate->price;
 
         if (!is_null($rate->free_shipping_threshold) && $subtotal >= (float) $rate->free_shipping_threshold) {
@@ -132,6 +133,7 @@ public function availableOptions(Address $address, array $cart): array
             'price' => $shippingFee,
             'eta_min_days' => $rate->eta_min_days,
             'eta_max_days' => $rate->eta_max_days,
+            'delivery' => DeliveryPromise::make($rate->eta_min_days, $rate->eta_max_days)->toArray(),
             'label' => $methodName . ' - ' . number_format($shippingFee, 2) . ' ' . __('SAR'),
         ];
     })->values()->toArray();

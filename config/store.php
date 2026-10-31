@@ -27,6 +27,21 @@ return [
     // SMS/WhatsApp) this many hours after their last cart change.
     'cart_reminder_after_hours' => (int) (env('CART_REMINDER_AFTER_HOURS') ?: 3),
 
+    /*
+    | Delivery promises shown at checkout, on orders and on the tracking page.
+    | Couriers do not deliver on the listed weekdays (0 = Sunday ... 6 =
+    | Saturday), so those days are skipped when counting. Same-day and
+    | next-day orders placed after the cut-off hour move one day later.
+    */
+    'delivery' => [
+        'timezone'     => env('STORE_TIMEZONE') ?: 'Asia/Riyadh',
+        'days_off'     => array_values(array_map('intval', array_filter(
+            explode(',', (string) (env('STORE_DELIVERY_DAYS_OFF') ?? '5')),
+            fn ($day) => $day !== ''
+        ))),
+        'cutoff_hour'  => (int) (env('STORE_DELIVERY_CUTOFF_HOUR') ?: 14),
+    ],
+
     'support_email' => env('STORE_SUPPORT_EMAIL'),
     'support_phone' => env('STORE_SUPPORT_PHONE'),
 

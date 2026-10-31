@@ -14,6 +14,7 @@ use App\Models\ProductVariant;
 use App\Models\ShippingRate;
 use App\Models\User;
 use App\Services\Coupons\CouponRedemptionService;
+use App\Support\Shipping\DeliveryPromise;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -67,6 +68,8 @@ class CheckoutService
             $taxTotal = (float) ($totals['tax_total'] ?? 0);
             $total = round($subtotal - $discount + $taxTotal + $shippingFee, 2);
 
+            $promise = DeliveryPromise::make($rate->eta_min_days, $rate->eta_max_days);
+
             $order = Order::create([
                 'order_number'            => $this->generateOrderNumber(),
                 'user_id'                 => $user->id,
@@ -84,8 +87,8 @@ class CheckoutService
                 'shipping_status'         => 'pending',
                 'payment_status'          => 'pending',
                 'payment_method'          => 'moyasar',
-                'estimated_delivery_from' => $rate->eta_min_days ? now()->addDays($rate->eta_min_days) : null,
-                'estimated_delivery_to'   => $rate->eta_max_days ? now()->addDays($rate->eta_max_days) : null,
+                'estimated_delivery_from' => $promise->from,
+                'estimated_delivery_to'   => $promise->to,
                 'placed_at'               => now(),
             ]);
 
