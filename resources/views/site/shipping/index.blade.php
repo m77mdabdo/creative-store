@@ -2,6 +2,10 @@
 
 @section('title', __('site.checkout'))
 
+@push('styles')
+<link rel="stylesheet" href="{{ versioned_asset('css/site/site-shipping-checkout.css') }}">
+@endpush
+
 @section('content')
 <section class="bg0 p-t-75 p-b-85">
     <div class="container">
@@ -270,20 +274,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
             let html = '';
 
+            const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+            const icons = {'standard': 'fa-truck', 'express': 'fa-shipping-fast', 'next-day': 'fa-bolt', 'same-day': 'fa-rocket', 'pickup': 'fa-store'};
+
             data.options.forEach((option, index) => {
+                const delivery = option.delivery || {};
+                const price = option.price > 0
+                    ? `${option.price.toFixed(2)} ${esc(@json(__('SAR')))}`
+                    : esc(@json(__('site.free')));
+
                 html += `
-                    <div class="bor8 p-3 m-b-15">
-                        <label class="w-100" style="cursor:pointer;">
-                            <input type="radio"
-                                   name="shipping_option"
-                                   data-method-id="${option.shipping_method_id}"
-                                   data-rate-id="${option.rate_id}"
-                                   ${index === 0 ? 'checked' : ''}>
-                            <strong>${option.method_name}</strong><br>
-                            ${option.price.toFixed(2)} ${@json(__('SAR'))}<br>
-                            ${option.eta_min_days ?? 0} - ${option.eta_max_days ?? 0} {{ __('site.days') }}
-                        </label>
-                    </div>
+                    <label class="cs-ship-option">
+                        <input type="radio"
+                               name="shipping_option"
+                               data-method-id="${option.shipping_method_id}"
+                               data-rate-id="${option.rate_id}"
+                               ${index === 0 ? 'checked' : ''}>
+                        <span class="cs-ship-icon"><i class="fas ${icons[option.method_code] || 'fa-truck'}" aria-hidden="true"></i></span>
+                        <span class="cs-ship-body">
+                            <span class="cs-ship-name">${esc(option.method_name)}</span>
+                            <span class="cs-ship-eta">${esc(delivery.headline)}</span>
+                            <span class="cs-ship-window">${esc(delivery.window)}</span>
+                            ${delivery.cutoff_hint ? `<span class="cs-ship-cutoff"><i class="far fa-clock" aria-hidden="true"></i> ${esc(delivery.cutoff_hint)}</span>` : ''}
+                        </span>
+                        <span class="cs-ship-price ${option.price > 0 ? '' : 'is-free'}">${price}</span>
+                    </label>
                 `;
             });
 

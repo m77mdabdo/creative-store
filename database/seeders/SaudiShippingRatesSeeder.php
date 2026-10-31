@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\ShippingMethod;
 use App\Models\ShippingZone;
 use App\Models\ShippingRate;
+use App\Support\Shipping\DeliveryTiers;
 
 class SaudiShippingRatesSeeder extends Seeder
 {
@@ -290,5 +291,8 @@ class SaudiShippingRatesSeeder extends Seeder
                 'is_active' => true,
             ]
         );
+
+        // Delivery days per method and next-day routes for the big cities.
+        DeliveryTiers::apply();
     }
 }

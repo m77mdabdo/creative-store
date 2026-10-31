@@ -1,0 +1,49 @@
+/* Shipping method cards on the checkout page */
+.cs-ship-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    margin: 0 0 12px;
+    padding: 14px 16px;
+    border: 1px solid #e6e6e6;
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.cs-ship-option:hover { border-color: rgba(var(--cs-primary-rgb), .45); }
+
+.cs-ship-option:has(input:checked) {
+    border-color: var(--cs-primary);
+    background: rgba(var(--cs-primary-rgb), .05);
+    box-shadow: 0 4px 14px rgba(var(--cs-primary-rgb), .12);
+}
+
+.cs-ship-option input { flex: 0 0 auto; accent-color: var(--cs-primary); width: 18px; height: 18px; margin: 0; }
+
+.cs-ship-icon {
+    flex: 0 0 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--cs-primary-rgb), .10);
+    color: var(--cs-primary);
+}
+
+.cs-ship-body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.cs-ship-name { font-weight: 600; color: #222; }
+.cs-ship-eta { color: #1e8e3e; font-weight: 600; font-size: 14px; }
+.cs-ship-window { color: #888; font-size: 12px; }
+.cs-ship-cutoff { color: #c26a00; font-size: 12px; }
+
+.cs-ship-price { flex: 0 0 auto; font-weight: 700; color: #222; white-space: nowrap; }
+.cs-ship-price.is-free { color: #1e8e3e; }
+
+@media (max-width: 480px) {
+    .cs-ship-option { flex-wrap: wrap; }
+    .cs-ship-price { margin-inline-start: 72px; }
+}
