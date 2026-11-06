@@ -24,7 +24,5 @@
 
     @include('site.app.footer')
     @include('site.app.script')
-
-    @stack('scripts')
 </body>
 </html>
