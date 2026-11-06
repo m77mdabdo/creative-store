@@ -319,6 +319,15 @@ Route::group([
     Route::post('/track-order', [CustomerTrackingController::class, 'track'])
         ->middleware('throttle:forms')
         ->name('tracking.track');
+
+    Route::get('/track-order/{orderNumber}', [CustomerTrackingController::class, 'show'])
+        ->where('orderNumber', '[A-Za-z0-9\-]+')
+        ->name('tracking.show');
+
+    Route::get('/track-order/{orderNumber}/status', [CustomerTrackingController::class, 'status'])
+        ->where('orderNumber', '[A-Za-z0-9\-]+')
+        ->middleware('throttle:60,1')
+        ->name('tracking.status');
 });
 
 /*

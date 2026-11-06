@@ -76,10 +76,24 @@
                     <div class="page-sub-title">
                         {{ __('site.placed_on') }} {{ $placedAt ?? '-' }}
                     </div>
+                    @php
+                        $promise = $order->status !== 'cancelled' && $order->shipping_status !== 'delivered'
+                            ? \App\Support\Shipping\DeliveryPromise::forOrder($order->estimated_delivery_from, $order->estimated_delivery_to)
+                            : null;
+                    @endphp
+                    @if ($promise)
+                        <div class="page-sub-title" style="color:#1f9d55;font-weight:600;">
+                            <i class="fas fa-truck m-r-8"></i>{{ __('shipping.eta.estimated') }}: {{ $promise->label() }}
+                        </div>
+                    @endif
                 </div>
 
                 <div class="col-lg-4 text-lg-right">
-                    <a href="{{ route('shipping.orders.invoice', $order->id) }}" class="main-action-btn dark-btn">
+                    <a href="{{ route('tracking.show', $order->order_number) }}" class="main-action-btn light-btn m-b-10">
+                        <i class="fas fa-map-marker-alt m-r-8"></i>
+                        {{ __('site.track_order') }}
+                    </a>
+                    <a href="{{ route('shipping.orders.invoice', $order->id) }}" class="main-action-btn dark-btn m-b-10">
                         <i class="fas fa-file-invoice m-r-8"></i>
                         {{ __('site.download_invoice') }}
                     </a>
@@ -288,7 +302,7 @@
 
                         @if($order->shipment->tracking_number)
                             <div class="box-actions">
-                                <a href="{{ route('tracking.search-form', ['tracking_number' => $order->shipment->tracking_number]) }}"
+                                <a href="{{ route('tracking.show', $order->order_number) }}"
                                    class="main-action-btn light-btn">
                                     <i class="fas fa-map-marker-alt m-r-8"></i>
                                     {{ __('site.track_shipment') }}

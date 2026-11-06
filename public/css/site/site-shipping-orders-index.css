@@ -51,6 +51,9 @@
 
     .order-actions {
         margin-top: 14px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
     }
 
     .order-actions .btn {

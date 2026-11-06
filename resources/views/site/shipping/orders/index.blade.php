@@ -39,6 +39,11 @@
                         <a href="{{ route('shipping.orders.show', $order) }}" class="btn btn-sm btn-dark">
                             {{ __('site.view_order') }}
                         </a>
+                        @if ($order->status !== 'cancelled')
+                            <a href="{{ route('tracking.show', $order->order_number) }}" class="btn btn-sm btn-outline-dark">
+                                <i class="fas fa-map-marker-alt" aria-hidden="true"></i> {{ __('site.track_order') }}
+                            </a>
+                        @endif
                     </div>
                 </div>
             @empty
