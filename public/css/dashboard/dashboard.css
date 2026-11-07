@@ -395,3 +395,76 @@ html[dir="rtl"] .main-sidebar .brand-link .brand-image {
 .main-sidebar .brand-link .brand-text {
     font-weight: 600 !important;
 }
+
+/* ── Live notification toasts ── */
+.cs-toast-stack {
+    position: fixed;
+    z-index: 1080;
+    inset-block-end: 20px;
+    inset-inline-end: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: min(360px, calc(100vw - 32px));
+    pointer-events: none;
+}
+
+.cs-toast {
+    pointer-events: auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 14px 14px 16px;
+    border-radius: 14px;
+    background: #fff;
+    color: #1f2937;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 16px 40px rgba(17, 24, 39, .16);
+    text-decoration: none;
+    opacity: 0;
+    transform: translateY(12px) scale(.98);
+    transition: opacity .25s ease, transform .25s ease;
+}
+
+.cs-toast:hover { color: #1f2937; text-decoration: none; box-shadow: 0 18px 44px rgba(17, 24, 39, .22); }
+.cs-toast.is-visible { opacity: 1; transform: none; }
+
+.cs-toast-icon {
+    flex: 0 0 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
+
+.cs-toast-body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.cs-toast-body strong { font-size: 14px; }
+.cs-toast-body span { font-size: 13px; color: #6b7280; overflow-wrap: anywhere; }
+
+.cs-toast-close {
+    flex: 0 0 auto;
+    border: 0;
+    background: transparent;
+    font-size: 20px;
+    line-height: 1;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 0 2px;
+}
+
+.cs-bell-ring { display: inline-block; animation: cs-bell-ring .9s ease; transform-origin: 50% 0; }
+
+@keyframes cs-bell-ring {
+    0%, 100% { transform: rotate(0); }
+    15% { transform: rotate(16deg); }
+    30% { transform: rotate(-14deg); }
+    45% { transform: rotate(10deg); }
+    60% { transform: rotate(-8deg); }
+    75% { transform: rotate(4deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cs-toast, .cs-bell-ring { transition: none; animation: none; }
+}

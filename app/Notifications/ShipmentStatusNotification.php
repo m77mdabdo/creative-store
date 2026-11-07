@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\Shipment;
 use App\Notifications\Channels\TextMessageChannel;
+use App\Notifications\Concerns\WritesBellImmediately;
 use App\Services\Messaging\TextMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,6 +17,7 @@ use Illuminate\Notifications\Notification;
 class ShipmentStatusNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+    use WritesBellImmediately;
 
     public function __construct(public readonly Shipment $shipment, public readonly string $event)
     {

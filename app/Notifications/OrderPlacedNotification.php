@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\Order;
 use App\Notifications\Channels\TextMessageChannel;
+use App\Notifications\Concerns\WritesBellImmediately;
 use App\Services\Messaging\TextMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,6 +14,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 class OrderPlacedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+    use WritesBellImmediately;
 
     public $order;
 

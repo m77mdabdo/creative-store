@@ -7,12 +7,23 @@
     <section class="content-header">
         <div class="container-fluid d-flex justify-content-between align-items-center">
             <h1>{{ __('User Details') }}</h1>
-            <a href="{{ route('dashboard.users.edit', $user) }}" class="btn btn-primary">{{ __('Edit') }}</a>
+            <div class="d-flex flex-wrap" style="gap:8px;">
+                @if ($user->isDashboardUser() && auth()->user()->hasPermission('users.edit'))
+                    <form method="POST" action="{{ route('dashboard.users.invitation', $user) }}" class="m-0">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="fas fa-paper-plane mr-1" aria-hidden="true"></i> {{ __('staff.invite.resend') }}
+                        </button>
+                    </form>
+                @endif
+                <a href="{{ route('dashboard.users.edit', $user) }}" class="btn btn-primary">{{ __('Edit') }}</a>
+            </div>
         </div>
     </section>
 
     <section class="content">
         <div class="container-fluid">
+            @include('dashboard.partials.alerts')
             <div class="row">
                 <div class="col-md-4">
                     <div class="card card-primary card-outline">

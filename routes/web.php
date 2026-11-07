@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\StaffWelcomeController;
 use App\Http\Controllers\Auth\VerifyAccountController;
 use App\Http\Controllers\Blog\BlogCommentController;
 use App\Http\Controllers\Blog\BlogController;
@@ -96,6 +97,16 @@ Route::group([
     Route::post('/reset-password', ResetPasswordController::class)
         ->middleware('throttle:auth')
         ->name('password.update');
+
+    // New team members choose their password from the invitation email.
+    Route::get('/welcome/{user}', [StaffWelcomeController::class, 'show'])
+        ->middleware('signed')
+        ->whereNumber('user')
+        ->name('staff.welcome');
+
+    Route::post('/welcome/{user}', [StaffWelcomeController::class, 'store'])
+        ->middleware(['signed', 'throttle:auth'])
+        ->whereNumber('user');
 
     /*
     |--------------------------------------------------------------------------

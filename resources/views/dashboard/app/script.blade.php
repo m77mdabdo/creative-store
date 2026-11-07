@@ -40,6 +40,19 @@
 <!-- AdminLTE App -->
 <script src="{{ asset('AdminLTE/dist/js/adminlte.js') }}"></script>
 
+@auth
+    <script>
+        window.CS_LIVE_NOTIFICATIONS = {
+            url: @json(route('dashboard.notifications.feed')),
+            indexUrl: @json(route('dashboard.notifications.index')),
+            since: {{ now()->getTimestamp() }},
+            interval: 15000,
+            closeLabel: @json(__('Close')),
+        };
+    </script>
+    <script src="{{ versioned_asset('js/dashboard/live-notifications.js') }}" defer></script>
+@endauth
+
 <script>
     // OverlayScrollbars miscalculates its scroll area in RTL (sidebar content
     // shifted, logo cut off, stray horizontal scrollbar). In Arabic the

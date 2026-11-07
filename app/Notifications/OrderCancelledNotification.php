@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\NotificationLog;
 use App\Models\Order;
+use App\Notifications\Concerns\WritesBellImmediately;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
@@ -13,6 +14,7 @@ use Illuminate\Notifications\Notification;
 class OrderCancelledNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+    use WritesBellImmediately;
 
     public function __construct(
         protected Order $order,

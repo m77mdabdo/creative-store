@@ -16,6 +16,17 @@
     </div>
 @endif
 
+@foreach (['info' => 'info', 'warning' => 'warning'] as $flash => $tone)
+    @if(session($flash))
+        <div class="alert alert-{{ $tone }} alert-dismissible fade show">
+            {{ session($flash) }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="{{ __('Close') }}">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+@endforeach
+
 @if($errors->any())
     <div class="alert alert-danger alert-dismissible fade show">
         <strong>{{ __('Please fix the following errors:') }}</strong>

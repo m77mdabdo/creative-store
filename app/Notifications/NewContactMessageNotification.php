@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\ContactMessage;
+use App\Notifications\Concerns\WritesBellImmediately;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -11,6 +12,7 @@ use Illuminate\Notifications\Notification;
 class NewContactMessageNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+    use WritesBellImmediately;
 
     public function __construct(public ContactMessage $contactMessage)
     {

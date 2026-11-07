@@ -8,6 +8,8 @@ use App\Notifications\OrderCancelledNotification;
 use App\Notifications\OrderPlacedNotification;
 use App\Notifications\RegisteredNotify;
 use App\Notifications\ShipmentStatusNotification;
+use App\Notifications\StaffInvitationNotification;
+use App\Notifications\StaffMemberAddedNotification;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -60,6 +62,27 @@ final class NotificationPresenter
                     'tracking' => $data['tracking_number'] ?? '—',
                 ]),
                 self::orderUrl($orderId),
+            ],
+            StaffInvitationNotification::class => [
+                'fa-hands-helping', 'success',
+                __('staff.bell.invited_title'),
+                __('staff.bell.invited_message', ['role' => __('staff.roles.' . ($data['role'] ?? 'employee'))]),
+                self::route('dashboard.home'),
+            ],
+            StaffMemberAddedNotification::class => [
+                'fa-user-plus', 'info',
+                __('staff.bell.added_title'),
+                ! empty($data['added_by'])
+                    ? __('staff.bell.added_message_by', [
+                        'by'   => $data['added_by'],
+                        'name' => $data['name'] ?? '—',
+                        'role' => __('staff.roles.' . ($data['role'] ?? 'employee')),
+                    ])
+                    : __('staff.bell.added_message', [
+                        'name' => $data['name'] ?? '—',
+                        'role' => __('staff.roles.' . ($data['role'] ?? 'employee')),
+                    ]),
+                isset($data['user_id']) ? self::route('dashboard.users.show', $data['user_id']) : null,
             ],
             LoginNotify::class => [
                 'fa-sign-in-alt', 'secondary',
