@@ -61,6 +61,9 @@ Route::group([
 
     // The signed-in user's own notifications (no extra permission needed)
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/feed', [NotificationController::class, 'feed'])
+        ->middleware('throttle:120,1')
+        ->name('notifications.feed');
     Route::get('/notifications/{id}/open', [NotificationController::class, 'open'])->name('notifications.open');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
 
@@ -96,6 +99,10 @@ Route::group([
         Route::post('/users', [UserController::class, 'store'])
             ->middleware('permission:users.create')
             ->name('users.store');
+
+        Route::post('/users/{user}/invitation', [UserController::class, 'resendInvitation'])
+            ->middleware(['permission:users.edit', 'throttle:6,1'])
+            ->name('users.invitation');
 
         Route::get('/users/{user}', [UserController::class, 'show'])
             ->middleware('permission:users.view')

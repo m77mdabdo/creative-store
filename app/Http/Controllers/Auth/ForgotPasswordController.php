@@ -17,7 +17,8 @@ class ForgotPasswordController extends Controller
 
         DB::table('password_reset_tokens')->updateOrInsert(
             ['email' => $request->email],
-            ['token' => $token, 'created_at' => now()]
+            // Only a hash is stored, so a leaked table cannot be used to reset passwords.
+            ['token' => hash('sha256', $token), 'created_at' => now()]
         );
 
         Mail::to($request->email)->send(

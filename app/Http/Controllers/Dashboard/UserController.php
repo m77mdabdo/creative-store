@@ -11,7 +11,9 @@ use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\Security\ProtectOwnerService;
+use App\Services\Staff\StaffInvitations;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -20,7 +22,8 @@ use Illuminate\View\View;
 class UserController extends Controller
 {
     public function __construct(
-        protected ProtectOwnerService $protectOwnerService
+        protected ProtectOwnerService $protectOwnerService,
+        protected StaffInvitations $invitations,
     ) {}
 
     public function index(UserIndexRequest $request): View
@@ -149,7 +152,7 @@ class UserController extends Controller
     {
         $data = $request->validated();
 
-        DB::transaction(function () use ($data, $request) {
+        $user = DB::transaction(function () use ($data, $request) {
             $user = User::create([
                 'name'              => $data['name'],
                 'email'             => $data['email'],
@@ -166,11 +169,35 @@ class UserController extends Controller
                 $data['direct_permissions'] ?? [],
                 $data['denied_permissions'] ?? []
             );
+
+            return $user;
         });
 
-        return redirect()
+        $redirect = redirect()
             ->route('dashboard.users.index')
             ->with('success', __('User created successfully.'));
+
+        if ($this->invitations->roleOf($user) === null) {
+            return $redirect;
+        }
+
+        return $this->invitations->invite($user, $request->user())
+            ? $redirect->with('info', __('staff.invite.sent', ['email' => $user->email]))
+            : $redirect->with('warning', __('staff.invite.send_failed'));
+    }
+
+    /**
+     * Send a team member their sign-in invitation again (a fresh link).
+     */
+    public function resendInvitation(Request $request, User $user): RedirectResponse
+    {
+        if ($this->invitations->roleOf($user) === null) {
+            return back()->with('error', __('staff.invite.not_staff'));
+        }
+
+        return $this->invitations->invite($user, $request->user(), announce: false)
+            ? back()->with('success', __('staff.invite.sent', ['email' => $user->email]))
+            : back()->with('error', __('staff.invite.send_failed'));
     }
 
     public function show(User $user): View

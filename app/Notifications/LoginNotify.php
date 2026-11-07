@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Notifications\Concerns\WritesBellImmediately;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
@@ -10,6 +11,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 class LoginNotify extends Notification implements ShouldQueue
 {
     use Queueable;
+    use WritesBellImmediately;
 
     public function __construct(
         public ?string $driver = null // مثال: "google" أو "web"

@@ -14,10 +14,13 @@ class ResetPasswordController extends Controller
     {
         $record = DB::table('password_reset_tokens')
             ->where('email', $request->email)
-            ->where('token', $request->token)
             ->first();
 
-        if (! $record) {
+        $valid = $record
+            && hash_equals((string) $record->token, hash('sha256', (string) $request->token))
+            && now()->subMinutes((int) config('auth.passwords.users.expire', 60))->lessThanOrEqualTo($record->created_at);
+
+        if (! $valid) {
             return back()->with('error', __('Invalid Token or email address'));
         }
 
