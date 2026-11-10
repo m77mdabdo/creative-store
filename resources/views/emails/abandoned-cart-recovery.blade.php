@@ -6,7 +6,7 @@
 <html lang="{{ app()->getLocale() }}" dir="{{ $rtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
-    <title>{{ __('notifications.cart_email.subject') }}</title>
+    <title>{{ __('notifications.cart_email.subject_' . ($tone ?? 'first')) }}</title>
 </head>
 <body style="font-family: Tahoma, Arial, sans-serif; background:#f8f9fa; padding:30px; direction:{{ $rtl ? 'rtl' : 'ltr' }};">
     <div style="max-width:640px; margin:0 auto; background:#ffffff; border-radius:12px; padding:30px; border:1px solid #e5e7eb; text-align:{{ $align }};">
@@ -17,7 +17,7 @@
         </p>
 
         <p style="color:#4b5563; font-size:15px; line-height:1.7;">
-            {{ __('notifications.cart_email.body') }}
+            {{ __(($tone ?? 'first') === 'first' ? 'notifications.cart_email.body' : 'notifications.cart_email.body_' . $tone) }}
         </p>
 
         <table width="100%" cellspacing="0" cellpadding="10" style="border-collapse: collapse; margin-top:20px;">

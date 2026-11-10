@@ -13,5 +13,5 @@ Artisan::command('inspire', function () {
 
 
 
-Schedule::command('carts:process-abandoned')->hourly();
+Schedule::command('carts:process-abandoned')->everyMinute()->withoutOverlapping();
 Schedule::command('shipments:sync')->everyThirtyMinutes()->withoutOverlapping();

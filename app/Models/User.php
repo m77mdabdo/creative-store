@@ -19,6 +19,7 @@ class User extends Authenticatable
         'otp',
         'email_verified_at',
         'phone',
+        'avatar_path',
         'is_active',
         'created_by',
         'last_login_at',
@@ -38,6 +39,25 @@ class User extends Authenticatable
             'is_active'         => 'boolean',
             'last_login_at'     => 'datetime',
         ];
+    }
+
+    /**
+     * The uploaded profile photo, or null to show initials instead.
+     */
+    public function avatarUrl(): ?string
+    {
+        return $this->avatar_path ? media_url($this->avatar_path) : null;
+    }
+
+    /**
+     * One or two letters for the avatar when there is no photo ("Mohamed Abdo" → "MA").
+     */
+    public function initials(): string
+    {
+        $words = preg_split('/\s+/u', trim((string) $this->name), -1, PREG_SPLIT_NO_EMPTY) ?: ['?'];
+        $letters = mb_substr($words[0], 0, 1) . (count($words) > 1 ? mb_substr(end($words), 0, 1) : '');
+
+        return mb_strtoupper($letters);
     }
 
     /* =========================

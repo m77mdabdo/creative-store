@@ -39,7 +39,11 @@
     @auth
     <div class="cs-user-card">
         <div class="cs-avatar">
-            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+            @if (auth()->user()->avatarUrl())
+                <img src="{{ auth()->user()->avatarUrl() }}" alt="" width="38" height="38">
+            @else
+                {{ auth()->user()->initials() }}
+            @endif
         </div>
         <div class="cs-user-info">
             <div class="cs-user-name">{{ auth()->user()->name }}</div>
@@ -116,5 +120,6 @@ function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.re
 toggle.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
 overlay.addEventListener('click', closeSidebar);
 </script>
+@stack('scripts')
 </body>
 </html>

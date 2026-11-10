@@ -294,3 +294,6 @@ html[dir="rtl"] .cs-mobile-toggle { left: auto; right: 14px; }
 /* AdminLTE (loaded for this area) forces body{text-align:left}; follow the
    page direction instead so Arabic headings, labels and cards align right. */
 body { text-align: start; }
+
+.cs-avatar { overflow: hidden; }
+.cs-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }

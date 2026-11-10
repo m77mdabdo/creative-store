@@ -23,7 +23,7 @@ class SidebarService
 
             'user' => [
                 'name' => $user?->name ?? 'Dashboard User',
-                'avatar' => asset('AdminLTE/dist/img/user1-128x128.jpg'),
+                'avatar' => $user?->avatarUrl() ?? asset('AdminLTE/dist/img/user1-128x128.jpg'),
             ],
 
             'items' => array_values(array_filter([

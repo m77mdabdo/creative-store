@@ -6,17 +6,19 @@ use App\Models\AbandonedCartRecovery;
 use App\Models\Cart;
 use App\Notifications\CartReminderNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
- * Reminds customers (email and SMS/WhatsApp) about carts they left behind.
+ * Reminds customers (email and SMS/WhatsApp) about carts they left behind,
+ * on a growing schedule: 10 minutes after the last cart change, then an
+ * hour later, 2 hours later, 5 hours later and so on (store.cart_reminders).
  *
- * Works in bounded batches so the run time and memory stay flat no matter
- * how many carts exist: only carts abandoned in the recent window are
- * scanned, those already contacted are excluded in SQL, and each run
- * handles at most MAX_PER_RUN carts.
+ * A "cycle" is the time since the cart last changed: changing the cart
+ * starts a new cycle, recovering it or checking out ends it. Runs every
+ * minute and works in bounded batches so time and memory stay flat however
+ * many carts exist.
  */
 class ProcessAbandonedCarts implements ShouldQueue
 {
@@ -32,26 +34,33 @@ class ProcessAbandonedCarts implements ShouldQueue
     {
         $this->expireOldRecoveries();
 
+        $schedule = $this->schedule();
+
+        if ($schedule === []) {
+            return;
+        }
+
         $processed = 0;
 
         Cart::query()
             ->select(['id', 'user_id', 'session_id', 'updated_at'])
             ->whereNotNull('user_id')
-            ->whereBetween('updated_at', [
-                now()->subDays(self::LOOKBACK_DAYS),
-                now()->subHours(max(1, (int) config('store.cart_reminder_after_hours', 3))),
-            ])
+            ->whereBetween('updated_at', [now()->subDays(self::LOOKBACK_DAYS), now()->subMinutes($schedule[0])])
             ->whereHas('items')
-            ->whereNotExists(fn (QueryBuilder $q) => $q
-                ->selectRaw('1')
-                ->from('abandoned_cart_recoveries')
-                ->whereColumn('abandoned_cart_recoveries.cart_id', 'carts.id')
-                ->whereIn('abandoned_cart_recoveries.status', ['pending', 'sent', 'recovered']))
-            ->with(['user:id,name,email,phone'])
+            ->with([
+                'user:id,name,email,phone',
+                'recoveries' => fn ($q) => $q
+                    ->select(['id', 'cart_id', 'status', 'cart_abandoned_at', 'created_at'])
+                    ->where('created_at', '>=', now()->subDays(self::LOOKBACK_DAYS)),
+            ])
             ->withCount('items')
-            ->chunkById(self::BATCH_SIZE, function ($carts) use (&$processed) {
+            ->chunkById(self::BATCH_SIZE, function ($carts) use (&$processed, $schedule) {
                 foreach ($carts as $cart) {
-                    $this->notify($cart);
+                    if (! $this->isDue($cart, $schedule)) {
+                        continue;
+                    }
+
+                    $this->notify($cart, $this->cycle($cart)->count(), count($schedule));
 
                     if (++$processed >= self::MAX_PER_RUN) {
                         return false;
@@ -60,7 +69,49 @@ class ProcessAbandonedCarts implements ShouldQueue
             });
     }
 
-    private function notify(Cart $cart): void
+    /**
+     * @param  list<int>  $schedule  minutes to wait before each reminder
+     */
+    private function isDue(Cart $cart, array $schedule): bool
+    {
+        $cycle = $this->cycle($cart);
+
+        if ($cycle->contains('status', 'recovered')) {
+            return false;
+        }
+
+        $step = $cycle->count();
+
+        if ($step >= count($schedule)) {
+            return false;
+        }
+
+        $since = $step === 0 ? $cart->updated_at : $cycle->max('created_at');
+
+        return $since !== null && $since->lessThanOrEqualTo(now()->subMinutes($schedule[$step]));
+    }
+
+    /**
+     * Reminders already sent since the cart last changed.
+     */
+    private function cycle(Cart $cart): Collection
+    {
+        $changedAt = $cart->updated_at?->copy()->startOfSecond();
+
+        return $cart->recoveries->filter(fn (AbandonedCartRecovery $recovery) => $changedAt === null
+            || ($recovery->cart_abandoned_at !== null && $recovery->cart_abandoned_at->greaterThanOrEqualTo($changedAt)));
+    }
+
+    /** @return list<int> */
+    private function schedule(): array
+    {
+        return array_values(array_filter(
+            array_map('intval', (array) config('store.cart_reminders', [10, 60, 120, 300, 720, 1440])),
+            fn (int $minutes) => $minutes > 0
+        ));
+    }
+
+    private function notify(Cart $cart, int $step, int $steps): void
     {
         $email = $cart->user?->email;
 
@@ -78,7 +129,11 @@ class ProcessAbandonedCarts implements ShouldQueue
             'recovery_token'    => Str::random(64),
             'cart_abandoned_at' => $cart->updated_at,
             'expires_at'        => now()->addDays(3),
-            'meta'              => ['items_count' => $cart->items_count],
+            'meta'              => [
+                'items_count' => $cart->items_count,
+                'step'        => $step + 1,
+                'last'        => $step + 1 >= $steps,
+            ],
         ]);
 
         try {
