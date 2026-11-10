@@ -228,7 +228,12 @@
         {{-- User Dropdown --}}
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
-                <i class="fas fa-user-circle"></i>
+                @if (auth()->user()?->avatarUrl())
+                    <img src="{{ auth()->user()->avatarUrl() }}" alt="" width="24" height="24"
+                         class="img-circle" style="width:24px;height:24px;object-fit:cover;margin-top:-3px;">
+                @else
+                    <i class="fas fa-user-circle"></i>
+                @endif
                 <span class="ml-1 d-none d-md-inline">{{ auth()->user()->name ?? __('site.Guest') }}</span>
             </a>
 
@@ -241,7 +246,7 @@
                 <div class="dropdown-divider"></div>
 
                 <a href="{{ route('myaccount') }}" class="dropdown-item">
-                    <i class="fas fa-user mr-2"></i> {{ __('site.My Account') }}
+                    <i class="fas fa-user mr-2"></i> {{ __('account.profile') }}
                 </a>
 
                 <div class="dropdown-divider"></div>

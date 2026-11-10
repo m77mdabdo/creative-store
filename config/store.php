@@ -23,9 +23,18 @@ return [
         'vat_rate'   => (float) (env('STORE_VAT_RATE') ?: 0.15),
     ],
 
-    // Customers who leave items in their cart get one reminder (email and
-    // SMS/WhatsApp) this many hours after their last cart change.
-    'cart_reminder_after_hours' => (int) (env('CART_REMINDER_AFTER_HOURS') ?: 3),
+    /*
+    | Customers who leave items in their cart are reminded by email and
+    | SMS/WhatsApp. Each number is the wait in minutes before the next
+    | reminder: the first goes 10 minutes after the last cart change, the
+    | next an hour after that, then 2 hours, 5 hours, and so on. Any cart
+    | change starts the sequence again; checking out or emptying the cart
+    | stops it.
+    */
+    'cart_reminders' => array_values(array_filter(array_map(
+        'intval',
+        explode(',', (string) (env('CART_REMINDER_MINUTES') ?: '10,60,120,300,720,1440'))
+    ))),
 
     /*
     | Delivery promises shown at checkout, on orders and on the tracking page.

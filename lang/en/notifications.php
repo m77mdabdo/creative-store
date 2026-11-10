@@ -47,7 +47,11 @@ return [
         'message' => 'Order #:number was delivered.',
     ],
     'cart_email' => [
-        'subject' => 'Items are still waiting in your cart',
+        'subject_first' => 'Items are still waiting in your cart',
+        'subject_followup' => 'Your cart is still saved for you',
+        'subject_last' => 'Last reminder: your cart is about to expire',
+        'body_followup' => 'Your picks are still in your cart. Stock moves fast, so complete your order before they sell out.',
+        'body_last' => 'This is our last reminder about your cart. Complete your order now so you do not miss out.',
         'title' => 'Your cart is waiting',
         'greeting' => 'Hi :name,',
         'greeting_guest' => 'Hello,',

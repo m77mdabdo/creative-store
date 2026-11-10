@@ -17,7 +17,7 @@ class SidebarBuilder
 
         $sidebarUser = [
             'name'   => $user?->name ?: 'Dashboard User',
-            'avatar' => asset('AdminLTE/dist/img/user1-128x128.jpg'),
+            'avatar' => $user?->avatarUrl() ?? asset('AdminLTE/dist/img/user1-128x128.jpg'),
         ];
 
         if (! $user) {

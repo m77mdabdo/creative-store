@@ -34,9 +34,10 @@ use App\Http\Controllers\Wishlist\WishlistController;
 
 Route::group([
     'prefix' => LaravelLocalization::setLocale(),
+    // The storefront opens in English (APP_LOCALE); visitors switch to Arabic
+    // from the header and every link keeps the language they chose.
     'middleware' => [
         'web',
-        'localeSessionRedirect',
         'localizationRedirect',
         'localeViewPath',
     ],

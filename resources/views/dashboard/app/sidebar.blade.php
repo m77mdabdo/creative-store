@@ -21,11 +21,13 @@
                 <img
                     src="{{ $sidebar['user']['avatar'] ?? asset('AdminLTE/dist/img/user1-128x128.jpg') }}"
                     class="img-circle elevation-2"
-                    alt="User Image"
+                    alt="{{ $sidebar['user']['name'] ?? '' }}"
+                    width="34" height="34"
+                    style="width:34px;height:34px;object-fit:cover;"
                 >
             </div>
             <div class="info">
-                <a href="#" class="d-block font-weight-bold">
+                <a href="{{ route('myaccount') }}" class="d-block font-weight-bold">
                     {{ $sidebar['user']['name'] ?? __('Dashboard User') }}
                 </a>
             </div>
