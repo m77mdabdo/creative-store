@@ -19,14 +19,14 @@ class MoveImagesToS3 extends Command
 
             $path = $image->path;
 
-            // لو موجود في local
+            // If it exists on the local disk
             if (Storage::disk('public')->exists($path)) {
 
                 $this->info("Moving: $path");
 
                 $content = Storage::disk('public')->get($path);
 
-                // رفع على S3 (default disk)
+                // Upload to S3 (default disk)
                 Storage::put($path, $content);
             } else {
                 $this->warn("Not found in local: $path");

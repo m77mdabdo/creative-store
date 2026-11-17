@@ -46,13 +46,13 @@
             pauseOnHover: false,
             slidesToShow: 1,
             slidesToScroll: 1,
-            fade: false,          // ← fade لازم false مع RTL (Slick bug معروف)
+            fade: false,          // fade must be false with RTL (known Slick bug)
             speed: 1000,
             infinite: true,
             autoplay: true,
             autoplaySpeed: 6000,
             arrows: true,
-            rtl: isRTL,           // ← الإضافة الأساسية
+            rtl: isRTL,           // The key addition
             appendArrows: $(wrapSlick1),
             prevArrow: '<button class="arrow-slick1 prev-slick1"><i class="zmdi zmdi-caret-left"></i></button>',
             nextArrow: '<button class="arrow-slick1 next-slick1"><i class="zmdi zmdi-caret-right"></i></button>',
@@ -98,7 +98,7 @@
             autoplay: false,
             autoplaySpeed: 6000,
             arrows: true,
-            rtl: isRTL,           // ← الإضافة
+            rtl: isRTL,           // Added
             appendArrows: $(this),
             prevArrow: '<button class="arrow-slick2 prev-slick2"><i class="fa fa-angle-left" aria-hidden="true"></i></button>',
             nextArrow: '<button class="arrow-slick2 next-slick2"><i class="fa fa-angle-right" aria-hidden="true"></i></button>',
@@ -122,12 +122,12 @@
         $(this).find('.slick3').slick({
             slidesToShow: 1,
             slidesToScroll: 1,
-            fade: false,          // ← false مع RTL
+            fade: false,          // false with RTL
             infinite: true,
             autoplay: false,
             autoplaySpeed: 6000,
             arrows: true,
-            rtl: isRTL,           // ← الإضافة
+            rtl: isRTL,           // Added
             appendArrows: $(this).find('.wrap-slick3-arrows'),
             prevArrow: '<button class="arrow-slick3 prev-slick3"><i class="fa fa-angle-left" aria-hidden="true"></i></button>',
             nextArrow: '<button class="arrow-slick3 next-slick3"><i class="fa fa-angle-right" aria-hidden="true"></i></button>',
@@ -282,7 +282,7 @@ $('.wrap-slick-blog').each(function () {
     });
 });
 
-/* لو عندك tabs أو resize */
+/* In case of tabs or resize */
 $(window).on('load resize orientationchange', function () {
     $('.slick-blog').each(function () {
         var $this = $(this);

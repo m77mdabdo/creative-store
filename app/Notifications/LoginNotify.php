@@ -14,7 +14,7 @@ class LoginNotify extends Notification implements ShouldQueue
     use WritesBellImmediately;
 
     public function __construct(
-        public ?string $driver = null // مثال: "google" أو "web"
+        public ?string $driver = null // e.g. "google" or "web"
     ) {}
 
     public function via($notifiable): array
