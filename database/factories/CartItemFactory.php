@@ -18,7 +18,7 @@ class CartItemFactory extends Factory
         return [
             'cart_id' => Cart::query()->inRandomOrder()->value('id') ?? Cart::factory(),
             'product_id' => $productId,
-            'variant_id' => null, // هنسيبها null غالباً
+            'variant_id' => null, // Usually left null
             'quantity' => $this->faker->numberBetween(1, 5),
             'price_snapshot' => $this->faker->randomFloat(2, 10, 999),
             'tax_rate_snapshot' => $this->faker->randomFloat(2, 0, 15),

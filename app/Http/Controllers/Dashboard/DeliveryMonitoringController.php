@@ -38,7 +38,7 @@ class DeliveryMonitoringController extends Controller
             'next_attempt_at' => $request->next_attempt_at,
         ]);
 
-        // مزامنة حالة الشحنة
+        // Sync the shipment status
         $shipmentStatus = match ($request->status) {
             'scheduled' => 'pending',
             'out_for_delivery' => 'in_transit',

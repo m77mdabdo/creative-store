@@ -1,4 +1,4 @@
-@extends('site.app.layout') {{-- حسب مشروعك --}}
+@extends('site.app.layout') {{-- Adjust to your layout --}}
 
 @section('content')
 <div class="container py-5">

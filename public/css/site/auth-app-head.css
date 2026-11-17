@@ -6,7 +6,7 @@
   }
 
   .logo-header img{
-      max-height: 125px;   /* حجم متوازن */
+      max-height: 125px;   /* Balanced size */
       width: auto;
       display: block;
       margin: 0 auto;
@@ -81,7 +81,7 @@
       overflow:hidden;
   }
 
-  /* الشمال فيديو */
+  /* Left side: video */
   .register-video{
       width:50%;
       position:relative;
@@ -93,11 +93,11 @@
       width:100%;
       height:100%;
       object-fit:cover;
-      filter: grayscale(100%); /* أبيض وأسود */
+      filter: grayscale(100%); /* Black and white */
       transform: scale(1.02);
   }
 
-  /* طبقة احترافية */
+  /* Overlay layer */
   .video-overlay{
       position:absolute;
       top:0;
@@ -108,7 +108,7 @@
       pointer-events:none;
   }
 
-  /* اليمين الفورم */
+  /* Right side: form */
   .register-form-side{
       width:50%;
       background:var(--cs-surface);
@@ -118,13 +118,13 @@
       padding: 24px;
   }
 
-  /* تثبيت حجم الفورم */
+  /* Fix the form size */
   .register-form-side .register-box{
       width: 420px;
       margin: 0;
   }
 
-  /* الموبايل: نخفي الفيديو */
+  /* Mobile: hide the video */
   @media (max-width: 991.98px){
       .register-video{
           display:none;
@@ -139,7 +139,7 @@
 .auth-left{
     width: 45%;
     padding: 60px 50px;
-    background: var(--cs-black);   /* خلفية سوداء */
+    background: var(--cs-black);   /* Black background */
     color: var(--cs-surface);
     display:flex;
     flex-direction:column;
@@ -147,7 +147,7 @@
     position:relative;
 }
 
-/* خط بسيط ديكور */
+/* Simple decorative line */
 .auth-left::after{
     content:"";
     position:absolute;
@@ -158,7 +158,7 @@
     background:#e5e5e5;
 }
 
-/* عنوان */
+/* Heading */
 .auth-left h2{
     font-size: 36px;
     font-weight: 700;
@@ -166,7 +166,7 @@
     letter-spacing: 1px;
 }
 
-/* النص */
+/* Text */
 .auth-left p{
     opacity:.85;
     line-height: 1.6;
@@ -174,7 +174,7 @@
     max-width: 330px;
 }
 
-/* زرار أبيض */
+/* White button */
 .auth-left .left-btn{
     display:inline-flex;
     align-items:center;

@@ -25,7 +25,7 @@ class WishlistController extends Controller
             'user_id' => Auth::id()
         ]);
 
-        // تنظيف العناصر المكسورة: لو المنتج اتحذف من قاعدة البيانات
+        // Clean up broken items: the product was deleted from the database
         $validItems = $wishlist->items
             ->filter(fn ($item) => !is_null($item->product))
             ->values();

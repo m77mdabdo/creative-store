@@ -9,8 +9,8 @@ class SendLoginNotification
 {
     public function handle(Login $event): void
     {
-        // Login event بيحصل سواء login عادي أو Auth::login بعد Google
-        $driver = auth()->getDefaultDriver(); // غالبًا "web"
+        // The Login event fires for both a normal login and Auth::login after Google sign-in
+        $driver = auth()->getDefaultDriver(); // Usually "web"
         $event->user->notify(new LoginNotify($driver));
     }
 }

@@ -17,14 +17,14 @@ class CustomerSeeder extends Seeder
     public function run(): void
     {
         /* =========================
-         * تأكيد وجود Users
+         * Make sure Users exist
          * ========================= */
         if (User::count() < 5) {
             User::factory(10)->create();
         }
 
         /* =========================
-         * تأكيد وجود Products
+         * Make sure Products exist
          * ========================= */
         if (Product::count() === 0) {
             $this->command->warn('No products found. Run CatalogSeeder first.');
@@ -100,7 +100,7 @@ class CustomerSeeder extends Seeder
             /* =========================
              * Addresses
              * ========================= */
-            // بدل ما نعمل duplicates كتير، نعمل 1-2 لكن باستخدام factory عادي (مفيش unique constraint هنا)
+            // Instead of creating many duplicates, create 1-2 with a plain factory (no unique constraint here)
             Address::factory()
                 ->count(rand(1, 2))
                 ->create([

@@ -45,7 +45,7 @@ class OrderSeeder extends Seeder
                 'is_active' => true,
             ]);
 
-        // Coupon اختياري
+        // Coupon is optional
         $coupon = Coupon::query()->inRandomOrder()->first();
 
         $users = User::query()->inRandomOrder()->take(20)->get();
@@ -56,7 +56,7 @@ class OrderSeeder extends Seeder
          * ========================= */
         foreach ($users as $user) {
 
-            // تأكد عنده عنوان واحد على الأقل (علشان snapshot)
+            // Make sure the customer has at least one address (needed for the snapshot)
             $address = Address::where('user_id', $user->id)->inRandomOrder()->first();
             if (!$address) {
                 $address = Address::factory()->create([
@@ -99,13 +99,13 @@ $order = Order::factory()->create([
                 $subtotal = 0;
                 $taxTotal = 0;
 
-                // علشان ما يتكرر نفس المنتج في نفس الأوردر كتير
+                // So the same product is not repeated too often in one order
                 $picked = $products->random($itemsCount);
 
                 foreach ($picked as $product) {
                     $qty = rand(1, 3);
 
-                    // لو المنتج عنده variants اختار واحد
+                    // If the product has variants, pick one
                     $variantId = null;
                     if ($product->has_variants) {
                         $variantId = ProductVariant::where('product_id', $product->id)
@@ -161,7 +161,7 @@ $order = Order::factory()->create([
                         }
 
                         if ($couponModel->min_order_amount && $subtotal < $couponModel->min_order_amount) {
-                            $discount = 0; // لا يطبق
+                            $discount = 0; // Not applied
                         }
                     }
                 }
@@ -252,7 +252,7 @@ $order = Order::factory()->create([
                         ]
                     );
 
-                    // تحديث used_count (اختياري)
+                    // Update used_count (optional)
                     Coupon::where('id', $order->coupon_id)->increment('used_count');
                 }
             }

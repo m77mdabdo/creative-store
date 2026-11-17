@@ -13,14 +13,14 @@
     height: 92vh;
     min-height: 520px;
     display: flex !important;
-    align-items: flex-end;          /* النص في الأسفل دايماً */
+    align-items: flex-end;          /* Text always at the bottom */
     justify-content: center;
     background-position: center top !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
 }
 
-/* ── Overlay شفاف يضمن قراءة النص ── */
+/* ── Transparent overlay keeps the text readable ── */
 .item-slick1::before {
     content: '';
     position: absolute;
@@ -159,7 +159,7 @@
     .item-slick1 {
         height: 75vh;
         min-height: 420px;
-        /* نص في الأسفل — صورة في الأعلى */
+        /* Text at the bottom, image at the top */
         align-items: flex-end;
         background-position: center 15% !important;
     }

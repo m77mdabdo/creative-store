@@ -3337,20 +3337,20 @@ input.num-product::-webkit-inner-spin-button {
 
 /* Desktop logo (اللي ظاهر في الصورة) */
 .wrap-menu-desktop .logo img{
-    height: 200px !important;   /* غيّري الرقم زي ما تحبي */
+    height: 200px !important;   /* Adjust this value as needed */
     width: auto !important;
     max-height: none !important;
 }
 
-/* يخلي اللوجو في النص عموديًا */
+/* Vertically center the logo */
 .wrap-menu-desktop .logo{
     display: flex !important;
     align-items: center !important;
 }
 
-/* لو الهيدر بيقص اللوجو لما تكبّريه */
+/* If the header clips the logo when it is enlarged */
 .limiter-menu-desktop{
-    height: 100px !important;   /* كبّريها لو احتجتي */
+    height: 100px !important;   /* Increase if needed */
     align-items: center !important;
 }
 
@@ -3362,28 +3362,28 @@ input.num-product::-webkit-inner-spin-button {
 
 
 
-/* محاذاة الهيدر كله */
+/* Align the whole header */
 .wrap-menu-desktop .limiter-menu-desktop {
     display: flex;
     align-items: center;
 }
 
-/* اللوجو */
+/* Logo */
 .logo-brand {
     display: flex;
     align-items: center;
-    gap: 8px;                 /* مسافة بين الأيقونة والاسم */
+    gap: 8px;                 /* Space between the icon and the name */
     margin-right: 30px;
     text-decoration: none;
 }
 
-/* الأيقونة */
+/* Icon */
 .logo-brand img {
-    height: 42px;             /* حجم مناسب للهيدر */
+    height: 42px;             /* Size that fits the header */
     width: auto;
 }
 
-/* الاسم */
+/* Name */
 .logo-brand span {
     font-size: 15px;
     font-weight: 600;
@@ -3391,7 +3391,7 @@ input.num-product::-webkit-inner-spin-button {
     white-space: nowrap;
 }
 
-/* تأكيد محاذاة المينيو */
+/* Keep the menu aligned */
 .menu-desktop,
 .wrap-icon-header {
     align-items: center;
@@ -3402,26 +3402,26 @@ input.num-product::-webkit-inner-spin-button {
 .wrap-menu-desktop .logo.logo-brand{
     display: flex !important;
     align-items: center !important;
-    margin-right: 28px !important;  /* يروح شمال/يبعد عن المينيو */
+    margin-right: 28px !important;  /* Push left, away from the menu */
 }
 
 .wrap-menu-desktop .logo.logo-brand img{
-    height: 58px !important;        /* كبّريها هنا */
+    height: 58px !important;        /* Adjust the size here */
     width: auto !important;
     max-height: none !important;
     max-width: none !important;
     display: block !important;
 }
 
-/* مهم: نخلي الهيدر يسمح بالارتفاع */
+/* Important: let the header grow in height */
 .wrap-menu-desktop .limiter-menu-desktop{
     align-items: center !important;
-    min-height: 80px;               /* زوّدي لو لسه بيقص */
+    min-height: 80px;               /* Increase if it still clips */
 }
 
 /* ===== Mobile logo ===== */
 .logo-mobile .logo-brand-mobile img{
-    height: 55px !important;        /* كبّريها في الموبايل */
+    height: 55px !important;        /* Size on mobile */
     width: auto !important;
     max-height: none !important;
     max-width: none !important;
@@ -3429,7 +3429,7 @@ input.num-product::-webkit-inner-spin-button {
 }
 
 .wrap-header-mobile{
-    min-height: 80px !important;    /* لو بيقص في الموبايل */
+    min-height: 80px !important;    /* If it clips on mobile */
     align-items: center !important;
 }
 
@@ -3437,26 +3437,26 @@ input.num-product::-webkit-inner-spin-button {
 .wrap-menu-desktop .logo.logo-brand{
     display: flex !important;
     align-items: center !important;
-    margin-right: 28px !important;  /* يروح شمال/يبعد عن المينيو */
+    margin-right: 28px !important;  /* Push left, away from the menu */
 }
 
 .wrap-menu-desktop .logo.logo-brand img{
-    height: 58px !important;        /* كبّريها هنا */
+    height: 58px !important;        /* Adjust the size here */
     width: auto !important;
     max-height: none !important;
     max-width: none !important;
     display: block !important;
 }
 
-/* مهم: نخلي الهيدر يسمح بالارتفاع */
+/* Important: let the header grow in height */
 .wrap-menu-desktop .limiter-menu-desktop{
     align-items: center !important;
-    min-height: 80px;               /* زوّدي لو لسه بيقص */
+    min-height: 80px;               /* Increase if it still clips */
 }
 
 /* ===== Mobile logo ===== */
 .logo-mobile .logo-brand-mobile img{
-    height: 55px !important;        /* كبّريها في الموبايل */
+    height: 55px !important;        /* Size on mobile */
     width: auto !important;
     max-height: none !important;
     max-width: none !important;
@@ -3464,7 +3464,7 @@ input.num-product::-webkit-inner-spin-button {
 }
 
 .wrap-header-mobile{
-    min-height: 80px !important;    /* لو بيقص في الموبايل */
+    min-height: 80px !important;    /* If it clips on mobile */
     align-items: center !important;
 }
 

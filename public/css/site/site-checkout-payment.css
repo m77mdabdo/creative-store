@@ -242,7 +242,7 @@
         }
     }
 
-    /* إخفاء رسالة Test Mode الخاصة بـ Moyasar */
+    /* Hide Moyasar's Test Mode message */
     .mysr-form .mysr-alert {
         display: none !important;
     }

@@ -27,7 +27,7 @@ class ShipmentTrackingController extends Controller
             'tracked_at' => now(),
         ]);
 
-        // تحديث الشحنة نفسها
+        // Update the shipment itself
         $shipment->update([
             'status' => $request->status ?? $shipment->status,
             'current_location' => $request->location ?? $shipment->current_location,
