@@ -14,7 +14,7 @@
 .mobile-menu-drawer {
     position: fixed;
     top: 0;
-    right: -320px; /* RTL: يطلع من اليمين */
+    right: -320px; /* RTL: slides in from the right */
     width: 300px;
     height: 100%;
     background: var(--cs-surface);

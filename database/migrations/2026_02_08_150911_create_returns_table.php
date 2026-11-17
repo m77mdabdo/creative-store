@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('returns', function (Blueprint $table) {
             $table->id();
 
-            // العلاقات
+            // Relations
             $table->foreignId('order_id')
                 ->constrained('orders')
                 ->restrictOnDelete();
@@ -21,7 +21,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->nullOnDelete();
 
-            // حالة الإرجاع
+            // Return status
             $table->enum('status', [
                 'requested',
                 'approved',
@@ -31,7 +31,7 @@ return new class extends Migration
                 'partial_refunded'
             ])->default('requested');
 
-            // تفاصيل
+            // Details
             $table->text('reason')->nullable();
 
             $table->boolean('refund_shipping')->default(false);
@@ -40,7 +40,7 @@ return new class extends Migration
             $table->decimal('shipping_refund_amount', 12, 2)->default(0);
             $table->decimal('tax_refund_amount', 12, 2)->default(0);
 
-            // تواريخ
+            // Dates
             $table->timestamp('requested_at')->nullable();
             $table->timestamp('processed_at')->nullable();
 

@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const raw = (input.value || "").trim();
         if (!raw) { hidden.value = ""; return; }
 
-        // حاول تجيب رقم دولي من المكتبة
+        // Try to get the international number from the library
         const e164 = iti.getNumber && iti.getNumber();
         hidden.value = e164 && e164.startsWith("+") ? e164 : buildE164Fallback();
 

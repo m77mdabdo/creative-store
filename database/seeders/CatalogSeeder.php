@@ -15,7 +15,7 @@ class CatalogSeeder extends Seeder
     public function run(): void
     {
         /* =========================
-         * تأكيد وجود Users
+         * Make sure Users exist
          * ========================= */
         if (User::count() === 0) {
             User::factory(10)->create();

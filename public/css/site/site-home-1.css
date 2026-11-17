@@ -248,7 +248,7 @@ html[dir="rtl"] .slick-blog .slick-slide {
 
 /* ===== ARROWS ===== */
 .arrow-slick-blog {
-    position: static; /* بدل absolute */
+    position: static; /* Instead of absolute */
     width: 44px;
     height: 44px;
     border-radius: 50%;
@@ -266,7 +266,7 @@ html[dir="rtl"] .slick-blog .slick-slide {
 .next-slick-blog { right: unset; }
 .prev-slick-blog { right: unset; }
 
-/* حط الأسهم جنب زر عرض الكل */
+/* Place the arrows next to the View All button */
 .wrap-slick-blog .slick-arrow-group {
     display: flex;
     align-items: center;

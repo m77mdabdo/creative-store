@@ -1,26 +1,26 @@
 /* ===============================
-       RTL NAVBAR — الحل النهائي
+       RTL NAVBAR
     =============================== */
 
-    /* عكس ترتيب العناصر الرئيسية */
+    /* Reverse the order of the main elements */
     html[dir="rtl"] .custom-navbar .navbar-inner {
     }
 
-    /* المنيو يبدأ من اليمين بدون عكس الأيتمز */
+    /* Menu starts from the right without reversing its items */
     html[dir="rtl"] .custom-navbar .main-menu {
         flex-direction: row !important;
         direction: rtl !important;
     }
 
-    /* الأيقونات تتعكس */
+    /* Mirror the icons */
     html[dir="rtl"] .custom-navbar .site-actions {
     }
 
-    /* اللوجو يتعكس */
+    /* Mirror the logo */
     html[dir="rtl"] .custom-navbar .site-brand {
     }
 
-    /* الـ badge على الشمال في RTL */
+    /* Badge sits on the left in RTL */
     html[dir="rtl"] .custom-navbar .icon-header-noti::after,
     html[dir="rtl"] .custom-mobile-header .icon-header-noti::after {
         left: -4px !important;

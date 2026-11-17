@@ -515,36 +515,36 @@
     }
 
     /* ===================================
-   RTL NAVBAR FIX — الحل النهائي
+   RTL NAVBAR FIX
 =================================== */
 
-/* الـ navbar الرئيسي */
+/* Main navbar */
 html[dir="rtl"] .custom-navbar .navbar-inner {
 }
 
-/* اللوجو — يروح اليمين */
+/* Logo goes to the right */
 html[dir="rtl"] .custom-navbar .site-brand {
 }
 
-/* المنيو — يفضل في المنتصف */
+/* Menu stays in the center */
 html[dir="rtl"] .custom-navbar .menu-desktop {
 }
 
 html[dir="rtl"] .custom-navbar .main-menu {
 }
 
-/* الأيقونات — تروح الشمال */
+/* Icons go to the left */
 html[dir="rtl"] .custom-navbar .site-actions {
 }
 
-/* الـ topbar */
+/* Topbar */
 html[dir="rtl"] .custom-topbar .content-topbar {
 }
 
 html[dir="rtl"] .custom-topbar .right-top-bar {
 }
 
-/* الـ badge — يجي على الشمال في RTL */
+/* Badge sits on the left in RTL */
 html[dir="rtl"] .icon-header-noti::after {
     left: -4px !important;
     right: auto !important;

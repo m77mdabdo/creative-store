@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        // FK متأخر (product_images.variant_id)
+        // Deferred FK (product_images.variant_id)
         Schema::table('product_images', function (Blueprint $table) {
             $table->foreign('variant_id')->references('id')->on('product_variants')->nullOnDelete();
         });
@@ -44,7 +44,7 @@ return new class extends Migration {
             $table->dropForeign(['variant_id']);
         });
 
-        // ملاحظة: DROP CHECK يختلف حسب DB
+        // Note: DROP CHECK syntax differs per database
         // MySQL: ALTER TABLE table_name DROP CHECK constraint_name;
         // PostgreSQL: ALTER TABLE table_name DROP CONSTRAINT constraint_name;
     }

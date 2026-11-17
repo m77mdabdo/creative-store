@@ -15,11 +15,11 @@ return new class extends Migration {
             $table->foreignId('attribute_value_id')->constrained('attribute_values')->cascadeOnDelete();
             $table->timestamps();
 
-            // ✅ أسماء قصيرة للـ unique indexes
+            // Short names for the unique indexes
             $table->unique(['product_variant_id','attribute_id'], 'uq_pvv_variant_attr');
             $table->unique(['product_variant_id','attribute_value_id'], 'uq_pvv_variant_value');
 
-            // ❌ احذفي الثلاثي لأنه يطوّل اسم الـ index ومش لازم
+            // Drop the three-column index: it makes the index name too long and is not needed
             // $table->unique(['product_variant_id','attribute_id','attribute_value_id'], 'uq_pvv_v_a_v');
         });
     }
