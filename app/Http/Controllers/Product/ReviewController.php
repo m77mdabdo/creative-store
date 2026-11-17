@@ -31,7 +31,7 @@ class ReviewController extends Controller
         $product = Product::query()->where('status', 'active')->findOrFail($validated['product_id']);
 
 
-        // منع تكرار التعليق لنفس المستخدم
+        // Prevent the same user from reviewing twice
         if(Auth::check()){
 
             $alreadyReviewed = Review::where('product_id',$product->id)

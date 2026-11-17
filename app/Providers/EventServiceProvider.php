@@ -19,7 +19,7 @@ class EventServiceProvider extends ServiceProvider
         ],
     ];
 
-    // ✅ اقفل الاكتشاف التلقائي للأحداث (اللي بيحتاج 'files')
+    // Disable automatic event discovery (it needs 'files')
     public function shouldDiscoverEvents(): bool
     {
         return false;

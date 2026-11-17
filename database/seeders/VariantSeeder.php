@@ -65,10 +65,10 @@ class VariantSeeder extends Seeder
         $products = Product::inRandomOrder()->take(20)->get();
 
         foreach ($products as $product) {
-            // المنتج ده هيبقى له variants
+            // This product will have variants
             $product->update(['has_variants' => true]);
 
-            // ربط attributes بالمنتج
+            // Attach attributes to the product
             foreach ($attributes as $attribute) {
                 ProductAttribute::firstOrCreate([
                     'product_id' => $product->id,

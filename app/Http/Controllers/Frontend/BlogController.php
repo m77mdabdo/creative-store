@@ -16,7 +16,7 @@ class BlogController extends Controller
             ->with(['category', 'comments'])
             ->firstOrFail();
 
-        // زيادة عدد المشاهدات
+        // Increment the view count
         $blog->increment('views');
 
         return view('frontend.blog.show', [
